@@ -1,0 +1,88 @@
+
+## default CRLF => LF, LF => LF
+* text=auto
+
+## filters
+* filter=tabspace
+
+## CRLF => LF, LF => LF
+
+# source
+*.css text
+*.sass text
+*.scss text
+*.less text
+*.styl text
+
+*.js text
+*.coffee text
+*.json text
+
+*.htm text
+*.html text
+*.xml text
+*.svg text
+
+*.txt text
+*.ini text
+*.sh text
+
+*.jade text
+*.haml text
+*.dot text
+*.tmpl text
+*.phtml text
+*.ejs text
+*.hbt text
+
+.htaccess text
+
+.gitattributes text
+
+.jshintrc text
+.jscsrc text
+.jshintignore text
+.coffeelintrc text
+.csslintrc text
+
+*.yaml text
+*.yml text
+.editorconfig text
+
+*.npmignore text
+*.bowerrc text
+
+Procfile text
+.slugignore text
+
+*.md text
+LICENSE text
+AUTHORS text
+CHANGELOG text
+
+*.py text
+
+## CRLF => CRLF, LF => LF
+
+.gitignore binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+
+*.mov binary
+*.mp4 binary
+*.mp3 binary
+
+*.gz binary
+*.zip binary
+*.7z binary
+
+*.ttf binary
+*.eot binary
+*.woff binary
+
+*.pyc binary
+*.pdf binary
+
