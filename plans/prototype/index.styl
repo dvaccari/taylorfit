@@ -35,6 +35,8 @@ body
 
 .right
   float right
+.space
+  margin 0 10px
 
 // --- sections
 
@@ -43,7 +45,7 @@ section.section
   position relative
   header
     font-size 16pt
-    padding 12px 0
+    padding-bottom 12px
     span
       margin-right 12px
   &:before
@@ -95,6 +97,7 @@ table
   font-size 10pt
   cursor pointer
   text-align right
+  width 100%
   td, th
     box-shadow 2px 2px white
     padding 4px 10px
@@ -106,10 +109,17 @@ table
     td:hover
       background lighten(green, 60%)
 
+// --- input
 
-
-
-
-
+input
+  border none
+  outline none
+  padding 4px 12px
+  font-size 14pt
+  border-radius 2px
+  box-shadow 0 0 0 2px white
+  width 50pt
+  &:focus
+    box-shadow 0 0 0 2px green
 
 

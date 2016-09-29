@@ -1,4 +1,8 @@
 
+- var rand = function ( lo, hi ) {
+-   return Math.floor(lo + Math.random() * (hi - lo))
+- }
+
 doctype html
 html(lang="en-us")
   head
@@ -17,11 +21,17 @@ html(lang="en-us")
         thead
           tr
             each col in cols
-              th= "Feature" + col
+              th= "Part " + col
         tbody
           each row in rows
             tr
               each col in cols
-                td= Math.floor(10 + Math.random() * 90)
-
+                td= rand(10, 100)
+    section.section#rows
+      header
+        span Row Selection
+        span.small Click and drag table rows or input data
+      input(type="text" value=rand(1,3))
+      span.space -
+      input(type="text" value=rand(4,6))
 
