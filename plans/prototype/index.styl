@@ -9,6 +9,10 @@ html, body, ul
   padding 0
 *
   transition all 300ms
+hr
+  border 1px solid white
+  background-color white
+  color white
 
 body
   background bg
@@ -66,25 +70,35 @@ section.section
     left 28px
     z-index -1
   .help
-    &:before
-      content "?"
+  .suggest
     position absolute
     left 15px
     border-radius 100%
-    color blue
     font-weight bold
     font-size 16pt
     background #FFF
     box-sizing border-box
     width 30px
     height 30px
-    padding 2px 9px
     margin-top -15px
     box-shadow 0 0 0 2px lighten(grey, 40%)
     cursor pointer
+  .help
+    color blue
+    padding 2px 9px
+    &:before
+      content "?"
     &:hover
       color white
       background blue
+  .suggest
+    color orange
+    padding 2px 11px
+    &:before
+      content "!"
+    &:hover
+      color white
+      background orange
 
 
 // --- tables
@@ -101,6 +115,8 @@ table
   td, th
     box-shadow 2px 2px white
     padding 4px 10px
+    &.selected
+      box-shadow 0 2px green, 2px 2px white
   tbody
     tr:nth-child(2n)
       background lighten(white, 50%)
@@ -109,7 +125,7 @@ table
     td:hover
       background lighten(green, 60%)
     tr.selected > td:first-child
-      box-shadow inset 2px 0 0 green, 2px 2px white
+      box-shadow inset 2px 0 green, 2px 2px white
 
 // --- input
 
@@ -125,3 +141,17 @@ input
     box-shadow 0 0 0 2px green
 
 
+#variables
+  .header
+    display inline-block
+    width 90px
+    font-size 14pt
+  .button
+    margin 5px
+  .select
+    display inline-block
+    border-radius 5px
+    box-shadow 0 0 0 2px white
+    padding 0px 5px
+    box-sizing border-box
+    width calc(100% - 90px)
