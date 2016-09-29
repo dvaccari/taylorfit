@@ -4,5 +4,26 @@ html(lang="en-us")
   head
     meta(charset="utf-8")
     link(rel="stylesheet" href="./index.css")
+    - var part = 1
   body
+    if part == 1
+      section.section#grid
+        header
+          span Data Input
+          span.small Start by inputting some data
+          span.import.button Import CSV
+        .help
+        table
+          - var cols = [1,2,3,4,5,6]
+          - var rows = [1,2,3,4,5,6]
+          thead
+            tr
+              each col in cols
+                th= "Feature " + col
+          tbody
+            each row in rows
+              tr
+                each col in cols
+                  td= Math.floor(10 + Math.random() * 90)
+
 
