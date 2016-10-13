@@ -35,15 +35,17 @@ module.exports =
   devtool: "#inline-source-map"
   devServer:
     contentBase: BUILD
+    inline: true
+    hot: true
   node:
     console: false
     global: false
-    process: false
+    process: true
     Buffer: false
     setImmediate: false
   entry:
     algorithm: "#{ALGORITHM}/index.coffee"
-    inferface: "#{INTERFACE}/index.coffee"
+    interface: "#{INTERFACE}/index.coffee"
   output:
     path: BUILD
     filename: "[name].js"
@@ -59,6 +61,9 @@ module.exports =
   module:
     loaders: LOADERS
   plugins: [
+    new webpack.BannerPlugin ";;(window.global = window);;",
+      raw: true
+      entryOnly: true
     new webpack.optimize.UglifyJsPlugin
   ]
 
