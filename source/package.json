@@ -22,5 +22,11 @@
     "url-loader": "^0.5.7",
     "webpack": "^1.13.2",
     "webpack-dev-server": "^1.16.2"
+  },
+  "dependencies": {
+    "knockout": "^3.4.0",
+    "ko-anonymous": "github:tsu-complete/js-ko-anonymous",
+    "ko-shell": "github:tsu-complete/js-ko-shell",
+    "ko-template": "github:tsu-complete/js-ko-template"
   }
 }
