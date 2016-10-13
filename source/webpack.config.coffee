@@ -16,7 +16,13 @@ INTERFACE = rel "./interface"
 BUILD = rel "./build"
 
 LOADERS = [
+  # -- scripts
   { test: /\.coffee$/, loader: "coffee-loader" }
+  # -- templates
+  { test: /\.(?:pug|jade)$/, loader: "pug-loader" }
+  # -- styles
+  { test: /\.styl$/, loader: "style-loader!css-loader!stylus-loader" }
+  # -- misc
   { test: /\.txt$/, loader: "raw-loader" }
 ]
 
@@ -55,4 +61,9 @@ module.exports =
   plugins: [
     new webpack.optimize.UglifyJsPlugin
   ]
+
+  stylus:
+    use: [ do require "nib" ]
+    import: [ "~nib/lib/nib/index.styl" ]
+    preferPathResolver: "webpack"
 
