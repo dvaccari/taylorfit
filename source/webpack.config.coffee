@@ -4,11 +4,6 @@ webpack = require "webpack"
 path = require "path"
 # -- helpers
 rel = ( p1 ) -> path.resolve __dirname, p1
-loader = ( suffix, uri ) ->
-  _name: suffix
-  _suffix: ".#{suffix}"
-  test: new RegExp "\\.#{suffix}$"
-  loader: loader
 # -- constants
 CONTEXT = rel "."
 ALGORITHM = rel "./algorithm"
