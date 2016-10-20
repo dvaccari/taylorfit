@@ -1,4 +1,7 @@
 
+# --- include core libraries
+require "core-js"
+
 # --- setup knockout
 global.ko = require "knockout"
 require "ko-shell"

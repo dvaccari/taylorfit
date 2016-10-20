@@ -24,6 +24,7 @@
     "webpack-dev-server": "^1.16.2"
   },
   "dependencies": {
+    "core-js": "^2.4.1",
     "knockout": "^3.4.0",
     "ko-anonymous": "github:tsu-complete/js-ko-anonymous",
     "ko-shell": "github:tsu-complete/js-ko-shell",
