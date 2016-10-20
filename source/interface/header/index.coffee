@@ -1,9 +1,11 @@
 
-engine.register "header-template", do require "./index.jade"
+engine.register "header-template",
+  do require "./index.jade"
 
 module.exports = class Header
+  name: "header-template"
+  as: "header"
+
   constructor: ( @title ) ->
-    @name = "header-template"
     @data = this
-    @as = "header"
 
