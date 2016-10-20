@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "build": "npm install; webpack",
-    "debug": "npm install; webpack-dev-server --inline --hot"
+    "debug": "npm install; webpack-dev-server --inline --hot",
+    "winbuild": "npm install && webpack",
+    "windebug": "npm install && webpack-dev-server --inline --hot"
   },
   "devDependencies": {
     "coffee-loader": "^0.7.2",
