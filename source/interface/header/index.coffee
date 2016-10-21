@@ -1,12 +1,11 @@
 
-engine.register "header-template",
-  do require "./index.jade"
 require "./index.styl"
+Template = require "../Template.coffee"
+template = do require "./index.jade"
 
-module.exports = class Header
-  name: "header-template"
-  as: "header"
+module.exports = class Header extends Template
+  Header.register "header", template
 
   constructor: ( @title ) ->
-    @data = this
+    super
 
