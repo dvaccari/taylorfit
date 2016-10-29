@@ -3,10 +3,10 @@ import numpy as np
 
 LOW     = -10
 HIGH    =  10
-VAR     =  5
+VAR     =  .5
 SAMPLES =  50
-OUTLIER_VAR = 40
-OUTLIER_FREQ= 0.1
+OUTLIER_VAR = 2
+OUTLIER_FREQ= 0.05
 
 outs = []
 
