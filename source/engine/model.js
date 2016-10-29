@@ -1,22 +1,24 @@
 
-const math      = require('mathjs');
-const lstsq     = require('./lstsq');
-const polyTerms = require('./genPolyTerms');
+const math          = require('mathjs');
+const lstsq         = require('./lstsq');
+const combos        = require('./combos');
 
-const _weights  = Symbol('weights');
-const _data     = Symbol('data');
-const _terms    = Symbol('terms');
-const _degree   = Symbol('degree');
-const _headers  = Symbol('degree');
+const _weights      = Symbol('weights');
+const _data         = Symbol('data');
+const _terms        = Symbol('terms');
+const _exponents    = Symbol('exponents');
+const _multipliers  = Symbol('multipliers');
+const _headers      = Symbol('headers');
 
 class Model {
 
-  constructor(X, y, degree, headers=null) {
-    this[_headers]  = headers;
-    this[_degree]   = degree;
-    this[_terms]    = polyTerms.getTerms(X.size()[1], degree);
-    this[_data]     = polyTerms.createPolyMatrix(this[_terms], X);
-    this[_weights]  = lstsq(this[_data], y);
+  constructor(X, y, exponents, multipliers, headers=null) {
+    this[_headers] = headers;
+    this[_exponents] = exponents;
+    this[_multipliers] = multipliers;
+    this[_terms] = combos.generateTerms(X.size()[1], exponents, multipliers);
+    this[_data] = combos.createPolyMatrix(this[_terms], X);
+    this[_weights] = lstsq(this[_data], y);
 
     console.log(this[_data]);
     console.log(this[_terms]);
@@ -43,7 +45,7 @@ class Model {
 
   predict(vector) {
     vector = math.matrix([vector]);
-    var augmentedVector = polyTerms.createPolyMatrix(this[_terms], vector);
+    var augmentedVector = combos.createPolyMatrix(this[_terms], vector);
     return math.dot(this[_weights], math.squeeze(augmentedVector));
   }
 
@@ -55,12 +57,17 @@ class Model {
     return this[_weights];
   }
 
+  get terms() {
+    return this[_terms];
+  }
+
   toJSON() {
     return {
-      headers : this[_headers].toArray(),
-      weights : this[_weights].toArray(),
-      terms   : this[_terms].toArray(),
-      degree  : this[_degree]
+      headers     : this[_headers].toArray(),
+      weights     : this[_weights].toArray(),
+      terms       : this[_terms].toArray(),
+      exponents   : this[_exponents],
+      multipliers : this[_multipliers]
     };
   }
 
