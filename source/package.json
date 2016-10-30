@@ -8,10 +8,12 @@
     "debug": "npm install && webpack-dev-server --inline --hot"
   },
   "devDependencies": {
+    "chai": "^3.5.0",
     "coffee-loader": "^0.7.2",
     "coffee-script": "^1.11.1",
     "css-loader": "^0.25.0",
     "file-loader": "^0.9.0",
+    "mocha": "^3.1.2",
     "nib": "^1.1.2",
     "pug": "^2.0.0-beta6",
     "pug-loader": "^2.3.0",

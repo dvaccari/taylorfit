@@ -49,7 +49,7 @@ function combinationsFromBins(bins, k) {
     var subCombos = combinationsFromBins(bins.slice(1), k - 1);
     combos = combos.concat(subCombos.map((combo) => [bins[0][i]].concat(combo)));
   }
-  return combos;
+  return combos.concat(combinationsFromBins(bins.slice(1), k));
 }
 
 function getAllPolyTerms(features, degree) {
