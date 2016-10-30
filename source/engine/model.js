@@ -44,14 +44,21 @@ class Model {
   }
 
   addTerm(term, recompute=true) {
-    var size = math.size(term);
-
-    if (size.length !== 1 && size[0] !== 2) {
-      throw new DimensionError(size, [2], '!=');
+    if (!Array.isArray(term)) {
+      throw new TypeError('Expected an array of [col, exp] pairs');
     }
 
+    term.forEach((pair) => {
+      var size = math.size(pair);
+
+      if (size.length !== 1 && size[0] !== 2) {
+        throw new math.error.DimensionError(size, [2], '!=');
+      }
+    });
+
     var found = this[_terms].find((existingTerm) => {
-      return existingTerm[0] === term[0] && existingTerm[1] === term[1];
+      return existingTerm.length === term.length &&
+        math.sum(math.equal(existingTerm, term)) === 2*term.length;
     });
 
     if (found) {
@@ -69,12 +76,18 @@ class Model {
 
   removeTerm(termToRemove, recompute=true) {
     this[_terms] = this[_terms].filter((term) => {
-      return !!math.sum(math.not(math.equal(term, termToRemove)));
+      return term.length !== termToRemove.length ||
+        math.sum(math.equal(term, termToRemove)) !== 2*term.length;
     });
 
     if (recompute) {
-      this[_Xaugmented] = combos.createPolyMatrix(this[_terms], this[_X]);
-      this[_weights] = stats.lstsq(this[_Xaugmented], this[_y]);
+      if (this[_terms].length > 0) {
+        this[_Xaugmented] = combos.createPolyMatrix(this[_terms], this[_X]);
+        this[_weights] = stats.lstsq(this[_Xaugmented], this[_y]);
+      } else {
+        this[_Xaugmented] = this[_X];
+        this[_weights] = [];
+      }
     }
     return this[_terms];
   }
@@ -85,13 +98,13 @@ class Model {
   }
 
   row(i) {
-    var cols = this[_data].size()[1];
-    return this[_data].subset(math.index(i, math.range(0, cols)));
+    var cols = this[_Xaugmented].size()[1];
+    return this[_Xaugmented].subset(math.index(i, math.range(0, cols)));
   }
 
   col(i) {
-    var rows = this[_data].size()[0];
-    return this[_data].subset(math.index(math.range(0, rows), i));
+    var rows = this[_Xaugmented].size()[0];
+    return this[_Xaugmented].subset(math.index(math.range(0, rows), i));
   }
 
   predict(vector) {
@@ -124,3 +137,6 @@ class Model {
 
 module.exports = Model;
 
+//var z = math.matrix([[1]]).resize([x.size()[0], 1], 1);
+
+//x = math.concat(z, x);
