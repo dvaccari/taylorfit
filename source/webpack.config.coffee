@@ -6,7 +6,7 @@ path = require "path"
 rel = ( p1 ) -> path.resolve __dirname, p1
 # -- constants
 CONTEXT = rel "."
-ALGORITHM = rel "./algorithm"
+ALGORITHM = rel "./engine"
 INTERFACE = rel "./interface"
 BUILD = rel "./build"
 
@@ -39,7 +39,7 @@ module.exports =
     Buffer: false
     setImmediate: false
   entry:
-    algorithm: "#{ALGORITHM}/index.coffee"
+    algorithm: "#{ALGORITHM}/index.js"
     interface: "#{INTERFACE}/index.coffee"
   output:
     path: BUILD
