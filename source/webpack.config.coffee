@@ -6,9 +6,10 @@ path = require "path"
 rel = ( p1 ) -> path.resolve __dirname, p1
 # -- constants
 CONTEXT = rel "."
-ALGORITHM = rel "./engine"
+ENGINE = rel "./engine"
 INTERFACE = rel "./interface"
 BUILD = rel "./build"
+MATHJS = rel "./node_modules/mathjs/dist/math.min.js"
 
 LOADERS = [
   # -- scripts
@@ -19,6 +20,8 @@ LOADERS = [
   { test: /\.styl$/, loader: "style-loader!css-loader!stylus-loader" }
   # -- misc
   { test: /\.txt$/, loader: "raw-loader" }
+  # -- es6
+  { test: /\.jsx$/, exclude: /node_modules/, loader: "babel?presets[]=es2015"}
 ]
 
 # -- exported configuration
@@ -27,7 +30,7 @@ module.exports =
   profile: true
   progress: true
   cache: true
-  devtool: "#inline-source-map"
+  devtool: "#source-map"
   devServer:
     contentBase: BUILD
     inline: true
@@ -39,7 +42,7 @@ module.exports =
     Buffer: false
     setImmediate: false
   entry:
-    algorithm: "#{ALGORITHM}/index.js"
+    engine: "#{ENGINE}/index.jsx"
     interface: "#{INTERFACE}/index.coffee"
   output:
     path: BUILD
@@ -47,8 +50,9 @@ module.exports =
   resolve:
     alias:
       context: CONTEXT
-      algorithm: ALGORITHM
+      engine: ENGINE
       interface: INTERFACE
+      blaba: MATHJS
   resolveLoader:
     extensions: [ "", ".webpack-loader.js",
       ".web-loader.js", ".loader.js", ".js",
