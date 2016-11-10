@@ -76,7 +76,7 @@ module.exports = {
   ],
   stylus: {
     use: [require("nib")()],
-    "import": ["~nib/lib/nib/index.styl"],
+    "import": ["~nib/lib/nib/index.styl", rel("./config.styl")],
     preferPathResolver: "webpack"
   }
 };
