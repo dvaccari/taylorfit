@@ -1,6 +1,0 @@
-
-!build/
-build/**/*
-!build/readme.md
-!build/index.html
-
