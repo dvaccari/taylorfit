@@ -4,5 +4,3 @@ build/**/*
 !build/readme.md
 !build/index.html
 
-webpack.config.js
-
