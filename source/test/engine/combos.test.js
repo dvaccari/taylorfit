@@ -5,7 +5,7 @@ const chai    = require('chai')
     , should  = chai.should;
 
 const math    = require('mathjs')
-    , combos  = require('../../engine/combos');
+    , combos  = require('../../engine/combos.jsx');
 
 describe('combos', () => {
 

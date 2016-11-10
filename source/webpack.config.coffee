@@ -9,7 +9,6 @@ CONTEXT = rel "."
 ENGINE = rel "./engine"
 INTERFACE = rel "./interface"
 BUILD = rel "./build"
-MATHJS = rel "./node_modules/mathjs/dist/math.min.js"
 
 LOADERS = [
   # -- scripts
@@ -30,7 +29,7 @@ module.exports =
   profile: true
   progress: true
   cache: true
-  devtool: "#source-map"
+  devtool: "#inline-source-map"
   devServer:
     contentBase: BUILD
     inline: true
@@ -42,7 +41,7 @@ module.exports =
     Buffer: false
     setImmediate: false
   entry:
-    engine: "#{ENGINE}/index.jsx"
+    #engine: "#{ENGINE}/index.jsx"
     interface: "#{INTERFACE}/index.coffee"
   output:
     path: BUILD
@@ -52,13 +51,14 @@ module.exports =
       context: CONTEXT
       engine: ENGINE
       interface: INTERFACE
-      blaba: MATHJS
   resolveLoader:
     extensions: [ "", ".webpack-loader.js",
       ".web-loader.js", ".loader.js", ".js",
       ".coffee" ]
   module:
     loaders: LOADERS
+    #noParse: [ /math.min.js/, /bam.js/ ]
+
   plugins: [
     new webpack.BannerPlugin ";;(window.global = window);;",
       raw: true
@@ -70,4 +70,5 @@ module.exports =
     use: [ do require "nib" ]
     import: [ "~nib/lib/nib/index.styl" ]
     preferPathResolver: "webpack"
+
 

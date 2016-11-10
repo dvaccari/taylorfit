@@ -1,5 +1,6 @@
 
 //const math = require('mathjs');
+const math = require('./math.jsx');
 
 const fn = {
   //                 =   (X'X)^-1X'

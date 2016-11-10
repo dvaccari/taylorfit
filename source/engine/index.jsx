@@ -3,7 +3,7 @@
 
 //const math    = require('mathjs');
 //const load = require('./load');
-const math = require('./math.jsx');
+const math    = require('./math.jsx');
 const Model   = require('./model.jsx');
 const combos  = require('./combos.jsx');
 

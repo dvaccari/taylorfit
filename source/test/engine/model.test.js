@@ -5,8 +5,8 @@ const chai    = require('chai')
     , should  = chai.should;
 
 const math    = require('mathjs')
-    , combos  = require('../../engine/combos')
-    , Model   = require('../../engine/model')
+    , combos  = require('../../engine/combos.jsx')
+    , Model   = require('../../engine/model.jsx')
     , dataset = require('./test.data.json');
 
 describe('Model', () => {

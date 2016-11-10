@@ -1,5 +1,5 @@
 
-//const math          = require('mathjs');
+const math          = require('./math.jsx');
 const stats         = require('./stats.jsx');
 const combos        = require('./combos.jsx');
 
