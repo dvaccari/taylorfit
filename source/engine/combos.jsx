@@ -1,6 +1,5 @@
 
-const math = require('mathjs');
-const Model = require('./model');
+const math = require('./math.jsx');
 
 function combinations(terms, k, replacement) {
   var combos = [];

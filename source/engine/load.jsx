@@ -1,7 +1,7 @@
 
 
 const csv = require('fast-csv');
-const math = require('mathjs');
+const math = require('./math.jsx');
 
 
 module.exports = (path, removeHeader, callback) => {

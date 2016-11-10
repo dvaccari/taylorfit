@@ -1,9 +1,11 @@
 
+//const math = require('blaba');
 
-const math    = require('mathjs');
+//const math    = require('mathjs');
 //const load = require('./load');
-const Model   = require('./model');
-const combos  = require('./combos');
+const math    = require('./math.jsx');
+const Model   = require('./model.jsx');
+const combos  = require('./combos.jsx');
 
 module.exports.buildModel = (data, indepCol) => {
   indepCol = indepCol || (data.size()[1] - 1);

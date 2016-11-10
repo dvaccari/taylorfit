@@ -6,7 +6,7 @@ path = require "path"
 rel = ( p1 ) -> path.resolve __dirname, p1
 # -- constants
 CONTEXT = rel "."
-ALGORITHM = rel "./engine"
+ENGINE = rel "./engine"
 INTERFACE = rel "./interface"
 BUILD = rel "./build"
 
@@ -19,6 +19,8 @@ LOADERS = [
   { test: /\.styl$/, loader: "style-loader!css-loader!stylus-loader" }
   # -- misc
   { test: /\.txt$/, loader: "raw-loader" }
+  # -- es6
+  { test: /\.jsx$/, exclude: /node_modules/, loader: "babel?presets[]=es2015"}
 ]
 
 # -- exported configuration
@@ -39,7 +41,7 @@ module.exports =
     Buffer: false
     setImmediate: false
   entry:
-    algorithm: "#{ALGORITHM}/index.js"
+    #engine: "#{ENGINE}/index.jsx"
     interface: "#{INTERFACE}/index.coffee"
   output:
     path: BUILD
@@ -47,7 +49,7 @@ module.exports =
   resolve:
     alias:
       context: CONTEXT
-      algorithm: ALGORITHM
+      engine: ENGINE
       interface: INTERFACE
   resolveLoader:
     extensions: [ "", ".webpack-loader.js",
@@ -55,6 +57,8 @@ module.exports =
       ".coffee" ]
   module:
     loaders: LOADERS
+    #noParse: [ /math.min.js/, /bam.js/ ]
+
   plugins: [
     new webpack.BannerPlugin ";;(window.global = window);;",
       raw: true
@@ -66,4 +70,5 @@ module.exports =
     use: [ do require "nib" ]
     import: [ "~nib/lib/nib/index.styl" ]
     preferPathResolver: "webpack"
+
 

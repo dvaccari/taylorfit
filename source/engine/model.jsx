@@ -1,7 +1,7 @@
 
-const math          = require('mathjs');
-const stats         = require('./stats');
-const combos        = require('./combos');
+const math          = require('./math.jsx');
+const stats         = require('./stats.jsx');
+const combos        = require('./combos.jsx');
 
 const _weights      = Symbol('weights');
 const _Xaugmented   = Symbol('Xaugmented');
