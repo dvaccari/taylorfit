@@ -2,6 +2,7 @@
 .input-bar
   input#input-csv(type="file" accept=".csv" data-bind="value:csv_file" hidden)
   label.button(for="input-csv") Import CSV
+  label.button(data-bind="click:save") Export CSV
 .table-wrapper
   table.grid
     thead

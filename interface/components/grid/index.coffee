@@ -46,12 +46,34 @@ ko.components.register "tf-grid",
         for col in row
           r.push ko.observable col
 
+    @save = ( ) =>
+      csv = ""
+      csv += @cols()
+      .map ( col ) ->
+        col.name()
+      .join ","
+      csv += "\n"
+      csv += @rows()
+      .map ( row ) ->
+        row()
+        .map ( col ) ->
+          col()
+        .join ","
+      .join "\n"
 
+      a = document.createElement "a"
+      a.href = URL.createObjectURL new Blob [csv], type: "text/csv"
+      a.download = "data.csv"
+
+      document.body.appendChild a
+      a.click()
+
+      URL.revokeObjectURL a.href
+      document.body.removeChild a
 
     @csv_file = ko.observable undefined
     @csv_file.subscribe ( ) =>
       elem = document.getElementById "input-csv"
-
       read elem.files[0]
       .then @load
       .catch ( error ) ->
