@@ -1,0 +1,27 @@
+
+.table-wrapper
+  table.grid
+    thead
+      tr
+        // ko foreach: cols
+        th
+          input(data-bind="value:name")
+          label.placeholder(data-bind="if:name() === ''")
+            span X
+            sub(data-bind="text:$index")
+        // /ko
+        th.add(data-bind="click:cols.add")
+          a.fa.fa-plus
+    tbody
+      // ko foreach: rows
+      tr
+        // ko foreach: $rawData
+        td
+          input(data-bind="value:$rawData")
+          label.placeholder(data-bind="if:$rawData() === undefined") No Data
+        // /ko
+      // /ko
+      tr
+        td.add(data-bind="click:rows.add,attr:{colspan:cols().length}")
+          a.fa.fa-plus
+

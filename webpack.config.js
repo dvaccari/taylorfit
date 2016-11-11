@@ -18,7 +18,7 @@ module.exports = {
   profile: true,
   progress: true,
   cache: true,
-  devtool: "#inline-source-map",
+  devtool: "#eval",
   devServer: {
     contentBase: BUILD,
     inline: true,
@@ -36,7 +36,8 @@ module.exports = {
   },
   output: {
     path: BUILD,
-    filename: "[name].js"
+    filename: "[name].js",
+    pathinfo: true
   },
   resolve: {
     alias: {
