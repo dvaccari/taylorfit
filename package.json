@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "npm install && npm run build:engine && webpack",
-    "build:engine": "browserify engine/index.jsx -o build/engine.js -s engine --noparse node_modules/mathjs/dist/math.min.js -t [ babelify --presets [ es2015 ] ]",
+    "build:engine": "browserify engine/index.es6 -o build/engine.js -s engine --noparse node_modules/mathjs/dist/math.min.js -t [ babelify --presets [ es2015 ] ]",
     "debug": "npm install && webpack-dev-server --inline --hot",
     "test": "mocha --recursive test"
   },

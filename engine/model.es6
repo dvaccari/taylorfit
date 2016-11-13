@@ -1,7 +1,9 @@
 
-const math          = require('./math.jsx');
-const stats         = require('./stats.jsx');
-const combos        = require('./combos.jsx');
+const math          = require('./math.es6');
+const stats         = require('./stats.es6');
+const combos        = require('./combos.es6');
+
+const Term          = require('./term.es6');
 
 const _weights      = Symbol('weights');
 const _Xaugmented   = Symbol('Xaugmented');
@@ -11,10 +13,11 @@ const _multipliers  = Symbol('multipliers');
 const _headers      = Symbol('headers');
 const _X            = Symbol('X');
 const _y            = Symbol('y');
+const _candyTerms   = Symbol('candidateTerms');
 
 class Model {
 
-  constructor(X, y, terms=null, headers=null) {
+  constructor(X, y, exponents, multipliers, terms=null, headers=null) {
     this[_X] = X;
     this[_y] = y;
     this[_headers] = headers;
@@ -23,16 +26,13 @@ class Model {
     this[_Xaugmented] = X;
     this[_weights] = [];
 
+    this[_candyTerms] = combos
+      .generateTerms(X.size()[1], exponents, multipliers)
+      .map((term) => new Term(term, this));
+
     if (terms != null) {
       this.compute();
     }
-    /* maybe get rid of these, since there is no need to compute them now v
-    this[_exponents] = exponents;
-    this[_multipliers] = multipliers;
-    this[_terms] = combos.generateTerms(X.size()[1], exponents, multipliers);
-    this[_Xaugmented] = combos.createPolyMatrix(this[_terms], X);
-    this[_weights] = stats.lstsq(this[_Xaugmented], y);
-     */
   }
 
   weight(i) {
@@ -68,8 +68,7 @@ class Model {
     this[_terms].push(term);
 
     if (recompute) {
-      this[_Xaugmented] = combos.createPolyMatrix(this[_terms], this[_X]);
-      this[_weights] = stats.lstsq(this[_Xaugmented], this[_y]);
+      this.compute();
     }
     return this[_terms];
   }
@@ -82,8 +81,7 @@ class Model {
 
     if (recompute) {
       if (this[_terms].length > 0) {
-        this[_Xaugmented] = combos.createPolyMatrix(this[_terms], this[_X]);
-        this[_weights] = stats.lstsq(this[_Xaugmented], this[_y]);
+        this.compute();
       } else {
         this[_Xaugmented] = this[_X];
         this[_weights] = [];
@@ -94,7 +92,24 @@ class Model {
 
   compute() {
     this[_Xaugmented] = combos.createPolyMatrix(this[_terms], this[_X]);
-    this[_weights] = stats.lstsq(this[_Xaugmented], this[_y]);
+    var things = stats.lstsqWithStats(this[_Xaugmented], this[_y]);
+    this[_weights] = things.weights;
+
+    /*
+    var candidateTerms = this[_candyTerms].map((term) => ({
+      term : JSON.stringify(term.term),
+      stuff: term.getStats()
+    }));
+
+     */
+    return {
+      model: {
+        weights: this[_weights].toArray(),
+        tstats: things.tstats.toArray(),
+        terms: this[_terms]
+      }
+      //potential: candidateTerms
+    };
   }
 
   row(i) {
@@ -113,6 +128,14 @@ class Model {
     return math.dot(this[_weights], math.squeeze(augmentedVector));
   }
 
+  get X() {
+    return this[_X];
+  }
+
+  get y() {
+    return this[_y];
+  }
+
   get data() {
     return this[_Xaugmented];
   }
@@ -123,6 +146,10 @@ class Model {
 
   get terms() {
     return this[_terms];
+  }
+
+  get candidates () {
+    return this[_candyTerms];
   }
 
   toJSON() {
@@ -136,7 +163,3 @@ class Model {
 }
 
 module.exports = Model;
-
-//var z = math.matrix([[1]]).resize([x.size()[0], 1], 1);
-
-//x = math.concat(z, x);

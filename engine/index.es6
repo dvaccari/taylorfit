@@ -3,9 +3,9 @@
 
 //const math    = require('mathjs');
 //const load = require('./load');
-const math    = require('./math.jsx');
-const Model   = require('./model.jsx');
-const combos  = require('./combos.jsx');
+const math    = require('./math.es6');
+const Model   = require('./model.es6');
+const combos  = require('./combos.es6');
 
 module.exports.buildModel = (data, indepCol) => {
   indepCol = indepCol || (data.size()[1] - 1);

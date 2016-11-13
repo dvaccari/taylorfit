@@ -1,5 +1,5 @@
 
-const math = require('./math.jsx');
+const math = require('./math.es6');
 
 function combinations(terms, k, replacement) {
   var combos = [];
@@ -86,6 +86,15 @@ function createPolyMatrix(terms, data) {
   return augmentedData;
 }
 
+function createCandidateMatrix(Xaug, term, data) {
+  var rows = data.size()[0];
+  var newXaug = Xaug.clone();
+  var newColumn = term.reduce((prev, curr) => {
+    var index = math.index(math.range(0, rows), curr[0]);
+    var currColumn = math.subset(data, index);
+  });
+}
+
 function generateTerms(features, exponents, multipliers) {
   var bins = math.range(0, features)
         .toArray()
@@ -95,6 +104,8 @@ function generateTerms(features, exponents, multipliers) {
 
   return [].concat.apply([], combosForMults);
 }
+
+
 
 module.exports.generateTerms = generateTerms;
 module.exports.createPolyMatrix = createPolyMatrix;

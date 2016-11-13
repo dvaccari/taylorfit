@@ -1,6 +1,6 @@
 
 //const math = require('mathjs');
-const math = require('./math.jsx');
+const math = require('./math.es6');
 
 const fn = {
   //                 =   (X'X)^-1X'
@@ -27,9 +27,13 @@ const fn = {
   tstat : (B, C) => fn._tstat.eval({ B: B, C: C })
 };
 
-module.exports.lstsq = fn.lstsq;
 module.exports.hatmatrix = fn.hat;
 module.exports.mse = fn.mse;
+
+module.exports.lstsq = (A, b) => {
+  var d = fn.lstsq(A, b);
+  return d.isMatrix ? d : math.matrix([d]);
+};
 
 module.exports.lstsqWithStats = (A, b) => {
   var pseudoInverse = fn._psinv.eval({ A: A })
@@ -73,4 +77,4 @@ var z = math.matrix([[1]]).resize([x.size()[0], 1], 1);
 x = math.concat(z, x);
 
 //console.log(module.exports.hatmatrix(x));
-console.log(module.exports.lstsqWithStats(x, y));
+//console.log(module.exports.lstsqWithStats(x, y));
