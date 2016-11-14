@@ -1,0 +1,74 @@
+##############
+## Protocol ##
+##############
+
+    [client]        |           [server]
+======================================================
+
+import data
+    |
+choose parameters (exponents & multiplicands)
+    |
+send to server      >       get data
+                                |
+                            compute terms
+                                |
+                            for each term, compute the potential model (& fit statistics)
+                                |
+get terms & stats   <       report back to client
+    |
+                 {loop}
+client picks term   >       add term to model
+                                |
+                            compute model & fit stats for model
+                                |
+                            compute new terms (excluding the added one, using the new matrix)
+                                |
+get model & terms   <       report model & new terms back to client
+                 {/loop}
+
+
+###################
+## Data Contract ##
+###################
+
+NOTE: For now, this is only considering the creation of a new model
+
+data format (interface -> engine):
+{
+    data          : [ [ number, number, ... m],
+                      [ number, number, ... m],
+                        ... n
+                    ],
+    exponents     : [ number, number, ... ],
+    multiplicands : [ number, number, ... ]
+}
+
+
+data format (engine -> interface):
+{
+    model: {
+        terms   : [ Term, ... k ],
+        weights : [ number, ... k],
+        stats   : {
+            t: [ number, ... k]
+            mse: number,
+            ... other stats ...
+        }
+    },
+    terms: [
+        {
+            term  : Term,
+            stats : {
+                t: number,
+                ... other stats ...
+            }
+        },
+        ...
+    ]
+}
+Term: [ [ column1, exponent1 ], [ column2, exponent2 ], ... ]
+
+Notes:
+- Model persists throughout session
+- This is a lot of computation, might want to return intermediate results
