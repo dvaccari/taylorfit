@@ -1,44 +1,22 @@
 
-//const math = require('blaba');
-
-//const math    = require('mathjs');
-//const load = require('./load');
-const math    = require('./math.es6');
 const Model   = require('./model.es6');
+const utils   = require('./playground/utils.es6');
+const Matrix  = require('./playground/matrix.es6');
 const combos  = require('./combos.es6');
 
-module.exports.buildModel = (data, indepCol) => {
+
+// TODO: replace input to model() with object per data contract once it is
+//       finalized
+
+module.exports.model = (data, indepCol, exponents, multipliers) => {
   indepCol = indepCol || (data.size()[1] - 1);
+  data = new Matrix(data);
 
-  var inputColumns = math.index(
-      // all rows
-      math.range(0, data.size()[0]),
-      // columns
-      math.concat(
-        // cols ..[indepCol]
-        math.range(0, indepCol),
-        // cols [indepCol+1]..
-        math.range(indepCol + 1, data.size()[1])
-      ))
-    , outputColumn = math.index(math.range(0, data.size()[0]), indepCol);
+  var inputColumns = data.subset(
+    ':',
+    utils.range(0, indepCol).concat(utils.range(indepCol, data[0].length))
+  ) , outputColumn = data.col(indepCol);
 
-  return new Model(
-    data.subset(inputColumns),
-    data.subset(outputColumn)
-  );
+  return new Model(inputColumns, outputColumn, exponents, multipliers);
 };
 
-module.exports.generateTerms = combos.generateTerms;
-
-
-/*
-load('./prototype/bla.data', true, (data) => {
-  console.time('compute');
-  var model = module.exports.buildModel(data, [1, 2, 3], [1, 2], 2);
-  console.timeEnd('compute');
-
-  console.log(model.predict([1, 2]));
-
-  var weights = model.weights.map((weight) => math.round(weight, 10));
-});
-*/
