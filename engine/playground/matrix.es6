@@ -1,11 +1,23 @@
 
 const utils = require('./utils.es6');
 
+/**
+ * Private members
+ *
+ * @private
+ */
 const _data = Symbol('data');
 const _n    = Symbol('n');
 const _m    = Symbol('m');
 
 
+/**
+ * Swap rows `i` and `j` in matrix `m` in place.
+ *
+ * @param {Matrix} m
+ * @param {number} i
+ * @param {number} j
+ */
 function swapRows(m, i, j) {
   var k, temp;
 
@@ -16,6 +28,14 @@ function swapRows(m, i, j) {
   }
 }
 
+/**
+ * Divide row `i` in both matrix `m` and matrix `inv` by `factor`.
+ *
+ * @param {Matrix} m
+ * @param {Matrix} inv
+ * @param {number} i
+ * @param {number} j
+ */
 function divideRow(m, inv, i, factor) {
   var k, temp;
 
@@ -25,6 +45,14 @@ function divideRow(m, inv, i, factor) {
   }
 }
 
+/**
+ * Subtract multiple of row `i` and column `j` from every row in `m` and `inv`.
+ *
+ * @param {Matrix} m
+ * @param {Matrix} inv
+ * @param {number} i
+ * @param {number} j
+ */
 function subtractRowMultiple(m, inv, i, j) {
   var k, l, factor;
 
@@ -41,8 +69,24 @@ function subtractRowMultiple(m, inv, i, j) {
 }
 
 
+/**
+ * A speedy 2-dimensional matrix implementation.
+ *
+ * @class Matrix
+ */
 class Matrix {
 
+  /**
+   * Creates a new Matrix of size <n, m>, using `stuff`.
+   *
+   * If `stuff` is a Float64Array, then the reference will be used. Otherwise,
+   * its contents will be copied into a new Float64Array.
+   *
+   * @param {number | number[][]}       n     Number of rows (or nested arrays
+   *                                          that look like a matrix)
+   * @param {number}                    m     Number of columns
+   * @param {Float64Array | number[][]} stuff Items to populate the matrix
+   */
   constructor(n, m, stuff) {
     if (Array.isArray(n)) {
       return Matrix.from(n);
@@ -60,6 +104,13 @@ class Matrix {
     return this;
   }
 
+  /**
+   * Performs element-wise addition between two matrices and returns a new copy.
+   *
+   * @param {Matrix<n,m>} other Matrix with equivalent dimensions to this
+   * @return {Matrix<n,m>} this + other
+   * @throws {Error} If dimensions do not match
+   */
   add(other) {
     if (this[_n] !== other[_n] || this[_m] !== other[_m]) {
       throw new Error('Dimensions do not match');
@@ -74,6 +125,13 @@ class Matrix {
     return sum;
   }
 
+  /**
+   * Performs matrix multiplication between this and other.
+   *
+   * @param {Matrix<m,k>} other Matrix whose rows must be === to this's columns
+   * @return {Matrix<n,k>} this * other
+   * @throws {Error} If dimensions do not match
+   */
   multiply(other) {
     if (this[_m] !== other[_n]) {
       throw new Error('Dimensions do not match');
@@ -94,6 +152,12 @@ class Matrix {
     return product;
   }
 
+  /**
+   * Computes the inverse of the matrix (only if it is square!).
+   *
+   * @return {Matrix<n,m>} Inverse matrix s.t. this * inv(this) === I
+   * @throws {Error} If not a square matrix
+   */
   inv() {
     if (this[_n] !== this[_m]) {
       throw new Error('Must be square');
@@ -124,10 +188,22 @@ class Matrix {
     return inverse;
   }
 
+  /**
+   * Returns a copy of the matrix.
+   *
+   * @return {Matrix<n,m>} Fresh clone
+   */
   clone() {
     return new Matrix(this[_n], this[_m], this[_data].slice());
   }
 
+  /**
+   * Horizontally stacks `other` and returns the new matrix.
+   *
+   * @param {Matrix<n,k>} other Matrix whose rows === this's rows
+   * @return {Matrix<n,m+k>} Horizontal concatenation of this and other
+   * @throws {Error} If dimensions do not match
+   */
   hstack(other) {
     if (this[_n] !== other[_n]) {
       throw new Error('Dimensions do not match');
@@ -148,6 +224,13 @@ class Matrix {
     return stacked;
   }
 
+  /**
+   * Vertically stacks `other` and returns the new matrix.
+   *
+   * @param {Matrix<k,m>} other Matrix whose cols === this's cols
+   * @return {Matrix<n+k,m>} Vertical concatenation of this and other
+   * @throws {Error} If dimensions do not match
+   */
   vstack(other) {
     if (this[_m] !== other[_m]) {
       throw new Error('Dimensions do not match');
@@ -160,6 +243,12 @@ class Matrix {
     return stacked;
   }
 
+  /**
+   * Performs element-wise exponentiation to the matrix and returns a new copy.
+   *
+   * @param {number} exponent Power to raise each element to
+   * @return {Matrix<n,m>} this[i,i]^exponent
+   */
   dotPow(exponent) {
     var powd = this.clone()
       , i;
@@ -170,6 +259,14 @@ class Matrix {
     return powd;
   }
 
+  /**
+   * Performs element-wise multiplication to the matrix and returns a new copy.
+   *
+   * @param {number | Matrix} n Multiplicand to multiply each element by, or a
+   *                            matrix whose elements will be iterated through
+   *                            in alignment with this
+   * @return {Matrix<n,m>} this[i,i] * n   OR   this[i,i] * n[i,i]
+   */
   dotMultiply(n) {
     var product = this.clone()
       , i;
@@ -186,6 +283,14 @@ class Matrix {
     return product;
   }
 
+  /**
+   * Performs element-wise division to the matrix and returns a new copy.
+   *
+   * @param {number | Matrix} n Divisor to divide each element by, or a matrix
+   *                            whose elements will be iterated through in
+   *                            alignment with this
+   * @return {Matrix<n,m>} this[i,i] / n   OR   this[i,i] / n[i,i]
+   */
   dotDivide(n) {
     var product = this.clone()
     , i;
@@ -202,6 +307,11 @@ class Matrix {
     return product;
   }
 
+  /**
+   * Stringifies the matrix into a (somewhat) pretty format
+   *
+   * @return {string} Representation of the matrix
+   */
   toString() {
     var str = '';
     var colSizes = [];
@@ -225,6 +335,12 @@ class Matrix {
     return str;
   }
 
+  /**
+   * Retrieves the ith column of the matrix
+   *
+   * @param {number} i Column index
+   * @return {Matrix<n,1>} Column as a matrix
+   */
   col(i) {
     var theCol = new Matrix(this[_n], 1)
       , k;
@@ -235,6 +351,12 @@ class Matrix {
     return theCol;
   }
 
+  /**
+   * Retrieves the ith row of the matrix
+   *
+   * @param {number} i Row index
+   * @return {Matrix<1,m>} Row as a matrix
+   */
   row(i) {
     return new Matrix(
       1, this[_m],
@@ -242,6 +364,15 @@ class Matrix {
     );
   }
 
+  /**
+   * Retrieves a subset of the matrix, constructed from indices in `rows` and
+   * `cols`. The resulting matrix will have rows s.t. result[i] = this[rows[i]]
+   * and columns s.t. result[i][j] = this[rows[i][cols[j]]]
+   *
+   * @param {number[]} rows Array of indices used to construct the subset
+   * @param {number[]} cols Array of indices used to construct the subset
+   * @return {Matrix<rows.length, cols.length>} Subset of this
+   */
   subset(rows, cols) {
     rows = utils.convertRange(rows, this[_n]);
     cols = utils.convertRange(cols, this[_m]);
@@ -258,6 +389,11 @@ class Matrix {
     return subMatrix;
   }
 
+  /**
+   * Retrieves the diagonal elements as a 1 x min(n, m) matrix.
+   *
+   * @return {Matrix<1,min(n,m)>} Diagonal elements
+   */
   diag() {
     var diagonal = new Matrix(1, Math.min(this[_n], this[_m]))
       , i;
@@ -268,6 +404,11 @@ class Matrix {
     return diagonal;
   }
 
+  /**
+   * Sums all of the elements.
+   *
+   * @return {number} Sum of all of the elements
+   */
   sum() {
     var tot = 0
       , i;
@@ -278,6 +419,9 @@ class Matrix {
     return tot;
   }
 
+  /**
+   * @property {Matrix<m,n>} T The transposition of the matrix
+   */
   get T() {
     var transpose = new Matrix(this[_m], this[_n])
       , i, j;
@@ -290,14 +434,26 @@ class Matrix {
     return transpose;
   }
 
+  /**
+   * @property {[number, number]} shape The shape of this matrix [n, m]
+   */
   get shape() {
     return [this[_n], this[_m]];
   }
 
+  /**
+   * @property {Float64Array} data The underlying storage for the matrix
+   */
   get data() {
     return this[_data];
   }
 
+  /**
+   * Generates a matrix full of random (0, 1) numbers.
+   *
+   * @static
+   * @return {Matrix<n,m>} Matrix full'a random numbas
+   */
   static random(n, m) {
     var randMatrix = new Matrix(n, m)
       , i, j;
@@ -310,6 +466,12 @@ class Matrix {
     return randMatrix;
   }
 
+  /**
+   * Generates a matrix whose diagonal elements equal 1.
+   *
+   * @static
+   * @return {Matrix<n,m>} Diagonal onez
+   */
   static eye(n, m=n) {
     var onez = new Matrix(n, m)
       , i, j;
@@ -320,6 +482,14 @@ class Matrix {
     return onez;
   }
 
+  /**
+   * Creates a matrix from matrix-looking nested arrays, or a flat array and the
+   * given `n` and `m`.
+   *
+   * @param {iterable}  arr Values to populate the matrix with
+   * @param {number}    n   Rows in the new matrix
+   * @param {number}    m   Columns in the new matrix
+   */
   static from(arr, n, m) {
     if (!Array.isArray(arr)) {
       throw new TypeError('Expected an array');

@@ -1,9 +1,8 @@
 
-const math          = require('./math.es6');
 const stats         = require('./stats.es6');
 const combos        = require('./combos.es6');
 
-const Matrix        = require('./playground/Matrix.js');
+const Matrix        = require('./playground/matrix.es6');
 
 /**
  * Private members

@@ -1,5 +1,5 @@
 
-const Matrix = require('./playground/Matrix.js');
+const Matrix = require('./playground/matrix.es6');
 
 /**
  * Computes the hat matrix for X.

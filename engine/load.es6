@@ -1,7 +1,7 @@
 
 
 const csv = require('fast-csv');
-const math = require('./math.es6');
+const Matrix = require('./playground/matrix.es6');
 
 
 module.exports = (path, removeHeader, callback) => {
@@ -18,8 +18,8 @@ module.exports = (path, removeHeader, callback) => {
         removeHeader = false;
         return;
       }
-      data.push(row.map((x) => parseInt(x)));
+      data.push(row.map((x) => parseFloat(x)));
     })
-    .on('end', () => callback(math.matrix(data)));
+    .on('end', () => callback(new Matrix(data)));
 };
 
