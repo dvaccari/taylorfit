@@ -1,6 +1,7 @@
 
 //const math = require('mathjs');
 const math = require('./math.es6');
+const Matrix = require('./playground/Matrix.js');
 
 const fn = {
   //                 =   (X'X)^-1X'
@@ -27,14 +28,63 @@ const fn = {
   tstat : (B, C) => fn._tstat.eval({ B: B, C: C })
 };
 
-module.exports.hatmatrix = fn.hat;
-module.exports.mse = fn.mse;
+//module.exports.hatmatrix = fn.hat;
+//module.exports.mse = fn.mse;
 
+module.exports.hatmatrix = (A) => { 
+  return A.multiply(A.T.multiply(A).inv()).multiply(A.T);
+};
+
+module.exports.mse = (A, b, H) => {
+  var I = Matrix.eye(A.shape[0])
+    , n = A.shape[0]
+    , k = A.shape[1];
+
+  H = H || module.exports.hatmatrix(A);
+
+  return b.T.multiply(I.add(H.dotMultiply(-1)))
+            .multiply(b).dotMultiply(1 / (n - k));
+};
+
+/*
 module.exports.lstsq = (A, b) => {
   var d = fn.lstsq(A, b);
   return d.isMatrix ? d : math.matrix([d]);
 };
+ */
 
+module.exports.lstsq = (A, b) => {
+  return (A.T.multiply(A)).inv().multiply(A.T).multiply(b);
+};
+
+module.exports.lstsqWithStats = (X, y) => {
+  var XT            = X.T
+  , pseudoInverse = XT.multiply(X).inv()
+  , BHat          = pseudoInverse.multiply(XT).multiply(y)
+  , yHat          = X.multiply(BHat)
+  , sse           = y.add(yHat.dotMultiply(-1)).dotPow(2).sum()
+  , mse           = sse / X.shape[0]
+  , sec           = pseudoInverse.diag().dotMultiply(mse).dotPow(0.5)
+  , tstats        = BHat.dotDivide(sec);
+
+  /*
+  console.log();
+  console.log(XT.multiply(X).toString());
+  console.log('invX:');
+  console.log(pseudoInverse.toString());
+  console.log('BHAT:', BHat.data);
+  console.log('SEC :', sec.data);
+   */
+
+  return {
+    weights : BHat,
+    tstats  : tstats,
+    mse     : mse
+  };
+};
+
+
+/*
 module.exports.lstsqWithStats = (A, b) => {
   var pseudoInverse = fn._psinv.eval({ A: A })
     , invTimzAPrime = math.multiply(pseudoInverse, math.transpose(A))
@@ -49,6 +99,7 @@ module.exports.lstsqWithStats = (A, b) => {
     mse     : mse
   };
 };
+ */
 
 var x = math.matrix([[41.9, 29.1],
                      [43.4, 29.3],

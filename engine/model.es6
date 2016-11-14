@@ -4,7 +4,13 @@ const stats         = require('./stats.es6');
 const combos        = require('./combos.es6');
 
 const Term          = require('./term.es6');
+const Matrix        = require('./playground/Matrix.js');
 
+/**
+ * Private members
+ *
+ * @private
+ */
 const _weights      = Symbol('weights');
 const _Xaugmented   = Symbol('Xaugmented');
 const _terms        = Symbol('terms');
@@ -14,20 +20,87 @@ const _headers      = Symbol('headers');
 const _X            = Symbol('X');
 const _y            = Symbol('y');
 const _candyTerms   = Symbol('candidateTerms');
+const _means        = Symbol('means');
+const _variances    = Symbol('variances');
 
+
+function standardize(X) {
+  var stand = X.clone()
+    , n = stand.shape[0]
+    , m = stand.shape[1]
+    , vars = [], means = []
+    , i, j, mean, variance;
+
+  for (i = 0; i < m; i += 1) {
+    for (mean = 0, j = 0; j < n; j += 1) {
+      mean += stand.data[j * m + i];
+    }
+    mean /= n;
+    for (variance = 0, j = 0; j < n; j += 1) {
+      variance += Math.pow(stand.data[j * m + i] - mean, 2);
+    }
+    variance /= n;
+    for (j = 0; j < n; j += 1) {
+      stand.data[j * m + i] = (stand.data[j * m + i] - mean) / variance;
+    }
+    vars.push(variance);
+    means.push(mean);
+  }
+
+  return {
+    X: stand,
+    means: means,
+    vars: vars
+  };
+}
+
+
+/**
+ * Representation of a predictive model using multivariate polynomial
+ * regression.
+ *
+ * The model uses least-squares regression on a set of polynomial terms to
+ * approximate data. The model is bounded by a set of exponents and set of # of
+ * multiplicands, which limits the number of candidate terms for the model.
+ *
+ * NOTE: Each time a term is added or removed from the initially nil model, all
+ * candidate terms need to be re-evaluated. For this reason, efficiency is a
+ * primary concern here.
+ *
+ * @class Model
+ */
 class Model {
 
+  /**
+   * Craft a new model from an input feature matrix X, an actual value
+   * column y, a list of exponents, and a list of # of multiplicands.
+   *
+   * @constructor
+   * @param {Matrix<n,m>} X           The input feature set, where each column
+   *                                  is a feature and each row is an
+   *                                  observation
+   * @param {Matrix<n,1>} y           The true values for each observation
+   * @param {number[]}    exponents   List of exponents that a column can be
+   *                                  raised to
+   * @param {number[]}    multipliers List of # of multiplicands for each term,
+   *                                  for instance [1] means only the individual
+   *                                  columns can be terms (x, y, x^2, y^2, ...)
+   */
   constructor(X, y, exponents, multipliers, terms=null, headers=null) {
-    this[_X] = X;
+    var standardizedX = standardize(X);
+    this[_X] = standardizedX.X;
+    this[_means] = standardizedX.means;
+    this[_variances] = standardizedX.vars;
+
     this[_y] = y;
     this[_headers] = headers;
 
     this[_terms] = terms || [];
-    this[_Xaugmented] = X;
+    this[_Xaugmented] = new Matrix(X.shape[0], 0);
     this[_weights] = [];
 
     this[_candyTerms] = combos
-      .generateTerms(X.size()[1], exponents, multipliers)
+      .generateTerms(X.shape[1], exponents, multipliers)
       .map((term) => new Term(term, this));
 
     if (terms != null) {
@@ -35,14 +108,18 @@ class Model {
     }
   }
 
-  weight(i) {
-    return this[_weights][i];
-  }
-
-  term(i) {
-    return this[_terms][i];
-  }
-
+  /**
+   * Adds a term to the model. A term should either be a Term object, or a list
+   * of [column_index, exponent] pairs.
+   *
+   * Beware: Each time a term is added, every candidate term needs to be
+   * recomputed.
+   *
+   * @param {Term | [number, number][]} term The term to be added to the model
+   * @param {boolean} [recompute] Optional flag indicating whether or not to
+   *                              recompute the model
+   * @return {Term[]} List of current terms in the model
+   */
   addTerm(term, recompute=true) {
     if (!Array.isArray(term)) {
       throw new TypeError('Expected an array of [col, exp] pairs');
@@ -56,16 +133,15 @@ class Model {
       }
     });
 
-    var found = this[_terms].find((existingTerm) => {
-      return existingTerm.length === term.length &&
-        math.sum(math.equal(existingTerm, term)) === 2*term.length;
-    });
+    var found = this[_terms].find((existingTerm) => existingTerm.equals(term));
 
     if (found) {
       return this[_terms];
     }
 
-    this[_terms].push(term);
+    found = this[_candyTerms].find((candyTerm) => candyTerm.equals(term));
+
+    this[_terms].push(found);
 
     if (recompute) {
       this.compute();
@@ -73,85 +149,134 @@ class Model {
     return this[_terms];
   }
 
+  /**
+   * Removes a term from the model. A term should either be a Term object, or a
+   * list of [column_index, exponent] pairs.
+   *
+   * Beware: Each time a term is removed, every candidate term needs to be
+   * recomputed.
+   *
+   * @param {Term | [number, number][]} term The term to be added to the model
+   * @param {boolean} [recompute] Optional flag indicating whether or not to
+   *                              recompute the model
+   * @return {Term[]} List of current terms in the model
+   */
   removeTerm(termToRemove, recompute=true) {
-    this[_terms] = this[_terms].filter((term) => {
-      return term.length !== termToRemove.length ||
-        math.sum(math.equal(term, termToRemove)) !== 2*term.length;
-    });
+    this[_terms] = this[_terms].filter((term) => !term.equals(termToRemove));
 
     if (recompute) {
-      if (this[_terms].length > 0) {
-        this.compute();
-      } else {
-        this[_Xaugmented] = this[_X];
-        this[_weights] = [];
-      }
+      this.compute();
     }
     return this[_terms];
   }
 
+  /**
+   * Computes least squares regression and analytical statistics on the model as
+   * well as all of the candidate terms. This might take a little while,
+   * depending on how big the data are.
+   *
+   * @return {TODO: something per data contract} Regression and analytical
+   *    results
+   */
   compute() {
-    this[_Xaugmented] = combos.createPolyMatrix(this[_terms], this[_X]);
+    this[_Xaugmented] = this[_terms]
+      .map((term) => term.col)
+      .reduce((prev, curr) => prev.hstack(curr));
+
     var things = stats.lstsqWithStats(this[_Xaugmented], this[_y]);
     this[_weights] = things.weights;
 
-    /*
     var candidateTerms = this[_candyTerms].map((term) => ({
-      term : JSON.stringify(term.term),
-      stuff: term.getStats()
+      term : term.term,
+      stats: term.getStats()
     }));
 
-     */
     return {
       model: {
-        weights: this[_weights].toArray(),
-        tstats: things.tstats.toArray(),
+        weights: this[_weights],
+        tstats: things.tstats,
         terms: this[_terms]
-      }
-      //potential: candidateTerms
+      },
+      candidates: candidateTerms
     };
   }
 
-  row(i) {
-    var cols = this[_Xaugmented].size()[1];
-    return this[_Xaugmented].subset(math.index(i, math.range(0, cols)));
-  }
-
-  col(i) {
-    var rows = this[_Xaugmented].size()[0];
-    return this[_Xaugmented].subset(math.index(math.range(0, rows), i));
-  }
-
+  /**
+   * Make a prediction based on the values for each feature given in `vector`.
+   *
+   * @param {Matrix<k,m>} vector  A set of observations for each feature (a
+   *                              matrix with the same # of columns as
+   *                              `this[_X]`, but as many rows as your heart
+   *                              desires)
+   * @return {Matrix<k,1>} Predictions
+   *
+   * FIXME: We ain't usein' mathjs no more
+   */
   predict(vector) {
     vector = math.matrix([vector]);
     var augmentedVector = combos.createPolyMatrix(this[_terms], vector);
     return math.dot(this[_weights], math.squeeze(augmentedVector));
   }
 
+  /**
+   * The input feature matrix.
+   *
+   * @property {Matrix} X
+   */
   get X() {
     return this[_X];
   }
 
+  /**
+   * The given training values.
+   *
+   * @property {Matrix} y
+   */
   get y() {
     return this[_y];
   }
 
+  /**
+   * Current matrix, whose columns reflect the terms in the model.
+   *
+   * @property {Matrix} data
+   */
   get data() {
     return this[_Xaugmented];
   }
 
+  /**
+   * Coefficients derived by least squares regression.
+   *
+   * @property {Matrix} weights
+   */
   get weights() {
     return this[_weights];
   }
 
+  /**
+   * Terms currently in the model.
+   *
+   * @property {Term[]} terms
+   */
   get terms() {
     return this[_terms];
   }
 
+  /**
+   * Candidate terms (this also includes terms in the model already)
+   *
+   * @property {Term[]} candidates
+   */
   get candidates () {
     return this[_candyTerms];
   }
 
+  /**
+   * Serializes the model for later use.
+   *
+   * @return {TODO: something per data contract}
+   */
   toJSON() {
     return {
       headers     : this[_headers],
