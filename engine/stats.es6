@@ -1,62 +1,62 @@
 
-//const math = require('mathjs');
-const math = require('./math.es6');
 const Matrix = require('./playground/Matrix.js');
 
-const fn = {
-  //                 =   (X'X)^-1X'
-  _psinv: math.parse("inv(A'*A)"),
-  //               H =  X(X'X)^-1X'
-  _hat  : math.parse("A*inv(A'*A)*A'"),
-  //             MSE =     SSe       /  dof(A)
-  _mse  : math.parse("(b'*(I - H)*b) / (n - k)"),
-  //               B =  (X'X)^-1X'y
-  _lstsq: math.parse("inv(A'*A)*A'*b"),
-
-  _tstat: math.parse("B ./ sqrt(diag(C))"),
-
-  hat   : (A) => fn._hat.eval({ A: A }),
-  mse   : (A, b, H) => fn._mse.eval({
-    A   : A,
-    I   : math.eye(A.size()[0]),
-    H   : H || fn.hat(A),
-    b   : b,
-    n   : A.size()[0],
-    k   : A.size()[1]
-  }),
-  lstsq : (A, b) => math.squeeze(fn._lstsq.eval({ A: A, b: b })),
-  tstat : (B, C) => fn._tstat.eval({ B: B, C: C })
-};
-
-//module.exports.hatmatrix = fn.hat;
-//module.exports.mse = fn.mse;
-
-module.exports.hatmatrix = (A) => { 
-  return A.multiply(A.T.multiply(A).inv()).multiply(A.T);
-};
-
-module.exports.mse = (A, b, H) => {
-  var I = Matrix.eye(A.shape[0])
-    , n = A.shape[0]
-    , k = A.shape[1];
-
-  H = H || module.exports.hatmatrix(A);
-
-  return b.T.multiply(I.add(H.dotMultiply(-1)))
-            .multiply(b).dotMultiply(1 / (n - k));
-};
-
-/*
-module.exports.lstsq = (A, b) => {
-  var d = fn.lstsq(A, b);
-  return d.isMatrix ? d : math.matrix([d]);
-};
+/**
+ * Computes the hat matrix for X.
+ *
+ *    H = X*inv(X'X)*X'
+ *
+ * @param {Matrix<n,m>} X
+ * @return {Matrix<n,n>} Hat matrix for `X`
  */
-
-module.exports.lstsq = (A, b) => {
-  return (A.T.multiply(A)).inv().multiply(A.T).multiply(b);
+module.exports.hatmatrix = (X) => {
+  return X.multiply(X.T.multiply(X).inv()).multiply(X.T);
 };
 
+/**
+ * Computes the mean square error of X and y.
+ *
+ * @param {Matrix<n,m>} X
+ * @param {Matrix<n,1>} y
+ * @param {Matrix<n,n>} [H] Optional -- hat matrix (if not supplied, it will be
+ *                          computed)
+ * @return {number} MSE of X and y
+ */
+module.exports.mse = (X, y, H) => {
+  var I = Matrix.eye(X.shape[0])
+    , n = X.shape[0]
+    , k = X.shape[1];
+
+  H = H || module.exports.hatmatrix(X);
+
+  return y.T.multiply(I.add(H.dotMultiply(-1)))
+            .multiply(y).dotMultiply(1 / (n - k));
+};
+
+/**
+ * Compute least squares regression using normal equations.
+ *
+ *    B' = inv(X'X)X'y
+ *
+ * @return {Matrix<n,1>} Coefficients for each term in X that best fit the model
+ */
+module.exports.lstsq = (X, y) => {
+  return (X.T.multiply(X)).inv().multiply(X.T).multiply(y);
+};
+
+/**
+ * Compute least squares regression using normal equations, then compute
+ * analytical statistics to determine the quality of the fit for the model and
+ * for each term in the model.
+ *
+ *    B'  = inv(X'X)X'y
+ *    y'  = XB'
+ *    SSE = sum((y - y')^2)                     ^2 is element-wise
+ *    MSE = SSE / n
+ *    t_i = B' / sqrt( inv(X'X)[i,i] * MSE )    / is element-wise
+ *
+ * @return {object} Regression results
+ */
 module.exports.lstsqWithStats = (X, y) => {
   var XT            = X.T
   , pseudoInverse = XT.multiply(X).inv()
@@ -83,24 +83,7 @@ module.exports.lstsqWithStats = (X, y) => {
   };
 };
 
-
 /*
-module.exports.lstsqWithStats = (A, b) => {
-  var pseudoInverse = fn._psinv.eval({ A: A })
-    , invTimzAPrime = math.multiply(pseudoInverse, math.transpose(A))
-    , hatMatrix     = math.multiply(A, invTimzAPrime)
-    , mse           = fn.mse(A, b, hatMatrix)
-    , lstsq         = math.multiply(invTimzAPrime, b)
-    , tstats        = fn.tstat(lstsq, math.multiply(mse, pseudoInverse));
-
-  return {
-    weights : lstsq,
-    tstats  : tstats,
-    mse     : mse
-  };
-};
- */
-
 var x = math.matrix([[41.9, 29.1],
                      [43.4, 29.3],
                      [43.9, 29.5],
@@ -124,8 +107,4 @@ var y = math.matrix([251.3, 251.3, 248.3, 267.5,
                      304.5, 309.3, 321.7, 330.7,
                      349.0]);
 var z = math.matrix([[1]]).resize([x.size()[0], 1], 1);
-
-x = math.concat(z, x);
-
-//console.log(module.exports.hatmatrix(x));
-//console.log(module.exports.lstsqWithStats(x, y));
+ */

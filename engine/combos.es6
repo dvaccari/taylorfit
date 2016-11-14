@@ -1,6 +1,14 @@
 
-const math = require('./math.es6');
+const utils = require('./playground/utils.es6');
 
+/**
+ * Generate all combinations of k terms.
+ *
+ * @param {*[]}     terms         Array of items to combine
+ * @param {number}  k             # of items in every combination
+ * @param {boolean} [replacement] If true, an item from `terms` can be repeated
+ *                                in a single combination
+ */
 function combinations(terms, k, replacement) {
   var combos = [];
   var i;
@@ -12,11 +20,6 @@ function combinations(terms, k, replacement) {
     return terms.map((term) => [term]);
   }
 
-  // 1 2 3 4
-  // 1 2 3 4
-  // 1 1, 1 2, 1 3, 1 4
-  // 2 3 4
-  // 2 2, 2 3, 2 4
   for (i = 0; i < terms.length; i += 1) {
     var subCombos = combinations(
       // with replacements    => slice at i (include the current term)
@@ -31,6 +34,17 @@ function combinations(terms, k, replacement) {
   return combos;
 }
 
+/**
+ * Generates all combinations of k items using one item from each bin in `bins`.
+ *
+ *    bins = [[0, 1], [2, 3]], k = 2
+ *  ->[[0, 2], [0, 3], [1, 2], [1, 3]]
+ *
+ *
+ * @param {*[][]} bins  An array of arrays containing items. For each
+ *                      combination, only one item from each bin can be present
+ * @return {*[][]} Combos
+ */
 function combinationsFromBins(bins, k) {
   var combos = [];
   var i;
@@ -51,53 +65,19 @@ function combinationsFromBins(bins, k) {
   return combos.concat(combinationsFromBins(bins.slice(1), k));
 }
 
-function getAllPolyTerms(features, degree) {
-  return [].concat.apply(
-    [],
-    math
-      .range(1, degree + 1)
-      .map((d) => {
-        return combinations(
-          math.range(0, features).toArray(),
-          d,
-          true
-        );
-      }).toArray()
-  );
-}
-
-function createPolyMatrix(terms, data) {
-  var rows = data.size()[0];
-  var augmentedData = math.matrix().resize([rows, 0]);
-
-  terms.forEach((term) => {
-    var newColumn = term.reduce((prev, curr) => {
-      var index = math.index(math.range(0, rows), curr[0]);
-      var currColumn = math.subset(data, index);
-      if (typeof currColumn === 'number') {
-        currColumn = [[currColumn]];
-      }
-      return math.dotMultiply(prev, math.dotPow(currColumn, curr[1]));
-    }, math.ones([data.size()[0], 1]));
-    //console.log(newColumn);
-    augmentedData = math.concat(augmentedData, newColumn);
-  });
-
-  return augmentedData;
-}
-
-function createCandidateMatrix(Xaug, term, data) {
-  var rows = data.size()[0];
-  var newXaug = Xaug.clone();
-  var newColumn = term.reduce((prev, curr) => {
-    var index = math.index(math.range(0, rows), curr[0]);
-    var currColumn = math.subset(data, index);
-  });
-}
-
+/**
+ * Generates all possible combinations of exponentiated terms given a list of
+ * exponents and a list of # of multiplicands
+ *
+ * @param {number}    features    Number of features in the original dataset
+ * @param {number[]}  exponents   Array of exponents ([1, 2] means x, x^2)
+ * @param {number[]}  multipliers Array of # of multiplicands ([1] means only
+ *                                one multiplicand per term)
+ * @return {[number, number][][]} List of terms
+ */
 function generateTerms(features, exponents, multipliers) {
-  var bins = math.range(0, features)
-        .toArray()
+  var bins = utils
+        .range(0, features)
         .map((index) => exponents.map((e) => [index, e]))
 
     , combosForMults = multipliers.map((m) => combinationsFromBins(bins, m));
@@ -105,10 +85,7 @@ function generateTerms(features, exponents, multipliers) {
   return [].concat.apply([], combosForMults);
 }
 
-
-
 module.exports.generateTerms = generateTerms;
-module.exports.createPolyMatrix = createPolyMatrix;
 module.exports.combinations = combinations;
 module.exports.combinationsFromBins = combinationsFromBins;
 
