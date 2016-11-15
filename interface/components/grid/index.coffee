@@ -51,6 +51,7 @@ ko.components.register "tf-grid",
     @rows.add = ( ) =>
       @rows.ins @rows().length
     @rows.del = ( index ) =>
+      return if do once_guard
       @rows.splice index, 1
     @rows.ins = ( index ) =>
       return if do once_guard
