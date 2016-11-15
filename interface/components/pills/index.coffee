@@ -4,7 +4,9 @@ require "./index.styl"
 within = (val, arr) ->
   i = 0
   while i < arr.length
-    if arr[i].val is val
+    if arr[i].val is val and arr[i].class() is "inactive"
+      return arr[i]
+    else if arr[i].val is val and arr[i].class() is "active"
       return true
     i++
   false
@@ -27,10 +29,13 @@ ko.components.register "tf-pills",
         pill.class("inactive")
 
     @add = (e, d) =>
-     num = parseInt(@input())
-     if d.key is "Enter" and num and not within(num, @pills())
-      @pills.push((val: parseInt(@input()), class: ko.observable("active")))
-     true
+      num = parseInt(@input())
+      pill = within(num, @pills())
+      if d.key is "Enter" and num and pill is false
+        @pills.push((val: parseInt(@input()), class: ko.observable("active")))
+      else if d.key is "Enter" and num and pill != true
+        @pills()[@pills.indexOf(pill)].class("active")
+      true
 
 
     return this
