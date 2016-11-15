@@ -10,8 +10,10 @@ read = ( file ) ->
         if errors.length
           reject errors
         else
-          data.headless = not data[0].some ( value ) ->
-            typeof value isnt "string" or value is ""
+          window.d0 = data[0]
+          window.data = data
+          data.headless = not data[0].every ( value ) ->
+            (typeof value is "string")# and (value isnt "")
           accept data
 
 write = ( table ) ->
@@ -27,6 +29,16 @@ once_guard = ( ) ->
 ko.components.register "tf-grid",
   template: do require "./index.pug"
   viewModel: ( params ) ->
+    @location = ko.observable 0
+    @pagesize = ko.observable 10
+
+    @scroll = ( model, event) ->
+      if event.deltaY < 0
+        if @location() > 0
+          @location @location() - 1
+      else if @location() < @rows().length - @pagesize()
+        @location @location() + 1
+
     @cols = ko.observableArray [
       name: ko.observable ""
     ]
@@ -49,7 +61,8 @@ ko.components.register "tf-grid",
       for row in @rows()
         row.splice index, 0, ko.observable undefined
     @rows.add = ( ) =>
-      @rows.ins @rows().length
+      @rows.ins len = @rows().length
+      @location len + 1 - @pagesize()
     @rows.del = ( index ) =>
       return if do once_guard
       @rows.splice index, 1
@@ -58,6 +71,8 @@ ko.components.register "tf-grid",
       @rows.splice index, 0, row = ko.observableArray [ ]
       for col in @cols()
         row.push ko.observable undefined
+      if index is @location() + @pagesize()
+        @location @location() + 1
 
     @load = ( table ) =>
       @cols.removeAll()

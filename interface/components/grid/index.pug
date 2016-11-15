@@ -33,9 +33,9 @@
         // /ko
         th.add(data-bind="click:cols.add")
           a.fa.fa-plus
-    tbody
+    tbody(data-bind="event:{mousewheel:scroll}")
       // ko foreach: rows
-      // ko if:$index() < 10
+      // ko if:$parent.location() <= $index() && $index() < $parent.location() + $parent.pagesize()
       tr
         td.static
           span(data-bind="text:1+$index()")
