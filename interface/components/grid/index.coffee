@@ -61,7 +61,8 @@ ko.components.register "tf-grid",
       for row in @rows()
         row.splice index, 0, ko.observable undefined
     @rows.add = ( ) =>
-      @rows.ins @rows().length
+      @rows.ins len = @rows().length
+      @location len + 1 - @pagesize()
     @rows.del = ( index ) =>
       return if do once_guard
       @rows.splice index, 1
@@ -70,6 +71,8 @@ ko.components.register "tf-grid",
       @rows.splice index, 0, row = ko.observableArray [ ]
       for col in @cols()
         row.push ko.observable undefined
+      if index is @location() + @pagesize()
+        @location @location() + 1
 
     @load = ( table ) =>
       @cols.removeAll()
