@@ -1,5 +1,22 @@
 
 tf-grid
+  tf-dropdown
+    absolute right 10px top 7px
+    .dropdown-content
+      overflow hidden
+      & > *
+        padding 4px 10px
+        display inline-block
+        transition background 300ms
+        width 100%
+        box-sizing border-box
+        cursor pointer
+        &.sep
+          border-top 1px solid #DDD
+        &:hover
+          background #EEE
+      .remove
+        color red
   input
     padding 6px 10px
     font-size 12pt

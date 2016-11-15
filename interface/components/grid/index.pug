@@ -15,6 +15,13 @@
           label.placeholder(data-bind="if:name() === ''")
             span X
             sub(data-bind="text:$index")
+          tf-dropdown(params="shallow:1")
+            span.insert-left(data-bind="click:function(){cols.insert($index)}")
+              | Insert Column Before
+            span.insert-left(data-bind="click:function(){cols.insert($index()+1)}")
+              | Insert Column After
+            span.remove.sep(data-bind="click:function(){cols.remove($index)}")
+              | Remove Column
         // /ko
         th.add(data-bind="click:cols.add")
           a.fa.fa-plus

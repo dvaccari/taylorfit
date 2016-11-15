@@ -1,0 +1,28 @@
+
+tf-dropdown
+  position relative
+  overflow visible
+  font-size 12px
+
+  .dropdown-arrow
+    color #CCC
+    box-shadow 0 0 0 1px #CCC
+    display inline-block
+    border-radius 100%
+    padding 2px 4px
+    cursor pointer
+    user-select none
+
+  .dropdown-content
+    z-index 1000000
+    display none
+    position absolute
+    top 24px
+    left 10px
+    transform translateX(-50%)
+    background white
+    border-radius 5px
+    box-shadow 0 0 0 1px #CCC
+    text-align left
+    & > *
+      white-space nowrap

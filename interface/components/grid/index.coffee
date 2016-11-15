@@ -34,6 +34,14 @@ ko.components.register "tf-grid",
       for row in @rows()
         row.push ko.observable undefined
       @cols.push name: ko.observable ""
+    @cols.remove = ( index ) =>
+      @cols.splice index, 1
+      for row in @rows()
+        row.splice index, 1
+    @cols.insert = ( index ) =>
+      for row in @rows()
+        row.splice index, 0, ko.observable undefined
+      @cols.splice index, 0, name: ko.observable ""
     @rows.add = ( ) =>
       @rows.push row = ko.observableArray [ ]
       for col in @cols()
@@ -57,7 +65,6 @@ ko.components.register "tf-grid",
       data = ko.toJS @rows
       cols = ko.toJS @cols
       data.unshift cols.map ( v ) -> v.name
-      console.log data
 
       csv = write data
 
