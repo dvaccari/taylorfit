@@ -36,7 +36,7 @@ ko.components.register "tf-grid",
       ]
     ]
 
-
+    @dependant = ko.observable undefined
 
     @cols.add = ( ) =>
       @cols.ins @cols().length

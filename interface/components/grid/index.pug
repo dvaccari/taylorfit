@@ -10,13 +10,21 @@
         th
           //- empty for row numbers
         // ko foreach: cols
-        th
+        th(data-bind="css:{dependant:$rawData === $parent.dependant()}")
           input(data-bind="value:name")
           label.placeholder(data-bind="if:name() === ''")
             span X
             sub(data-bind="text:$index")
           tf-dropdown(params="shallow:1,align:'right'")
-            span.insert(data-bind="click:function(){cols.ins($index())}")
+            // ko ifnot:dependant()
+            span.mark(data-bind="click:function(){dependant(cols()[$index()])}")
+              | Mark as Dependant
+            // /ko
+            // ko if:dependant()
+            span.mark(data-bind="click:function(){dependant(undefined)}")
+              | Clear Dependant
+            // /ko
+            span.insert.sep(data-bind="click:function(){cols.ins($index())}")
               | Insert Column Before
             span.insert(data-bind="click:function(){cols.ins($index()+1)}")
               | Insert Column After
