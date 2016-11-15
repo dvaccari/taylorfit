@@ -10,8 +10,10 @@ read = ( file ) ->
         if errors.length
           reject errors
         else
-          data.headless = not data[0].some ( value ) ->
-            typeof value isnt "string" or value is ""
+          window.d0 = data[0]
+          window.data = data
+          data.headless = not data[0].every ( value ) ->
+            (typeof value is "string")# and (value isnt "")
           accept data
 
 write = ( table ) ->
@@ -27,6 +29,16 @@ once_guard = ( ) ->
 ko.components.register "tf-grid",
   template: do require "./index.pug"
   viewModel: ( params ) ->
+    @location = ko.observable 0
+    @pagesize = ko.observable 10
+
+    @scroll = ( model, event) ->
+      if event.deltaY < 0
+        if @location() > 0
+          @location @location() - 1
+      else if @location() < @rows().length - @pagesize()
+        @location @location() + 1
+
     @cols = ko.observableArray [
       name: ko.observable ""
     ]
