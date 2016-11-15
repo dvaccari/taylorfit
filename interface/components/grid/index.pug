@@ -15,12 +15,12 @@
           label.placeholder(data-bind="if:name() === ''")
             span X
             sub(data-bind="text:$index")
-          tf-dropdown(params="shallow:1")
-            span.insert-left(data-bind="click:function(){cols.insert($index)}")
+          tf-dropdown(params="shallow:1,align:'right'")
+            span.insert(data-bind="click:function(){cols.insert($index())}")
               | Insert Column Before
-            span.insert-left(data-bind="click:function(){cols.insert($index()+1)}")
+            span.insert(data-bind="click:function(){cols.insert($index()+1)}")
               | Insert Column After
-            span.remove.sep(data-bind="click:function(){cols.remove($index)}")
+            span.remove.sep(data-bind="click:function(){cols.remove($index())}")
               | Remove Column
         // /ko
         th.add(data-bind="click:cols.add")
@@ -28,8 +28,15 @@
     tbody
       // ko foreach: rows
       tr
-        td.static(data-bind="text:1+$index()")
-
+        td.static
+          span(data-bind="text:1+$index()")
+          tf-dropdown(params="shallow:1,align:'left'")
+            span.insert(data-bind="click:function(){rows.insert($index())}")
+              | Insert Row Before
+            span.insert(data-bind="click:function(){rows.insert($index()+1)}")
+              | Insert Row After
+            span.remove(data-bind="click:function(){rows.remove($index())}")
+              | Remove Row
         // ko foreach: $rawData
         td
           input(data-bind="value:$rawData")

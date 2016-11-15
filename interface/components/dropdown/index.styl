@@ -6,12 +6,13 @@ tf-dropdown
 
   .dropdown-arrow
     color #CCC
-    box-shadow 0 0 0 1px #CCC
     display inline-block
     border-radius 100%
     padding 2px 4px
     cursor pointer
     user-select none
+
+
 
   .dropdown-content
     z-index 1000000
@@ -26,3 +27,10 @@ tf-dropdown
     text-align left
     & > *
       white-space nowrap
+
+  &.align-left
+    .dropdown-content
+      transform translateX(0%)
+  &.align-right
+    .dropdown-content
+      transform translateX(-100%)

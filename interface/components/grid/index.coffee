@@ -30,20 +30,21 @@ ko.components.register "tf-grid",
     ]
 
     @cols.add = ( ) =>
-      # ORDER MATTERS
-      for row in @rows()
-        row.push ko.observable undefined
-      @cols.push name: ko.observable ""
+      @cols.insert @cols().length
     @cols.remove = ( index ) =>
       @cols.splice index, 1
       for row in @rows()
         row.splice index, 1
     @cols.insert = ( index ) =>
+      @cols.splice index, 0, name: ko.observable ""
       for row in @rows()
         row.splice index, 0, ko.observable undefined
-      @cols.splice index, 0, name: ko.observable ""
     @rows.add = ( ) =>
-      @rows.push row = ko.observableArray [ ]
+      @rows.insert @rows().length
+    @rows.remove = ( index ) =>
+      @rows.splice index, 1
+    @rows.insert = ( index ) =>
+      @rows.splice index, 0, row = ko.observableArray [ ]
       for col in @cols()
         row.push ko.observable undefined
 

@@ -5,6 +5,10 @@ require "./index.styl"
 ko.components.register "tf-dropdown",
   template: do require "./index.pug"
   viewModel: createViewModel: ( params, { element, templateNodes } ) ->
+    # -- params
+    if params.align
+      element.className += " align-#{params.align}"
+
     # -- arrow
     arrow = element.children[0]
 
@@ -23,7 +27,5 @@ ko.components.register "tf-dropdown",
           window.addEventListener "click", rm = ( ) ->
             content.style.display = "none"
             window.removeEventListener "click", rm
-    content.onmouseleave = ( ) ->
-      content.style.display = "none"
 
     return this
