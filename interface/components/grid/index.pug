@@ -10,24 +10,48 @@
         th
           //- empty for row numbers
         // ko foreach: cols
-        th
+        th(data-bind="css:{dependant:$rawData === $parent.dependant()}")
           input(data-bind="value:name")
           label.placeholder(data-bind="if:name() === ''")
             span X
             sub(data-bind="text:$index")
+          tf-dropdown(params="shallow:1,align:'right'")
+            // ko ifnot:dependant()
+            span.mark(data-bind="click:function(){dependant(cols()[$index()])}")
+              | Mark as Dependant
+            // /ko
+            // ko if:dependant()
+            span.mark(data-bind="click:function(){dependant(undefined)}")
+              | Clear Dependant
+            // /ko
+            span.insert.sep(data-bind="click:function(){cols.ins($index())}")
+              | Insert Column Before
+            span.insert(data-bind="click:function(){cols.ins($index()+1)}")
+              | Insert Column After
+            span.remove.sep(data-bind="click:function(){cols.del($index())}")
+              | Remove Column
         // /ko
         th.add(data-bind="click:cols.add")
           a.fa.fa-plus
     tbody
       // ko foreach: rows
+      // ko if:$index() < 10
       tr
-        td.static(data-bind="text:1+$index()")
-
+        td.static
+          span(data-bind="text:1+$index()")
+          tf-dropdown(params="shallow:1,align:'left'")
+            span.insert(data-bind="click:function(){rows.ins($index())}")
+              | Insert Row Before
+            span.insert(data-bind="click:function(){rows.ins($index()+1)}")
+              | Insert Row After
+            span.remove.sep(data-bind="click:function(){rows.del($index())}")
+              | Remove Row
         // ko foreach: $rawData
         td
           input(data-bind="value:$rawData")
           label.placeholder(data-bind="if:$rawData() === undefined") No Data
         // /ko
+      // /ko
       // /ko
       tr
         td.add(data-bind="click:rows.add")

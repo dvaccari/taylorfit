@@ -17,6 +17,13 @@ read = ( file ) ->
 write = ( table ) ->
   Papa.unparse table
 
+once = false
+once_guard = ( ) ->
+  return true if once
+  once = true
+  setTimeout -> once = false
+  return false
+
 ko.components.register "tf-grid",
   template: do require "./index.pug"
   viewModel: ( params ) ->
@@ -29,13 +36,26 @@ ko.components.register "tf-grid",
       ]
     ]
 
+    @dependant = ko.observable undefined
+
     @cols.add = ( ) =>
-      # ORDER MATTERS
+      @cols.ins @cols().length
+    @cols.del = ( index ) =>
+      @cols.splice index, 1
       for row in @rows()
-        row.push ko.observable undefined
-      @cols.push name: ko.observable ""
+        row.splice index, 1
+    @cols.ins = ( index ) =>
+      @cols.splice index, 0, name: ko.observable ""
+      for row in @rows()
+        row.splice index, 0, ko.observable undefined
     @rows.add = ( ) =>
-      @rows.push row = ko.observableArray [ ]
+      @rows.ins @rows().length
+    @rows.del = ( index ) =>
+      return if do once_guard
+      @rows.splice index, 1
+    @rows.ins = ( index ) =>
+      return if do once_guard
+      @rows.splice index, 0, row = ko.observableArray [ ]
       for col in @cols()
         row.push ko.observable undefined
 
@@ -57,7 +77,6 @@ ko.components.register "tf-grid",
       data = ko.toJS @rows
       cols = ko.toJS @cols
       data.unshift cols.map ( v ) -> v.name
-      console.log data
 
       csv = write data
 
