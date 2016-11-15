@@ -7,6 +7,8 @@
   table.grid
     thead
       tr
+        th
+          //- empty for row numbers
         // ko foreach: cols
         th
           input(data-bind="value:name")
@@ -19,6 +21,8 @@
     tbody
       // ko foreach: rows
       tr
+        td.static(data-bind="text:$index")
+
         // ko foreach: $rawData
         td
           input(data-bind="value:$rawData")
@@ -26,6 +30,6 @@
         // /ko
       // /ko
       tr
-        td.add(data-bind="click:rows.add,attr:{colspan:cols().length}")
+        td.add(data-bind="click:rows.add")
           a.fa.fa-plus
 

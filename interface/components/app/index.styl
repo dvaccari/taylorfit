@@ -34,8 +34,14 @@ table
   overflow hidden
   & > thead > tr > th
   & > tbody > tr > td
-    box-shadow inset 0 0 0 1px #EEE
     position relative
+    box-shadow inset -1px -1px 0 0 #EEE
+
+    &.static
+      color #CCC
+      padding 4px 10px
+      text-align center
+      font-size 12pt
   & > thead
     font-weight bold
 
