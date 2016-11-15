@@ -1,0 +1,8 @@
+
+.exponents
+  span Exponents:
+  // ko foreach: pills
+  button.pill(data-bind="text: $data.val, click: $parent.clicked, css: $data.class")
+  // /ko
+  input#input-pill(type="text" placeholder="add exponent" maxlength=3 data-bind="textInput: input, event: {keypress: add}")
+
