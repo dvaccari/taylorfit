@@ -9,11 +9,21 @@ tf-grid
     td .placeholder
       color #CCC
     .add
-      padding 6px 10px 4px
-      background green
+      box-shadow none
+      padding 3px
+    .add > a
+      padding 4px 5px
+      size 24px
+      box-sizing border-box
+      font-size 12pt
+      background #DDD
       color white
       text-align center
       cursor pointer
+      border-radius 100%
+      transition background 300ms
+      &:hover
+        background green
     th.add
       border-top-right-radius 10px
       border-bottom-right-radius 10px
