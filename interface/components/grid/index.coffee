@@ -1,18 +1,21 @@
 
 require "./index.styl"
+Papa = require "papaparse"
 
 read = ( file ) ->
-  return new Promise ( accept, reject ) ->
-    reader = new FileReader
-    reader.readAsText file
-    reader.onload = ( e ) ->
-      csv = e.target.result
-      lines = [ ]
-      for line in csv.split /\r\n|\n/
-        lines.push line.split ","
-      accept lines
-    reader.onerror = ( e ) ->
-      reject e.target.error
+  new Promise ( accept, reject ) ->
+    Papa.parse file,
+      dynamicTyping: true
+      complete: ( { errors, data } ) ->
+        if errors.length
+          reject errors
+        else
+          data.headless = not data[0].some ( value ) ->
+            typeof value isnt "string" or value is ""
+          accept data
+
+write = ( table ) ->
+  Papa.unparse table
 
 ko.components.register "tf-grid",
   template: do require "./index.pug"
@@ -39,27 +42,24 @@ ko.components.register "tf-grid",
     @load = ( table ) =>
       @cols.removeAll()
       @rows.removeAll()
-      for title in table.shift()
-        @cols.push name: ko.observable title
+      unless table.headless
+        for title in table.shift()
+          @cols.push name: ko.observable title
+      else
+        for title in table[0]
+          @cols.push name: ko.observable ""
       for row in table
         @rows.push r = ko.observableArray [ ]
         for col in row
           r.push ko.observable col
 
     @save = ( ) =>
-      csv = ""
-      csv += @cols()
-      .map ( col ) ->
-        col.name()
-      .join ","
-      csv += "\n"
-      csv += @rows()
-      .map ( row ) ->
-        row()
-        .map ( col ) ->
-          col()
-        .join ","
-      .join "\n"
+      data = ko.toJS @rows
+      cols = ko.toJS @cols
+      data.unshift cols.map ( v ) -> v.name
+      console.log data
+
+      csv = write data
 
       a = document.createElement "a"
       a.href = URL.createObjectURL new Blob [csv], type: "text/csv"
