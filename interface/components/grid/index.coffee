@@ -17,6 +17,13 @@ read = ( file ) ->
 write = ( table ) ->
   Papa.unparse table
 
+once = false
+once_guard = ( ) ->
+  return true if once
+  once = true
+  setTimeout -> once = false
+  return false
+
 ko.components.register "tf-grid",
   template: do require "./index.pug"
   viewModel: ( params ) ->
@@ -29,21 +36,24 @@ ko.components.register "tf-grid",
       ]
     ]
 
+
+
     @cols.add = ( ) =>
-      @cols.insert @cols().length
-    @cols.remove = ( index ) =>
+      @cols.ins @cols().length
+    @cols.del = ( index ) =>
       @cols.splice index, 1
       for row in @rows()
         row.splice index, 1
-    @cols.insert = ( index ) =>
+    @cols.ins = ( index ) =>
       @cols.splice index, 0, name: ko.observable ""
       for row in @rows()
         row.splice index, 0, ko.observable undefined
     @rows.add = ( ) =>
-      @rows.insert @rows().length
-    @rows.remove = ( index ) =>
+      @rows.ins @rows().length
+    @rows.del = ( index ) =>
       @rows.splice index, 1
-    @rows.insert = ( index ) =>
+    @rows.ins = ( index ) =>
+      return if do once_guard
       @rows.splice index, 0, row = ko.observableArray [ ]
       for col in @cols()
         row.push ko.observable undefined
