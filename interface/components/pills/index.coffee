@@ -37,7 +37,7 @@ ko.components.register "tf-pills",
             @pills.push((val: parseInt(@input()), class: ko.observable("active")))
             @pills.sort((left, right) => return left.val > right.val ? 1 : -1)
             @input("")
-          else if pill != true
+          else if typeof pill is "object"
             @pills()[@pills.indexOf(pill)].class("active")
             @input("")
       true
