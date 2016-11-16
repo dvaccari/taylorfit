@@ -489,13 +489,16 @@ class Matrix {
    * Creates a matrix from matrix-looking nested arrays, or a flat array and the
    * given `n` and `m`.
    *
-   * @param {iterable}  arr Values to populate the matrix with
-   * @param {number}    n   Rows in the new matrix
-   * @param {number}    m   Columns in the new matrix
+   * @param {iterable | Matrix} arr Values to populate the matrix with
+   * @param {number}            n   Rows in the new matrix
+   * @param {number}            m   Columns in the new matrix
    */
   static from(arr, n, m) {
+    if (arr instanceof Matrix) {
+      return arr.clone();
+    }
     if (!Array.isArray(arr)) {
-      throw new TypeError('Expected an array');
+      throw new TypeError('Expected an array or Matrix');
     }
 
     var i;

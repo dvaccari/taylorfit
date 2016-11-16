@@ -18,26 +18,6 @@ const DEBUG   = false;
 
 
 /**
- * Compute the data column for the given term.
- *
- * @param {[number, number][]}  term  List of pairs of numbers. The first is the
- *                                    index of a column, where the second is the
- *                                    exponent to raise that column to
- * @param {Matrix}              X     The input data matrix
- * @return {Matrix<n,1>} n x 1 Matrix -- polynomial combo of columns in term
- */
-function computeColumn(term, X) {
-  var sum = new Matrix(X.shape[0], 1)
-    , i;
-
-  for (i = 0; i < term.length; i += 1) {
-    sum = sum.add(X.col(term[i][0]).dotPow(term[i][1]));
-  }
-  return sum;
-}
-
-
-/**
  * Term is a combination of input columns and exponents, such as x^2*y^3.
  *
  * @class Term
@@ -56,7 +36,7 @@ class Term {
   constructor(term, model) {
     this[_term] = term;
     this[_model] = model;
-    this[_col] = computeColumn(term, model.X);
+    this[_col] = this.computeColumn(model.X);
   }
 
   /**
@@ -91,6 +71,22 @@ class Term {
       console.log(e);
       return NaN;
     }
+  }
+
+  /**
+   * Compute the data column for a given matrix.
+   *
+   * @param {Matrix} X The input data matrix
+   * @return {Matrix<n,1>} n x 1 Matrix -- polynomial combo of columns in term
+   */
+  computeColumn(X) {
+    var sum = new Matrix(X.shape[0], 1)
+    , i;
+
+    for (i = 0; i < this[_term].length; i += 1) {
+      sum = sum.add(X.col(this[_term][i][0]).dotPow(this[_term][i][1]));
+    }
+    return sum;
   }
 
   /**

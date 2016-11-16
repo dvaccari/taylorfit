@@ -1,5 +1,4 @@
 
-const math          = require('./math.es6');
 const stats         = require('./stats.es6');
 const combos        = require('./combos.es6');
 
@@ -128,10 +127,8 @@ class Model {
     }
 
     term.forEach((pair) => {
-      var size = math.size(pair);
-
-      if (size.length !== 1 && size[0] !== 2) {
-        throw new math.error.DimensionError(size, [2], '!=');
+      if (!Array.isArray(pair) || pair.length !== 2) {
+        throw new TypeError('Invalid [col, exp] pair: ' + JSON.stringify(pair));
       }
     });
 
@@ -205,20 +202,21 @@ class Model {
   }
 
   /**
-   * Make a prediction based on the values for each feature given in `vector`.
+   * Make a prediction based on the values for each feature given in `testData`.
    *
-   * @param {Matrix<k,m>} vector  A set of observations for each feature (a
-   *                              matrix with the same # of columns as
-   *                              `this[_X]`, but as many rows as your heart
-   *                              desires)
+   * @param {Matrix<k,m>} testData A set of observations for each feature (a
+   *                               matrix with the same # of columns as
+   *                               `this[_X]`, but as many rows as your heart
+   *                               desires)
    * @return {Matrix<k,1>} Predictions
-   *
-   * FIXME: We ain't usein' mathjs no more
    */
-  predict(vector) {
-    vector = math.matrix([vector]);
-    var augmentedVector = combos.createPolyMatrix(this[_terms], vector);
-    return math.dot(this[_weights], math.squeeze(augmentedVector));
+  predict(testData) {
+    testData = Matrix.from(testData);
+    testData = this[_terms]
+      .map((term) => term.computeColumn(testData))
+      .reduce((prev, curr) => prev.hstack(curr),
+              new Matrix(testData.shape[0], 0));
+    return testData.multiply(Matrix.from(this[_weights]).T);
   }
 
   /**
