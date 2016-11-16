@@ -86,24 +86,26 @@ class Model {
    *                                  for instance [1] means only the individual
    *                                  columns can be terms (x, y, x^2, y^2, ...)
    */
-  constructor(X, y, exponents, multipliers, terms=null, headers=null) {
-    var standardizedX = standardize(X);
-    this[_X] = standardizedX.X;
-    this[_means] = standardizedX.means;
-    this[_variances] = standardizedX.vars;
+  constructor(X, y, exponents=[1], multipliers=[1], terms=[], headers=null) {
+    //var standardizedX = standardize(X);
+    this[_X] = X;//standardizedX.X;
+    //this[_means] = standardizedX.means;
+    //this[_variances] = standardizedX.vars;
 
     this[_y] = y;
     this[_headers] = headers;
 
-    this[_terms] = terms || [];
     this[_Xaugmented] = new Matrix(X.shape[0], 0);
     this[_weights] = [];
 
     this[_candyTerms] = combos
       .generateTerms(X.shape[1], exponents, multipliers)
       .map((term) => new Term(term, this));
+    this[_terms] = terms.map(
+      (pair) => this[_candyTerms].find((term) => term.equals(pair))
+    );
 
-    if (terms != null) {
+    if (terms.length !== 0) {
       this.compute();
     }
   }
@@ -181,7 +183,8 @@ class Model {
   compute() {
     this[_Xaugmented] = this[_terms]
       .map((term) => term.col)
-      .reduce((prev, curr) => prev.hstack(curr));
+      .reduce((prev, curr) => prev.hstack(curr),
+              new Matrix(this[_X].shape[0], 0));
 
     var things = stats.lstsqWithStats(this[_Xaugmented], this[_y]);
     this[_weights] = things.weights;

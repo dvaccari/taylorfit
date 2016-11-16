@@ -95,6 +95,9 @@ class Matrix {
       stuff = (stuff instanceof Float64Array)
               ? stuff
               : Float64Array.from(stuff);
+      if (stuff.length !== n * m) {
+        throw new Error('Array does not match the specified dimensions');
+      }
     } else {
       stuff = new Float64Array(n * m);
     }

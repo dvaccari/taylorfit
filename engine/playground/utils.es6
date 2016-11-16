@@ -6,6 +6,9 @@ module.exports.range = (start, end) => {
 module.exports.convertRange = (str, length) => {
   var range, start, end;
 
+  if (typeof str === 'number') {
+    return (str < 0) ? [length + str] : [str];
+  }
   if (typeof str !== 'string') {
     return str.map((ind) => (ind < 0) ? length + ind : ind);
   }

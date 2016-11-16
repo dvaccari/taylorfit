@@ -1,17 +1,20 @@
 
-const stats         = require('./stats.es6');
-const combos        = require('./combos.es6');
+const stats   = require('./stats.es6');
+const combos  = require('./combos.es6');
 
-const Matrix        = require('./playground/matrix.es6');
+const Matrix  = require('./playground/matrix.es6');
 
 /**
  * Private members
  *
  * @private
  */
-const _term         = Symbol('term');
-const _model        = Symbol('model');
-const _col          = Symbol('col');
+const _term   = Symbol('term');
+const _model  = Symbol('model');
+const _col    = Symbol('col');
+
+
+const DEBUG   = false;
 
 
 /**
@@ -63,15 +66,24 @@ class Term {
    * @return {t: number, mse: number} Statistics for the regression
    */
   getStats() {
-    console.time('createPolyMatrix');
+    if (DEBUG) {
+      console.time('createPolyMatrix');
+    }
     var XAugmented = this[_model].data.hstack(this[_col])
       , theStats;
-    console.timeEnd('createPolyMatrix');
+
+    if (DEBUG) {
+      console.timeEnd('createPolyMatrix');
+    }
 
     try {
-      console.time('lstsq');
+      if (DEBUG) {
+        console.time('lstsq');
+      }
       theStats = stats.lstsqWithStats(XAugmented, this[_model].y);
-      console.timeEnd('lstsq');
+      if (DEBUG) {
+        console.timeEnd('lstsq');
+      }
       return {
         t: theStats.tstats.data[[theStats.tstats.shape[0] - 1]]
       };
