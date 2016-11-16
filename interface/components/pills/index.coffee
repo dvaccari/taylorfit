@@ -35,7 +35,7 @@ ko.components.register "tf-pills",
           pill = within(num, @pills())
           if pill is false
             @pills.push((val: parseInt(@input()), class: ko.observable("active")))
-            @pills.sort((left, right) => return left.val > right.val ? 1 : -1)
+            @pills.sort((left, right) ->  if left.val < right.val then -1 else 1)
             @input("")
           else if typeof pill is "object"
             @pills()[@pills.indexOf(pill)].class("active")
