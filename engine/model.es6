@@ -87,10 +87,9 @@ class Model {
    */
   constructor(X, y, exponents=[1], multipliers=[1], terms=[], headers=null) {
     //var standardizedX = standardize(X);
-    this[_X] = X;//standardizedX.X;
+    this[_X] = X; //standardizedX.X;
     //this[_means] = standardizedX.means;
     //this[_variances] = standardizedX.vars;
-
     this[_y] = y;
     this[_headers] = headers;
 
@@ -193,9 +192,9 @@ class Model {
 
     return {
       model: {
-        weights: this[_weights],
-        tstats: things.tstats,
-        terms: this[_terms]
+        weights: this[_weights].data,
+        tstats: things.tstats.data,
+        terms: this[_terms].map((t) => t.term)
       },
       candidates: candidateTerms
     };

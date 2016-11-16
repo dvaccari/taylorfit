@@ -14,7 +14,7 @@ module.exports.model = (data, indepCol, exponents, multipliers) => {
 
   var inputColumns = data.subset(
     ':',
-    utils.range(0, indepCol).concat(utils.range(indepCol, data.shape[1]))
+    utils.range(0, indepCol).concat(utils.range(indepCol + 1, data.shape[1]))
   ) , outputColumn = data.col(indepCol);
 
   return new Model(inputColumns, outputColumn, exponents, multipliers);

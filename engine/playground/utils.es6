@@ -1,5 +1,8 @@
 
 module.exports.range = (start, end) => {
+  if (start >= end) {
+    return [];
+  }
   return Array(end - start).join(' ').split(' ').map((_, i) => i + start);
 };
 
