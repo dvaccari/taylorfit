@@ -4,9 +4,9 @@ const chai    = require('chai')
     , expect  = chai.expect
     , should  = chai.should;
 
-const math    = require('mathjs')
-    , combos  = require('../../engine/combos.jsx')
-    , Model   = require('../../engine/model.jsx')
+const Matrix  = require('../../engine/playground/matrix.es6')
+    , combos  = require('../../engine/combos.es6')
+    , Model   = require('../../engine/model.es6')
     , dataset = require('./test.data.json');
 
 describe('Model', () => {
@@ -15,8 +15,8 @@ describe('Model', () => {
 
   before(() => {
     data = {
-      X: math.matrix(dataset.X),
-      y: math.matrix(dataset.y),
+      X: new Matrix(dataset.X),
+      y: new Matrix(dataset.y).T,
       headers: dataset.headers
     };
   });
@@ -24,22 +24,19 @@ describe('Model', () => {
   describe('constructor()', () => {
 
     it('accepts an input data matrix and an expected output vector', () => {
-      var m = new Model(data.X, data.y);
-      expect(m.data).to.eql(data.X);
+      var m = new Model(data.X, data.y, [1, 2], [1]);
+      expect(m.X).to.eql(data.X);
       expect(m.weights).to.eql([]);
       expect(m.terms).to.eql([]);
     });
 
     it('computes an augmented matrix if a list of terms is given', () => {
-      var terms = combos.generateTerms(data.X.size()[1], [1, 2], [1]);
-      var m = new Model(data.X, data.y, terms);
+      var terms = combos.generateTerms(data.X.shape[1], [1, 2], [1]);
+      var m = new Model(data.X, data.y, [1, 2], [1], terms);
 
       m.terms.forEach((term, i) => {
-        var dataindex = math.index(math.range(0, m.data.size()[0]), term[0][0]);
-        var augindex = math.index(math.range(0, m.data.size()[0]), i);
-
-        expect(math.dotPow(data.X.subset(dataindex), term[0][1]))
-          .to.eql(m.data.subset(augindex));
+        expect(data.X.subset(':', term.term[0][0]).dotPow(term.term[0][1]))
+          .to.eql(m.data.subset(':', i));
       });
     });
 
@@ -48,17 +45,17 @@ describe('Model', () => {
   describe('addTerm()', () => {
 
     it('accepts a valid term [[column, exponent], ...]', () => {
-      var m = new Model(data.X, data.y);
+      var m = new Model(data.X, data.y, [1, 2], [1, 2]);
 
       m.addTerm([[0, 1]]);
-      expect(m.terms).to.include.deep.members([[[0, 1]]]);
+      expect(m.terms.map((t) => t.term)).to.include.deep.members([[[0, 1]]]);
       m.addTerm([[1, 1]]);
-      expect(m.terms).to.include.deep.members([
+      expect(m.terms.map((t) => t.term)).to.include.deep.members([
         [[0, 1]],
         [[1, 1]]
       ]);
       m.addTerm([[0, 1], [1, 1]]);
-      expect(m.terms).to.include.deep.members([
+      expect(m.terms.map((t) => t.term)).to.include.deep.members([
         [[0, 1]],
         [[1, 1]],
         [[0, 1], [1, 1]]
@@ -66,12 +63,12 @@ describe('Model', () => {
     });
 
     it('does not add duplicate terms', () => {
-      var m = new Model(data.X, data.y);
+      var m = new Model(data.X, data.y, [1, 2], [1]);
 
       m.addTerm([[0, 1]]);
-      expect(m.terms).to.include.deep.members([[[0, 1]]]);
+      expect(m.terms.map((t) => t.term)).to.include.deep.members([[[0, 1]]]);
       m.addTerm([[0, 1]]);
-      expect(m.terms).to.include.deep.members([[[0, 1]]]);
+      expect(m.terms.map((t) => t.term)).to.include.deep.members([[[0, 1]]]);
       expect(m.terms.length).to.equal(1);
     });
 
@@ -82,20 +79,16 @@ describe('Model', () => {
 
     it('throw a DimensionError if `term` is not the proper shape', () => {
       var f = () => new Model(data.X, data.y).addTerm([1, 2]);
-      expect(f).to.throw(math.error.DimensionError);
+      expect(f).to.throw(/*some kind of dimension error*/);
     });
 
     it('recomputes the augmented data matrix & weights automatically', () => {
       var m = new Model(data.X, data.y);
 
       m.addTerm([[0, 1]]);
-      expect(m.data).to.eql(data.X.subset(
-        math.index(math.range(0, data.X.size()[0]), 0)
-      ));
+      expect(m.data.data).to.eql(data.X.subset(':', 0).data);
       m.addTerm([[1, 1]]);
-      expect(m.data).to.eql(data.X.subset(
-        math.index(math.range(0, data.X.size()[0]), [0, 1])
-      ));
+      expect(m.data.data).to.eql(data.X.subset(':', [0, 1]).data);
     });
 
   });
@@ -103,16 +96,16 @@ describe('Model', () => {
   describe('removeTerm()', () => {
 
     it('removes an existing term', () => {
-      var m = new Model(data.X, data.y);
+      var m = new Model(data.X, data.y, [1, 2], [1, 2]);
 
       m.addTerm([[0, 1]]);
-      expect(m.terms).to.include.deep.members([[[0, 1]]]);
+      expect(m.terms.map((t) => t.term)).to.include.deep.members([[[0, 1]]]);
       m.removeTerm([[0, 1]]);
-      expect(m.terms).to.eql([]);
+      expect(m.terms.map((t) => t.term)).to.eql([]);
       m.addTerm([[0, 1], [1, 2]]);
-      expect(m.terms).to.include.deep.members([[[0, 1], [1, 2]]]);
+      expect(m.terms.map((t) => t.term)).to.include.deep.members([[[0, 1], [1, 2]]]);
       m.removeTerm([[0, 1], [1, 2]]);
-      expect(m.terms).to.eql([]);
+      expect(m.terms.map((t) => t.term)).to.eql([]);
     });
 
     it('does nothing if the term is not found', () => {
@@ -120,7 +113,7 @@ describe('Model', () => {
 
       m.addTerm([[0, 1]]);
       m.removeTerm([[1, 0]]);
-      expect(m.terms).to.include.deep.members([[[0, 1]]]);
+      expect(m.terms.map((t) => t.term)).to.include.deep.members([[[0, 1]]]);
     });
 
   });
