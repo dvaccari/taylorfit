@@ -1,5 +1,5 @@
 
-span.title(data-bind="text:name")
+span.title(data-bind="text:name()")
 span.subtitle(data-bind="text:style()==='radio'?'Select One':'Select Many'")
 // ko foreach: pills
 a.pill(data-bind="text: $data.val, click: $parent.clicked, css: $data.class")

@@ -4,10 +4,8 @@ require "./index.styl"
 within = (val, arr) ->
   i = 0
   while i < arr.length
-    if arr[i].val() is val and arr[i].class() is "inactive"
-      return arr[i]
-    else if arr[i].val() is val and arr[i].class() is "active"
-      return true
+    if arr[i].val() is val
+      if arr[i].class() is "inactive" then return arr[i] else return true
     i++
   false
 
@@ -20,6 +18,7 @@ ko.components.register "tf-pills",
     if ko.isObservable params.vals then @pills = params.vals else @pills = ko.observableArray()
     if ko.isObservable params.name then @name = params.name else @name = ko.observable params.name
     if ko.isObservable params.style then @style = params.style else @style = ko.observable params.style
+    @millis = +new Date()
 
     params.vals.forEach (param) =>
       @pills.push((val: ko.observable(param), class: ko.observable("inactive")))
@@ -27,15 +26,18 @@ ko.components.register "tf-pills",
     @input = ko.observable ""
 
     @clicked = ( pill ) =>
-      if @style() is "check"
-        if pill.class() is "inactive"
-          pill.class "active"
-        else
-          pill.class "inactive"
-      else if @style() is "radio"
-        if pill.class() is "inactive"
+      if +new Date() - @millis <= 200
+        @dclicked pill
+        return
+      else
+        @millis = +new Date()
+      if @style() is "check" and pill.class() is "inactive" then pill.class "active" else pill.class "inactive"
+      if @style() is "radio" and pill.class() is "inactive"
           clearActive @pills()
           pill.class "active"
+
+    @dclicked = ( pill ) =>
+      @pills.remove pill   
 
     @add = (e, d) =>
       if d.key is "Enter"
