@@ -1,8 +1,9 @@
 
-.exponents
-  span Exponents:
-  // ko foreach: pills
-  button.pill(data-bind="text: $data.val, click: $parent.clicked, css: $data.class")
-  // /ko
-  input#input-pill(type="text" placeholder="add exponent" maxlength=3 data-bind="textInput: input, event: {keypress: add}")
+span.title Exponents
+// ko foreach: pills
+a.pill(data-bind="text: $data.val, click: $parent.clicked, css: $data.class")
+// /ko
+//- TODO: enforce min and max through keypress
+input.custom(type="number" placeholder="Custom..."
+min="-255" max="255" data-bind="textInput: input, event: {keypress: add}")
 

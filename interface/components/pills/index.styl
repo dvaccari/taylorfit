@@ -1,30 +1,30 @@
 
 tf-pills
-  .exponents
-    padding-bottom 10px
-  button
-    text-decoration none
-    background #DDDDDD
+  margin-bottom 10px
+  padding-bottom 10px
+  display inline-block
+  border-bottom 1px solid #DDD
+
+  & > span.title
+    color #999
+    margin-right 10px
+
+  & > a.pill
+    font-size 12pt
     color black
-    font-size 12px
-    font-weight bold
-    line-height 32px
-    height auto
-    display inline-block
-    text-align center
-    height 35px
-    width 35px
-    text-align center
-    margin-right 3px
-  .active
-    background green
-    color white
-  input
-  	display inline
-  	margin 0
-  	font-size 18px
-  	appearance none
-  	box-shadow none
-  	border-radius none
-  	border solid 1px #707070
+    background #DDD
+    padding 2px 12px
+    margin 0 4px
+    border-radius 1000px
+    transition 300ms
+    cursor pointer
+    &.active
+      color white
+      background green
+
+  & > input.custom
+    margin-left 10px
+    cursor text
+    width 100px
+
 
