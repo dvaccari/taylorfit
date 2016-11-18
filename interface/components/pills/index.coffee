@@ -44,7 +44,7 @@ ko.components.register "tf-pills",
     @add = (e, d) =>
       if d.key is "Enter"
         num = parseInt(@input())
-        if num > -10 and num < 10
+        if num >= params.range[0] and num <= params.range[1]
           pill = within(num, @pills())
           if pill is false
             if @style() is 'check'
