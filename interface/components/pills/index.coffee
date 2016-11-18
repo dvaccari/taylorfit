@@ -21,7 +21,6 @@ ko.components.register "tf-pills",
     if ko.isObservable params.name then @name = params.name else @name = ko.observable params.name
     if ko.isObservable params.style then @style = params.style else @style = ko.observable params.style
 
-
     params.vals.forEach (param) =>
       @pills.push((val: ko.observable(param), class: ko.observable("inactive")))
 
@@ -36,7 +35,7 @@ ko.components.register "tf-pills",
       else if @style() is "radio"
         if pill.class() is "inactive"
           clearActive @pills()
-          pill.class "active"        
+          pill.class "active"
 
     @add = (e, d) =>
       if d.key is "Enter"
