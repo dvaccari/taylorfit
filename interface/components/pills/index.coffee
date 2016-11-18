@@ -18,7 +18,7 @@ ko.components.register "tf-pills",
     if ko.isObservable params.vals then @pills = params.vals else @pills = ko.observableArray()
     if ko.isObservable params.name then @name = params.name else @name = ko.observable params.name
     if ko.isObservable params.style then @style = params.style else @style = ko.observable params.style
-    @millis = +new Date()
+    @millis = 0
 
     params.vals.forEach (param) =>
       @pills.push((val: ko.observable(param), class: ko.observable("inactive")))
