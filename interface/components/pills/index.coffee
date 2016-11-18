@@ -18,6 +18,7 @@ ko.components.register "tf-pills",
     if ko.isObservable params.vals then @pills = params.vals else @pills = ko.observableArray()
     if ko.isObservable params.name then @name = params.name else @name = ko.observable params.name
     if ko.isObservable params.style then @style = params.style else @style = ko.observable params.style
+    if ko.isObservable params.range then @range = params.range else @range = ko.observableArray [params.range[0], params.range[1]]
     @millis = 0
     @cpill = undefined
 
@@ -44,7 +45,7 @@ ko.components.register "tf-pills",
     @add = (e, d) =>
       if d.key is "Enter"
         num = parseInt(@input())
-        if num >= params.range[0] and num <= params.range[1]
+        if num >= @range()[0] and num <= @range()[1]
           pill = within(num, @pills())
           if pill is false
             if @style() is 'check'
