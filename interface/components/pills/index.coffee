@@ -45,7 +45,7 @@ ko.components.register "tf-pills",
         if num > -10 and num < 10
           pill = within(num, @pills())
           if pill is false
-            if @style is 'checked'
+            if @style is 'check'
               @pills.push((val: parseInt(@input()), class: ko.observable("active")))
             else if @style is 'button'
               clearActive(@pills())
