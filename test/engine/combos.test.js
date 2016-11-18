@@ -5,7 +5,7 @@ const chai    = require('chai')
     , should  = chai.should;
 
 const math    = require('mathjs')
-    , combos  = require('../../engine/combos.jsx');
+    , combos  = require('../../engine/combos.es6');
 
 describe('combos', () => {
 
@@ -145,32 +145,6 @@ describe('combos', () => {
         [[0, 2], [1, 1]],
         [[0, 2], [1, 2]]
       ]);
-    });
-
-  });
-
-  describe('createPolyMatrix()', () => {
-    var data;
-
-    before(() => {
-      data = math.matrix([
-        [1, 1],
-        [1, 2],
-        [2, 3]
-      ]);
-    });
-
-    it('returns a matrix whose columns repr terms from generateTerms()', () => {
-      var terms = combos.generateTerms(2, [1, 2], [1]);
-      var aug = combos.createPolyMatrix(terms, data);
-
-      terms.forEach((term, i) => {
-        var dataindex = math.index(math.range(0, aug.size()[0]), term[0][0]);
-        var augindex = math.index(math.range(0, aug.size()[0]), i);
-
-        expect(math.dotPow(data.subset(dataindex), term[0][1]))
-          .to.eql(aug.subset(augindex));
-      });
     });
 
   });
