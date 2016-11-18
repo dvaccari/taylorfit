@@ -19,6 +19,7 @@ ko.components.register "tf-pills",
     if ko.isObservable params.name then @name = params.name else @name = ko.observable params.name
     if ko.isObservable params.style then @style = params.style else @style = ko.observable params.style
     @millis = 0
+    @cpill = undefined
 
     params.vals.forEach (param) =>
       @pills.push((val: ko.observable(param), class: ko.observable("inactive")))
@@ -26,11 +27,12 @@ ko.components.register "tf-pills",
     @input = ko.observable ""
 
     @clicked = ( pill ) =>
-      if +new Date() - @millis <= 200
+      if +new Date() - @millis <= 200 and @cpill is pill
         @dclicked pill
         return
       else
         @millis = +new Date()
+        @cpill = pill
       if @style() is "check" and pill.class() is "inactive" then pill.class "active" else pill.class "inactive"
       if @style() is "radio" and pill.class() is "inactive"
           clearActive @pills()
