@@ -107,6 +107,10 @@ class Matrix {
     return this;
   }
 
+  get(i, j) {
+    return this[_data][i * this[_m] + j];
+  }
+
   /**
    * Performs element-wise addition between two matrices and returns a new copy.
    *
