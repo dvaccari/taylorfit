@@ -6,7 +6,7 @@ require "core-js"
 global.ko = require "knockout"
 
 # --- include components
-require "./components/index.coffee"
+require "./components"
 
 document.body.appendChild \
   document.createElement "tf-app"

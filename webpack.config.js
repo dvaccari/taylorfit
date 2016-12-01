@@ -32,7 +32,7 @@ module.exports = {
     setImmediate: false
   },
   entry: {
-    "interface": INTERFACE + "/index.coffee"
+    "interface": INTERFACE
   },
   output: {
     path: BUILD,
@@ -44,11 +44,9 @@ module.exports = {
       context: CONTEXT,
       engine: ENGINE,
       "interface": INTERFACE
-    }
-  },
-  resolveLoader: {
+    },
     extensions: ["", ".webpack-loader.js", ".web-loader.js",
-    ".loader.js", ".js", ".coffee"]
+    ".loader.js", ".js", ".coffee", ".es6"]
   },
   module: {
     loaders: [{
@@ -73,7 +71,7 @@ module.exports = {
     new webpack.BannerPlugin(";;(window.global = window);;", {
       raw: true,
       entryOnly: true
-    }), new webpack.optimize.UglifyJsPlugin
+    }), new webpack.optimize.UglifyJsPlugin()
   ],
   stylus: {
     use: [require("nib")()],
