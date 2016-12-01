@@ -12,6 +12,7 @@ CONTEXT = rel(".");
 ENGINE = rel("./engine");
 INTERFACE = rel("./interface");
 BUILD = rel("./build");
+WORKER = rel("./worker");
 
 module.exports = {
   target: "web",
@@ -32,7 +33,8 @@ module.exports = {
     setImmediate: false
   },
   entry: {
-    "interface": INTERFACE
+    "interface": INTERFACE,
+    "engine-worker": WORKER
   },
   output: {
     path: BUILD,
