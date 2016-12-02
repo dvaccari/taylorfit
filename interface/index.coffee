@@ -2,6 +2,10 @@
 # --- include core libraries
 require "core-js"
 
+# --- choose correct adapter
+# TODO: make selection based on build model
+global.adapter = require "./adapter/worker"
+
 # --- setup knockout
 global.ko = require "knockout"
 

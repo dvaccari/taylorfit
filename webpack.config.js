@@ -70,7 +70,7 @@ module.exports = {
     }]
   },
   plugins: [
-    new webpack.BannerPlugin(";;(window.global = window);;", {
+    new webpack.BannerPlugin(";;(function(){this.global=this;this.window=this})();;", {
       raw: true,
       entryOnly: true
     }), new webpack.optimize.UglifyJsPlugin()
