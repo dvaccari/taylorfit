@@ -5,9 +5,11 @@ div.candidates
   span.title Candidates
   // ko foreach: candidates
   span.candidate
+    // ko foreach: $data
     | x
-    sub(data-bind="text:$data[0][0]")
-    sup(data-bind="text:$data[0][1]")
+    sub(data-bind="text:$data[0]")
+    sup(data-bind="text:$data[1]")
+    // /ko
   // /ko
 tf-grid
 
