@@ -91,29 +91,29 @@ function lstsqNEWithStats(X, y) {
  * @return {object} Regression results
  */
 function lstsqSVDWithStats(X, y) {
-  var XT            = X.T
-    , svdstuff      = svd.svd(X)
+  var svdstuff      = svd.svd(X)
     , U             = svdstuff[0]
     , w             = Matrix.from(svdstuff[1])
     , V             = svdstuff[2]
     , BHat          = svd.lstsq(X, U, w, V, y)
     , yHat          = X.multiply(BHat)
     , sse           = y.add(yHat.dotMultiply(-1)).dotPow(2).sum()
-    , mse           = sse / X.shape[0]
-    , Vdivw         = V.dotDivide(w)
+    , mse           = sse / (X.shape[0] - 2)
+    , VdivwSq       = V.dotDivide(w).dotPow(2)
     , i;
 
-  for (i = 0; i < Vdivw.data.length; i += 1) {
-    if (Math.abs(Vdivw.data[i]) === Infinity || isNaN(Vdivw.data[i])) {
-      Vdivw.data[i] = 0;
+  for (i = 0; i < VdivwSq.data.length; i += 1) {
+    if (Math.abs(VdivwSq.data[i]) === Infinity || isNaN(VdivwSq.data[i])) {
+      VdivwSq.data[i] = 0;
     }
   }
 
-  var stdModelErr   = Math.sqrt(Vdivw.dotPow(2).sum() * mse)
-    , sec           = new Matrix(1, X.shape[1]);
+  var sec = new Matrix(1, X.shape[1])
+    , stdModelErr;
 
   for (i = 0; i < X.shape[1]; i += 1) {
-    sec.data[i] = stdModelErr / (X.col(i).sum() / X.shape[0]);
+    stdModelErr = Math.sqrt(VdivwSq.row(i).sum() * mse);
+    sec.data[i] = stdModelErr;
   }
 
   var tstats        = BHat.dotDivide(sec);
@@ -123,7 +123,7 @@ function lstsqSVDWithStats(X, y) {
     tstats  : tstats,
     mse     : mse
   };
-};
+}
 
 module.exports.lstsqWithStats = lstsqSVDWithStats;
 
@@ -149,12 +149,10 @@ var b = new Matrix(17, 1, [251.3, 251.3, 248.3, 267.5,
                            285.0, 290.0, 297.0, 302.5,
                            304.5, 309.3, 321.7, 330.7,
                            349.0]);
-/*
 
+/*
 var z = math.matrix([[1]]).resize([x.size()[0], 1], 1);
- */
 
-/*
 var a = new Matrix(8, 5, Float64Array.from([22,10, 2,  3, 7,
                                             14, 7,10,  0, 8,
                                             -1,13,-1,-11, 3,
@@ -164,18 +162,41 @@ var a = new Matrix(8, 5, Float64Array.from([22,10, 2,  3, 7,
                                              2,-6, 6,  5, 1,
                                              4, 5, 0, -2, 2]));
 var b = new Matrix(8, 1, [12, 5, -2, -7, 1, 3, 10, 3]);
-*/
+ */
 
+// taylorfit's Bhat
+//var tfguess = Matrix.from([0.308165, 0.0720651, -0.0893553, 0.602561, 0.210042]).T;
+var tfguess = Matrix.from([1.79903, 6.11149]).T;
+
+// rms test
+var rms = [];
+var ndf = a.shape[0] - 2;
+for (var i = 0; i < a.shape[1]; i += 1) {
+  rms.push(a.col(i).abs().sum() / ndf);
+}
+
+rms = Matrix.from(rms);
+var anorm = a.dotDivide(rms);
+var bnorm = b.dotDivide(b.abs().sum() / ndf);
+
+console.log('rms', rms.toString());
 var estNE = lstsqNEWithStats(a, b);
 var estSVD = lstsqSVDWithStats(a, b);
 
-console.log(estNE.weights.T.toString());
-console.log(estSVD.weights.T.toString());
+console.log('ne  B:', estNE.weights.T.toString());
+console.log('svd B:', estSVD.weights.T.toString());
 
-console.log(estNE.tstats.T.toString());
-console.log(estSVD.tstats.T.toString());
+console.log('ne  T:', estNE.tstats.T.toString());
+console.log('svd T:', estSVD.tstats.T.toString());
+console.log('realB:', tfguess.T.toString());
 
 console.log(Math.sqrt(a.multiply(estSVD.weights).dotMultiply(-1).add(b).dotPow(2).sum()));
+console.log(Math.sqrt(a.multiply(tfguess).dotMultiply(-1).add(b).dotPow(2).sum()));
+console.log();
+
+console.log('actual :', b.T.toString());
+console.log('myguess:', a.multiply(estSVD.weights).T.toString());
+console.log('tfguess:', a.multiply(tfguess).T.toString());
 
 
 /*
