@@ -108,6 +108,22 @@ class Term {
   }
 
   /**
+   * Normalize the data column for a given matrix.
+   *
+   * @param {Matrix} X The input data matrix
+   * @return {Matrix<n,1>} n x 1 Matrix -- polynomial combo of columns in term
+   */
+  normalizeColumn(X) {
+    var normalized = new Matrix(X.shape[0], 1)
+    , i, j;
+
+    for (i = 0; i < this[_col].length; i += 1) {
+      console.log(this[i]);
+    }
+  }
+
+
+  /**
    * Returns the list of pairs constituting the term.
    *
    * @property {[number, number][]} term
@@ -123,6 +139,21 @@ class Term {
    */
   get col() {
     return this[_col];
+  }
+
+  /**
+   * Returns the RMS of this column
+   *
+   * @property {Matrix<n,1>} col
+   */
+  get rms() {
+    var i, sum = 0;
+
+    for (i = 0; i < this[_col].length; i += 1) {
+      sum += Math.pow(this[i],2);
+    }
+
+    return Math.pow(sum/this[_col].length, 0.5);
   }
 
 }
