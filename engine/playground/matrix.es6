@@ -300,24 +300,36 @@ class Matrix {
    */
   dotDivide(n) {
     var product = this.clone()
-    , i;
+      , i, j;
 
     if (typeof n === 'number') {
       for (i = 0; i < product[_data].length; i += 1) {
         product[_data][i] = product[_data][i] / n;
       }
     } else if (n instanceof Matrix) {
-      for (i = 0; i < product[_data].length; i += 1) {
-        product[_data][i] = product[_data][i] / n[_data][i];
+      for (i = 0, j = 0; i < product[_data].length; i += 1, j += 1) {
+        if (j >= n[_data].length) {
+          j = 0;
+        }
+        product[_data][i] = product[_data][i] / n[_data][j];
       }
     }
     return product;
   }
 
-  /**
-   * Stringifies the matrix into a (somewhat) pretty format
+  dotInv() {
+    var inverse = this.clone()
+      , i;
+
+    for (i = 0; i < this[_data].length; i += 1) {
+      inverse[_data][i] = 1.0 / inverse[_data][i];
+    }
+    return inverse;
+  }
+
+  /** * Stringifies the matrix into a (somewhat) pretty format
    *
-   * @return {string} Representation of the matrix
+   * @return {string} Representation of the matrix /
    */
   toString() {
     var str = '';
@@ -409,6 +421,16 @@ class Matrix {
       diagonal[_data][i] = this[_data][i * this[_m] + i];
     }
     return diagonal;
+  }
+
+  abs() {
+    var absolute = this.clone()
+      , i;
+
+    for (i = 0; i < absolute[_data].length; i += 1) {
+      absolute[_data][i] = Math.abs(absolute[_data][i]);
+    }
+    return absolute;
   }
 
   /**
@@ -522,6 +544,17 @@ class Matrix {
       }
     }
     return new Matrix(n, m, Float64Array.from([].concat.apply([], arr)));
+  }
+
+  static diag(arr) {
+    var n = arr.length
+      , mat = new Matrix(n, n)
+      , i;
+
+    for (i = 0; i < n; i += 1) {
+      mat.data[i*n+i] = arr[i];
+    }
+    return mat;
   }
 
 }
