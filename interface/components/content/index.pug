@@ -1,5 +1,13 @@
 
 tf-pills(params="name:'Multiplicands',values:multiplicands,style:'radio'")
 tf-pills(params="name:'Exponents',values:exponents,style:'check'")
+div.candidates
+  span.title Candidates
+  // ko foreach: candidates
+  span.candidate
+    | x
+    sub(data-bind="text:$data[0][0]")
+    sup(data-bind="text:$data[0][1]")
+  // /ko
 tf-grid
 
