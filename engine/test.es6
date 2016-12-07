@@ -1,9 +1,8 @@
 
 const load  = require('./load.es6');
 const Model = require('./model.es6');
-const math  = require('./math.es6');
 
-load('prototype/concrete_data.csv', true, (data) => {
+load('data/concrete_data.csv', true, (data) => {
   var X = data.subset(':', ':-1');
   var y = data.subset(':', [-1]);
 

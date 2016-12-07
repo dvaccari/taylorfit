@@ -1,56 +1,49 @@
 
-const Matrix = require('./playground/matrix.es6');
-const svd = require('./playground/svd-golum-reinsch.es6');
+const Matrix  = require('./matrix.es6');
+const svd     = require('./svd-golum-reinsch.es6');
 
 /**
- * Computes the hat matrix for X.
+ * Computes total least squares regression on the matrix `A`, already decomposed
+ * using SVD into the constituent `U`, `S` (sigma), and `V` matrices.
  *
- *    H = X*inv(X'X)*X'
- *
- * @param {Matrix<n,m>} X
- * @return {Matrix<n,n>} Hat matrix for `X`
+ * @param {Matrix<m,n>} A Data matrix
+ * @param {Matrix<m,m>} U U matrix resulting from SVD
+ * @param {Matrix<m,n>} S Diagonal sigma matrix resulting from SVD
+ * @param {Matrix<n,n>} V V matrix resulting from SVD
+ * @param {Matrix<m,1>} b Independent column
+ * @return {Matrix<n,1>} Estimated weight vector for the parameters (cols) in A
  */
-module.exports.hatmatrix = (X) => {
-  return X.multiply(X.T.multiply(X).inv()).multiply(X.T);
-};
+function lstsqSVD(A, U, S, V, b) {
+  var s = S
+    , m = A.shape[0]
+    , n = A.shape[1]
+    , eps = Number.EPSILON
+    , efcols = []
+    , maxEig = Math.max.apply(null, s.data)
+    , i, d, x;
 
-/**
- * Computes the mean square error of X and y.
- *
- * @param {Matrix<n,m>} X
- * @param {Matrix<n,1>} y
- * @param {Matrix<n,n>} [H] Optional -- hat matrix (if not supplied, it will be
- *                          computed)
- * @return {number} MSE of X and y
- */
-module.exports.mse = (X, y, H) => {
-  var I = Matrix.eye(X.shape[0])
-    , n = X.shape[0]
-    , k = X.shape[1];
-
-  H = H || module.exports.hatmatrix(X);
-
-  return y.T.multiply(I.add(H.dotMultiply(-1)))
-            .multiply(y).dotMultiply(1 / (n - k));
-};
-
-/**
- * Compute least squares regression using normal equations.
- *
- *    B' = inv(X'X)X'y
- *
- * @return {Matrix<n,1>} Coefficients for each term in X that best fit the model
- */
-module.exports.lstsq = (X, y) => {
-  return (X.T.multiply(X)).inv().multiply(X.T).multiply(y);
-};
+  for (i = 0; i < n; i++) {
+    if (s.data[i] < Math.max(m, n)*eps*maxEig) {
+      s.data[i] = 0;
+    }
+  }
+  d = U.T.dot(b);
+  d = d.dotDivide(s);
+  for (i = 0; i < n; i++) {
+    if (Math.abs(d.data[i]) === Infinity) {
+      d.data[i] = 0;
+    }
+  }
+  x = V.dot(d);
+  return x;
+}
 
 /**
  * Compute least squares regression using normal equations, then compute
  * analytical statistics to determine the quality of the fit for the model and
  * for each term in the model.
  *
- *    B'  = inv(X'X)X'y
+ *    B'  = inv(X'X)X'y                     <-- weight vector
  *    y'  = XB'
  *    SSE = sum((y - y')^2)                     ^2 is element-wise
  *    MSE = SSE / n
@@ -60,9 +53,9 @@ module.exports.lstsq = (X, y) => {
  */
 function lstsqNEWithStats(X, y) {
   var XT            = X.T
-    , pseudoInverse = XT.multiply(X).inv()
-    , BHat          = pseudoInverse.multiply(XT).multiply(y)
-    , yHat          = X.multiply(BHat)
+    , pseudoInverse = XT.dot(X).inv()
+    , BHat          = pseudoInverse.dot(XT).dot(y)
+    , yHat          = X.dot(BHat)
     , sse           = y.add(yHat.dotMultiply(-1)).dotPow(2).sum()
     , mse           = sse / X.shape[0]
     , rtmse         = Math.sqrt(mse)
@@ -86,17 +79,17 @@ function lstsqNEWithStats(X, y) {
  *    y'      = XB'
  *    SSE     = sum((y - y')^2)                   ^2 is element-wise
  *    MSE     = SSE / n
- *    t_i     = 
+ *    t_i     = it's complicated...see code
  *
  * @return {object} Regression results
  */
 function lstsqSVDWithStats(X, y) {
-  var svdstuff      = svd.svd(X)
-    , U             = svdstuff[0]
-    , w             = Matrix.from(svdstuff[1])
-    , V             = svdstuff[2]
-    , BHat          = svd.lstsq(X, U, w, V, y)
-    , yHat          = X.multiply(BHat)
+  var decomposition = svd(X)
+    , U             = decomposition[0]
+    , w             = Matrix.from(decomposition[1])
+    , V             = decomposition[2]
+    , BHat          = lstsqSVD(X, U, w, V, y)
+    , yHat          = X.dot(BHat)
     , sse           = y.add(yHat.dotMultiply(-1)).dotPow(2).sum()
     , mse           = sse / (X.shape[0] - 2)
     , VdivwSq       = V.dotDivide(w).dotPow(2)
@@ -125,7 +118,8 @@ function lstsqSVDWithStats(X, y) {
   };
 }
 
-module.exports.lstsqWithStats = lstsqSVDWithStats;
+module.exports.lstsqSVD = lstsqSVDWithStats;
+module.exports.lstsqNE  = lstsqNEWithStats;
 
 var a = Matrix.from([[41.9, 29.1],
                      [43.4, 29.3],
@@ -179,24 +173,24 @@ rms = Matrix.from(rms);
 var anorm = a.dotDivide(rms);
 var bnorm = b.dotDivide(b.abs().sum() / ndf);
 
-console.log('rms', rms.toString());
+console.log('rms', rms);
 var estNE = lstsqNEWithStats(a, b);
 var estSVD = lstsqSVDWithStats(a, b);
 
-console.log('ne  B:', estNE.weights.T.toString());
-console.log('svd B:', estSVD.weights.T.toString());
+console.log('ne  B:', estNE.weights.T);
+console.log('svd B:', estSVD.weights.T);
 
-console.log('ne  T:', estNE.tstats.T.toString());
-console.log('svd T:', estSVD.tstats.T.toString());
-console.log('realB:', tfguess.T.toString());
+console.log('ne  T:', estNE.tstats.T);
+console.log('svd T:', estSVD.tstats.T);
+console.log('realB:', tfguess.T);
 
-console.log(Math.sqrt(a.multiply(estSVD.weights).dotMultiply(-1).add(b).dotPow(2).sum()));
-console.log(Math.sqrt(a.multiply(tfguess).dotMultiply(-1).add(b).dotPow(2).sum()));
+console.log(Math.sqrt(a.dot(estSVD.weights).dotMultiply(-1).add(b).dotPow(2).sum()));
+console.log(Math.sqrt(a.dot(tfguess).dotMultiply(-1).add(b).dotPow(2).sum()));
 console.log();
 
-console.log('actual :', b.T.toString());
-console.log('myguess:', a.multiply(estSVD.weights).T.toString());
-console.log('tfguess:', a.multiply(tfguess).T.toString());
+console.log('       [ actual   , my guess , taylorfit ]');
+console.log('       -----------------------------------');
+console.log(b.hstack(a.dot(estSVD.weights)).hstack(a.dot(tfguess)));
 
 
 /*

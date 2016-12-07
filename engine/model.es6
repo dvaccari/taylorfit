@@ -1,9 +1,9 @@
 
-const stats         = require('./stats.es6');
 const combos        = require('./combos.es6');
+const lstsq         = require('./matrix').lstsq;
 
 const Term          = require('./term.es6');
-const Matrix        = require('./playground/matrix.es6');
+const Matrix        = require('./matrix').Matrix;
 
 /**
  * Private members
@@ -182,7 +182,7 @@ class Model {
       .reduce((prev, curr) => prev.hstack(curr),
               new Matrix(this[_X].shape[0], 0));
 
-    var things = stats.lstsqWithStats(this[_Xaugmented], this[_y]);
+    var things = lstsq(this[_Xaugmented], this[_y]);
     this[_weights] = things.weights;
 
     var candidateTerms = this[_candyTerms].map((term) => ({
@@ -215,7 +215,7 @@ class Model {
       .map((term) => term.computeColumn(testData))
       .reduce((prev, curr) => prev.hstack(curr),
               new Matrix(testData.shape[0], 0));
-    return testData.multiply(Matrix.from(this[_weights]).T);
+    return testData.dot(Matrix.from(this[_weights]).T);
   }
 
   /**

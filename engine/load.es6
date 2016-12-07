@@ -1,7 +1,7 @@
 
 
 const csv = require('fast-csv');
-const Matrix = require('./playground/matrix.es6');
+const Matrix = require('./matrix').Matrix;
 
 
 module.exports = (path, removeHeader, callback) => {
