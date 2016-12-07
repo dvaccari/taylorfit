@@ -5,19 +5,21 @@ waiting = false
 
 worker.onerror = ( error ) ->
   if waiting is false
-    throw new Error "Worker: unexpected message: " + error.message
+    throw new Error "Worker: unexpected message: " + JSON.stringify error.message
   waiting.reject error
   waiting = false
 
 worker.onmessage = ( { data } ) ->
+  console.debug "Worker/res", data
   if waiting is false
-    throw new Error "Worker: unexpected message: " + data
+    throw new Error "Worker: unexpected message: " + JSON.stringify data
   waiting.accept data
   waiting = false
 
 send = ( data ) ->
-  if waiting isnt false
-    throw new Error "Worker: unexpected entry: " + data
+  console.debug "Worker/req", data
+  #if waiting isnt false
+  #  throw new Error "Worker: unexpected entry: " + JSON.stringify data
   promise = new Promise ( accept, reject ) ->
     waiting = { accept, reject }
   worker.postMessage data
