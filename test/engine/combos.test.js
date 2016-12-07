@@ -4,8 +4,7 @@ const chai    = require('chai')
     , expect  = chai.expect
     , should  = chai.should;
 
-const math    = require('mathjs')
-    , combos  = require('../../engine/combos.es6');
+const combos  = require('../../engine/combos.es6');
 
 describe('combos', () => {
 
