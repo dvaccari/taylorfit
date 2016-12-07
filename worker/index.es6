@@ -20,11 +20,13 @@ onmessage = function (e) {
     }
     var terms = model.candidates.map((term) => term.term);
     postMessage({ type: 'candidates', candidates: terms });
+    break;
 
   case 'add_term':
     if (model == null) {
       postMessage({ type: 'error', message: 'Model not instantiated' });
     }
+    console.log('yoyoyo', e.data.term);
     model.addTerm(e.data.term, false);
     var results = model.compute();
     results.type = 'result';
