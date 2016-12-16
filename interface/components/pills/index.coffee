@@ -46,7 +46,7 @@ ko.components.register "tf-pills",
       values = @values()
       unless name == "0"
         delete values[name]
-      do @update
+        do @update
 
     @add = ( ) =>
       name = @input()
