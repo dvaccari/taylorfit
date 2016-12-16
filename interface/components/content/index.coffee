@@ -24,7 +24,7 @@ ko.components.register "tf-content",
       1: false
     @exponents = ko.observable
       "-1": false
-      0: false
+      0: true
       1: false
 
     @multiplicands.subscribe update
