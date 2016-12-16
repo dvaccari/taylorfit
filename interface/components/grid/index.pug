@@ -31,8 +31,8 @@
             span.remove.sep(data-bind="click:function(){cols.del($index())}")
               | Remove Column
         // /ko
-        th.add(data-bind="click:cols.add")
-          a.fa.fa-plus
+        //th.add(data-bind="click:cols.add")
+        //  a.fa.fa-plus
     tbody(data-bind="event:{mousewheel:scroll}")
       // ko foreach: rows
       // ko if:$parent.location() <= $index() && $index() < $parent.location() + $parent.pagesize()
@@ -53,7 +53,7 @@
         // /ko
       // /ko
       // /ko
-      tr
-        td.add(data-bind="click:rows.add")
-          a.fa.fa-plus
+      //tr
+      //  td.add(data-bind="click:rows.add")
+      //    a.fa.fa-plus
 
