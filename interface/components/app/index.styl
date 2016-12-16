@@ -8,6 +8,11 @@ html, body
   size 100%
   font-size 16pt
 
+tf-app
+  size 100%
+  & > *
+    display inline-block
+
 body, input
   font-family "Muli", sans-serif
 
@@ -38,6 +43,7 @@ a
 table
   border-collapse collapse
   border-radius 3px
+  overflow visible
   & > thead > tr > th
   & > tbody > tr > td
     position relative
@@ -67,13 +73,6 @@ input
   vertical-align middle
   display inline-block
   font-size 12pt
-  & + label.placeholder
-    absolute top 5px left 0
-    z-index 10
-    padding 6px 10px
-    font-size 12pt
-    line-height 1
-    color #999
-    pointer-events none
-  &:focus + label.placeholder
-    display none
+.placeholder
+  color #999
+  pointer-events none

@@ -10,23 +10,20 @@
         th
           //- empty for row numbers
         // ko foreach: cols
-        th(data-bind="css:{dependant:$rawData === $parent.dependant()}")
-          input(data-bind="value:name")
-          label.placeholder(data-bind="if:name() === ''")
+        th(data-bind="css:{dependant:$index() === $parent.dependant()}")
+          //-input(data-bind="value:name")
+          // ko if:name
+          span(data-bind="text:name")
+          // /ko
+          span.placeholder(data-bind="ifnot:name")
             span X
             sub(data-bind="text:$index")
           tf-dropdown(params="shallow:1,align:'right'")
-            // ko ifnot:dependant()
-            span.mark(data-bind="click:function(){dependant(cols()[$index()])}")
+            span.mark(data-bind="click:function(){dependant($index())}")
               | Mark as Dependant
-            // /ko
-            // ko if:dependant()
-            span.mark(data-bind="click:function(){dependant(undefined)}")
-              | Clear Dependant
-            // /ko
-            span.insert.sep(data-bind="click:function(){cols.ins($index())}")
+            //-span.insert.sep(data-bind="click:function(){cols.ins($index())}")
               | Insert Column Before
-            span.insert(data-bind="click:function(){cols.ins($index()+1)}")
+            //-span.insert(data-bind="click:function(){cols.ins($index()+1)}")
               | Insert Column After
             span.remove.sep(data-bind="click:function(){cols.del($index())}")
               | Remove Column
@@ -34,26 +31,28 @@
         //th.add(data-bind="click:cols.add")
         //  a.fa.fa-plus
     tbody(data-bind="event:{mousewheel:scroll}")
-      // ko foreach: rows
+      // ko foreach: rows()
       // ko if:$parent.location() <= $index() && $index() < $parent.location() + $parent.pagesize()
       tr
         td.static
           span(data-bind="text:1+$index()")
           tf-dropdown(params="shallow:1,align:'left'")
-            span.insert(data-bind="click:function(){rows.ins($index())}")
+            //-span.insert(data-bind="click:function(){rows.ins($index())}")
               | Insert Row Before
-            span.insert(data-bind="click:function(){rows.ins($index()+1)}")
+            //-span.insert(data-bind="click:function(){rows.ins($index()+1)}")
               | Insert Row After
             span.remove.sep(data-bind="click:function(){rows.del($index())}")
               | Remove Row
-        // ko foreach: $rawData
+        // ko foreach: $data
         td
-          input(data-bind="value:$rawData")
-          label.placeholder(data-bind="if:$rawData() === undefined") No Data
+          // ko if: $data != null
+          span(data-bind="text:$data")
+          // /ko
+          span.placeholder(data-bind="if:$data == null") No Data
         // /ko
       // /ko
       // /ko
-      //tr
-      //  td.add(data-bind="click:rows.add")
-      //    a.fa.fa-plus
+      //-tr
+        td.add(data-bind="click:rows.add")
+          a.fa.fa-plus
 

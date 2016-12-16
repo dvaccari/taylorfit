@@ -5,6 +5,7 @@ tf-pills
   display block
   border-bottom 1px solid #DDD
   position relative
+  max-width 100%
 
   & > span.subtitle
     absolute bottom 0 left 10px
@@ -14,11 +15,13 @@ tf-pills
     color black
     background #DDD
     padding 2px 12px
-    margin 0 4px
+    margin 4px
     border-radius 1000px
     transition 300ms
     cursor pointer
     user-select none
+    float left
+
     &:hover
       box-shadow 0 0 0 2px green
     &.active

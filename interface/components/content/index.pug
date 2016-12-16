@@ -1,5 +1,5 @@
 
-span.options
+span.options(data-bind="style:{width:'calc(100% - ' + pane1() + 'px)'}")
   tf-pills(params="name:'Multiplicands',values:multiplicands,style:'radio'")
   tf-pills(params="name:'Exponents',values:exponents,style:'check'")
   div.candidates
@@ -13,6 +13,7 @@ span.options
       sup(data-bind="text:$data[1]")
       // /ko
     // /ko
-span.grid
+span.resize(data-bind="event:{drag:pane1drag}")
+span.grid(data-bind="style:{width:'calc(' + pane1() + 'px - 5px)'}")
   tf-grid
 

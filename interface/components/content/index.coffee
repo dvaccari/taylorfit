@@ -4,6 +4,10 @@ require "./index.styl"
 ko.components.register "tf-content",
   template: do require "./index.pug"
   viewModel: ( params ) ->
+    @pane1 = ko.observable 600
+    @pane1drag = ( model, event ) =>
+      if event.clientX
+        @pane1 event.clientX
 
     update = ( ) =>
       exponents = [ ]
