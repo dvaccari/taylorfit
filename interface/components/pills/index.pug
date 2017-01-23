@@ -1,10 +1,14 @@
 
-span.title(data-bind="text:name()")
-span.subtitle(data-bind="text:style()==='radio'?'Select One':'Select Many'")
-// ko foreach: pills
-a.pill(data-bind="text: $data.val, click: $parent.clicked, css: $data.class")
+
+header
+  span.title(data-bind="text:name")
+  span.subtitle(data-bind="text:ko.unwrap(style)==='radio'?'Select One':'Select Many'")
+//- TODO: replace with each binding
+// ko foreach: Object.keys(values()).sort(function(a,b){return Number(b)<Number(a)})
+a.pill(data-bind="text:$data,css:{active:$parent.values()[$data]},event:{click:$parent.toggle,dblclick:$parent.delete}")
 // /ko
 //- TODO: enforce min and max through keypress
 input.custom(type="number" placeholder="Custom..."
-min="-255" max="255" data-bind="textInput: input, event: {keypress: add}")
+data-bind="textInput:input,event:{change:add},css:{invalid:invalid}")
+
 

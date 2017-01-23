@@ -31,6 +31,7 @@ ko.components.register "tf-grid",
   viewModel: ( params ) ->
     @location = ko.observable 0
     @pagesize = ko.observable 10
+    @dependant = ko.observable 0
 
     @scroll = ( model, event) ->
       if event.deltaY < 0
@@ -40,32 +41,36 @@ ko.components.register "tf-grid",
         @location @location() + 1
 
     @cols = ko.observableArray [
-      name: ko.observable ""
+      name: ""
     ]
     @rows = ko.observableArray [
-      ko.observableArray [
-        ko.observable undefined
-      ]
+      [ undefined ]
     ]
 
-    @dependant = ko.observable undefined
 
+    ###
     @cols.add = ( ) =>
       @cols.ins @cols().length
+    ###
     @cols.del = ( index ) =>
       @cols.splice index, 1
       for row in @rows()
         row.splice index, 1
+    ###
     @cols.ins = ( index ) =>
       @cols.splice index, 0, name: ko.observable ""
       for row in @rows()
         row.splice index, 0, ko.observable undefined
+    ###
+    ###
     @rows.add = ( ) =>
       @rows.ins len = @rows().length
       @location len + 1 - @pagesize()
+    ###
     @rows.del = ( index ) =>
       return if do once_guard
       @rows.splice index, 1
+    ###
     @rows.ins = ( index ) =>
       return if do once_guard
       @rows.splice index, 0, row = ko.observableArray [ ]
@@ -73,20 +78,23 @@ ko.components.register "tf-grid",
         row.push ko.observable undefined
       if index is @location() + @pagesize()
         @location @location() + 1
+    ###
 
     @load = ( table ) =>
       @cols.removeAll()
       @rows.removeAll()
       unless table.headless
         for title in table.shift()
-          @cols.push name: ko.observable title
+          @cols.push name: title
       else
         for title in table[0]
-          @cols.push name: ko.observable ""
+          @cols.push name: ""
       for row in table
-        @rows.push r = ko.observableArray [ ]
-        for col in row
-          r.push ko.observable col
+        @rows.push row
+
+      window.w = @rows
+
+      @dependant = ko.observable 0
 
     @save = ( ) =>
       data = ko.toJS @rows

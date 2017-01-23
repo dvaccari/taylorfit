@@ -1,7 +1,7 @@
 
 tf-grid
   tf-dropdown
-    absolute right 10px top 7px
+    absolute right 8px top 5px
     .dropdown-content
       overflow hidden
       & > *
@@ -24,9 +24,16 @@ tf-grid
     font-size 12pt
     width 120px
   table
-    th input
+    font-size 11pt
+    td, th
+      padding 4px 8px
+      text-align left
+      position relative
+      & > *
+        display inline-block
+    th
       padding-right 32px
-    td input
+    td
       text-align right
     th .placeholder
       font-family "Cookie"
@@ -56,8 +63,6 @@ tf-grid
       border-bottom-right-radius 10px
     th.dependant
       box-shadow inset 0 -2px 0 blue
-    th
-      position relative
 
 
 
