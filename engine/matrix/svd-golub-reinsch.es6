@@ -10,6 +10,15 @@ function pythag(a, b) {
           : (absb === 0 ? 0 : absb*Math.sqrt(1 + Math.pow(absa/absb, 2))));
 }
 
+/**
+ * Translation of the SVD algorithm published in Numer. Math. 14, 403-420 (1970)
+ * by G. H. Golub and C. Reinsch.
+ *
+ * Source: http://cs.brown.edu/courses/csci0530/current/homeworks/svd.py
+ *
+ * @param {Matrix<m,n>} A Matrix to decompose (m >= n)
+ * @return {[Matrix<m,m>, Matrix<m,n>, Matrix<n,n>]} [U, E, V] s.t. A = U*E*V
+ */
 function svd(A) {
   var eps = Number.EPSILON
     , tol = Number.MIN_VALUE / eps;

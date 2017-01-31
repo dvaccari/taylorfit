@@ -1,6 +1,6 @@
 
 const Matrix  = require('./matrix.es6');
-const svd     = require('./svd-golum-reinsch.es6');
+const svd     = require('./svd-golub-reinsch.es6');
 
 /**
  * Computes total least squares regression on the matrix `A`, already decomposed
@@ -103,7 +103,6 @@ function lstsqSVDWithStats(X, y) {
 
   var sec = new Matrix(1, X.shape[1])
     , stdModelErr;
-
   for (i = 0; i < X.shape[1]; i += 1) {
     stdModelErr = Math.sqrt(VdivwSq.row(i).sum() * mse);
     sec.data[i] = stdModelErr;
@@ -144,23 +143,20 @@ var b = new Matrix(17, 1, [251.3, 251.3, 248.3, 267.5,
                            304.5, 309.3, 321.7, 330.7,
                            349.0]);
 
-/*
-var z = math.matrix([[1]]).resize([x.size()[0], 1], 1);
 
-var a = new Matrix(8, 5, Float64Array.from([22,10, 2,  3, 7,
-                                            14, 7,10,  0, 8,
-                                            -1,13,-1,-11, 3,
-                                            -3,-2,13, -2, 4,
-                                             9, 8, 1, -2, 4,
-                                             9, 1,-7,  5,-1,
-                                             2,-6, 6,  5, 1,
-                                             4, 5, 0, -2, 2]));
+var a = new Matrix([[22,10, 2,  3, 7],
+                    [14, 7,10,  0, 8],
+                    [-1,13,-1,-11, 3],
+                    [-3,-2,13, -2, 4],
+                    [ 9, 8, 1, -2, 4],
+                    [ 9, 1,-7,  5,-1],
+                    [ 2,-6, 6,  5, 1],
+                    [ 4, 5, 0, -2, 2]]);
 var b = new Matrix(8, 1, [12, 5, -2, -7, 1, 3, 10, 3]);
- */
 
 // taylorfit's Bhat
-//var tfguess = Matrix.from([0.308165, 0.0720651, -0.0893553, 0.602561, 0.210042]).T;
-var tfguess = Matrix.from([1.79903, 6.11149]).T;
+//var tfguess = Matrix.from([1.79903, 6.11149]).T;
+var tfguess = Matrix.from([0.308165, 0.0720651, -0.0893553, 0.602561, 0.210042]).T;
 
 // rms test
 var rms = [];
@@ -169,6 +165,7 @@ for (var i = 0; i < a.shape[1]; i += 1) {
   rms.push(a.col(i).abs().sum() / ndf);
 }
 
+/*
 rms = Matrix.from(rms);
 var anorm = a.dotDivide(rms);
 var bnorm = b.dotDivide(b.abs().sum() / ndf);
@@ -191,6 +188,7 @@ console.log();
 console.log('       [ actual   , my guess , taylorfit ]');
 console.log('       -----------------------------------');
 console.log(b.hstack(a.dot(estSVD.weights)).hstack(a.dot(tfguess)));
+ */
 
 
 /*
