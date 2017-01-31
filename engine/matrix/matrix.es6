@@ -130,7 +130,10 @@ class Matrix {
    */
   add(other) {
     if (this[_m] !== other[_m] || this[_n] !== other[_n]) {
-      throw new Error('Dimensions do not match');
+      throw new Error('Dimensions (' + this.shape +
+                      ') and (' + other.shape + ') do not match: ' +
+                      this[_n] + ' !== ' + other[_m] + ' && ' +
+                      this[_m] + ' !== ' + other[_m]);
     }
 
     var sum = this.clone()
@@ -152,7 +155,10 @@ class Matrix {
    */
   sub(other) {
     if (this[_m] !== other[_m] || this[_n] !== other[_n]) {
-      throw new Error('Dimensions do not match');
+      throw new Error('Dimensions (' + this.shape +
+                      ') and (' + other.shape + ') do not match: ' +
+                      this[_n] + ' !== ' + other[_m] + ' && ' +
+                      this[_m] + ' !== ' + other[_m]);
     }
 
     var sum = this.clone()
@@ -173,7 +179,9 @@ class Matrix {
    */
   dot(other) {
     if (this[_n] !== other[_m]) {
-      throw new Error('Dimensions do not match');
+      throw new Error('Dimensions (' + this.shape +
+                      ') and (' + other.shape + ') do not match: ' +
+                      this[_n] + ' !== ' + other[_m]);
     }
 
     var product = new Matrix(this[_m], other[_n])
@@ -245,7 +253,9 @@ class Matrix {
    */
   hstack(other) {
     if (this[_m] !== other[_m]) {
-      throw new Error('Dimensions do not match');
+      throw new Error('Dimensions (' + this.shape +
+                      ') and (' + other.shape + ') do not match: ' +
+                      this[_m] + ' !== ' + other[_m]);
     }
 
     var newM = this[_n] + other[_n]
@@ -272,7 +282,9 @@ class Matrix {
    */
   vstack(other) {
     if (this[_n] !== other[_n]) {
-      throw new Error('Dimensions do not match');
+      throw new Error('Dimensions (' + this.shape +
+                      ') and (' + other.shape + ') do not match: ' +
+                      this[_n] + ' !== ' + other[_n]);
     }
 
     var stacked = new Matrix(this[_m] + other[_m], this[_n]);
@@ -364,7 +376,7 @@ class Matrix {
   inspect(depth, options={ stylize: (x) => ''+x }) {
     var repr = options.stylize(this.constructor.name, 'none')
       , strings = Array.from(this[_data])
-          .map((i) => (''+i).match(/(NaN|-?Infinity|\d*)\.?(\d*)/))
+          .map((i) => (''+i).match(/(NaN|-?Infinity|-?\d*)\.?(\d*)/))
       , lwidth = Math.max.apply(null, strings.map((match) => match[1].length))
       , rwidth = Math.min(
           Math.max.apply(null, strings.map((match) => match[2].length)),
@@ -373,13 +385,12 @@ class Matrix {
       , rows = []
       , i;
 
-    console.log(utils.formatNum(lwidth, rwidth, strings[0]));
     strings = Array.from(this[_data]).map(
       (n) => options.stylize(utils.formatNum(lwidth, rwidth, n), 'number')
     );
 
     for (i = 0; i < this[_m]; i += 1) {
-      rows.push('[ ' + strings.slice(i, i + this[_n]).join(', ') + ' ]');
+      rows.push('[ ' + strings.slice(i*this[_n], (i+1)*this[_n]).join(', ') + ' ]');
     }
 
     return repr + ' ' + utils.padAll(

@@ -1,5 +1,6 @@
 
 function nspaces(n) {
+  n = Math.max(0, n);
   return Array(n + 1).join(' ');
 }
 
@@ -44,7 +45,7 @@ module.exports.convertRange = (str, length) => {
 
 module.exports.formatNum = (leftwidth, rightwidth, val) => {
   val = ''+val;
-  var match = val.match(/(NaN|-?Infinity|\d*)\.?(\d*)/)
+  var match = val.match(/(NaN|-?Infinity|-?\d*)\.?(\d*)/)
     , whole = match[1]
     , frac = match[2]
     , repr = '';
