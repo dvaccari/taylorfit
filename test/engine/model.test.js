@@ -24,7 +24,7 @@ describe('Model', () => {
   describe('constructor()', () => {
 
     it('accepts an input data matrix and an expected output vector', () => {
-      var m = new Model(data.X, data.y, [1, 2], [1]);
+      var m = new Model(data.X, data.y, [1, 2], 1);
       expect(m.X).to.eql(data.X);
       expect(m.weights).to.eql([]);
       expect(m.terms).to.eql([]);
@@ -32,7 +32,7 @@ describe('Model', () => {
 
     it('computes an augmented matrix if a list of terms is given', () => {
       var terms = combos.generateTerms(data.X.shape[1], [1, 2], [1]);
-      var m = new Model(data.X, data.y, [1, 2], [1], terms);
+      var m = new Model(data.X, data.y, [1, 2], 1, terms);
 
       m.terms.forEach((term, i) => {
         expect(data.X.subset(':', term.term[0][0]).dotPow(term.term[0][1]))
@@ -45,7 +45,7 @@ describe('Model', () => {
   describe('addTerm()', () => {
 
     it('accepts a valid term [[column, exponent], ...]', () => {
-      var m = new Model(data.X, data.y, [1, 2], [1, 2]);
+      var m = new Model(data.X, data.y, [1, 2], 2);
 
       m.addTerm([[0, 1]]);
       expect(m.terms.map((t) => t.term)).to.include.deep.members([[[0, 1]]]);
@@ -63,7 +63,7 @@ describe('Model', () => {
     });
 
     it('does not add duplicate terms', () => {
-      var m = new Model(data.X, data.y, [1, 2], [1]);
+      var m = new Model(data.X, data.y, [1, 2], 1);
 
       m.addTerm([[0, 1]]);
       expect(m.terms.map((t) => t.term)).to.include.deep.members([[[0, 1]]]);
@@ -96,7 +96,7 @@ describe('Model', () => {
   describe('removeTerm()', () => {
 
     it('removes an existing term', () => {
-      var m = new Model(data.X, data.y, [1, 2], [1, 2]);
+      var m = new Model(data.X, data.y, [1, 2], 2);
 
       m.addTerm([[0, 1]]);
       expect(m.terms.map((t) => t.term)).to.include.deep.members([[[0, 1]]]);

@@ -26,7 +26,7 @@ describe('Term', () => {
     var m;
 
     before(() => {
-      m = new Model(data.X, data.y, [1, 2], [1, 2]);
+      m = new Model(data.X, data.y, [1, 2], 2);
     });
 
     it('creates a new term given a valid set of pairs and a model', () => {
@@ -49,7 +49,7 @@ describe('Term', () => {
     var m;
 
     before(() => {
-      m = new Model(data.X, data.y, [1, 2], [1, 2]);
+      m = new Model(data.X, data.y, [1, 2], 2);
     });
 
     it('returns the t-statistic and MSE when the candidate term is included', () => {
