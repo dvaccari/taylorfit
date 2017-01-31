@@ -2,8 +2,67 @@
 tf-content
   position relative
   display block
-  min-height 100%
-  padding 20px
-  padding-top header-height + 20px
-  box-sizing border-box
   color black
+  min-height 100%
+
+  & > *
+    padding 20px
+    padding-top header-height + 20px
+    box-sizing border-box
+    min-height 100%
+    display block
+
+  & > .options
+    width 30%
+    float right
+  & > .grid
+    width 70%
+    float left
+    box-shadow 1px 0 0 #CCC
+    height 100%
+
+
+
+  .candidates
+
+    padding-bottom 10px
+    margin-bottom 10px
+
+    .candidate
+      font-family "Cookie"
+
+      padding 4px 20px
+      margin 5px
+      font-size 24pt
+      display block
+
+      background #EEE
+      border-radius 10px
+
+      sub, sup
+        font-family "Muli"
+        font-size 10pt
+
+
+@media screen and (max-width: 1024px) {
+  tf-content > .options {
+    width: 50%
+  }
+  tf-content > .grid {
+    width: 50%
+  }
+}
+
+@media screen and (max-width: 600px) {
+  tf-content > * {
+    min-height: auto;
+  }
+  tf-content > .options {
+    width: 100%;
+    float: left;
+  }
+  tf-content > .grid {
+    width: 100%;
+    padding-top: 0;
+  }
+}

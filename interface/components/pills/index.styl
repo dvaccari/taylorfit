@@ -1,0 +1,36 @@
+
+tf-pills
+  margin-bottom 10px
+  padding-bottom 10px
+  display block
+  border-bottom 1px solid #DDD
+  position relative
+
+  & > span.subtitle
+    absolute bottom 0 left 10px
+
+  & > a.pill
+    font-size 12pt
+    color black
+    background #DDD
+    padding 2px 12px
+    margin 0 4px
+    border-radius 1000px
+    transition 300ms
+    cursor pointer
+    user-select none
+    &:hover
+      box-shadow 0 0 0 2px green
+    &.active
+      color white
+      background green
+      &:hover
+        box-shadow 0 0 0 2px #CCC
+
+  & > input.custom
+    margin-left 10px
+    cursor text
+    width 100px
+    &.invalid
+      box-shadow 0 0 2px red
+

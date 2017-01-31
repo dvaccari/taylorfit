@@ -1,2 +1,18 @@
 
-tf-grid
+span.options
+  tf-pills(params="name:'Multiplicands',values:multiplicands,style:'radio'")
+  tf-pills(params="name:'Exponents',values:exponents,style:'check'")
+  div.candidates
+    header
+      span.title Candidates
+    // ko foreach: candidates
+    span.candidate
+      // ko foreach: $data
+      | x
+      sub(data-bind="text:$data[0]")
+      sup(data-bind="text:$data[1]")
+      // /ko
+    // /ko
+span.grid
+  tf-grid
+

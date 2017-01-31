@@ -9,7 +9,7 @@ const utils = require('./utils.es6');
  * @param {boolean} [replacement] If true, an item from `terms` can be repeated
  *                                in a single combination
  */
-function combinations(terms, k, replacement) {
+let combinations = function(terms, k, replacement) {
   var combos = [];
   var i;
 
@@ -45,7 +45,7 @@ function combinations(terms, k, replacement) {
  *                      combination, only one item from each bin can be present
  * @return {*[][]} Combos
  */
-function combinationsFromBins(bins, k) {
+let combinationsFromBins = function(bins, k) {
   var combos = [];
   var i;
 
@@ -75,7 +75,7 @@ function combinationsFromBins(bins, k) {
  *                                one multiplicand per term)
  * @return {[number, number][][]} List of terms
  */
-function generateTerms(features, exponents, multipliers) {
+let generateTerms = function(features, exponents, multipliers) {
   var bins = utils
         .range(0, features)
         .map((index) => exponents.map((e) => [index, e]))
