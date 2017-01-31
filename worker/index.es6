@@ -85,32 +85,41 @@ onmessage = function (e) {
 
   case 'get_terms':
     if (model == null) {
-      postMessage({ type: 'error', message: 'Model not instantiated' });
+      postMessage({ type: 'error', data: 'Model not instantiated' });
     }
     var terms = model.candidates.map((term) => term.term);
-    postMessage({ type: 'candidates', candidates: terms });
+    postMessage({
+      type: 'candidates',
+      data: terms
+    });
     break;
 
   case 'add_term':
     if (model == null) {
-      postMessage({ type: 'error', message: 'Model not instantiated' });
+      postMessage({ type: 'error', data: 'Model not instantiated' });
     }
-    console.log('yoyoyo', e.data.term);
-    model.addTerm(e.data.term, false);
-    var results = model.compute();
-    results.type = 'result';
-    postMessage(results);
+    console.log('yoyoyo', data);
+
+    model.addTerm(data, false);
+    postMessage({
+      type: 'candidates',
+      data: model.compute()
+    });
     break;
 
   case 'remove_term':
     if (model == null) {
-      postMessage({ type: 'error', message: 'Model not instantiated' });
+      postMessage({ type: 'error', data: 'Model not instantiated' });
     }
-    model.removeTerm(e.data.term);
+    model.removeTerm(data, false);
+    postMessage({
+      type: 'candidates',
+      data: model.compute()
+    });
     break;
 
   default:
-    postMessage({ type: 'error', message: 'Invalid type: ' + e.data.type });
+    postMessage({ type: 'error', data: 'Invalid type: ' + type });
 
   }
 };
