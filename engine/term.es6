@@ -1,8 +1,8 @@
 
-const stats   = require('./stats.es6');
+const lstsq   = require('./matrix').lstsq;
 const combos  = require('./combos.es6');
 
-const Matrix  = require('./playground/matrix.es6');
+const Matrix  = require('./matrix').Matrix;
 
 /**
  * Private members
@@ -60,12 +60,13 @@ class Term {
       if (DEBUG) {
         console.time('lstsq');
       }
-      theStats = stats.lstsqWithStats(XAugmented, this[_model].y);
+      theStats = lstsq(XAugmented, this[_model].y);
       if (DEBUG) {
         console.timeEnd('lstsq');
       }
       return {
-        t: theStats.tstats.data[[theStats.tstats.shape[0] - 1]]
+        t  : theStats.tstats.data[[theStats.tstats.shape[0] - 1]],
+        mse: theStats.mse
       };
     } catch (e) {
       console.log(e);
@@ -123,6 +124,18 @@ class Term {
    */
   get col() {
     return this[_col];
+  }
+
+
+  /**
+   * Give a representation of the term in a pretty format.
+   *
+   * @return {string} Representation of this term
+   */
+  inspect(depth, options) {
+    return 'Term < ' + this[_term]
+        .map((t) => String.fromCharCode(t[0] + 97) + '^' + t[1])
+        .join(' + ') + ' >';
   }
 
 }

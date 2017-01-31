@@ -4,7 +4,7 @@ const chai    = require('chai')
     , expect  = chai.expect
     , should  = chai.should;
 
-const Matrix  = require('../../engine/playground/matrix.es6')
+const Matrix  = require('../../engine/matrix').Matrix
     , combos  = require('../../engine/combos.es6')
     , Model   = require('../../engine/model.es6')
     , dataset = require('./test.data.json');
