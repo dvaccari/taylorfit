@@ -122,6 +122,18 @@ class Matrix {
   }
 
   /**
+   * Set the element at the ith row and jth column.
+   *
+   * @param {number} i s.t. 0 <= i < m
+   * @param {number} j s.t. 0 <= i < n
+   * @param {number} value To replace the existing one
+   * @return {number} Element at (i, j)
+   */
+  set(i, j, value) {
+    return this[_data][i * this[_n] + j] = value;
+  }
+
+  /**
    * Performs element-wise addition between two matrices and returns a new copy.
    *
    * @param {Matrix<m,n>} other Matrix with equivalent dimensions to this
@@ -400,14 +412,24 @@ class Matrix {
   }
 
   /**
-   * Retrieves the ith column of the matrix
+   * Retrieves/sets the ith column of the matrix
    *
-   * @param {number} i Column index
+   * @param {number}    i         Column index
+   * @param {number[]}  [newCol]  Elements to replace the col with
    * @return {Matrix<m,1>} Column as a matrix
    */
-  col(i) {
+  col(i, newCol) {
     var theCol = new Matrix(this[_m], 1)
       , k;
+
+    if (newCol != null) {
+      if (newCol.length > this[_m]) {
+        throw new RangeError('newCol cannot be longer than ' + this[_m]);
+      }
+      for (k = 0; k < this[_m]; k += 1) {
+        this[_data][k * this[_n] + i] = newCol[k];
+      }
+    }
 
     for (k = 0; k < this[_m]; k += 1) {
       theCol[_data][k] = this[_data][k * this[_n] + i];
@@ -416,12 +438,19 @@ class Matrix {
   }
 
   /**
-   * Retrieves the ith row of the matrix
+   * Retrieves/sets the ith row of the matrix
    *
-   * @param {number} i Row index
+   * @param {number}    i         Row index
+   * @param {number[]}  [newRow]  Elements to replace the row with
    * @return {Matrix<1,n>} Row as a matrix
    */
-  row(i) {
+  row(i, newRow) {
+    if (newRow != null) {
+      if (newRow.length > this[_n]) {
+        throw new RangeError('newRow cannot be longer than ' + this[_n]);
+      }
+      this[_data].subarray(i * this[_n]).set(newRow);
+    }
     return new Matrix(
       1, this[_n],
       this[_data].slice(i * this[_n], (i+1) * this[_n])
