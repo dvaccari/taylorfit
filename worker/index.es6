@@ -24,7 +24,7 @@ var model   = null;
  *                                        specify a location and value to
  *                                        replace
  */
-let updateModel = function (data) {
+var updateModel = function (data) {
   var dataset       = data.model || (model && model.X)
     , existingTerms = (model && model.terms.map((t) => t.term)) || []
     , dependent     = data.dependent
@@ -73,14 +73,21 @@ let updateModel = function (data) {
 };
 
 
+function log() {
+  console.debug('[Engine]:', ...arguments);
+}
+
 onmessage = function (e) {
   var type = e.data.type
     , data = e.data.data;
+
+  log(e.data);
 
   switch(type) {
 
   case 'update_model':
     updateModel(data);
+    log('new model:', model);
     break;
 
   case 'get_terms':
@@ -88,23 +95,15 @@ onmessage = function (e) {
       postMessage({ type: 'error', data: 'Model not instantiated' });
     }
     var terms = model.candidates.map((term) => term.term);
-    postMessage({
-      type: 'candidates',
-      data: terms
-    });
+    postMessage({ type: 'candidates', data: terms });
     break;
 
   case 'add_term':
     if (model == null) {
       postMessage({ type: 'error', data: 'Model not instantiated' });
     }
-    console.log('yoyoyo', data);
-
     model.addTerm(data, false);
-    postMessage({
-      type: 'candidates',
-      data: model.compute()
-    });
+    postMessage({ type: 'candidates', data: model.compute() });
     break;
 
   case 'remove_term':
@@ -112,10 +111,7 @@ onmessage = function (e) {
       postMessage({ type: 'error', data: 'Model not instantiated' });
     }
     model.removeTerm(data, false);
-    postMessage({
-      type: 'candidates',
-      data: model.compute()
-    });
+    postMessage({ type: 'candidates', data: model.compute() });
     break;
 
   default:
