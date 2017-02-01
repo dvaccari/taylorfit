@@ -19,7 +19,7 @@ ko.components.register "tf-content",
 
       adapter.send_model([
         [ 0, 0, 0, 0 ]
-      ], 3, exponents, multiplicands).then ( {candidates} ) =>
+      ], 3, exponents, multiplicands).then ( candidates ) =>
         @candidates candidates
 
     @candidates = ko.observable [ ]

@@ -4,6 +4,7 @@ const lstsq         = require('./matrix').lstsq;
 
 const Term          = require('./term.es6');
 const Matrix        = require('./matrix').Matrix;
+const utils         = require('./utils.es6');
 
 /**
  * Private members
@@ -81,11 +82,14 @@ class Model {
    * @param {Matrix<n,1>} y           The true values for each observation
    * @param {number[]}    exponents   List of exponents that a column can be
    *                                  raised to
-   * @param {number[]}    multipliers List of # of multiplicands for each term,
-   *                                  for instance [1] means only the individual
-   *                                  columns can be terms (x, y, x^2, y^2, ...)
+   * @param {number}      multipliers Max number of multiplicands for each term,
+   *                                  for instance 1 means only the individual
+   *                                  columns can be terms (x, y, x^2, y^2, ..),
+   *                                  but 3 means that candidate terms with
+   *                                  1, 2, and 3 multiplicands will be computed
+   *                                  (x, xy, xyz, ...)
    */
-  constructor(X, y, exponents=[1], multipliers=[1], terms=[], headers=null) {
+  constructor(X, y, exponents=[1], multipliers=1, terms=[], headers=null) {
     //var standardizedX = standardize(X);
     this[_X] = X; //standardizedX.X;
     //this[_means] = standardizedX.means;
@@ -96,13 +100,20 @@ class Model {
     this[_Xaugmented] = new Matrix(X.shape[0], 0);
     this[_weights] = [];
 
+    // Create a range [1, 2, 3, ..., n] for n multipliers
+    multipliers = utils.range(1, multipliers + 1);
+
+    // Generate candidate terms for the given parameters
     this[_candyTerms] = combos
       .generateTerms(X.shape[1], exponents, multipliers)
       .map((term) => new Term(term, this));
+
+    // Find the initial terms in candyTerms and add them to the model
     this[_terms] = terms.map(
       (pair) => this[_candyTerms].find((term) => term.equals(pair))
     );
 
+    // If any terms are specified, compute the model & all candidate terms
     if (terms.length !== 0) {
       this.compute();
     }

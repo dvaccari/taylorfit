@@ -1,3 +1,4 @@
+'use strict';
 
 const utils = require('./utils.es6');
 
@@ -32,7 +33,7 @@ let combinations = function(terms, k, replacement) {
     combos = combos.concat(subCombos.map((combo) => [terms[i]].concat(combo)));
   }
   return combos;
-}
+};
 
 /**
  * Generates all combinations of k items using one item from each bin in `bins`.
@@ -63,7 +64,7 @@ let combinationsFromBins = function(bins, k) {
     combos = combos.concat(subCombos.map((combo) => [bins[0][i]].concat(combo)));
   }
   return combos.concat(combinationsFromBins(bins.slice(1), k));
-}
+};
 
 /**
  * Generates all possible combinations of exponentiated terms given a list of
@@ -83,7 +84,7 @@ let generateTerms = function(features, exponents, multipliers) {
     , combosForMults = multipliers.map((m) => combinationsFromBins(bins, m));
 
   return [].concat.apply([], combosForMults);
-}
+};
 
 module.exports.generateTerms = generateTerms;
 module.exports.combinations = combinations;

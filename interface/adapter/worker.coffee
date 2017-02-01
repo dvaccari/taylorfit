@@ -28,9 +28,10 @@ send = ( data ) ->
 module.exports =
   send_model: ( grid, dependant, exponents, multiplicands ) ->
     worker.postMessage
-      type: "new_model"
-      data: grid
-      indepCol: dependant
-      exponents: exponents
-      multiplicands: multiplicands
+      type: "update_model"
+      data:
+        model: grid
+        dependent: dependant
+        exponents: exponents
+        multiplicands: multiplicands
     send type: "get_terms"
