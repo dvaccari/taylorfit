@@ -1,3 +1,4 @@
+'use strict';
 
 const Matrix  = require('./matrix.es6');
 
