@@ -1,6 +1,6 @@
 /*global onmessage, postMessage*/
 
-var engine  = require('../engine/index.es6');
+var engine  = require('../index.es6');
 var model   = null;
 
 
@@ -88,14 +88,16 @@ onmessage = function (e) {
   case 'update_model':
     updateModel(data);
     log('new model:', model);
+    postMessage({ type: 'candidates', data: model.compute() });
     break;
 
   case 'get_terms':
     if (model == null) {
       postMessage({ type: 'error', data: 'Model not instantiated' });
     }
-    var terms = model.candidates.map((term) => term.term);
-    postMessage({ type: 'candidates', data: terms });
+    //var terms = model.candidates.map((term) => term.term);
+    //postMessage({ type: 'candidates', data: terms });
+    postMessage({ type: 'candidates', data: model.compute() });
     break;
 
   case 'add_term':
