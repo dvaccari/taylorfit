@@ -9,30 +9,27 @@ ko.components.register "tf-content",
       if event.clientX
         @pane1 event.clientX
 
-    update = ( ) =>
-      exponents = [ ]
-      for k, v of @exponents()
-        if v() then exponents.push Number k
-      multiplicands = [ ]
-      for k, v of @multiplicands()
-        if v() then multiplicands.push Number k
-
-      adapter.send_model([
-        [ 0, 0, 0, 0 ]
-      ], 3, exponents, multiplicands).then ( candidates ) =>
-        @candidates candidates
-
     @candidates = ko.observable [ ]
+    adapter.on "candidates", ( candidates ) =>
+      @candidates candidates
 
-    @multiplicands = ko.observable
-      1: false
-    @exponents = ko.observable
+    adapter.post_dataset [ 0, 0, 0, 0 ]
+    adapter.post_dependent 3
+
+    @multiplicand = ko.observable()
+    @exponents = ko.observable()
+
+    @multiplicand.subscribe ( next ) ->
+      adapter.post_multiplicand Number next
+    @exponents.subscribe ( next ) ->
+      next =  (key for key, value of next when ko.unwrap value)
+      adapter.post_exponents next
+
+    @multiplicand 1
+    @exponents
       "-1": false
       0: true
       1: false
-
-    @multiplicands.subscribe update
-    @exponents.subscribe update
 
     return this
 

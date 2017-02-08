@@ -1,37 +1,48 @@
 
-worker = new Worker "engine-worker.js"
+class ME
 
-waiting = false
+  constructor: ( ) ->
+    @listeners = { }
+    undefined
 
-worker.onerror = ( error ) ->
-  if waiting is false
-    throw new Error "Worker: unexpected message: " + JSON.stringify error.message
-  waiting.reject error
-  waiting = false
+  on: ( target, listener ) ->
+    (@listeners[target] or= [ ]).push listener
+    undefined
 
-worker.onmessage = ( { data } ) ->
-  console.debug "Worker/res", data
-  if waiting is false
-    throw new Error "Worker: unexpected message: " + JSON.stringify data
-  waiting.accept data
-  waiting = false
+  fire: ( target, message ) ->
+    if listeners = @listeners[target]
+      for listener in listeners
+        listener.call this, message
+    undefined
 
-send = ( data ) ->
-  console.debug "Worker/req", data
-  #if waiting isnt false
-  #  throw new Error "Worker: unexpected entry: " + JSON.stringify data
-  promise = new Promise ( accept, reject ) ->
-    waiting = { accept, reject }
-  worker.postMessage data
-  return promise
+# eventually have Adapter class extending ME
 
-module.exports =
-  send_model: ( grid, dependant, exponents, multiplicands ) ->
-    worker.postMessage
-      type: "update_model"
-      data:
-        model: grid
-        dependent: dependant
-        exponents: exponents
-        multiplicands: multiplicands
-    send type: "get_terms"
+module.exports = new class WorkerAdapter extends ME
+
+  constructor: ( ) ->
+    super
+
+    @worker = new Worker "engine-worker.js"
+
+    @worker.onerror = ( error ) =>
+      console.debug "Worker/res [error]", error
+      @fire "error", error
+
+    @worker.onmessage = ( { type, data } ) =>
+      console.debug "Worker/res [#{type}]", data
+      @fire type, data
+
+  post: ( target, message ) ->
+    console.debug "Worker/req [#{target}]", message
+    #@worker.postMessage
+    #  type: target
+    #  data: message
+
+  for target in [
+    "dataset",
+    "dependent", "multiplicand", "exponents"
+  ]
+    do ( target ) ->
+      WorkerAdapter::["post_#{target}"] = ( message ) ->
+        @post target, message
+
