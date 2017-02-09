@@ -1,0 +1,40 @@
+
+tf-counter
+  margin-bottom 10px
+  padding-bottom 10px
+  display block
+  border-bottom 1px solid #DDD
+  position relative
+  max-width 100%
+
+  & > div.chevrons
+    color #DDD
+    display inline-block
+    border-radius 100%
+    padding 2px 4px
+    cursor pointer
+    user-select none
+
+    & > a
+      &:hover
+        -webkit-filter: drop-shadow(0px 0px 1px green)
+        -moz-filter: drop-shadow(0px 0px 1px green)
+        -ms-filter: drop-shadow(0px 0px 1px green)
+        -o-filter: drop-shadow(0px 0px 1px green)
+        filter: drop-shadow(0px 0px 1px green)
+      &:active
+        color: green
+
+  & > a.counter
+    font-size 12pt
+    padding 2px 12px
+    margin 4px
+    border-radius 1000px
+    transition 300ms
+    cursor pointer
+    user-select none
+    float left
+    color white
+    background green
+
+

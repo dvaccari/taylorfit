@@ -24,8 +24,7 @@ ko.components.register "tf-content",
 
     @candidates = ko.observable [ ]
 
-    @multiplicands = ko.observable
-      1: false
+    @multiplicands = ko.observable 1
     @exponents = ko.observable
       "-1": false
       0: true
