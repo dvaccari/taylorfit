@@ -24,7 +24,7 @@ ko.components.register "tf-counter",
         @values @values() + 1
 
     @decrement = ( name ) =>
-      unless @values() is 0 
+      unless @values() is 1 
         @values @values() - 1
 
     return this
