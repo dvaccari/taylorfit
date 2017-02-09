@@ -13,9 +13,7 @@ ko.components.register "tf-content",
       exponents = [ ]
       for k, v of @exponents()
         if v() then exponents.push Number k
-      multiplicands = [ ]
-      for k, v of @multiplicands()
-        if v() then multiplicands.push Number k
+      multiplicands = @multiplicands()
 
       adapter.send_model([
         [ 0, 0, 0, 0 ]
