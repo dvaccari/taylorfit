@@ -8,7 +8,7 @@ tf-counter
   max-width 100%
 
   & > div.chevrons
-    color #DDD
+    color #333
     display inline-block
     border-radius 100%
     padding 2px 4px
@@ -16,14 +16,16 @@ tf-counter
     user-select none
 
     & > a
+      transition 300ms
       &:hover
-        -webkit-filter: drop-shadow(0px 0px 1px green)
-        -moz-filter: drop-shadow(0px 0px 1px green)
-        -ms-filter: drop-shadow(0px 0px 1px green)
-        -o-filter: drop-shadow(0px 0px 1px green)
-        filter: drop-shadow(0px 0px 1px green)
+        text-shadow 2px 0 0 green, -2px 0 0 green,
+         0 2px 0 green, 0 -2px 0 green
       &:active
-        color: green
+        color green
+      &.disable
+        color #EEE
+        text-shadow none
+        cursor not-allowed
 
   & > a.counter
     font-size 12pt
