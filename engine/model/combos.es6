@@ -1,6 +1,6 @@
 'use strict';
 
-const utils = require('./utils.es6');
+const utils = require('../utils.es6');
 
 /**
  * Generate all combinations of k terms.

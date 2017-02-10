@@ -1,6 +1,6 @@
 /*global onmessage, postMessage*/
 
-var engine  = require('../engine/index.es6');
+var engine  = require('../index.es6');
 var model   = null;
 
 
@@ -73,9 +73,48 @@ var updateModel = function (data) {
 };
 
 
-function log() {
+/**
+ * Takes the computed candidate terms produced by the model and formats them to
+ * conform to the data contract (what the client is expecting).
+ *
+ * Input:
+ * [
+ *   {
+ *     term: [ [col, exp], [col, exp], ... ],
+ *     stats: { t: 0.12, mse: 0.45 }
+ *   },
+ *   ...
+ * ]
+ *
+ *
+ * Output:
+ * [
+ *   [ col, exp, col, exp, ..., tstat: 0.12, mse: 0.25 ], // candidate term 0
+ *   [ col, exp, col, exp, ..., tstat: 0.02, mse: 0.45 ], // candidate term 1
+ *   ...
+ * ]
+ *
+ * @param candidates See 'Input' above
+ * @return See 'Output' above
+ */
+var formatCandidates = function (candidates) {
+  return candidates.map((candidate) => {
+    var newCandidate = [];
+
+    candidate.term.forEach(
+      (multiplicand) => newCandidate.push(multiplicand[0], multiplicand[1])
+    );
+    newCandidate.t = candidate.stats.t;
+    newCandidate.mse = candidate.stats.mse;
+
+    return newCandidate;
+  });
+};
+
+
+var log = function () {
   console.debug('[Engine]:', ...arguments);
-}
+};
 
 onmessage = function (e) {
   var type = e.data.type
@@ -88,14 +127,22 @@ onmessage = function (e) {
   case 'update_model':
     updateModel(data);
     log('new model:', model);
+    postMessage({
+      type: 'candidates',
+      data: formatCandidates(model.compute().candidates)
+    });
     break;
 
   case 'get_terms':
     if (model == null) {
       postMessage({ type: 'error', data: 'Model not instantiated' });
     }
-    var terms = model.candidates.map((term) => term.term);
-    postMessage({ type: 'candidates', data: terms });
+    //var terms = model.candidates.map((term) => term.term);
+    //postMessage({ type: 'candidates', data: terms });
+    postMessage({
+      type: 'candidates',
+      data: formatCandidates(model.compute().candidates)
+    });
     break;
 
   case 'add_term':
@@ -103,7 +150,11 @@ onmessage = function (e) {
       postMessage({ type: 'error', data: 'Model not instantiated' });
     }
     model.addTerm(data, false);
-    postMessage({ type: 'candidates', data: model.compute() });
+    // This should eventually send candidates and model
+    postMessage({
+      type: 'candidates',
+      data: formatCandidates(model.compute().candidates)
+    });
     break;
 
   case 'remove_term':
@@ -111,7 +162,11 @@ onmessage = function (e) {
       postMessage({ type: 'error', data: 'Model not instantiated' });
     }
     model.removeTerm(data, false);
-    postMessage({ type: 'candidates', data: model.compute() });
+    // This should also eventually send candidates and model
+    postMessage({
+      type: 'candidates',
+      data: formatCandidates(model.compute().candidates)
+    });
     break;
 
   default:

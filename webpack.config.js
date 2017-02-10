@@ -12,7 +12,7 @@ CONTEXT = rel(".");
 ENGINE = rel("./engine");
 INTERFACE = rel("./interface");
 BUILD = rel("./build");
-WORKER = rel("./worker");
+WORKER = rel("./engine/worker");
 
 module.exports = {
   target: "web",
