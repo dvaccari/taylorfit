@@ -1,8 +1,7 @@
 
-const Model   = require('./model.es6');
+const Model   = require('./model');
 const utils   = require('./utils.es6');
 const Matrix  = require('./matrix').Matrix;
-const combos  = require('./combos.es6');
 
 
 // TODO: replace input to model() with object per data contract once it is
