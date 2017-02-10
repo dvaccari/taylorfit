@@ -16,16 +16,16 @@ ko.components.register "tf-content",
     adapter.post_dataset [ 0, 0, 0, 0 ]
     adapter.post_dependent 3
 
-    @multiplicand = ko.observable()
+    @multiplicands = ko.observable()
     @exponents = ko.observable()
 
-    @multiplicand.subscribe ( next ) ->
-      adapter.post_multiplicand Number next
+    @multiplicands.subscribe ( next ) ->
+      adapter.post_multiplicands Number next
     @exponents.subscribe ( next ) ->
       next =  (key for key, value of next when ko.unwrap value)
       adapter.post_exponents next
 
-    @multiplicand 1
+    @multiplicands 1
     @exponents
       0: true
       1: false

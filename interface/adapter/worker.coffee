@@ -39,8 +39,8 @@ module.exports = new class WorkerAdapter extends ME
       data: message
 
   for target in [
-    "dataset",
-    "dependent", "multiplicand", "exponents"
+    "dataset", "dependent",
+    "multiplicands", "exponents"
   ]
     do ( target ) ->
       WorkerAdapter::["post_#{target}"] = ( message ) ->
