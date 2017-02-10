@@ -34,9 +34,9 @@ module.exports = new class WorkerAdapter extends ME
 
   post: ( target, message ) ->
     console.debug "Worker/req [#{target}]", message
-    #@worker.postMessage
-    #  type: target
-    #  data: message
+    @worker.postMessage
+      type: target
+      data: message
 
   for target in [
     "dataset",
@@ -44,5 +44,6 @@ module.exports = new class WorkerAdapter extends ME
   ]
     do ( target ) ->
       WorkerAdapter::["post_#{target}"] = ( message ) ->
-        @post target, message
+        m = { }; m[target] = message
+        @post "update", m
 

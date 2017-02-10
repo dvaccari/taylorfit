@@ -5,4 +5,5 @@ require "./dropdown"
 require "./grid"
 require "./header"
 require "./pills"
+require "./counter"
 

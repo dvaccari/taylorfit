@@ -1,7 +1,6 @@
 
 span.options(data-bind="style:{width:'calc(100% - ' + pane1() + 'px)'}")
-  //- needs to be fixed
-  //-tf-pills(params="name:'Multiplicands',values:multiplicands,style:'radio'")
+  tf-counter(params="name:'Multiplicands',value:multiplicand,max:9")
   tf-pills(params="name:'Exponents',values:exponents,style:'check'")
   div.candidates
     header
