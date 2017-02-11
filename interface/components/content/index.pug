@@ -1,5 +1,5 @@
 
-span.options(data-bind="style:{width:'calc(100% - ' + pane1() + 'px)'}")
+span.options(data-bind="style:{width:'calc(100% - ' + pane1() + 'px)'},css:{hidden:!loaded()}")
   tf-counter(params="name:'Multiplicands',value:multiplicands,max:9")
   tf-pills(params="name:'Exponents',values:exponents,style:'check'")
   div.candidates
@@ -13,7 +13,7 @@ span.options(data-bind="style:{width:'calc(100% - ' + pane1() + 'px)'}")
       sup(data-bind="text:$data[1]")
       // /ko
     // /ko
-span.resize(data-bind="event:{drag:pane1drag}")
+span.resize(data-bind="event:{drag:pane1drag},css:{hidden:!loaded()}")
 span.grid(data-bind="style:{width:'calc(' + pane1() + 'px - 5px)'}")
-  tf-grid
+  tf-grid(params="loaded:loaded")
 

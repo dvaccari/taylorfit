@@ -33,6 +33,10 @@ ko.components.register "tf-grid",
     @pagesize = ko.observable 10
     @dependant = ko.observable 0
 
+    @loaded = params.loaded
+    unless ko.isObservable @loaded
+      @loaded = ko.observable false
+
     @scroll = ( model, event) ->
       if event.deltaY < 0
         if @location() > 0
@@ -95,6 +99,7 @@ ko.components.register "tf-grid",
       window.w = @rows
 
       @dependant = ko.observable 0
+      @loaded true
 
     @save = ( ) =>
       data = ko.toJS @rows

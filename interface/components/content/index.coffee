@@ -18,6 +18,7 @@ ko.components.register "tf-content",
 
     @multiplicands = ko.observable()
     @exponents = ko.observable()
+    @loaded = ko.observable false
 
     @multiplicands.subscribe ( next ) ->
       adapter.post_multiplicands Number next
