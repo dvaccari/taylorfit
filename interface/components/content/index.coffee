@@ -27,8 +27,7 @@ ko.components.register "tf-content",
 
     @multiplicands 1
     @exponents
-      0: true
-      1: false
+      1: true
 
     return this
 

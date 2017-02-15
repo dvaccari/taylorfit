@@ -51,7 +51,7 @@ ko.components.register "tf-pills",
     @add = ( ) =>
       name = @input()
 
-      unless @valid name
+      unless @valid(name) and name != '0'
         return @invalid true
       @invalid false
 
