@@ -38,20 +38,20 @@ ko.components.register "tf-pills",
 
     @toggle = ( name ) =>
       values = @values()
-      unless name == "0"
+      unless name == "1"
         values[name] not values[name]()
         @update name
 
     @delete = ( name ) =>
       values = @values()
-      unless name == "0"
+      unless name == "1"
         delete values[name]
         do @update
 
     @add = ( ) =>
       name = @input()
 
-      unless @valid name
+      unless @valid(name) and name != "0" and name != ""
         return @invalid true
       @invalid false
 
