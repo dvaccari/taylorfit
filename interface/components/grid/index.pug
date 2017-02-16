@@ -6,11 +6,14 @@
     span Import
   // /ko
   // ko ifnot:loaded
-  label.button.start(for="input-csv")
-    span Import Data &nbsp;
-    span.small (Click Here)
+  label.button.start.import(for="input-csv")
+    span Import Data
     hr
     span.small Program requires data to begin
+  span.button.start.load
+    span Load Model
+    hr
+    span.small Coming Soon!
   // /ko
   // ko if:loaded
   label.button(data-bind="click:save") Export
