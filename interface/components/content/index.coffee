@@ -28,7 +28,7 @@ ko.components.register "tf-content",
       0: true
       1: false
     @loaded = ko.observable false
-    @dependent = ko.observable 0
+    @dependent = ko.observable 1#0 - TMP
     @rows = ko.observableArray [ ]
 
     exponents2array = ( exps ) ->

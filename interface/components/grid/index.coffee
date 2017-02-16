@@ -10,8 +10,7 @@ read = ( file ) ->
         if errors.length
           reject errors
         else
-          window.d0 = data[0]
-          window.data = data
+          data.pop() # remove \n
           data.headless = not data[0].every ( value ) ->
             (typeof value is "string")# and (value isnt "")
           accept data
