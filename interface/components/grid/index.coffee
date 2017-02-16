@@ -29,13 +29,12 @@ once_guard = ( ) ->
 ko.components.register "tf-grid",
   template: do require "./index.pug"
   viewModel: ( params ) ->
-    @location = ko.observable 0
-    @pagesize = ko.observable 10
-    @dependant = ko.observable 0
-
-    @loaded = params.loaded
-    unless ko.isObservable @loaded
-      @loaded = ko.observable false
+    @location   = ko.observable 0
+    @pagesize   = ko.observable 10
+    @dependent  = params.dependent  or ko.observable 0
+    @loaded     = params.loaded     or ko.observable false
+    @cols       = params.cols       or ko.observableArray [ ]
+    @rows       = params.rows       or ko.observableArray [ ]
 
     @scroll = ( model, event) ->
       if event.deltaY < 0
@@ -44,22 +43,17 @@ ko.components.register "tf-grid",
       else if @location() < @rows().length - @pagesize()
         @location @location() + 1
 
-    @cols = ko.observableArray [
-      name: ""
-    ]
-    @rows = ko.observableArray [
-      [ undefined ]
-    ]
-
-
     ###
     @cols.add = ( ) =>
       @cols.ins @cols().length
     ###
     @cols.del = ( index ) =>
       @cols.splice index, 1
-      for row in @rows()
+      for row in data = @rows()
         row.splice index, 1
+      @rows data
+      undefined
+
     ###
     @cols.ins = ( index ) =>
       @cols.splice index, 0, name: ko.observable ""
@@ -74,6 +68,7 @@ ko.components.register "tf-grid",
     @rows.del = ( index ) =>
       return if do once_guard
       @rows.splice index, 1
+      undefined
     ###
     @rows.ins = ( index ) =>
       return if do once_guard
@@ -88,17 +83,12 @@ ko.components.register "tf-grid",
       @cols.removeAll()
       @rows.removeAll()
       unless table.headless
-        for title in table.shift()
-          @cols.push name: title
+        @cols table.shift().map ( name ) -> { name }
       else
-        for title in table[0]
-          @cols.push name: ""
-      for row in table
-        @rows.push row
+        @cols table[0].map ( ) -> { name: "" }
+      @rows table
 
-      window.w = @rows
-
-      @dependant = ko.observable 0
+      @dependent 0
       @loaded true
 
     @save = ( ) =>
@@ -125,7 +115,6 @@ ko.components.register "tf-grid",
       .then @load
       .catch ( error ) ->
         console.log "ERROR", error
-
 
     return this
 

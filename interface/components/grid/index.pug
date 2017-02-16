@@ -1,16 +1,28 @@
 
 .input-bar
   input#input-csv(type="file" accept=".csv" data-bind="value:csv_file" hidden)
-  label.button(for="input-csv") Import
+  // ko if:loaded
+  label.button(for="input-csv")
+    span Import
+  // /ko
+  // ko ifnot:loaded
+  label.button.start(for="input-csv")
+    span Import Data &nbsp;
+    span.small (Click Here)
+    hr
+    span.small Program requires data to begin
+  // /ko
+  // ko if:loaded
   label.button(data-bind="click:save") Export
-.table-wrapper
+  // /ko
+.table-wrapper(data-bind="if:loaded")
   table.grid
     thead
       tr
         th
           //- empty for row numbers
         // ko foreach: cols
-        th(data-bind="css:{dependant:$index() === $parent.dependant()}")
+        th(data-bind="css:{dependent:$index() === $parent.dependent()}")
           //-input(data-bind="value:name")
           // ko if:name
           span(data-bind="text:name")
@@ -19,7 +31,7 @@
             span X
             sub(data-bind="text:$index")
           tf-dropdown(params="shallow:1,align:'right'")
-            span.mark(data-bind="click:function(){dependant($index())}")
+            span.mark(data-bind="click:function(){dependent($index())}")
               | Mark as Dependant
             //-span.insert.sep(data-bind="click:function(){cols.ins($index())}")
               | Insert Column Before

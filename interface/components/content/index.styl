@@ -10,15 +10,15 @@ tf-content
     width 5px
     background #DDD
     height 100vh
-    cursor col-resize
     z-index 1000
 
   & > .options
   & > .grid
+    transition width 1s
     padding 20px
     padding-top header-height + 20px
     box-sizing border-box
-    min-height 100%
+    height 100%
     min-width 300px
     max-width calc(100% - 306px) !important
     display block
@@ -56,29 +56,4 @@ tf-content
 
   & > .hidden
     display none
-
-/*
-@media screen and (max-width: 1024px) {
-  tf-content > .options {
-    width: 50%
-  }
-  tf-content > .grid {
-    width: 50%
-  }
-}
-
-@media screen and (max-width: 600px) {
-  tf-content > * {
-    min-height: auto;
-  }
-  tf-content > .options {
-    width: 100%;
-    float: left;
-  }
-  tf-content > .grid {
-    width: 100%;
-    padding-top: 0;
-  }
-}
-*/
 
