@@ -3,14 +3,7 @@ tf-content
   position relative
   display block
   color black
-  min-height 100%
-
-  .resize
-    display inline-block
-    width 5px
-    background #DDD
-    height 100vh
-    z-index 1000
+  height 100%
 
   & > .options
   & > .grid
@@ -19,21 +12,20 @@ tf-content
     padding-top header-height + 20px
     box-sizing border-box
     height 100%
-    min-width 300px
-    max-width calc(100% - 306px) !important
     display block
     background white
     overflow auto
 
   & > .options
-    width 30%
     float right
     text-align right
 
   & > .grid
-    width calc(70% - 3px)
     float left
-    //box-shadow 1px 0 0 #CCC
+    box-shadow 3px 0 0 #CCC
+    &.init
+      width 100% !important
+
 
   table.candidates
 
