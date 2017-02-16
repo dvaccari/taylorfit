@@ -8,7 +8,9 @@ var cache   = {};
 const cacheKeys = ['dataset', 'dependent', 'exponents', 'multiplicands'];
 
 var updateCache = function (data) {
-  cacheKeys.forEach((key) => cache[key] = data[key] || cache[key]);
+  cacheKeys.forEach(
+    (key) => cache[key] = (data[key] != null) ? data[key] : cache[key]
+  );
 };
 
 /**
@@ -34,7 +36,7 @@ var updateCache = function (data) {
 var updateModel = function (data) {
   var dataset       = data.dataset || (model && model.X) || cache.dataset
     , existingTerms = (model && model.terms.map((t) => t.term)) || []
-    , dependent     = data.dependent || cache.dependent
+    , dependent     = (data.dependent != null) ? data.dependent : cache.dependent
     , exponents     = data.exponents || cache.exponents
     , multiplicands = data.multiplicands || cache.multiplicands
     , row           = data.row

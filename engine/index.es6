@@ -8,8 +8,8 @@ const Matrix  = require('./matrix').Matrix;
 //       finalized
 
 module.exports.model = (data, dependent, exponents, multipliers) => {
-  dependent = dependent || (data.size()[1] - 1);
   data = new Matrix(data);
+  dependent = dependent || (data.shape[1] - 1);
 
   var inputColumns = data.subset(
     ':',
