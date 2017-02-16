@@ -21,14 +21,24 @@ ko.components.register "tf-content",
 
     @candidates = ko.observable [ ]
     adapter.on "candidates", ( candidates ) =>
-      @candidates candidates
+      cols = @cols()
+      candidates.forEach ( c ) ->
+        c.stats = ({name, value} \
+          for name, value of c.stats)
+
+        c.term = c.term.map ( term ) ->
+          name: cols[term[0]]?.name
+          index: term[0]
+          exp: term[1]
+      @candidates candidates.sort ( a, b ) ->
+        a.stats[0].value - b.stats[0].value
+
 
     @multiplicands = ko.observable 1
     @exponents = ko.observable
-      0: true
-      1: false
+      1: true
     @loaded = ko.observable false
-    @dependent = ko.observable 0#0 - TMP
+    @dependent = ko.observable 0
     @rows = ko.observableArray [ ]
     @cols = ko.observableArray [ ]
 
@@ -40,7 +50,8 @@ ko.components.register "tf-content",
       adapter.post_dataset next,
         @dependent(), @multiplicands(),
         exponents2array @exponents()
-    @dependent.subscribe ( next ) ->
+    @dependent.subscribe ( next ) =>
+      return unless @rows().length
       adapter.post_dependent Number next
     @multiplicands.subscribe ( next ) ->
       adapter.post_multiplicands Number next

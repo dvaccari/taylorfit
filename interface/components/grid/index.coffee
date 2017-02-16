@@ -81,6 +81,7 @@ ko.components.register "tf-grid",
     ###
 
     @load = ( table ) =>
+      @dependent table[0].length - 1
       @name table.name
       @cols.removeAll()
       @rows.removeAll()
@@ -90,7 +91,6 @@ ko.components.register "tf-grid",
         @cols table[0].map ( ) -> { name: "" }
       @rows table
 
-      @dependent 0
       @loaded true
 
     @save = ( ) =>
