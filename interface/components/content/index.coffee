@@ -28,7 +28,7 @@ ko.components.register "tf-content",
       0: true
       1: false
     @loaded = ko.observable false
-    @dependent = ko.observable 1#0 - TMP
+    @dependent = ko.observable 0#0 - TMP
     @rows = ko.observableArray [ ]
     @cols = ko.observableArray [ ]
 
@@ -37,7 +37,7 @@ ko.components.register "tf-content",
 
     @rows.subscribe ( next ) =>
       return unless next.length
-      adapter.post_model next,
+      adapter.post_dataset next,
         @dependent(), @multiplicands(),
         exponents2array @exponents()
     @dependent.subscribe ( next ) ->

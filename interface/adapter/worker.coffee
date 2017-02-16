@@ -39,9 +39,9 @@ module.exports = new class WorkerAdapter extends ME
       type: target
       data: message
 
-  post_model: ( s, d, m, e ) ->
-    @post "update_model",
-      model: s
+  post_dataset: ( s, d, m, e ) ->
+    @post "update",
+      dataset: s
       dependent: d
       multiplicands: m
       exponents: e
@@ -54,5 +54,5 @@ module.exports = new class WorkerAdapter extends ME
     do ( target ) ->
       WorkerAdapter::["post_#{target}"] = ( message ) ->
         m = { }; m[target] = message
-        @post "update_model", m
+        @post "update", m
 

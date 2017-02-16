@@ -7,10 +7,12 @@ span.options(data-bind="style:{width:100 - pane1() + '%'},css:{hidden:!loaded()}
       span.title Candidates
     // ko foreach: candidates
     span.candidate
-      // ko foreach: $data
+      // ko foreach: term
       | x
       sub(data-bind="text:$data[0]")
+      // ko if:$data[1] !== 0
       sup(data-bind="text:$data[1]")
+      // /ko
       // /ko
     // /ko
 span.resize(data-bind="event:{drag:pane1drag},css:{hidden:!loaded()}")
