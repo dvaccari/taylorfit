@@ -91,6 +91,9 @@ class Matrix {
    * @param {Float64Array | number[][]} stuff Items to populate the matrix
    */
   constructor(m, n, stuff) {
+    if (m instanceof Matrix) {
+      return m;
+    }
     if (Array.isArray(m)) {
       return Matrix.from(m);
     }

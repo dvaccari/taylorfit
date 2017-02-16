@@ -1,8 +1,15 @@
 /*global onmessage, postMessage*/
+'use strict';
 
 var engine  = require('../index.es6');
 var model   = null;
+var cache   = {};
 
+const cacheKeys = ['dataset', 'dependent', 'exponents', 'multiplicands'];
+
+var updateCache = function (data) {
+  cacheKeys.forEach((key) => cache[key] = data[key] || cache[key]);
+};
 
 /**
  * Updates the model in various ways depending on what's given.
@@ -25,18 +32,18 @@ var model   = null;
  *                                        replace
  */
 var updateModel = function (data) {
-  var dataset       = data.model || (model && model.X)
+  var dataset       = data.dataset || (model && model.X) || cache.dataset
     , existingTerms = (model && model.terms.map((t) => t.term)) || []
-    , dependent     = data.dependent
-    , exponents     = data.exponents
-    , multiplicands = data.multiplicands
+    , dependent     = data.dependent || cache.dependent
+    , exponents     = data.exponents || cache.exponents
+    , multiplicands = data.multiplicands || cache.multiplicands
     , row           = data.row
     , col           = data.col
     , item          = data.item
     , i;
 
   if (dataset == null) {
-    throw new TypeError('model must be specified');
+    throw new TypeError('dataset must be specified');
   }
   if (dependent == null) {
     throw new TypeError('dependent must be specified');
@@ -124,12 +131,13 @@ onmessage = function (e) {
 
   switch(type) {
 
-  case 'update_model':
+  case 'update':
+    updateCache(data);
     updateModel(data);
     log('new model:', model);
     postMessage({
       type: 'candidates',
-      data: formatCandidates(model.compute().candidates)
+      data: model.compute().candidates
     });
     break;
 
@@ -141,7 +149,7 @@ onmessage = function (e) {
     //postMessage({ type: 'candidates', data: terms });
     postMessage({
       type: 'candidates',
-      data: formatCandidates(model.compute().candidates)
+      data: model.compute().candidates
     });
     break;
 

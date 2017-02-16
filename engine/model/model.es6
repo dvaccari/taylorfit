@@ -193,13 +193,19 @@ class Model {
       .reduce((prev, curr) => prev.hstack(curr),
               new Matrix(this[_X].shape[0], 0));
 
+    // Perform least squares using the terms added the model
     var things = lstsq(this[_Xaugmented], this[_y]);
     this[_weights] = things.weights;
 
-    var candidateTerms = this[_candyTerms].map((term) => ({
-      term : term.term,
-      stats: term.getStats()
-    }));
+    // Perform least squares with each term not in the model independently
+    var candidateTerms = this[_candyTerms]
+          // Filter out candidates already in the model
+          .filter((term) => !this[_terms].includes(term))
+          // Create primitive representation for each term
+          .map((term) => ({
+            term : term.term,
+            stats: term.getStats()
+          }));
 
     return {
       model: {
