@@ -15,5 +15,6 @@ span.options(data-bind="style:{width:100 - pane1() + '%'},css:{hidden:!loaded()}
     // /ko
 span.resize(data-bind="event:{drag:pane1drag},css:{hidden:!loaded()}")
 span.grid(data-bind="style:{width:'calc(' + pane1() + '% - 5px)'},event:{mouseover:hover('grid')}")
-  tf-grid(params="loaded:loaded, dependent:dependent, rows:rows")
+  tf-grid(params="loaded:loaded, cols:cols, dependent:dependent, rows:rows")
+
 

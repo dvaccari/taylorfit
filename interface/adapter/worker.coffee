@@ -10,6 +10,7 @@ class ME
     undefined
 
   fire: ( target, message ) ->
+    console.debug "ME/fire", target
     if listeners = @listeners[target]
       for listener in listeners
         listener.call this, message
@@ -28,7 +29,7 @@ module.exports = new class WorkerAdapter extends ME
       console.debug "Worker/res [error]", error
       @fire "error", error
 
-    @worker.onmessage = ( { type, data } ) =>
+    @worker.onmessage = ( { data: { type, data } } ) =>
       console.debug "Worker/res [#{type}]", data
       @fire type, data
 
@@ -46,8 +47,9 @@ module.exports = new class WorkerAdapter extends ME
       exponents: e
 
   for target in [
-    "dependent",
-    "multiplicands", "exponents"
+    "dependent"
+    "multiplicands"
+    "exponents"
   ]
     do ( target ) ->
       WorkerAdapter::["post_#{target}"] = ( message ) ->

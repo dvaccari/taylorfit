@@ -30,6 +30,7 @@ ko.components.register "tf-content",
     @loaded = ko.observable false
     @dependent = ko.observable 1#0 - TMP
     @rows = ko.observableArray [ ]
+    @cols = ko.observableArray [ ]
 
     exponents2array = ( exps ) ->
       Number key for key, value of exps when ko.unwrap value

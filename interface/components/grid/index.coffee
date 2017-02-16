@@ -11,6 +11,7 @@ read = ( file ) ->
           reject errors
         else
           data.pop() # remove \n
+          data.name = file.name
           data.headless = not data[0].every ( value ) ->
             (typeof value is "string")# and (value isnt "")
           accept data
@@ -34,6 +35,7 @@ ko.components.register "tf-grid",
     @loaded     = params.loaded     or ko.observable false
     @cols       = params.cols       or ko.observableArray [ ]
     @rows       = params.rows       or ko.observableArray [ ]
+    @name       = ko.observable null
 
     @scroll = ( model, event) ->
       if event.deltaY < 0
@@ -79,6 +81,7 @@ ko.components.register "tf-grid",
     ###
 
     @load = ( table ) =>
+      @name table.name
       @cols.removeAll()
       @rows.removeAll()
       unless table.headless
