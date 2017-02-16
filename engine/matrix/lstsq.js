@@ -1,7 +1,7 @@
 'use strict';
 
-const Matrix  = require('./matrix.es6');
-const svd     = require('./svd-golub-reinsch.es6');
+const Matrix  = require('./matrix');
+const svd     = require('./svd-golub-reinsch');
 
 /**
  * Computes total least squares regression on the matrix `A`, already decomposed

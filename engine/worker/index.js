@@ -1,7 +1,7 @@
 /*global onmessage, postMessage*/
 'use strict';
 
-var engine  = require('../index.es6');
+var engine  = require('../index');
 var model   = null;
 var cache   = {};
 

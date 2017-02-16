@@ -1,10 +1,10 @@
 
 const lstsq         = require('../matrix').lstsq;
 const Matrix        = require('../matrix').Matrix;
-const utils         = require('../utils.es6');
+const utils         = require('../utils');
 
-const Term          = require('./term.es6');
-const combos        = require('./combos.es6');
+const Term          = require('./term');
+const combos        = require('./combos');
 
 /**
  * Private members

@@ -2,7 +2,7 @@
 const lstsq   = require('../matrix').lstsq;
 const Matrix  = require('../matrix').Matrix;
 
-const combos  = require('./combos.es6');
+const combos  = require('./combos');
 
 
 /**

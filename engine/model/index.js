@@ -1,3 +1,3 @@
 
-module.exports = require('./model.es6');
+module.exports = require('./model');
 

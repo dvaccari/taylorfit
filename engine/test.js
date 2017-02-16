@@ -1,5 +1,5 @@
 
-const load  = require('./load.es6');
+const load  = require('./load');
 const Model = require('./model');
 
 load('data/concrete_data.csv', true, (data) => {
