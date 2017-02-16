@@ -44,6 +44,8 @@ var updateModel = function (data) {
     , item          = data.item
     , i;
 
+  log('mults ' + multiplicands);
+
   if (dataset == null) {
     throw new TypeError('dataset must be specified');
   }
@@ -163,7 +165,7 @@ onmessage = function (e) {
     // This should eventually send candidates and model
     postMessage({
       type: 'candidates',
-      data: formatCandidates(model.compute().candidates)
+      data: model.compute().candidates
     });
     break;
 
@@ -175,7 +177,7 @@ onmessage = function (e) {
     // This should also eventually send candidates and model
     postMessage({
       type: 'candidates',
-      data: formatCandidates(model.compute().candidates)
+      data: model.compute().candidates
     });
     break;
 
