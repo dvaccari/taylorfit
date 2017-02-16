@@ -31,7 +31,7 @@ ko.components.register "tf-content",
           index: term[0]
           exp: term[1]
       @candidates candidates.sort ( a, b ) ->
-        a.stats[0].value - b.stats[0].value
+        b.stats[0].value - a.stats[0].value
 
 
     @multiplicands = ko.observable 1
