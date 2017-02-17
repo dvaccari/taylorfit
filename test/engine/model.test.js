@@ -6,7 +6,7 @@ const chai    = require('chai')
 
 const Matrix  = require('../../engine/matrix').Matrix
     , combos  = require('../../engine/model/combos')
-    , Model   = require('../../engine/model')
+    , Model   = require('../../engine/model/model')
     , dataset = require('./test.data.json');
 
 describe('Model', () => {
