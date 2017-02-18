@@ -53,14 +53,14 @@ function lstsqSVD(A, U, S, V, b) {
  *
  *    SSE     = sum((y - y')^2)                   ^2 is element-wise
  *    TSS     = sum((y - mean(y))^2)
- *    SSM     = TSS - SSE
+ *    SSR     = TSS - SSE
  *    Var y   = TSS / (Nd - 1)
- *    MSM     = SSM / Np
+ *    MSR     = SSR / (Np - 1)
  *    MSE     = SSE / (Nd - Np)
  *    RSQ     = 1 - (SSE / TSS)
  *    cRSQ    = 1 - R^2
  *    adj-RSQ = 1 - (MSE / Var y)
- *    F       = MSM / MSE
+ *    F       = MSR / MSE
  *    AIC     = log(MSE) + 2*(Np/Nd)
  *    BIC     = log(MSE) + Np*log(Nd)/Nd
  *    t_i = B' / sqrt( inv(X'X)[i,i] * MSE )      / is element-wise
@@ -78,14 +78,14 @@ function lstsqNEWithStats(X, y) {
     , np            = X.shape[1]
     , sse           = y.sub(yHat).dotPow(2).sum()
     , tss           = y.sub(y.sum() / y.shape[0]).dotPow(2).sum()
-    , ssm           = tss - sse
+    , ssr           = tss - sse
     , vary          = tss / (nd - 1)
-    , msm           = ssm / np
+    , msr           = ssr / (np - 1)
     , mse           = sse / (nd - np)
     , rsq           = 1 - (sse / tss)
     , crsq          = 1 - rsq
     , adjrsq        = 1 - (mse / vary)
-    , f             = msm / mse
+    , f             = msr / mse
     , aic           = Math.log10(mse) + 2*(np / nd)
     , bic           = Math.log10(mse) + np*(Math.log10(nd) / nd)
 
@@ -126,14 +126,14 @@ function lstsqNEWithStats(X, y) {
  *
  *    SSE     = sum((y - y')^2)                   ^2 is element-wise
  *    TSS     = sum((y - mean(y))^2)
- *    SSM     = TSS - SSE
+ *    SSR     = TSS - SSE
  *    Var y   = TSS / (Nd - 1)
- *    MSM     = SSM / Np
+ *    MSR     = SSM / (Np - 1)
  *    MSE     = SSE / (Nd - Np)
  *    RSQ     = 1 - (SSE / TSS)
  *    cRSQ    = 1 - R^2
  *    adj-RSQ = 1 - (MSE / Var y)
- *    F       = MSM / MSE
+ *    F       = MSR / MSE
  *    AIC     = log(MSE) + 2*(Np/Nd)
  *    BIC     = log(MSE) + Np*log(Nd)/Nd
  *    t_i     = it's complicated...see code
@@ -153,14 +153,14 @@ function lstsqSVDWithStats(X, y) {
     , np            = X.shape[1]
     , sse           = y.sub(yHat).dotPow(2).sum()
     , tss           = y.sub(y.sum() / y.shape[0]).dotPow(2).sum()
-    , ssm           = tss - sse
+    , ssr           = tss - sse
     , vary          = tss / (nd - 1)
-    , msm           = ssm / np
+    , msr           = ssr / (np - 1)
     , mse           = sse / (nd - np)
     , rsq           = 1 - (sse / tss)
     , crsq          = 1 - rsq
     , adjrsq        = 1 - (mse / vary)
-    , f             = msm / mse
+    , f             = msr / mse
     , aic           = Math.log10(mse) + 2*(np / nd)
     , bic           = Math.log10(mse) + np*(Math.log10(nd) / nd)
 
