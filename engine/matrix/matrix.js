@@ -139,23 +139,30 @@ class Matrix {
   /**
    * Performs element-wise addition between two matrices and returns a new copy.
    *
-   * @param {Matrix<m,n>} other Matrix with equivalent dimensions to this
+   * @param {number | Matrix<m,n>} other  Scalar or Matrix with equivalent
+   *                                      dimensions to this
    * @return {Matrix<m,n>} this + other
    * @throws {Error} If dimensions do not match
    */
   add(other) {
-    if (this[_m] !== other[_m] || this[_n] !== other[_n]) {
-      throw new Error('Dimensions (' + this.shape +
-                      ') and (' + other.shape + ') do not match: ' +
-                      this[_n] + ' !== ' + other[_m] + ' && ' +
-                      this[_m] + ' !== ' + other[_m]);
-    }
-
     var sum = this.clone()
       , i;
 
-    for (i = 0; i < sum[_data].length; i += 1) {
-      sum[_data][i] += other[_data][i];
+    if (typeof other === 'number') {
+      for (i = 0; i < sum[_data].length; i += 1) {
+        sum[_data][i] += other;
+      }
+    } else {
+      if (this[_m] !== other[_m] || this[_n] !== other[_n]) {
+        throw new Error('Dimensions (' + this.shape +
+                        ') and (' + other.shape + ') do not match: ' +
+                        this[_n] + ' !== ' + other[_m] + ' && ' +
+                        this[_m] + ' !== ' + other[_m]);
+      }
+
+      for (i = 0; i < sum[_data].length; i += 1) {
+        sum[_data][i] += other[_data][i];
+      }
     }
     return sum;
   }
@@ -164,23 +171,30 @@ class Matrix {
    * Performs element-wise subtraction between two matrices and returns a new
    * copy.
    *
-   * @param {Matrix<m,n>} other Matrix with equivalent dimensions to this
+   * @param {number | Matrix<m,n>} other  Scalar or Matrix with equivalent
+   *                                      dimensions to this
    * @return {Matrix<m,n>} this - other
    * @throws {Error} If dimensions do not match
    */
   sub(other) {
-    if (this[_m] !== other[_m] || this[_n] !== other[_n]) {
-      throw new Error('Dimensions (' + this.shape +
-                      ') and (' + other.shape + ') do not match: ' +
-                      this[_n] + ' !== ' + other[_m] + ' && ' +
-                      this[_m] + ' !== ' + other[_m]);
-    }
-
     var sum = this.clone()
-    , i;
+      , i;
 
-    for (i = 0; i < sum[_data].length; i += 1) {
-      sum[_data][i] -= other[_data][i];
+    if (typeof other === 'number') {
+      for (i = 0; i < sum[_data].length; i += 1) {
+        sum[_data][i] -= other;
+      }
+    } else {
+      if (this[_m] !== other[_m] || this[_n] !== other[_n]) {
+        throw new Error('Dimensions (' + this.shape +
+                        ') and (' + other.shape + ') do not match: ' +
+                        this[_n] + ' !== ' + other[_m] + ' && ' +
+                        this[_m] + ' !== ' + other[_m]);
+      }
+
+      for (i = 0; i < sum[_data].length; i += 1) {
+        sum[_data][i] -= other[_data][i];
+      }
     }
     return sum;
   }

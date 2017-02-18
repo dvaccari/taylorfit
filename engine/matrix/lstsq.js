@@ -2,6 +2,7 @@
 
 const Matrix  = require('./matrix');
 const svd     = require('./svd-golub-reinsch');
+const dist    = require('./distributions-socr');
 
 /**
  * Computes total least squares regression on the matrix `A`, already decomposed
@@ -44,11 +45,25 @@ function lstsqSVD(A, U, S, V, b) {
  * analytical statistics to determine the quality of the fit for the model and
  * for each term in the model.
  *
- *    B'  = inv(X'X)X'y                     <-- weight vector
- *    y'  = XB'
- *    SSE = sum((y - y')^2)                     ^2 is element-wise
- *    MSE = SSE / n
- *    t_i = B' / sqrt( inv(X'X)[i,i] * MSE )    / is element-wise
+ *    B'      = inv(X'X)X'y                       <-- weight vector
+ *    y'      = XB'
+ *
+ *    Nd      = # of data
+ *    Np      = # of params (coefs) in model
+ *
+ *    SSE     = sum((y - y')^2)                   ^2 is element-wise
+ *    TSS     = sum((y - mean(y))^2)
+ *    SSM     = TSS - SSE
+ *    Var y   = TSS / (Nd - 1)
+ *    MSM     = SSM / Np
+ *    MSE     = SSE / (Nd - Np)
+ *    RSQ     = 1 - (SSE / TSS)
+ *    cRSQ    = 1 - R^2
+ *    adj-RSQ = 1 - (MSE / Var y)
+ *    F       = MSM / MSE
+ *    AIC     = log(MSE) + 2*(Np/Nd)
+ *    BIC     = log(MSE) + Np*log(Nd)/Nd
+ *    t_i = B' / sqrt( inv(X'X)[i,i] * MSE )      / is element-wise
  *
  * @return {object} Regression results
  */
@@ -57,16 +72,43 @@ function lstsqNEWithStats(X, y) {
     , pseudoInverse = XT.dot(X).inv()
     , BHat          = pseudoInverse.dot(XT).dot(y)
     , yHat          = X.dot(BHat)
-    , sse           = y.add(yHat.dotMultiply(-1)).dotPow(2).sum()
-    , mse           = sse / X.shape[0]
+
+  // fit statistics
+    , nd            = X.shape[0]
+    , np            = X.shape[1]
+    , sse           = y.sub(yHat).dotPow(2).sum()
+    , tss           = y.sub(y.sum() / y.shape[0]).dotPow(2).sum()
+    , ssm           = tss - sse
+    , vary          = tss / (nd - 1)
+    , msm           = ssm / np
+    , mse           = sse / (nd - np)
+    , rsq           = 1 - (sse / tss)
+    , crsq          = 1 - rsq
+    , adjrsq        = 1 - (mse / vary)
+    , f             = msm / mse
+    , aic           = Math.log10(mse) + 2*(np / nd)
+    , bic           = Math.log10(mse) + np*(Math.log10(nd) / nd)
+
+  // for t-statistics
     , rtmse         = Math.sqrt(mse)
     , sec           = pseudoInverse.diag().abs().dotPow(0.5).dotMultiply(rtmse)
-    , tstats        = BHat.dotDivide(sec);
+    , tstats        = BHat.dotDivide(sec)
+    , pts           = tstats.clone();
+
+  pts.data.set(pts.data.map((t) => dist.pt(t, nd - np)));
 
   return {
     weights : BHat,
     tstats  : tstats,
-    mse     : mse
+    mse     : mse,
+    rsq     : rsq,
+    crsq    : crsq,
+    adjrsq  : adjrsq,
+    f       : f,
+    pf      : dist.pf(f, np, nd - np),
+    aic     : aic,
+    bic     : bic,
+    pts     : pts
   };
 }
 
@@ -78,8 +120,22 @@ function lstsqNEWithStats(X, y) {
  *    U, s, V = svd(X)
  *    B'      = V(U'b ./ s)                       See svd.lstsq for more
  *    y'      = XB'
+ *
+ *    Nd      = # of data
+ *    Np      = # of params (coefs) in model
+ *
  *    SSE     = sum((y - y')^2)                   ^2 is element-wise
- *    MSE     = SSE / n
+ *    TSS     = sum((y - mean(y))^2)
+ *    SSM     = TSS - SSE
+ *    Var y   = TSS / (Nd - 1)
+ *    MSM     = SSM / Np
+ *    MSE     = SSE / (Nd - Np)
+ *    RSQ     = 1 - (SSE / TSS)
+ *    cRSQ    = 1 - R^2
+ *    adj-RSQ = 1 - (MSE / Var y)
+ *    F       = MSM / MSE
+ *    AIC     = log(MSE) + 2*(Np/Nd)
+ *    BIC     = log(MSE) + Np*log(Nd)/Nd
  *    t_i     = it's complicated...see code
  *
  * @return {object} Regression results
@@ -91,8 +147,24 @@ function lstsqSVDWithStats(X, y) {
     , V             = decomposition[2]
     , BHat          = lstsqSVD(X, U, w, V, y)
     , yHat          = X.dot(BHat)
-    , sse           = y.add(yHat.dotMultiply(-1)).dotPow(2).sum()
-    , mse           = sse / (X.shape[0] - 2)
+
+  // fit statistics
+    , nd            = X.shape[0]
+    , np            = X.shape[1]
+    , sse           = y.sub(yHat).dotPow(2).sum()
+    , tss           = y.sub(y.sum() / y.shape[0]).dotPow(2).sum()
+    , ssm           = tss - sse
+    , vary          = tss / (nd - 1)
+    , msm           = ssm / np
+    , mse           = sse / (nd - np)
+    , rsq           = 1 - (sse / tss)
+    , crsq          = 1 - rsq
+    , adjrsq        = 1 - (mse / vary)
+    , f             = msm / mse
+    , aic           = Math.log10(mse) + 2*(np / nd)
+    , bic           = Math.log10(mse) + np*(Math.log10(nd) / nd)
+
+  // used for t-stat calculations
     , VdivwSq       = V.dotDivide(w).dotPow(2)
     , i;
 
@@ -104,17 +176,29 @@ function lstsqSVDWithStats(X, y) {
 
   var sec = new Matrix(1, X.shape[1])
     , stdModelErr;
+
   for (i = 0; i < X.shape[1]; i += 1) {
     stdModelErr = Math.sqrt(VdivwSq.row(i).sum() * mse);
     sec.data[i] = stdModelErr;
   }
 
   var tstats        = BHat.dotDivide(sec);
+  var pts           = tstats.clone();
+
+  pts.data.set(pts.data.map((t) => dist.pt(t, nd - np)));
 
   return {
     weights : BHat,
     tstats  : tstats,
-    mse     : mse
+    mse     : mse,
+    rsq     : rsq,
+    crsq    : crsq,
+    adjrsq  : adjrsq,
+    f       : f,
+    pf      : dist.pf(f, np, nd - np),
+    aic     : aic,
+    bic     : bic,
+    pts     : pts
   };
 }
 
