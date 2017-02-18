@@ -113,6 +113,9 @@ class Model {
       (pair) => this[_candyTerms].find((term) => term.equals(pair))
     );
 
+    // Add bias term
+    this[_terms].push(new Term([[0, 0]], this));
+
     // If any terms are specified, compute the model & all candidate terms
     if (terms.length !== 0) {
       this.compute();

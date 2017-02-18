@@ -66,8 +66,9 @@ class Term {
         console.timeEnd('lstsq');
       }
       return {
-        t  : theStats.tstats.data[[theStats.tstats.shape[0] - 1]],
-        mse: theStats.mse
+        coeff : theStats.weights.get(0, theStats.weights.shape[0]-1),
+        t     : theStats.tstats.data[[theStats.tstats.shape[0] - 1]],
+        mse   : theStats.mse
       };
     } catch (e) {
       console.log(e);
