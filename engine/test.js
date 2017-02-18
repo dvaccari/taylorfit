@@ -1,12 +1,12 @@
 
 const load  = require('./load');
-const Model = require('./model');
+const Model = require('./model/model');
 
 load('data/concrete_data.csv', true, (data) => {
   var X = data.subset(':', ':-1');
   var y = data.subset(':', [-1]);
 
-  var m = new Model(X, y, [1, 2, 3, 4], [1, 2, 3]);
+  var m = new Model(X, y, [1, 2, 3, 4], 3);
   var comp;
 
   //m.addTerm([[0, 1]]);
