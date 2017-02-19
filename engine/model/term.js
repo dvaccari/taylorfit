@@ -65,6 +65,16 @@ class Term {
       if (DEBUG) {
         console.timeEnd('lstsq');
       }
+      theStats.coeff = theStats.weights.get(0, theStats.weights.shape[0]-1);
+      theStats.t = theStats.tstats.get(0, theStats.tstats.shape[0]-1);
+      theStats.pt = theStats.pts.get(0, theStats.pts.shape[0]-1);
+      delete theStats.weights;
+      delete theStats.tstats;
+      delete theStats.pts;
+
+      return theStats;
+
+      // XXX: Obsolete
       return {
         coeff : theStats.weights.get(0, theStats.weights.shape[0]-1),
         t     : theStats.tstats.data[[theStats.tstats.shape[0] - 1]],

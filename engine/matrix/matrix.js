@@ -13,6 +13,8 @@ const _n    = Symbol('n');
 // Maximum number of decimal points to print
 const PRINT_DECIMALS = 5;
 
+// Number.MAX_SAFE_INTEGER value [ i.e. doesn't support :( ]
+const MAX_SAFE_INTEGER = Math.pow(2, 53) - 1;
 
 /**
  * Swap rows `i` and `j` in matrix `m` in place.
@@ -335,6 +337,9 @@ class Matrix {
 
     for (i = 0; i < powd[_data].length; i += 1) {
       powd[_data][i] = Math.pow(powd[_data][i], exponent);
+      if (!Number.isFinite(powd[_data][i])) {
+        powd[_data][i] = MAX_SAFE_INTEGER;
+      }
     }
     return powd;
   }
