@@ -22,12 +22,12 @@ ko.components.register "tf-content",
     @candidates = ko.observable [ ]
     adapter.on "candidates", ( candidates ) =>
       cols = @cols()
-      candidates.forEach ( c ) ->
+      candidates.forEach ( c ) =>
         c.stats = ({name, value} \
           for name, value of c.stats)
 
-        c.term = c.term.map ( term ) ->
-          name: cols[term[0]]?.name
+        c.term = c.term.map ( term ) =>
+          name: cols[term[0] + (term[0] >= @dependent())]?.name
           index: term[0]
           exp: term[1]
       @candidates candidates.sort ( a, b ) ->
