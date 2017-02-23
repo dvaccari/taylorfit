@@ -1,0 +1,28 @@
+
+tf-counter(params="name:'Multiplicands',value:multiplicands,max:9")
+tf-pills(params="name:'Exponents',values:exponents,style:'check'")
+header
+  span.title Candidates
+table.candidates(data-bind="if:candidates().length")
+  thead
+    tr
+      th Term
+      // ko foreach:candidates()[0].stats
+      th(data-bind="text:name")
+      // /ko
+
+  tbody
+    // ko foreach:candidates
+    tr.candidate
+      td.term(data-bind="foreach:term")
+        span.name
+          span(data-bind="text:name||'x'")
+          sub(data-bind="text:index")
+        // ko if:exp !== 1
+        sup(data-bind="text:exp")
+        // /ko
+      // ko foreach:stats
+      td.stat
+        span.value(data-bind="text:value.toFixed(3)")
+      // /ko
+    // /ko

@@ -1,0 +1,11 @@
+
+input#input-dataset(type="file" accept=".csv" data-bind="value:dataset" hidden)
+label.button.input-dataset(for="input-dataset")
+    span Import Data
+    hr
+    span.small Upload CSV data to begin!
+input#input-model(type="file" accept=".json,.tf" data-bind="value:model" hidden)
+label.button.input-model(for="input-model")
+    span Import Model
+    hr
+    span.small Already have a model?

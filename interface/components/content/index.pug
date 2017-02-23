@@ -1,35 +1,14 @@
 
-// ko if:loaded
-span.options(data-bind="style:{width:100 - pane1() + '%'},event:{mouseover:hover('option')}")
-  tf-counter(params="name:'Multiplicands',value:multiplicands,max:9")
-  tf-pills(params="name:'Exponents',values:exponents,style:'check'")
-  header
-    span.title Candidates
-  table.candidates(data-bind="if:candidates().length")
-    thead
-      tr
-        th Term
-        // ko foreach:candidates()[0].stats
-        th(data-bind="text:name")
-        // /ko
-
-    tbody
-      // ko foreach:candidates
-      tr.candidate
-        td.term(data-bind="foreach:term")
-          span.name
-            span(data-bind="text:name||'x'")
-            sub(data-bind="text:index")
-          // ko if:exp !== 1
-          sup(data-bind="text:exp")
-          // /ko
-        // ko foreach:stats
-        td.stat
-          span.value(data-bind="text:value.toFixed(3)")
-        // /ko
-      // /ko
-// /ko
-span.grid(data-bind="style:{width:pane1() + '%'},event:{mouseover:hover('grid')},css:{init:!loaded()}")
-  tf-grid(params="loaded:loaded, cols:cols, dependent:dependent, rows:rows")
-
+span.wrapper
+  // ko ifnot:model
+  span.loader
+    tf-loader(params="model:model")
+  // /ko
+  // ko if:model
+  span.options
+    tf-options(params="model:model")
+  span.grid
+    tf-grid(params="model:model")
+  span.model
+  // /ko
 

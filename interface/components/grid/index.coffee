@@ -31,11 +31,17 @@ ko.components.register "tf-grid",
   viewModel: ( params ) ->
     @location   = ko.observable 0
     @pagesize   = ko.observable 10
-    @dependent  = params.dependent  or ko.observable 0
-    @loaded     = params.loaded     or ko.observable false
-    @cols       = params.cols       or ko.observableArray [ ]
-    @rows       = params.rows       or ko.observableArray [ ]
-    @name       = ko.observable null
+
+    unless ko.isObservable params.model
+      throw new TypeError "components/grid:
+      expects [model] to be observable"
+
+    model = params.model() # now static
+    @dependent  = model.dependent
+    #@loaded     = params.loaded     or ko.observable false
+    @cols       = model.cols
+    @rows       = model.rows
+    #@name       = ko.observable null
 
     @scroll = ( model, event) ->
       if event.deltaY < 0
@@ -48,12 +54,14 @@ ko.components.register "tf-grid",
     @cols.add = ( ) =>
       @cols.ins @cols().length
     ###
+    ###
     @cols.del = ( index ) =>
       @cols.splice index, 1
       for row in data = @rows()
         row.splice index, 1
       @rows data
       undefined
+    ###
 
     ###
     @cols.ins = ( index ) =>
@@ -66,10 +74,12 @@ ko.components.register "tf-grid",
       @rows.ins len = @rows().length
       @location len + 1 - @pagesize()
     ###
+    ###
     @rows.del = ( index ) =>
       return if do once_guard
       @rows.splice index, 1
       undefined
+    ###
     ###
     @rows.ins = ( index ) =>
       return if do once_guard
@@ -80,8 +90,9 @@ ko.components.register "tf-grid",
         @location @location() + 1
     ###
 
+    ###
     @load = ( table ) =>
-      @dependent table[0].length - 1
+      @dependent 0
       @name table.name
       @cols.removeAll()
       @rows.removeAll()
@@ -102,7 +113,7 @@ ko.components.register "tf-grid",
 
       a = document.createElement "a"
       a.href = URL.createObjectURL new Blob [csv], type: "text/csv"
-      a.download = "data.csv"
+      a.download = @name()
 
       document.body.appendChild a
       a.click()
@@ -117,6 +128,7 @@ ko.components.register "tf-grid",
       .then @load
       .catch ( error ) ->
         console.log "ERROR", error
+    ###
 
     return this
 
