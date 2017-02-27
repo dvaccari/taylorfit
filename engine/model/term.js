@@ -2,7 +2,7 @@
 const lstsq   = require('../matrix').lstsq;
 const Matrix  = require('../matrix').Matrix;
 
-const combos  = require('./combos.es6');
+const combos  = require('./combos');
 
 
 /**
@@ -65,9 +65,20 @@ class Term {
       if (DEBUG) {
         console.timeEnd('lstsq');
       }
+      theStats.coeff = theStats.weights.get(0, theStats.weights.shape[0]-1);
+      theStats.t = theStats.tstats.get(0, theStats.tstats.shape[0]-1);
+      theStats.pt = theStats.pts.get(0, theStats.pts.shape[0]-1);
+      delete theStats.weights;
+      delete theStats.tstats;
+      delete theStats.pts;
+
+      return theStats;
+
+      // XXX: Obsolete
       return {
-        t  : theStats.tstats.data[[theStats.tstats.shape[0] - 1]],
-        mse: theStats.mse
+        coeff : theStats.weights.get(0, theStats.weights.shape[0]-1),
+        t     : theStats.tstats.data[[theStats.tstats.shape[0] - 1]],
+        mse   : theStats.mse
       };
     } catch (e) {
       console.log(e);

@@ -1,9 +1,8 @@
 /*global onmessage, postMessage*/
 'use strict';
 
-var engine  = require('../index.es6');
-var model   = null;
-var cache   = {};
+var singleton = require('../model/singleton').getInstance();
+var cache     = {};
 
 const cacheKeys = ['dataset', 'dependent', 'exponents', 'multiplicands'];
 
@@ -43,6 +42,8 @@ var updateModel = function (data) {
     , col           = data.col
     , item          = data.item
     , i;
+
+  log('mults ' + multiplicands);
 
   if (dataset == null) {
     throw new TypeError('dataset must be specified');
@@ -134,48 +135,51 @@ onmessage = function (e) {
   switch(type) {
 
   case 'update':
-    updateCache(data);
-    updateModel(data);
-    log('new model:', model);
+    //updateCache(data);
+    //updateModel(data);
+    if (data.dataset != null) {
+      singleton.setDataset(data.dataset);
+    }
+    if (data.exponents != null) {
+      singleton.setExponents(data.exponents);
+    }
+    if (data.multiplicands != null) {
+      singleton.setMultiplicands(data.multiplicands);
+    }
+    if (data.dependent != null) {
+      singleton.setDependent(data.dependent);
+    }
+
+    log('new model:', singleton.model);
+
     postMessage({
       type: 'candidates',
-      data: model.compute().candidates
+      data: singleton.model.compute().candidates
     });
     break;
 
   case 'get_terms':
-    if (model == null) {
-      postMessage({ type: 'error', data: 'Model not instantiated' });
-    }
-    //var terms = model.candidates.map((term) => term.term);
-    //postMessage({ type: 'candidates', data: terms });
     postMessage({
       type: 'candidates',
-      data: model.compute().candidates
+      data: singleton.model.compute().candidates
     });
     break;
 
   case 'add_term':
-    if (model == null) {
-      postMessage({ type: 'error', data: 'Model not instantiated' });
-    }
-    model.addTerm(data, false);
-    // This should eventually send candidates and model
+    singleton.model.addTerm(data, false);
+
     postMessage({
       type: 'candidates',
-      data: formatCandidates(model.compute().candidates)
+      data: singleton.model.compute().candidates
     });
     break;
 
   case 'remove_term':
-    if (model == null) {
-      postMessage({ type: 'error', data: 'Model not instantiated' });
-    }
-    model.removeTerm(data, false);
+    singleton.model.removeTerm(data, false);
     // This should also eventually send candidates and model
     postMessage({
       type: 'candidates',
-      data: formatCandidates(model.compute().candidates)
+      data: singleon.model.compute().candidates
     });
     break;
 

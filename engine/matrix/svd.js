@@ -1,5 +1,5 @@
 
-const Matrix  = require('./matrix.es6');
+const Matrix  = require('./matrix');
 
 function pythag(a, b) {
   var absa = Math.abs(a)

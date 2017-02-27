@@ -1,6 +1,6 @@
 
 const Model   = require('./model');
-const utils   = require('./utils.es6');
+const utils   = require('./utils');
 const Matrix  = require('./matrix').Matrix;
 
 

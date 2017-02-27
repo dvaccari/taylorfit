@@ -1,10 +1,10 @@
 
 const lstsq         = require('../matrix').lstsq;
 const Matrix        = require('../matrix').Matrix;
-const utils         = require('../utils.es6');
+const utils         = require('../utils');
 
-const Term          = require('./term.es6');
-const combos        = require('./combos.es6');
+const Term          = require('./term');
+const combos        = require('./combos');
 
 /**
  * Private members
@@ -112,6 +112,9 @@ class Model {
     this[_terms] = terms.map(
       (pair) => this[_candyTerms].find((term) => term.equals(pair))
     );
+
+    // Add bias term
+    this[_terms].push(new Term([[0, 0]], this));
 
     // If any terms are specified, compute the model & all candidate terms
     if (terms.length !== 0) {

@@ -1,5 +1,5 @@
 
-const utils = require('../utils.es6');
+const utils = require('../utils');
 
 /**
  * Private members
@@ -13,6 +13,8 @@ const _n    = Symbol('n');
 // Maximum number of decimal points to print
 const PRINT_DECIMALS = 5;
 
+// Number.MAX_SAFE_INTEGER value [ i.e. doesn't support :( ]
+const MAX_SAFE_INTEGER = Math.pow(2, 53) - 1;
 
 /**
  * Swap rows `i` and `j` in matrix `m` in place.
@@ -139,23 +141,30 @@ class Matrix {
   /**
    * Performs element-wise addition between two matrices and returns a new copy.
    *
-   * @param {Matrix<m,n>} other Matrix with equivalent dimensions to this
+   * @param {number | Matrix<m,n>} other  Scalar or Matrix with equivalent
+   *                                      dimensions to this
    * @return {Matrix<m,n>} this + other
    * @throws {Error} If dimensions do not match
    */
   add(other) {
-    if (this[_m] !== other[_m] || this[_n] !== other[_n]) {
-      throw new Error('Dimensions (' + this.shape +
-                      ') and (' + other.shape + ') do not match: ' +
-                      this[_n] + ' !== ' + other[_m] + ' && ' +
-                      this[_m] + ' !== ' + other[_m]);
-    }
-
     var sum = this.clone()
       , i;
 
-    for (i = 0; i < sum[_data].length; i += 1) {
-      sum[_data][i] += other[_data][i];
+    if (typeof other === 'number') {
+      for (i = 0; i < sum[_data].length; i += 1) {
+        sum[_data][i] += other;
+      }
+    } else {
+      if (this[_m] !== other[_m] || this[_n] !== other[_n]) {
+        throw new Error('Dimensions (' + this.shape +
+                        ') and (' + other.shape + ') do not match: ' +
+                        this[_n] + ' !== ' + other[_m] + ' && ' +
+                        this[_m] + ' !== ' + other[_m]);
+      }
+
+      for (i = 0; i < sum[_data].length; i += 1) {
+        sum[_data][i] += other[_data][i];
+      }
     }
     return sum;
   }
@@ -164,23 +173,30 @@ class Matrix {
    * Performs element-wise subtraction between two matrices and returns a new
    * copy.
    *
-   * @param {Matrix<m,n>} other Matrix with equivalent dimensions to this
+   * @param {number | Matrix<m,n>} other  Scalar or Matrix with equivalent
+   *                                      dimensions to this
    * @return {Matrix<m,n>} this - other
    * @throws {Error} If dimensions do not match
    */
   sub(other) {
-    if (this[_m] !== other[_m] || this[_n] !== other[_n]) {
-      throw new Error('Dimensions (' + this.shape +
-                      ') and (' + other.shape + ') do not match: ' +
-                      this[_n] + ' !== ' + other[_m] + ' && ' +
-                      this[_m] + ' !== ' + other[_m]);
-    }
-
     var sum = this.clone()
-    , i;
+      , i;
 
-    for (i = 0; i < sum[_data].length; i += 1) {
-      sum[_data][i] -= other[_data][i];
+    if (typeof other === 'number') {
+      for (i = 0; i < sum[_data].length; i += 1) {
+        sum[_data][i] -= other;
+      }
+    } else {
+      if (this[_m] !== other[_m] || this[_n] !== other[_n]) {
+        throw new Error('Dimensions (' + this.shape +
+                        ') and (' + other.shape + ') do not match: ' +
+                        this[_n] + ' !== ' + other[_m] + ' && ' +
+                        this[_m] + ' !== ' + other[_m]);
+      }
+
+      for (i = 0; i < sum[_data].length; i += 1) {
+        sum[_data][i] -= other[_data][i];
+      }
     }
     return sum;
   }
@@ -321,6 +337,9 @@ class Matrix {
 
     for (i = 0; i < powd[_data].length; i += 1) {
       powd[_data][i] = Math.pow(powd[_data][i], exponent);
+      if (!Number.isFinite(powd[_data][i])) {
+        powd[_data][i] = MAX_SAFE_INTEGER;
+      }
     }
     return powd;
   }
