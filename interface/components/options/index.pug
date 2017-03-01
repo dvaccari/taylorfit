@@ -1,8 +1,7 @@
 
-tf-counter(params="name:'Multiplicands',value:multiplicands,max:9")
-tf-pills(params="name:'Exponents',values:exponents,style:'check'")
-header
-  span.title Candidates
+.questions
+  tf-counter.multiplicands(params="name:'Multiplicands',value:multiplicands,max:9")
+  tf-pills.exponents(params="name:'Exponents',values:exponents,style:'check'")
 table.candidates(data-bind="if:candidates().length")
   thead
     tr
@@ -13,7 +12,7 @@ table.candidates(data-bind="if:candidates().length")
 
   tbody
     // ko foreach:candidates
-    tr.candidate
+    tr.candidate(data-bind="click:$parent.candidate_click")
       td.term(data-bind="foreach:term")
         span.name
           span(data-bind="text:name||'x'")

@@ -12,6 +12,7 @@ tf-content
   & > span.wrapper
     size 100%
     display block
+    overflow hidden
 
     & >.loader
       size 100%
@@ -34,25 +35,19 @@ tf-content
         & > .small
           font-size 12pt
 
-    & > .options, & > .grid
-      transition width 1s, height 1s
+
+    .options
+    .data
+    .model
       padding 20px
       box-sizing border-box
-
       display block
-      overflow auto
-      width 20%
-      height 100%
-      &:hover
-        width 80%
 
-
-    & > .options
+    .options
       float right
       text-align right
 
-    & > .grid
+    .data
       float left
-      box-shadow 3px 0 0 #CCC
 
 

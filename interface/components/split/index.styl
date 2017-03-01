@@ -1,0 +1,46 @@
+
+tf-split-border = rgba(black, 0.1)
+
+[tf-split]
+  position relative
+  display inline-block
+  size 100%
+
+  & > *:nth-child(1)
+  & > *:nth-child(2)
+    transition width 500ms, height 500ms
+    position absolute
+    display inline-block
+    box-sizing border-box
+    overflow auto
+    size 50%
+
+  &[direction="horizontal"]
+    & > *:nth-child(1)
+      box-shadow 2px 0 0 tf-split-border
+      left 0
+    & > *:nth-child(2)
+      box-shadow -2px 0 0 tf-split-border
+      right 0
+    & > *:nth-child(1)
+    & > *:nth-child(2)
+      height 100%
+      &[hover="true"]
+        width 80%
+      &[hover="false"]
+        width 20%
+
+  &[direction="vertical"]
+    & > *:nth-child(1)
+      box-shadow 0 2px 0 tf-split-border
+      top 0
+    & > *:nth-child(2)
+      box-shadow 0 -2px 0 tf-split-border
+      bottom 0
+    & > *:nth-child(1)
+    & > *:nth-child(2)
+      width 100%
+      &[hover="true"]
+        height 80%
+      &[hover="false"]
+        height 20%

@@ -5,10 +5,12 @@ span.wrapper
     tf-loader(params="model:model")
   // /ko
   // ko if:model
-  span.options
-    tf-options(params="model:model")
-  span.grid
-    tf-grid(params="model:model")
-  span.model
+  .split-model(data-bind="split:{direction:'vertical'}")
+    .split-data(data-bind="split:{direction:'horizontal'}")
+      .data
+        tf-grid(params="model:model")
+      .options
+        tf-options(params="model:model")
+    .model
   // /ko
 

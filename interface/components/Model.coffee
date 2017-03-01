@@ -42,16 +42,16 @@ module.exports = class Model
 
     adapter.on "candidates", ( candidates ) =>
       cols = @cols()
-      candidates.forEach ( c ) ->
-        return if c.processed
-        c.stats = ({name, value} \
+      candidates = candidates.map ( c ) ->
+        return c if c.raw
+        raw: c
+        stats: ({name, value} \
           for name, value of c.stats)
-
-        c.term = c.term.map ( term ) ->
+        term: c.term.map ( term ) ->
           name: cols[term[0]]?.name
           index: term[0]
           exp: term[1]
-        c.processed = true
+
       @candidates candidates.sort ( a, b ) ->
         b.stats[0].value - a.stats[0].value
 
