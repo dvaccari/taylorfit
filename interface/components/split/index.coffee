@@ -33,5 +33,3 @@ ko.bindingHandlers.split =
       child1.setAttribute "hover", false
       child2.setAttribute "hover", true
 
-
-

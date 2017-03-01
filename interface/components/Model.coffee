@@ -43,17 +43,23 @@ module.exports = class Model
     adapter.on "candidates", ( candidates ) =>
       cols = @cols()
       candidates = candidates.map ( c ) ->
-        return c if c.raw
-        raw: c
-        stats: ({name, value} \
-          for name, value of c.stats)
-        term: c.term.map ( term ) ->
-          name: cols[term[0]]?.name
-          index: term[0]
-          exp: term[1]
+        return c if c.selected?
+        result =
+          selected: ko.observable false
+          stats: ({name, value} \
+            for name, value of c.stats)
+          term: c.term.map ( term ) ->
+            name: cols[term[0]]?.name
+            index: term[0]
+            exp: term[1]
+        result.selected.subscribe ( ) ->
+          adapter.post_add_term c.term
+        return result
 
       @candidates candidates.sort ( a, b ) ->
         b.stats[0].value - a.stats[0].value
+
+
 
   toJSON: ( ) ->
     shallow = { }

@@ -39,6 +39,9 @@ module.exports = new class WorkerAdapter extends ME
       type: target
       data: message
 
+  post_add_term: ( term ) ->
+    @post "add_term", term
+
   post_dataset: ( s, d, m, e ) ->
     @post "update",
       dataset: s
