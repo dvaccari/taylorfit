@@ -168,9 +168,15 @@ onmessage = function (e) {
   case 'add_term':
     singleton.model.addTerm(data, false);
 
+    let updatedModel = singleton.model.compute();
+
     postMessage({
       type: 'candidates',
-      data: singleton.model.compute().candidates
+      data: updatedModel.candidates
+    });
+    postMessage({
+      type: 'model',
+      data: updatedModel.model
     });
     break;
 
@@ -179,7 +185,7 @@ onmessage = function (e) {
     // This should also eventually send candidates and model
     postMessage({
       type: 'candidates',
-      data: singleon.model.compute().candidates
+      data: singleton.model.compute().candidates
     });
     break;
 
