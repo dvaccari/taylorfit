@@ -8,7 +8,13 @@ tf-split-border = rgba(black, 0.1)
 
   & > *:nth-child(1)
   & > *:nth-child(2)
-    transition width 500ms, height 500ms
+    transition width 600ms, height 600ms
+    // bounce
+    // transition-timing-function cubic-bezier(0.175, 0.885, 0.32, 1.275)
+    // sine
+    // transition-timing-function cubic-bezier(0.445, 0.05, 0.55, 0.95)
+    // cubic
+    transition-timing-function cubic-bezier(0.645, 0.045, 0.355, 1)
     position absolute
     display inline-block
     box-sizing border-box
