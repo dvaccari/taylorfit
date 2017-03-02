@@ -212,8 +212,6 @@ class Model {
 
     return {
       model: {
-        weights: this[_weights].data,
-        tstats: things.tstats.data,
         terms: this[_terms].map((term, i) => ({
           term: term.term,
           stats: {
@@ -221,7 +219,8 @@ class Model {
             pt: things.pts.data[i]
           },
           coeff: things.weights.data[i]
-        }))
+        })),
+        stats: things
       },
       candidates: candidateTerms
     };
