@@ -3,14 +3,15 @@
 span.terms
   // ko foreach: result().terms
   span.term
-    //- TODO: if not first
     span.control
       // ko foreach:stats
       span.stat
         span.name(data-bind="text:name")
         span.value(data-bind="text:value.toFixed(3)")
       // /ko
+      // ko if:$index() !== 0
       span.remove(data-bind="click:function(){selected(true)}") Remove
+      // /ko
     span.coeff(data-bind="text:coeff.toFixed(3)")
     // ko foreach:term
     // ko if:exp
@@ -26,6 +27,14 @@ span.terms
     // /ko
   span.plus +
   // /ko
+span.stats
+  // ko foreach:result().stats
+  // ko if:"number" === typeof value
+  span.stat
+    span.name(data-bind="text:name")
+    span.value(data-bind="text:value.toFixed(3)")
+  // /ko
+  // /ko
 
   //- TODO: add stats to a tooltip
   //- ko foreach:stats
@@ -34,6 +43,6 @@ span.terms
     // /ko
 // /ko
 // ko ifnot:result
-span Select candidate terms to create a model.
+span.nomodel Select candidate terms to create a model.
 // /ko
 

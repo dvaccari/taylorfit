@@ -14,8 +14,4 @@ ko.components.register "tf-options",
     @multiplicands = model.multiplicands
     @candidates = model.candidates
 
-    @candidate_click = ( ) ->
-      this.selected true
-      console.log this, arguments
-
     return this

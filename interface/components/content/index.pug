@@ -6,12 +6,12 @@ span.wrapper
   // /ko
   // ko if:model
   .split-model(data-bind="split:{direction:'vertical'}")
+    .model
+      tf-result(params="model:model")
     .split-data(data-bind="split:{direction:'horizontal'}")
       .data
         tf-grid(params="model:model")
       .options
         tf-options(params="model:model")
-    .model
-      tf-result(params="model:model")
   // /ko
 

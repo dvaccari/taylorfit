@@ -64,9 +64,11 @@ module.exports = class Model
         b.stats[0].value - a.stats[0].value
 
     adapter.on "model", ( model ) =>
-      cols = @cols()
-      @result
+      @result {
         terms: mapper model.terms, "remove"
+        stats: ({name, value} \
+          for name, value of model.stats)
+      }
 
 
   toJSON: ( ) ->

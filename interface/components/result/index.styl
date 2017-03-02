@@ -2,15 +2,38 @@
 darken-amount = 6%
 
 tf-result
-  & > .terms
-    text-align center
+  text-align center
+
+  & > .nomodel
     display block
+
+  & > .stats
+    display block
+    margin-top 10px
+    & > .stat
+      background #EEE
+      box-shadow 0 0 0 1px #CCC
+      color black
+      border-radius 4px
+      margin 4px
+      padding 5px
+      font-size 12pt
+      & > *
+        padding 3px
+      & > .name
+        text-transform uppercase
+
+  & > .terms
+    display block
+
     & > .plus
       color black
       display inline-block
       padding 7px 3px
+
       &:last-child
         display none
+
     & > .term
       position relative
       display inline-block
