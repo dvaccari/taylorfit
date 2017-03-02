@@ -488,7 +488,7 @@ class Matrix {
    * @param {number[]} cols Array of indices used to construct the subset
    * @return {Matrix<rows.length, cols.length>} Subset of this
    */
-  subset(rows, cols) {
+  subset(rows=':', cols=':') {
     rows = utils.convertRange(rows, this[_m]);
     cols = utils.convertRange(cols, this[_n]);
 
@@ -496,7 +496,7 @@ class Matrix {
       , i, j;
 
     for (i = 0; i < rows.length; i += 1) {
-      for (j = 0; j < rows.length; j += 1) {
+      for (j = 0; j < cols.length; j += 1) {
         subMatrix[_data][i * subMatrix[_n] + j] =
           this[_data][rows[i] * this[_n] + cols[j]];
       }

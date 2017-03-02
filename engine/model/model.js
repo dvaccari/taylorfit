@@ -22,6 +22,7 @@ const _y            = Symbol('y');
 const _candyTerms   = Symbol('candidateTerms');
 const _means        = Symbol('means');
 const _variances    = Symbol('variances');
+const _lags         = Symbol('lags');
 
 
 function standardize(X) {
@@ -88,8 +89,11 @@ class Model {
    *                                  but 3 means that candidate terms with
    *                                  1, 2, and 3 multiplicands will be computed
    *                                  (x, xy, xyz, ...)
+   * @param {number[]}    lags        List of lags to apply to consider for each
+   *                                  term
    */
-  constructor(X, y, exponents=[1], multipliers=1, terms=[], headers=null) {
+  constructor(X, y, exponents=[1], multipliers=1, lags=[0],
+              terms=[], headers=null) {
     //var standardizedX = standardize(X);
     this[_X] = X; //standardizedX.X;
     //this[_means] = standardizedX.means;
@@ -99,14 +103,17 @@ class Model {
 
     this[_Xaugmented] = new Matrix(X.shape[0], 0);
     this[_weights] = [];
+    this[_lags] = lags;
 
     // Create a range [1, 2, 3, ..., n] for n multipliers
     multipliers = utils.range(1, multipliers + 1);
 
     // Generate candidate terms for the given parameters
-    this[_candyTerms] = combos
-      .generateTerms(X.shape[1], exponents, multipliers)
-      .map((term) => new Term(term, this));
+    let candidates = combos.generateTerms(X.shape[1], exponents, multipliers);
+
+    this[_candyTerms] = [].concat.apply([], lags.map(
+      (lag) => utils.clone(candidates).map(
+        (term) => new Term(this, term, lag))));
 
     // Find the initial terms in candyTerms and add them to the model
     this[_terms] = terms.map(
@@ -114,7 +121,7 @@ class Model {
     );
 
     // Add bias term
-    this[_terms].push(new Term([[0, 0]], this));
+    this[_terms].unshift(new Term(this, [[0, 0]]));
 
     // If any terms are specified, compute the model & all candidate terms
     if (terms.length !== 0) {
@@ -129,17 +136,19 @@ class Model {
    * Beware: Each time a term is added, every candidate term needs to be
    * recomputed.
    *
-   * @param {Term | [number, number][]} term The term to be added to the model
+   * @param {Term | Object}       term        Term to compare against
+   * @param {[number, number][]}  term.parts  [col, exp] pairs (if Object)
+   * @param {number}              term.lag    lag (if Object)
    * @param {boolean} [recompute] Optional flag indicating whether or not to
    *                              recompute the model
    * @return {Term[]} List of current terms in the model
    */
   addTerm(term, recompute=true) {
-    if (!Array.isArray(term)) {
+    if (!Array.isArray(term) && !Array.isArray(term.parts)) {
       throw new TypeError('Expected an array of [col, exp] pairs');
     }
 
-    term.forEach((pair) => {
+    term.parts.forEach((pair) => {
       if (!Array.isArray(pair) || pair.length !== 2) {
         throw new TypeError('Invalid [col, exp] pair: ' + JSON.stringify(pair));
       }
@@ -152,6 +161,10 @@ class Model {
     }
 
     found = this[_candyTerms].find((candyTerm) => candyTerm.equals(term));
+
+    if (!found) {
+      found = new Term(this, term.parts, term.lag);
+    }
 
     this[_terms].push(found);
 
@@ -168,7 +181,9 @@ class Model {
    * Beware: Each time a term is removed, every candidate term needs to be
    * recomputed.
    *
-   * @param {Term | [number, number][]} term The term to be added to the model
+   * @param {Term | Object}       removee       Term to compare against
+   * @param {[number, number][]}  removee.parts [col, exp] pairs (if Object)
+   * @param {number}              removee.lag   lag (if Object)
    * @param {boolean} [recompute] Optional flag indicating whether or not to
    *                              recompute the model
    * @return {Term[]} List of current terms in the model
@@ -206,7 +221,7 @@ class Model {
           .filter((term) => !this[_terms].includes(term))
           // Create primitive representation for each term
           .map((term) => ({
-            term : term.term,
+            term : term.valueOf(),
             stats: term.getStats()
           }));
 
@@ -215,7 +230,7 @@ class Model {
         weights: this[_weights].data,
         tstats: things.tstats.data,
         terms: this[_terms].map((term, i) => ({
-          term: term.term,
+          term: term.valueOf(),
           stats: {
             t: things.tstats.data[i],
             pt: things.pts.data[i]

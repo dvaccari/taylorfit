@@ -149,6 +149,9 @@ onmessage = function (e) {
     if (data.dependent != null) {
       singleton.setDependent(data.dependent);
     }
+    if (data.lags != null) {
+      singleton.setLags(data.lags);
+    }
 
     log('new model:', singleton.model);
 

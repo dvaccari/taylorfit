@@ -13,6 +13,7 @@ const combos  = require('./combos');
 const _term   = Symbol('term');
 const _model  = Symbol('model');
 const _col    = Symbol('col');
+const _lag    = Symbol('lag');
 
 
 const DEBUG   = false;
@@ -29,14 +30,17 @@ class Term {
    * Creates a new Term.
    *
    * @constructor
+   * @param {Model}               model Model that owns this Term
    * @param {[number, number][]}  term  List of pairs of numbers. The first is
    *                                    the index of a column, where the second
    *                                    is the exponent to raise that column to
-   * @param {Model}               model Model that owns this Term
+   * @param {number}              [lag] Moves this column down `lag` rows from
+   *                                    the top of `X`
    */
-  constructor(term, model) {
-    this[_term] = term;
+  constructor(model, term, lag=0) {
     this[_model] = model;
+    this[_term] = term;
+    this[_lag] = lag;
     this[_col] = this.computeColumn(model.X);
   }
 
@@ -94,7 +98,7 @@ class Term {
    */
   computeColumn(X) {
     var sum = new Matrix(X.shape[0], 1)
-    , i;
+      , i;
 
     for (i = 0; i < this[_term].length; i += 1) {
       sum = sum.add(X.col(this[_term][i][0]).dotPow(this[_term][i][1]));
@@ -105,19 +109,33 @@ class Term {
   /**
    * Determines if this term is equivalent to `other`.
    *
-   * @param {Term | [number, number][]} other Term to compare against
+   * @param {Term | Object}       other       Term to compare against
+   * @param {[number, number][]}  other.parts [col, exp] pairs (if Object)
+   * @param {number}              other.lag   lag (if Object)
    * @return {boolean} True if the terms are equivalent, false otherwise
    */
   equals(other) {
-    other = other[_term] || other;
+    if (other[_term]) {
+      other = { parts: other[_term], lag: other[_lag] };
+    }
 
-    if (other.length !== this[_term].length) {
+    if (other.parts.length !== this[_term].length) {
       return false;
     }
 
-    return other.every((oMult) => this[_term].find(
+    return other.parts.every((oMult) => this[_term].find(
       (tMult) => oMult[0] === tMult[0] && oMult[1] === tMult[1]
-    ));
+    )) && other.lag === this[_lag];
+  }
+
+  /**
+   * Returns the information necessary to reconstruct the term in a plain
+   * object (except the reference to the model).
+   *
+   * @return {Object} { parts, lag }
+   */
+  valueOf() {
+    return { parts: this[_term], lag: this[_lag] };
   }
 
   /**

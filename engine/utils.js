@@ -1,3 +1,4 @@
+'use strict';
 
 function nspaces(n) {
   n = Math.max(0, n);
@@ -70,4 +71,17 @@ module.exports.padAll = (lwidth, str) => {
     return str.split('\n').map((s) => pad(lwidth + s.length, s)).join('\n');
   }
   return pad(lwidth, str);
+};
+
+let clone = module.exports.clone = (obj) => {
+  if (typeof obj !== 'object') {
+    return obj;
+  }
+  if (Array.isArray(obj)) {
+    return obj.map(clone);
+  }
+
+  let newObj = {};
+  Object.keys(obj).forEach((key) => newObj[key] = clone(obj[key]));
+  return newObj;
 };
