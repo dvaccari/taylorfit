@@ -12,6 +12,7 @@ module.exports = class Model
     multiplicands: 1
     exponents: 1: true
     candidates: [ ]
+    result: null
 
   constructor: ( options ) ->
     for key, value of DEFAULTS
@@ -40,25 +41,32 @@ module.exports = class Model
     @exponents.subscribe ( next ) ->
       adapter.post_exponents exponents2array next
 
-    adapter.on "candidates", ( candidates ) =>
-      cols = @cols()
-      candidates = candidates.map ( c ) ->
-        return c if c.selected?
+    mapper = ( terms, fn ) =>
+      cols = ko.unwrap @cols
+      terms.map ( t ) ->
+        return t if t.selected?
         result =
           selected: ko.observable false
           stats: ({name, value} \
-            for name, value of c.stats)
-          term: c.term.map ( term ) ->
+            for name, value of t.stats)
+          # TODO, remove hack
+          coeff: t.coeff or t.stats.coeff
+          term: t.term.map ( term ) ->
             name: cols[term[0]]?.name
             index: term[0]
             exp: term[1]
         result.selected.subscribe ( ) ->
-          adapter.post_add_term c.term
+          adapter["post_#{fn}_term"] t.term
         return result
 
-      @candidates candidates.sort ( a, b ) ->
+    adapter.on "candidates", ( candidates ) =>
+      @candidates (mapper candidates, "add").sort ( a, b ) ->
         b.stats[0].value - a.stats[0].value
 
+    adapter.on "model", ( model ) =>
+      cols = @cols()
+      @result
+        terms: mapper model.terms, "remove"
 
 
   toJSON: ( ) ->

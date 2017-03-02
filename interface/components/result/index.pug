@@ -1,0 +1,39 @@
+
+// ko if:result
+span.terms
+  // ko foreach: result().terms
+  span.term
+    //- TODO: if not first
+    span.control
+      // ko foreach:stats
+      span.stat
+        span.name(data-bind="text:name")
+        span.value(data-bind="text:value.toFixed(3)")
+      // /ko
+      span.remove(data-bind="click:function(){selected(true)}") Remove
+    span.coeff(data-bind="text:coeff.toFixed(3)")
+    // ko foreach:term
+    // ko if:exp
+    span.name
+      span(data-bind="text:name||'x'")
+      // ko ifnot:name
+      sub(data-bind="text:index")
+      // /ko
+      // ko if:exp !== 1
+      sup(data-bind="text:exp")
+      // /ko
+    // /ko
+    // /ko
+  span.plus +
+  // /ko
+
+  //- TODO: add stats to a tooltip
+  //- ko foreach:stats
+    td.stat
+      span.value(data-bind="text:value.toFixed(3)")
+    // /ko
+// /ko
+// ko ifnot:result
+span Select candidate terms to create a model.
+// /ko
+

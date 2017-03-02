@@ -9,5 +9,6 @@ require "./header"
 require "./loader"
 require "./options"
 require "./pills"
+require "./result"
 require "./split"
 

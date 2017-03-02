@@ -1,0 +1,82 @@
+
+darken-amount = 6%
+
+tf-result
+  & > .terms
+    text-align center
+    display block
+    & > .plus
+      color black
+      display inline-block
+      padding 7px 3px
+      &:last-child
+        display none
+    & > .term
+      position relative
+      display inline-block
+      padding 7px
+
+      & > *:not(:last-child):after
+        content "·"
+        margin 0 2px
+
+      & > .control
+        absolute left 0
+        padding-top 28px
+        text-align center
+        width 100%
+        box-shadow 0 0 0 2px rgba(black, 0.3)
+        border-radius 4px
+        color black
+        overflow hidden
+        pointer-events none
+        opacity 0
+        transition opacity 300ms
+        z-index 10
+
+        &:after
+          content ""
+          margin 0
+
+        & > *
+          display inline-block
+          background white
+          width 100%
+          box-shadow inset 0 1px 0 0 #CCC
+          font-size 12pt
+          padding 5px 7px
+          box-sizing border-box
+
+        & > .stat
+          background #EEE
+          & > *
+            display inline-block
+          & > .name
+            text-align left
+            width 20%
+          & > .value
+            text-align right
+            width 80%
+
+        & > .remove
+          cursor pointer
+          background red
+          color white
+
+      &:hover
+        & > .control
+          opacity 1
+          pointer-events initial
+
+      &:nth-child(2)
+        color darken(red,darken-amount)
+      &:nth-child(3)
+        color darken(blue,darken-amount)
+      &:nth-child(4)
+        color darken(green,darken-amount)
+      &:nth-child(5)
+        color darken(orange,darken-amount)
+      &:nth-child(6)
+        color darken(purple,darken-amount)
+      &:nth-child(7)
+        color darken(cyan,darken-amount)
