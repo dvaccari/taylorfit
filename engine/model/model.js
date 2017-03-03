@@ -1,9 +1,11 @@
+'use strict';
 
 const lstsq         = require('../matrix').lstsq;
 const Matrix        = require('../matrix').Matrix;
 const utils         = require('../utils');
 
 const Term          = require('./term');
+const TermPool      = require('./termpool');
 const combos        = require('./combos');
 
 /**
@@ -74,7 +76,8 @@ class Model {
 
   /**
    * Craft a new model from an input feature matrix X, an actual value
-   * column y, a list of exponents, and a list of # of multiplicands.
+   * column y, a list of exponents, a list of # of multiplicands, and a list of
+   * lags.
    *
    * @constructor
    * @param {Matrix<n,m>} X           The input feature set, where each column
@@ -92,14 +95,14 @@ class Model {
    * @param {number[]}    lags        List of lags to apply to consider for each
    *                                  term
    */
-  constructor(X, y, exponents=[1], multipliers=1, lags=[0],
-              terms=[], headers=null) {
+  constructor(X, y, exponents=[1], multipliers=1, lags=[], terms=[]) {
     //var standardizedX = standardize(X);
     this[_X] = X; //standardizedX.X;
     //this[_means] = standardizedX.means;
     //this[_variances] = standardizedX.vars;
     this[_y] = y;
-    this[_headers] = headers;
+
+    this.candidates = new TermPool(this);
 
     this[_Xaugmented] = new Matrix(X.shape[0], 0);
     this[_weights] = [];
@@ -111,9 +114,8 @@ class Model {
     // Generate candidate terms for the given parameters
     let candidates = combos.generateTerms(X.shape[1], exponents, multipliers);
 
-    this[_candyTerms] = [].concat.apply([], lags.map(
-      (lag) => utils.clone(candidates).map(
-        (term) => new Term(this, term, lag))));
+    this[_candyTerms] = candidates.map(
+      (term) => new Term(this, term.parts, term.lag));
 
     // Find the initial terms in candyTerms and add them to the model
     this[_terms] = terms.map(
@@ -127,6 +129,13 @@ class Model {
     if (terms.length !== 0) {
       this.compute();
     }
+  }
+
+  // TODO: document
+  highestLag() {
+    return this[_terms].reduce(
+      (highest, term) => (highest.lag > term.lag) ? highest : term
+    ).lag;
   }
 
   /**
@@ -206,10 +215,14 @@ class Model {
    *    results
    */
   compute() {
+    let highestLag = this.highestLag();
+
     this[_Xaugmented] = this[_terms]
-      .map((term) => term.col)
+      .map((term) => term.col.shift(term.lag))
       .reduce((prev, curr) => prev.hstack(curr),
               new Matrix(this[_X].shape[0], 0));
+
+    let Xlagged = this[_Xaugmented].lo(highestLag);
 
     // Perform least squares using the terms added the model
     var things = lstsq(this[_Xaugmented], this[_y]);

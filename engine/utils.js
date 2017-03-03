@@ -85,3 +85,5 @@ let clone = module.exports.clone = (obj) => {
   Object.keys(obj).forEach((key) => newObj[key] = clone(obj[key]));
   return newObj;
 };
+
+module.exports.join = (arr) => [].concat.apply([], arr);

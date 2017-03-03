@@ -1,8 +1,7 @@
+'use strict';
 
 const lstsq   = require('../matrix').lstsq;
 const Matrix  = require('../matrix').Matrix;
-
-const combos  = require('./combos');
 
 
 /**
@@ -10,13 +9,9 @@ const combos  = require('./combos');
  *
  * @private
  */
-const _term   = Symbol('term');
+const _parts  = Symbol('parts');
 const _model  = Symbol('model');
-const _col    = Symbol('col');
-const _lag    = Symbol('lag');
-
-
-const DEBUG   = false;
+const _cache  = Symbol('cache');
 
 
 /**
@@ -30,18 +25,33 @@ class Term {
    * Creates a new Term.
    *
    * @constructor
-   * @param {Model}               model Model that owns this Term
-   * @param {[number, number][]}  term  List of pairs of numbers. The first is
-   *                                    the index of a column, where the second
-   *                                    is the exponent to raise that column to
-   * @param {number}              [lag] Moves this column down `lag` rows from
-   *                                    the top of `X`
+   * @param {Model}             model         Model that owns this Term
+   * @param {[num, num, num][]} parts         List of triples of numbers
+   * @param {number}            parts[i][0]   First is the index of a column
+   * @param {number}            parts[i][1]   Second is the exponent to raise
+   *                                          that column to
+   * @param {number}           [parts[i][2]]  Third is the lag to apply to that
+   *                                          column
    */
-  constructor(model, term, lag=0) {
+  constructor(model, parts) {
+    if (!parts.every(Array.isArray)) {
+      throw new TypeError('Part does not match: [col, exp (,lag)]');
+    }
+
+    this[_parts] = parts.map((part) => {
+      if (part.length < 2) {
+        throw new TypeError('Part does not match: [col, exp (,lag)]');
+      }
+      if (part.length < 3) {
+        return part.concat(0);
+      }
+      return part.slice();
+    });
+
     this[_model] = model;
-    this[_term] = term;
-    this[_lag] = lag;
-    this[_col] = this.computeColumn(model.X);
+
+    this[_cache] = { };
+    this[_cache].col = this.col;
   }
 
   /**
@@ -51,24 +61,13 @@ class Term {
    * @return {t: number, mse: number} Statistics for the regression
    */
   getStats() {
-    if (DEBUG) {
-      console.time('createPolyMatrix');
-    }
-    var XAugmented = this[_model].data.hstack(this[_col])
+    let lag = Math.max(this[_model].highestLag(), this.lag)
+      , XLagged = this[_model].X.hstack(this.col).lo(lag)
+      , yLagged = this[_model].y.lo(lag)
       , theStats;
 
-    if (DEBUG) {
-      console.timeEnd('createPolyMatrix');
-    }
-
     try {
-      if (DEBUG) {
-        console.time('lstsq');
-      }
-      theStats = lstsq(XAugmented, this[_model].y);
-      if (DEBUG) {
-        console.timeEnd('lstsq');
-      }
+      theStats = lstsq(XLagged, yLagged);
       theStats.coeff = theStats.weights.get(0, theStats.weights.shape[0]-1);
       theStats.t = theStats.tstats.get(0, theStats.tstats.shape[0]-1);
       theStats.pt = theStats.pts.get(0, theStats.pts.shape[0]-1);
@@ -79,83 +78,97 @@ class Term {
       return theStats;
 
       // XXX: Obsolete
+      /*
       return {
         coeff : theStats.weights.get(0, theStats.weights.shape[0]-1),
         t     : theStats.tstats.data[[theStats.tstats.shape[0] - 1]],
         mse   : theStats.mse
       };
+       */
     } catch (e) {
-      console.log(e);
+      console.error(e);
       return NaN;
     }
   }
 
-  /**
-   * Compute the data column for a given matrix.
-   *
-   * @param {Matrix} X The input data matrix
-   * @return {Matrix<n,1>} n x 1 Matrix -- polynomial combo of columns in term
-   */
-  computeColumn(X) {
-    var sum = new Matrix(X.shape[0], 1)
-      , i;
-
-    for (i = 0; i < this[_term].length; i += 1) {
-      sum = sum.add(X.col(this[_term][i][0]).dotPow(this[_term][i][1]));
-    }
-    return sum;
+  clearCache() {
+    this[_cache].col = null;
+    return this;
   }
 
   /**
    * Determines if this term is equivalent to `other`.
    *
-   * @param {Term | Object}       other       Term to compare against
-   * @param {[number, number][]}  other.parts [col, exp] pairs (if Object)
-   * @param {number}              other.lag   lag (if Object)
+   * @param {Term | [num, num, num][]}  other Term to compare against
    * @return {boolean} True if the terms are equivalent, false otherwise
    */
   equals(other) {
-    if (other[_term]) {
-      other = { parts: other[_term], lag: other[_lag] };
+    if (other instanceof Term) {
+      other = other.valueOf();
     }
 
-    if (other.parts.length !== this[_term].length) {
+    if (other.length !== this[_parts].length) {
       return false;
     }
 
-    return other.parts.every((oMult) => this[_term].find(
-      (tMult) => oMult[0] === tMult[0] && oMult[1] === tMult[1]
-    )) && other.lag === this[_lag];
+    let thiz = this[_parts];
+    comp:
+    for (let i = 0; i < other.length; i += 1) {
+      for (let j = 0; j < thiz.length; j += 1) {
+        if (other[i][0] === thiz[i][0] &&
+            other[i][1] === thiz[i][1] &&
+            other[i][2] === thiz[i][2]) {
+          continue comp;
+        }
+      }
+      return false;
+    }
+    return true;
+
+    return other.every((oth) => this[_parts].find(
+      (ths) => oth[0] === ths[0] && oth[1] === ths[1] && oth[2] === ths[2]
+    ));
   }
 
   /**
    * Returns the information necessary to reconstruct the term in a plain
    * object (except the reference to the model).
    *
-   * @return {Object} { parts, lag }
+   * @return {[num, num, num][]} List of [col, exp, lag] triples
    */
   valueOf() {
-    return { parts: this[_term], lag: this[_lag] };
+    return this[_parts].slice();
   }
 
   /**
-   * Returns the list of pairs constituting the term.
+   * Compute the data column for a given matrix.
    *
-   * @property {[number, number][]} term
-   */
-  get term() {
-    return this[_term];
-  }
-
-  /**
-   * Returns the data column for this term.
-   *
-   * @property {Matrix<n,1>} col
+   * @return {Matrix<n,1>} n x 1 Matrix -- polynomial combo of columns in term
    */
   get col() {
-    return this[_col];
+    if (this[_cache].col != null) {
+      return this[_cache].col;
+    }
+
+    let data = this[_model].data
+      , prod = Matrix.zeros(data.shape[0], 1).add(1)
+      , i;
+
+    for (i = 0; i < this[_parts].length; i += 1) {
+      prod = prod.dotMultiply(
+        data.col(this[_parts][i][0])
+          .dotPow(this[_parts][i][1])
+          .shift(this[_parts][i][2]));
+    }
+
+    this[_cache].col = prod;
+
+    return this[_cache].col;
   }
 
+  get lag() {
+    return Math.max.apply(null, this[_parts].map((part) => part[2]));
+  }
 
   /**
    * Give a representation of the term in a pretty format.
@@ -163,9 +176,11 @@ class Term {
    * @return {string} Representation of this term
    */
   inspect(depth, options) {
-    return 'Term < ' + this[_term]
-        .map((t) => String.fromCharCode(t[0] + 97) + '^' + t[1])
-        .join(' + ') + ' >';
+    return 'Term < ' + this[_parts]
+      .map((t) => String.fromCharCode(t[0] + 97)
+           + '^' + t[1]
+           + '[' + t[2] + ']')
+      .join(' * ') + ' >';
   }
 
 }
