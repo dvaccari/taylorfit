@@ -504,6 +504,32 @@ class Matrix {
     return subMatrix;
   }
 
+  // TODO: document
+  lo(row=0) {
+    return new Matrix(
+      this[_m] - row,
+      this[_n],
+      this[_data].slice(row * this[_n])
+    );
+  }
+
+  // TODO: document
+  hi(row=0) {
+    return new Matrix(
+      row,
+      this[_n],
+      this[_data].slice(0, row * this[_n])
+    );
+  }
+
+  // TODO: document
+  shift(rows) {
+    let newData = new Float64Array(this[_m] * this[_n]);
+    newData.subarray(this[_n] * rows).set(
+      this[_data].subarray(0, -(this[_n] * rows) || this[_data].length));
+    return new Matrix(this[_n], this[_m], newData);
+  }
+
   /**
    * Retrieves the diagonal elements as a 1 x min(m, n) matrix.
    *
@@ -648,7 +674,7 @@ class Matrix {
         throw new Error('All rows must have equal length');
       }
     }
-    return new Matrix(m, n, Float64Array.from([].concat.apply([], arr)));
+    return new Matrix(m, n, Float64Array.from(utils.join(arr)));
   }
 
   /**
@@ -666,6 +692,10 @@ class Matrix {
       mat.data[i*m+i] = arr[i];
     }
     return mat;
+  }
+
+  static zeros(m, n=m) {
+    return this.eye(m, n).dotMultiply(0);
   }
 
 }
