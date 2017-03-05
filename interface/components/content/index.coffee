@@ -27,11 +27,13 @@ ko.components.register "tf-content",
           for name, value of c.stats)
 
         c.term = c.term.map ( term ) =>
-          name: cols[term[0] + (term[0] >= @dependent())]?.name
+          name: cols[term[0]].name
           index: term[0]
           exp: term[1]
+          lag: term[2]
+
       @candidates candidates.sort ( a, b ) ->
-        b.stats[0].value - a.stats[0].value
+        a.stats[0].value - b.stats[0].value
 
 
     @multiplicands = ko.observable 1
