@@ -113,10 +113,12 @@ class Model {
     [].push.apply(candidates, this[_lags].map(
       (lag) => this.termpool.get([[this[_dependent], 1, lag]])));
 
-    return candidates.map((candidate) => ({
-      term: candidate.valueOf(),
-      stats: candidate.getStats()
-    }));
+    return candidates
+      .filter((cand) => !this[_terms].includes(cand))
+      .map((candidate) => ({
+        term: candidate.valueOf(),
+        stats: candidate.getStats()
+      }));
   }
 
   getModel() {
@@ -126,7 +128,16 @@ class Model {
 
     let stats = lstsq(X, y);
 
-    return stats;
+    let terms = this[_terms].map((term, i) => ({
+      term: term.valueOf(),
+      coeff: stats.weights.get(i, 0),
+      stats: {
+        t: stats.tstats.get(i, 0),
+        pt: stats.pts.get(i, 0)
+      }
+    }));
+
+    return { terms, stats };
   }
 
   highestLag() {
