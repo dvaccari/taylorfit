@@ -9,6 +9,9 @@ global.adapter = require "./adapter/worker"
 # --- setup knockout
 global.ko = require "knockout"
 
+# --- setup lodash
+global._ = require "lodash"
+
 # --- include components
 require "./components"
 

@@ -1,3 +1,8 @@
 
 span.title TaylorFit
+// ko if:model
+span.button(data-bind="click:clear")
+  | Start Over
+tf-exporter(params="model:model")
+// /ko
 
