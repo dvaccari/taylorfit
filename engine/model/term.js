@@ -50,8 +50,8 @@ class Term {
 
     this[_model] = model;
 
-    this[_cache] = { };
-    this[_cache].col = this.col;
+    this[_cache] = { col: {} };
+    this.col();
   }
 
   /**
@@ -60,10 +60,10 @@ class Term {
    *
    * @return {t: number, mse: number} Statistics for the regression
    */
-  getStats() {
+  getStats(subset=this[_model].DEFAULT_SUBSET) {
     let lag = Math.max(this[_model].highestLag(), this.lag)
-      , XLagged = this[_model].X.hstack(this.col).lo(lag)
-      , yLagged = this[_model].y.lo(lag)
+      , XLagged = this[_model].X(subset).hstack(this.col(subset)).lo(lag)
+      , yLagged = this[_model].y(subset).lo(lag)
       , theStats;
 
     try {
@@ -92,7 +92,7 @@ class Term {
   }
 
   clearCache() {
-    this[_cache].col = null;
+    this[_cache].col = {};
     return this;
   }
 
@@ -145,12 +145,12 @@ class Term {
    *
    * @return {Matrix<n,1>} n x 1 Matrix -- polynomial combo of columns in term
    */
-  get col() {
-    if (this[_cache].col != null) {
-      return this[_cache].col;
+  col(subset=this[_model].DEFAULT_SUBSET) {
+    if (this[_cache].col[subset] != null) {
+      return this[_cache].col[subset];
     }
 
-    let data = this[_model].data
+    let data = this[_model].data(subset)
       , prod = Matrix.zeros(data.shape[0], 1).add(1)
       , i;
 
@@ -161,9 +161,9 @@ class Term {
           .shift(this[_parts][i][2]));
     }
 
-    this[_cache].col = prod;
+    this[_cache].col[subset] = prod;
 
-    return this[_cache].col;
+    return this[_cache].col[subset];
   }
 
   get lag() {

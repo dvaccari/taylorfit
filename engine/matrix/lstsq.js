@@ -140,12 +140,12 @@ function lstsqNEWithStats(X, y) {
  *
  * @return {object} Regression results
  */
-function lstsqSVDWithStats(X, y) {
+function lstsqSVDWithStats(X, y, predictors) {
   var decomposition = svd(X)
     , U             = decomposition[0]
     , w             = Matrix.from(decomposition[1])
     , V             = decomposition[2]
-    , BHat          = lstsqSVD(X, U, w, V, y)
+    , BHat          = predictors || lstsqSVD(X, U, w, V, y)
     , yHat          = X.dot(BHat)
 
   // fit statistics
@@ -188,17 +188,9 @@ function lstsqSVDWithStats(X, y) {
   pts.data.set(pts.data.map((t) => dist.pt(t, nd - np)));
 
   return {
-    weights : BHat,
-    tstats  : tstats,
-    mse     : mse,
-    rsq     : rsq,
-    crsq    : crsq,
-    adjrsq  : adjrsq,
-    f       : f,
-    pf      : dist.pf(f, np, nd - np),
-    aic     : aic,
-    bic     : bic,
-    pts     : pts
+    weights: BHat,
+    pf: dist.pf(f, np, nd - np),
+    tstats, mse, rsq, crsq, adjrsq, f, aic, bic, pts
   };
 }
 

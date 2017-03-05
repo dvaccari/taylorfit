@@ -7,15 +7,18 @@ const utils           = require('../utils');
 
 const TermPool        = require('./termpool');
 const combos          = require('./combos');
+
 const _data           = Symbol('data');
 const _exponents      = Symbol('exponents');
 const _multiplicands  = Symbol('multiplicands');
 const _lags           = Symbol('lags');
 const _dependent      = Symbol('dependent');
+const _subsets        = Symbol('subsets');
 const _terms          = Symbol('terms');
 const _cache          = Symbol('cache');
 
 const INTERCEPT       = [[0, 0, 0]];
+const DEFAULT_SUBSET  = 'fit';
 
 class Model {
 
@@ -25,8 +28,9 @@ class Model {
     this[_multiplicands] = [1];
     this[_lags] = [];
     this[_dependent] = 0;
+    this[_subsets] = {};
 
-    this[_cache] = { X: null, highestLag: null, y: null };
+    this[_cache] = {};
 
     this[_terms] = [];
     this.termpool = new TermPool(this);
@@ -37,9 +41,13 @@ class Model {
       data = new Matrix(data);
     }
     this[_data] = data;
+    this[_subsets] = {};
+    this[_subsets][DEFAULT_SUBSET] = utils.range(0, data.shape[0]);
+
     this[_terms] = [];
-    this[_cache].X = null;
-    this[_cache].y = null;
+    this[_cache].X = {};
+    this[_cache].y = {};
+    this[_cache].data = {};
     this[_cache].highestLag = null;
     return this;
   }
@@ -56,8 +64,8 @@ class Model {
 
   setDependent(dependent) {
     this[_dependent] = dependent;
-    this[_cache].X = null;
-    this[_cache].y = null;
+    this[_cache].X = {};
+    this[_cache].y = {};
     this[_cache].highestLag = null;
     return this;
   }
@@ -67,14 +75,23 @@ class Model {
     return this;
   }
 
+  subset(name, startRow, endRow) {
+    if (!Array.isArray(startRow)) {
+      startRow = utils.range(startRow, endRow || this[_data].shape[0]);
+    }
+    this.termpool.clearCache();
+    this[_subsets][name] = startRow;
+    return this;
+  }
+
   addTerm(term) {
     let found = this[_terms].find((t) => t.equals(term));
 
     if (!found) {
       found = this.termpool.get(term);
       this[_terms].push(found);
-      this[_cache].X = null;
-      this[_cache].y = null;
+      this[_cache].X = {};
+      this[_cache].y = {};
       this[_cache].highestLag = null;
     }
     return this;
@@ -82,8 +99,8 @@ class Model {
 
   removeTerm(term) {
     this[_terms] = this[_terms].filter((t) => !t.equals(term));
-    this[_cache].X = null;
-    this[_cache].y = null;
+    this[_cache].X = {};
+    this[_cache].y = {};
     this[_cache].highestLag = null;
     return this;
   }
@@ -121,12 +138,16 @@ class Model {
       }));
   }
 
-  getModel() {
+  getModel(testSubset) {
     let highestLag = this.highestLag()
-      , X = this.X.lo(highestLag)
-      , y = this.y.lo(highestLag);
+      , X = this.X().lo(highestLag)
+      , y = this.y().lo(highestLag);
 
     let stats = lstsq(X, y);
+
+    if (testSubset) {
+      stats = lstsq(this.X(testSubset), this.y(testSubset), stats.weights);
+    }
 
     let terms = this[_terms].map((term, i) => ({
       term: term.valueOf(),
@@ -149,27 +170,35 @@ class Model {
     return this[_cache].highestLag;
   }
 
-  get X() {
-    if (this[_cache].X == null) {
-      this[_cache].X = this[_terms]
-        .reduce((prev, curr) => prev.hstack(curr.col),
-                new Matrix(this[_data].shape[0], 0));
+  X(subset=DEFAULT_SUBSET) {
+    if (this[_cache].X[subset] == null) {
+      this[_cache].X[subset] = this[_terms]
+        .reduce((prev, curr) => prev.hstack(curr.col(subset)),
+                new Matrix(this[_subsets][subset].length, 0));
     }
 
-    return this[_cache].X;
+    return this[_cache].X[subset];
   }
 
-  get y() {
-    if (this[_cache].y == null) {
-      this[_cache].y = this[_data].subset(':', this[_dependent]);
+  y(subset=DEFAULT_SUBSET) {
+    if (this[_cache].y[subset] == null) {
+      this[_cache].y[subset] = this.data(subset).subset(':', this[_dependent]);
     }
-    return this[_cache].y;
+    return this[_cache].y[subset];
   }
 
-  get data() {
-    return this[_data];
+  data(subset=DEFAULT_SUBSET) {
+    if (!this[_cache].data[subset]) {
+      this[_cache].data = {};
+      for (let subset in this[_subsets]) {
+        this[_cache].data[subset] = this[_data].subset(this[_subsets][subset]);
+      }
+    }
+    return this[_cache].data[subset];
   }
 
 }
+
+Model.prototype.DEFAULT_SUBSET = DEFAULT_SUBSET;
 
 module.exports = Model;

@@ -25,7 +25,7 @@ class TermPool {
   }
 
   clearCache() {
-    this.terms.forEach((term) => term.clearCache());
+    Object.values(this.terms).forEach((term) => term.clearCache());
   }
 
 }
