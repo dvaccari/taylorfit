@@ -1,16 +1,8 @@
 /*global onmessage, postMessage*/
 'use strict';
 
-var singleton = require('../model/singleton').getInstance();
-var cache     = {};
-
-const cacheKeys = ['dataset', 'dependent', 'exponents', 'multiplicands'];
-
-var updateCache = function (data) {
-  cacheKeys.forEach(
-    (key) => cache[key] = (data[key] != null) ? data[key] : cache[key]
-  );
-};
+const Model = require('../model/model2');
+const m     = new Model();
 
 /**
  * Updates the model in various ways depending on what's given.
@@ -32,6 +24,7 @@ var updateCache = function (data) {
  *                                        specify a location and value to
  *                                        replace
  */
+/*
 var updateModel = function (data) {
   var dataset       = data.dataset || (model && model.X) || cache.dataset
     , existingTerms = (model && model.terms.map((t) => t.term)) || []
@@ -76,11 +69,12 @@ var updateModel = function (data) {
   }
 
   // Reinstantiate the model
-  model = engine.model(dataset, dependent, exponents, multiplicands);
+  m = engine.model(dataset, dependent, exponents, multiplicands);
   existingTerms.forEach((term) => model.addTerm(term));
 
   return model;
 };
+ */
 
 
 /**
@@ -138,57 +132,53 @@ onmessage = function (e) {
     //updateCache(data);
     //updateModel(data);
     if (data.dataset != null) {
-      singleton.setDataset(data.dataset);
+      m.setData(data.dataset);
     }
     if (data.exponents != null) {
-      singleton.setExponents(data.exponents);
+      m.setExponents(data.exponents);
     }
     if (data.multiplicands != null) {
-      singleton.setMultiplicands(data.multiplicands);
+      m.setMultiplicands(data.multiplicands);
     }
     if (data.dependent != null) {
-      singleton.setDependent(data.dependent);
+      m.setDependent(data.dependent);
     }
     if (data.lags != null) {
-      singleton.setLags(data.lags);
+      m.setLags(data.lags);
     }
-
-    log('new model:', singleton.model);
 
     postMessage({
       type: 'candidates',
-      data: singleton.model.compute().candidates
+      data: m.getCandidates()
     });
     break;
 
   case 'get_terms':
     postMessage({
       type: 'candidates',
-      data: singleton.model.compute().candidates
+      data: m.getCandidates()
     });
     break;
 
   case 'add_term':
-    singleton.model.addTerm(data, false);
-
-    let updatedModel = singleton.model.compute();
+    m.addTerm(data);
 
     postMessage({
       type: 'candidates',
-      data: updatedModel.candidates
+      data: m.getCandidates()
     });
     postMessage({
       type: 'model',
-      data: updatedModel.model
+      data: m.getModel()
     });
     break;
 
   case 'remove_term':
-    singleton.model.removeTerm(data, false);
+    m.removeTerm(data);
     // This should also eventually send candidates and model
     postMessage({
       type: 'candidates',
-      data: singleton.model.compute().candidates
+      data: m.getCandidates()
     });
     break;
 

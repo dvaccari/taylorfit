@@ -1,28 +1,35 @@
 
 const load  = require('./load');
-const Model = require('./model/model');
+const Model = require('./model/model2');
+const Term  = require('./model/term');
 
 load('data/concrete_data.csv', true, (data) => {
   var X = data.subset(':', ':-1');
   var y = data.subset(':', [-1]);
 
-  var m = new Model(X, y, [1, 2, 3, 4], 3);
+  var m = new Model();
   var comp;
+
+  m.setData(data);
+  m.setExponents([1, 2, 3, 4]);
+  m.setMultiplicands(3);
 
   //m.addTerm([[0, 1]]);
   //m.addTerm([[1, 1]]);
 
-  m.addTerm([[0, 1]]);
+  m.addTerm([[1, 1]]);
 
-  console.log(m.candidates.length, 'candidate terms');
   console.time('termstats');
-  console.log(m.candidates.map((term, i, all) => {
-    console.log('computing', i, '/', all.length, JSON.stringify(term.term));
-    return {
-      term: JSON.stringify(term.term),
-      stats: term.getStats()
-    };
+  let cands = m.getCandidates();
+
+    /*.map((term, i, all) => {
+    console.log('computing', i, '/', all.length, JSON.stringify(term.term.valueOf()));
+    return term;
   }));
+  */
+  console.timeEnd('termstats');
+  console.time('termstats');
+  m.getCandidates();
   console.timeEnd('termstats');
 
   //comp = m.compute();
