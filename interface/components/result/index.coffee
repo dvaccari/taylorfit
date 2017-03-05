@@ -1,17 +1,15 @@
 
 require "./index.styl"
 
-ko.components.register "tf-options",
+ko.components.register "tf-result",
   template: do require "./index.pug"
   viewModel: ( params ) ->
     unless ko.isObservable params.model
-      throw new TypeError "components/options:
+      throw new TypeError "components/result:
       expects [model] to be observable"
 
     model = params.model() # now static
 
-    @exponents = model.exponents
-    @multiplicands = model.multiplicands
-    @candidates = model.candidates
+    @result = model.result
 
     return this

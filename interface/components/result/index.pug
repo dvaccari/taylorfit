@@ -1,0 +1,52 @@
+
+// ko if:result
+span.terms
+  // ko foreach: result().terms
+  span.term
+    span.control
+      // ko foreach:stats
+      span.stat
+        span.name(data-bind="text:name")
+        span.value(data-bind="text:value.toFixed(3)")
+      // /ko
+      // ko if:$index() !== 0
+      span.remove(data-bind="click:function(){selected(true)}") Remove
+      // /ko
+    span.coeff(data-bind="text:coeff.toFixed(3)")
+    // ko foreach:term
+    // ko if:exp
+    span.name
+      span(data-bind="text:name||'x'")
+      // ko ifnot:name
+      sub(data-bind="text:index")
+      // /ko
+      // ko if:exp !== 1
+      sup(data-bind="text:exp")
+      // /ko
+    // /ko
+    // /ko
+  span.plus +
+  // /ko
+span.stats
+  // ko foreach:result().stats
+  // ko if:"number" === typeof value
+  span.stat
+    span.name(data-bind="text:name")
+    span.value(data-bind="text:value.toFixed(3)")
+  // /ko
+  // /ko
+span.graphs
+  span.title Graphs
+  hr
+  span.subtitle Coming Soon
+
+  //- TODO: add stats to a tooltip
+  //- ko foreach:stats
+    td.stat
+      span.value(data-bind="text:value.toFixed(3)")
+    // /ko
+// /ko
+// ko ifnot:result
+span.nomodel Select candidate terms to create a model.
+// /ko
+

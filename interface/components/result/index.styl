@@ -1,0 +1,124 @@
+
+darken-amount = 6%
+
+tf-result
+  text-align center
+
+  & > .nomodel
+    display block
+
+  & > .graphs
+    margin 60px auto
+    padding 30px
+    box-sizing border-box
+    width 400px
+    display block
+    border 3px dashed rgba(black, 0.2)
+    border-radius 20px
+
+    & > *
+      display block
+      color #BBB
+    & > hr
+      border 1px solid #DDD
+    & > .title
+      font-size 28pt
+    & > .subtitle
+      font-size 16pt
+
+  & > .stats
+    display block
+    margin-top 10px
+    & > .stat
+      background #EEE
+      box-shadow 0 0 0 1px #CCC
+      color black
+      border-radius 4px
+      margin 4px
+      padding 5px
+      font-size 12pt
+      & > *
+        padding 3px
+      & > .name
+        text-transform uppercase
+
+  & > .terms
+    display block
+
+    & > .plus
+      color black
+      display inline-block
+      padding 7px 3px
+
+      &:last-child
+        display none
+
+    & > .term
+      position relative
+      display inline-block
+      padding 7px
+
+      & > *:not(:last-child):after
+        content "·"
+        margin 0 2px
+
+      & > .control
+        absolute left 0
+        padding-top 28px
+        text-align center
+        width 100%
+        box-shadow 0 0 0 2px rgba(black, 0.3)
+        border-radius 4px
+        color black
+        overflow hidden
+        pointer-events none
+        opacity 0
+        transition opacity 300ms
+        z-index 10
+
+        &:after
+          content ""
+          margin 0
+
+        & > *
+          display inline-block
+          background white
+          width 100%
+          box-shadow inset 0 1px 0 0 #CCC
+          font-size 12pt
+          padding 5px 7px
+          box-sizing border-box
+
+        & > .stat
+          background #EEE
+          & > *
+            display inline-block
+          & > .name
+            text-align left
+            width 20%
+          & > .value
+            text-align right
+            width 80%
+
+        & > .remove
+          cursor pointer
+          background red
+          color white
+
+      &:hover
+        & > .control
+          opacity 1
+          pointer-events initial
+
+      &:nth-child(2)
+        color darken(red,darken-amount)
+      &:nth-child(3)
+        color darken(blue,darken-amount)
+      &:nth-child(4)
+        color darken(green,darken-amount)
+      &:nth-child(5)
+        color darken(orange,darken-amount)
+      &:nth-child(6)
+        color darken(purple,darken-amount)
+      &:nth-child(7)
+        color darken(cyan,darken-amount)

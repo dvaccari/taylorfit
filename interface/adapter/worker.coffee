@@ -41,6 +41,8 @@ module.exports = new class WorkerAdapter extends ME
 
   post_add_term: ( term ) ->
     @post "add_term", term
+  post_remove_term: ( term ) ->
+    @post "remove_term", term
 
   post_dataset: ( s, d, m, e ) ->
     @post "update",

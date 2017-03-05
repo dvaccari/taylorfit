@@ -12,11 +12,13 @@ table.candidates(data-bind="if:candidates().length")
 
   tbody
     // ko foreach:candidates
-    tr.candidate(data-bind="click:$parent.candidate_click,css:{selected:selected}")
+    tr.candidate(data-bind="click:function(){selected(true)},css:{selected:selected}")
       td.term(data-bind="foreach:term")
         span.name
           span(data-bind="text:name||'x'")
+          // ko ifnot:name
           sub(data-bind="text:index")
+          // /ko
         // ko if:exp !== 1
         sup(data-bind="text:exp")
         // /ko
