@@ -4,6 +4,7 @@ const Matrix          = require('../matrix').Matrix;
 const lstsq           = require('../matrix').lstsq;
 
 const utils           = require('../utils');
+const Observable      = require('../observable');
 
 const TermPool        = require('./termpool');
 const combos          = require('./combos');
@@ -20,9 +21,11 @@ const _cache          = Symbol('cache');
 const INTERCEPT       = [[0, 0, 0]];
 const DEFAULT_SUBSET  = 'fit';
 
-class Model {
+class Model extends Observable {
 
   constructor() {
+    super();
+
     this[_data] = new Matrix(0, 0);
     this[_exponents] = [1];
     this[_multiplicands] = [1];
@@ -49,16 +52,19 @@ class Model {
     this[_cache].y = {};
     this[_cache].data = {};
     this[_cache].highestLag = null;
+    this.fire('setData', data);
     return this;
   }
 
   setExponents(exponents) {
     this[_exponents] = exponents.slice();
+    this.fire('setExponents', exponents);
     return this;
   }
 
   setMultiplicands(multiplicands) {
     this[_multiplicands] = utils.range(1, multiplicands + 1);
+    this.fire('setMultiplicands', multiplicands);
     return this;
   }
 
@@ -67,11 +73,13 @@ class Model {
     this[_cache].X = {};
     this[_cache].y = {};
     this[_cache].highestLag = null;
+    this.fire('setDependent', dependent);
     return this;
   }
 
   setLags(lags) {
     this[_lags] = lags.slice();
+    this.fire('setLags', lags);
     return this;
   }
 
@@ -81,6 +89,7 @@ class Model {
     }
     this.termpool.clearCache();
     this[_subsets][name] = startRow;
+    this.fire('subset', { name, startRow, endRow });
     return this;
   }
 
@@ -94,6 +103,7 @@ class Model {
       this[_cache].y = {};
       this[_cache].highestLag = null;
     }
+    this.fire('addTerm', term);
     return this;
   }
 
@@ -102,6 +112,7 @@ class Model {
     this[_cache].X = {};
     this[_cache].y = {};
     this[_cache].highestLag = null;
+    this.fire('removeTerm', term);
     return this;
   }
 
@@ -110,6 +121,8 @@ class Model {
   }
 
   getCandidates() {
+    this.fire('getCandidates.start');
+
     let independentCols = utils.join([
       utils.range(0, this[_dependent]),
       utils.range(this[_dependent] + 1, this[_data].shape[1])
@@ -130,12 +143,18 @@ class Model {
     [].push.apply(candidates, this[_lags].map(
       (lag) => this.termpool.get([[this[_dependent], 1, lag]])));
 
-    return candidates
+    let results = candidates
       .filter((cand) => !this[_terms].includes(cand))
-      .map((candidate) => ({
-        term: candidate.valueOf(),
-        stats: candidate.getStats()
-      }));
+      .map((candidate, i) => {
+        this.fire('getCandidates', { curr: i, total: candidates.length });
+        return {
+          term: candidate.valueOf(),
+          stats: candidate.getStats()
+        };
+      });
+
+    this.fire('getCandidates.end');
+    return results;
   }
 
   getModel(testSubset) {

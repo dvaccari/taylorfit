@@ -21,21 +21,20 @@ load('data/concrete_data.csv', true, (data) => {
   //m.addTerm([[1, 1]]);
 
   m.addTerm([[1, 1]]);
+  m.on('getCandidates', (data) => {
+    if (data.curr % 100 === 0) {
+      process.stdout.write(`computing ${data.curr} / ${data.total}\r`);
+    }
+  });
 
   console.time('termstats');
   let cands = m.getCandidates();
-
-    /*.map((term, i, all) => {
-    console.log('computing', i, '/', all.length, JSON.stringify(term.term.valueOf()));
-    return term;
-  }));
-  */
   console.timeEnd('termstats');
+
   console.time('termstats');
   m.getCandidates();
   console.timeEnd('termstats');
 
-  console.log(m.X().shape);
   console.time('model');
   console.log(m.getModel().stats);
   console.log(m.getModel('test').stats);

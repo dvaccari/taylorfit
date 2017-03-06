@@ -2,6 +2,7 @@
 
 const lstsq   = require('../matrix').lstsq;
 const Matrix  = require('../matrix').Matrix;
+const md5     = require('blueimp-md5');
 
 
 /**
@@ -103,31 +104,8 @@ class Term {
    * @return {boolean} True if the terms are equivalent, false otherwise
    */
   equals(other) {
-    if (other instanceof Term) {
-      other = other.valueOf();
-    }
-
-    if (other.length !== this[_parts].length) {
-      return false;
-    }
-
-    let thiz = this[_parts];
-    comp:
-    for (let i = 0; i < other.length; i += 1) {
-      for (let j = 0; j < thiz.length; j += 1) {
-        if (other[i][0] === thiz[i][0] &&
-            other[i][1] === thiz[i][1] &&
-            other[i][2] === thiz[i][2]) {
-          continue comp;
-        }
-      }
-      return false;
-    }
-    return true;
-
-    return other.every((oth) => this[_parts].find(
-      (ths) => oth[0] === ths[0] && oth[1] === ths[1] && oth[2] === ths[2]
-    ));
+    other = other.valueOf();
+    return Term.hash(other) === Term.hash(this);
   }
 
   /**
@@ -181,6 +159,11 @@ class Term {
            + '^' + t[1]
            + '[' + t[2] + ']')
       .join(' * ') + ' >';
+  }
+
+  static hash(term) {
+    term = term.valueOf();
+    return md5(term.map(md5).sort().join());
   }
 
 }

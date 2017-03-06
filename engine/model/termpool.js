@@ -2,10 +2,6 @@
 const Term  = require('./term');
 const md5   = require('blueimp-md5');
 
-function hash(term) {
-  return md5(term.map(md5).sort().join());
-}
-
 class TermPool {
 
   constructor(model) {
@@ -14,11 +10,11 @@ class TermPool {
   }
 
   get(term) {
-    let found = this.terms[hash(term)];
+    let found = this.terms[Term.hash(term)];
 
     if (!found) {
       found = new Term(this.model, term);
-      this.terms[hash(term)] = found;
+      this.terms[Term.hash(term)] = found;
     }
 
     return found;
@@ -32,4 +28,3 @@ class TermPool {
 
 
 module.exports = TermPool;
-module.exports.hash = hash;
