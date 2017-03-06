@@ -14,7 +14,7 @@ class TermPool {
 
     if (!found) {
       found = new Term(this.model, term);
-      this.terms[Term.hash(term)] = found;
+      this.terms[Term.hash(found.valueOf())] = found;
     }
 
     return found;

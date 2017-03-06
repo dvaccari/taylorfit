@@ -2,7 +2,9 @@
 
 const lstsq   = require('../matrix').lstsq;
 const Matrix  = require('../matrix').Matrix;
-const md5     = require('blueimp-md5');
+const bi_md5  = require('blueimp-md5');
+
+const md5     = (x) => bi_md5(x);
 
 
 /**
@@ -162,7 +164,16 @@ class Term {
   }
 
   static hash(term) {
-    term = term.valueOf();
+    term = term.valueOf().map((part) => {
+      if (part.length < 2) {
+        throw new TypeError('Part does not match: [col, exp (,lag)]');
+      }
+      if (part.length < 3) {
+        return part.concat(0);
+      }
+      return part.slice();
+    });
+
     return md5(term.map(md5).sort().join());
   }
 

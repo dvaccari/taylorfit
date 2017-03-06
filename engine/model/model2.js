@@ -32,8 +32,9 @@ class Model extends Observable {
     this[_lags] = [];
     this[_dependent] = 0;
     this[_subsets] = {};
+    this[_subsets][DEFAULT_SUBSET] = [];
 
-    this[_cache] = {};
+    this[_cache] = { X: {}, y: {}, data: {} };
 
     this[_terms] = [];
     this.termpool = new TermPool(this);
@@ -88,6 +89,9 @@ class Model extends Observable {
       startRow = utils.range(startRow, endRow || this[_data].shape[0]);
     }
     this.termpool.clearCache();
+    this[_cache].X = {};
+    this[_cache].y = {};
+    this[_cache].data = {};
     this[_subsets][name] = startRow;
     this.fire('subset', { name, startRow, endRow });
     return this;
