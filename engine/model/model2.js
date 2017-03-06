@@ -143,13 +143,17 @@ class Model extends Observable {
     [].push.apply(candidates, this[_lags].map(
       (lag) => this.termpool.get([[this[_dependent], 1, lag]])));
 
+    // For each candidate, get the stats for it alongside terms in the model
     let results = candidates
       .filter((cand) => !this[_terms].includes(cand))
       .map((candidate, i) => {
-        this.fire('getCandidates', { curr: i, total: candidates.length });
+        this.fire('getCandidates.each', { curr: i, total: candidates.length });
+
+        let stats = candidate.getStats();
         return {
           term: candidate.valueOf(),
-          stats: candidate.getStats()
+          coeff: stats.coeff,
+          stats
         };
       });
 

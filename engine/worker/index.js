@@ -17,7 +17,7 @@ m.on('getCandidates.start', () => console.time('getCandidates'));
 m.on('getCandidates.end', () => console.timeEnd('getCandidates'));
 
 let getCandidateProgressInterval = 100;
-let onGetCandidateId = m.on('getCandidates', (data) => {
+let onGetCandidateId = m.on('getCandidates.each', (data) => {
   if (data.curr % getCandidateProgressInterval === 0) {
     postMessage({
       type: 'progress',
