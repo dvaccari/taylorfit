@@ -10,7 +10,7 @@ const Matrix  = require('../../engine/matrix').Matrix
     , lstsqSVD= require('../../engine/matrix/lstsq').lstsqSVD;
 
 const rootdir = '/../../';
-const retail  = require('./retail.test.json');
+const retail  = require('./testdata/retail.data.json');
 
 const scalarStatistics = ['mse', 'rsq', 'crsq', 'adjrsq',
                           'f'  , 'pf' , 'aic' , 'bic'];
