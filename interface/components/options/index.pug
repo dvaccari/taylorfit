@@ -5,7 +5,7 @@
     div.stat(data-bind="text:$key,css:{selected:$value},\
     click:function(){$value(!$value())}")
     // /ko
-  tf-counter.multiplicands(params="name:'Multiplicands',value:multiplicands,max:9")
+  tf-counter.multiplicands(params="name:'Maximum No. of Multiplicands',value:multiplicands,max:9")
   tf-pills.exponents(params="name:'Exponents',values:exponents,style:'check'")
 .candidate-wrapper
   table.candidates(data-bind="if:candidates().length")

@@ -9,9 +9,14 @@ ko.components.register "tf-app",
       @model = ko.observable new Model JSON.parse model
     else @model = ko.observable null
 
+    window.model = @model
+
     @model.subscribe ( next ) ->
-      localStorage?.setItem "tf-model",
-        next?.toJSON()
+      if json = next?.toJSON()
+        localStorage?.setItem "tf-model", json
+      else
+        localStorage?.removeItem "tf-model"
+
       console.debug "component/app/model:
         [update]", next
 
