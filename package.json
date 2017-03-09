@@ -8,7 +8,7 @@
     "build:engine": "browserify engine/index.es6 -o build/engine.js -s engine --noparse node_modules/mathjs/dist/math.min.js -t [ babelify --presets [ es2015 ] ]",
     "build:worker": "browserify worker/worker.es6 -o worker/bundle.js -s worker -t [ babelify --presets [ es2015 ] ]",
     "debug": "npm install && webpack-dev-server --inline --hot",
-    "test": "mocha --recursive test",
+    "test": "mocha --recursive test/engine",
     "start": "http-server build"
   },
   "devDependencies": {
@@ -22,6 +22,8 @@
     "css-loader": "^0.25.0",
     "file-loader": "^0.9.0",
     "http-server": "^0.9.0",
+    "karma-chai": "^0.1.0",
+    "karma-mocha": "^1.3.0",
     "mocha": "^3.1.2",
     "nib": "^1.1.2",
     "pug": "^2.0.0-beta6",
@@ -35,11 +37,11 @@
     "webpack-dev-server": "^1.16.2"
   },
   "dependencies": {
+    "blueimp-md5": "^2.7.0",
     "core-js": "^2.4.1",
     "fast-csv": "^2.3.0",
     "knockout": "^3.4.0",
     "lodash": "^4.17.4",
-    "mathjs": "^3.6.0",
     "papaparse": "^4.1.2"
   }
 }

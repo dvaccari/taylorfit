@@ -133,16 +133,21 @@ describe('combos', () => {
 
   describe('generateTerms()', () => {
 
-    it('returns all terms for given # feats, list of exps, and list of mults', () => {
-      var terms = combos.generateTerms(2, [1, 2], [2]);
+    it('returns all terms for the given lists of columns, exps, mults, and lags', () => {
+      // each triple => [column, exponent, lag]
+      // [[0, 1, 0], [1, 2, 1]] => col(0)^1 * col(1)^2[lag 1] => x(y.shift(1))^2
+      expect(combos.generateTerms([0, 1], [1, 2], [2], [])).to.eql([
+        [[0, 1, 0], [1, 1, 0]],
+        [[0, 1, 0], [1, 2, 0]],
+        [[0, 2, 0], [1, 1, 0]],
+        [[0, 2, 0], [1, 2, 0]]
+      ]);
 
-      // each pair => [column, exponent]
-      // [[0, 1], [1, 2]] => col(0)^1 * col(1)^2 => xy^2
-      expect(terms).to.eql([
-        [[0, 1], [1, 1]],
-        [[0, 1], [1, 2]],
-        [[0, 2], [1, 1]],
-        [[0, 2], [1, 2]]
+      expect(combos.generateTerms([0, 1], [1, 2], [1], [1])).to.eql([
+        [[0, 1, 0]], [[0, 1, 1]],
+        [[0, 2, 0]], [[0, 2, 1]],
+        [[1, 1, 0]], [[1, 1, 1]],
+        [[1, 2, 0]], [[1, 2, 1]],
       ]);
     });
 

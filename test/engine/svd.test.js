@@ -6,7 +6,7 @@ const chai    = require('chai')
 
 const Matrix  = require('../../engine/matrix').Matrix
     , svd     = require('../../engine/matrix').svd
-    , dataset = require('./svd.data.json');
+    , dataset = require('./testdata/svd.data.json');
 
 describe('svd', () => {
 

@@ -5,7 +5,7 @@ const chai    = require('chai')
     , should  = chai.should;
 
 const Matrix  = require('../../engine/matrix').Matrix
-    , dataset = require('./test.data.json');
+    , dataset = require('./testdata/test.data.json');
 
 describe('Matrix', () => {
 

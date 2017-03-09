@@ -8,6 +8,7 @@ const defaults  = {
   dataset       : new Matrix(0, 0),
   dependent     : 0,
   exponents     : [1],
+  lags          : [0],
   multiplicands : 1
 };
 
@@ -70,7 +71,8 @@ class SingletonModel {
       this.getX(),
       this.gety(),
       this.exponents,
-      this.multiplicands
+      this.multiplicands,
+      this.lags
     );
   }
 
@@ -117,6 +119,21 @@ class SingletonModel {
   setDataset(dataset) {
     this.dataset = new Matrix(dataset);
     this.dependent = defaults.dependent;
+    this.update();
+    return this;
+  }
+
+  setLags(lags) {
+    if (!Array.isArray(lags)) {
+      throw new TypeError('lags must be an array of numbers');
+    }
+    lags.forEach((lag) => {
+      if (typeof lag !== 'number' || lag % 1 !== 0) {
+        throw new TypeError('lags must be an array of integers');
+      }
+    });
+
+    this.lags = lags;
     this.update();
     return this;
   }

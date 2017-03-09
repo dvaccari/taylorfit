@@ -488,7 +488,7 @@ class Matrix {
    * @param {number[]} cols Array of indices used to construct the subset
    * @return {Matrix<rows.length, cols.length>} Subset of this
    */
-  subset(rows, cols) {
+  subset(rows=':', cols=':') {
     rows = utils.convertRange(rows, this[_m]);
     cols = utils.convertRange(cols, this[_n]);
 
@@ -496,12 +496,38 @@ class Matrix {
       , i, j;
 
     for (i = 0; i < rows.length; i += 1) {
-      for (j = 0; j < rows.length; j += 1) {
+      for (j = 0; j < cols.length; j += 1) {
         subMatrix[_data][i * subMatrix[_n] + j] =
           this[_data][rows[i] * this[_n] + cols[j]];
       }
     }
     return subMatrix;
+  }
+
+  // TODO: document
+  lo(row=0) {
+    return new Matrix(
+      this[_m] - row,
+      this[_n],
+      this[_data].slice(row * this[_n])
+    );
+  }
+
+  // TODO: document
+  hi(row=0) {
+    return new Matrix(
+      row,
+      this[_n],
+      this[_data].slice(0, row * this[_n])
+    );
+  }
+
+  // TODO: document
+  shift(rows) {
+    let newData = new Float64Array(this[_m] * this[_n]);
+    newData.subarray(this[_n] * rows).set(
+      this[_data].subarray(0, -(this[_n] * rows) || this[_data].length));
+    return new Matrix(this[_n], this[_m], newData);
   }
 
   /**
@@ -648,7 +674,7 @@ class Matrix {
         throw new Error('All rows must have equal length');
       }
     }
-    return new Matrix(m, n, Float64Array.from([].concat.apply([], arr)));
+    return new Matrix(m, n, Float64Array.from(utils.join(arr)));
   }
 
   /**
@@ -666,6 +692,10 @@ class Matrix {
       mat.data[i*m+i] = arr[i];
     }
     return mat;
+  }
+
+  static zeros(m, n=m) {
+    return this.eye(m, n).dotMultiply(0);
   }
 
 }
