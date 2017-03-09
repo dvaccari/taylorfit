@@ -11,7 +11,10 @@ global.ko = require "knockout"
 
 ko.bindingHandlers.num =
   update: ( element, accessor ) ->
-    value = ko.unwrap accessor()
+    value = ko.unwrap(accessor()) or 0
+    negative = value < 0
+    value = Math.abs value
+
     if value < 0.0001
       value = value.toExponential 3
     else if value < 1
@@ -20,6 +23,9 @@ ko.bindingHandlers.num =
       value = value.toPrecision 5
     else
       value = value.toExponential 3
+
+    if negative
+      value = "-" + value
 
     element.textContent = value
 
