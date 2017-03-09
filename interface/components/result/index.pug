@@ -7,7 +7,7 @@ span.terms
       // ko foreach:stats
       span.stat
         span.name(data-bind="text:name")
-        span.value(data-bind="text:value.toFixed(3)")
+        span.value(data-bind="num:value")
       // /ko
       // ko if:$index() !== 0
       span.remove.fa.fa-close(data-bind="click:function(){selected(true)}")
@@ -32,7 +32,7 @@ span.stats
   // ko if:"number" === typeof value
   span.stat
     span.name(data-bind="text:name")
-    span.value(data-bind="text:value.toFixed(3)")
+    span.value(data-bind="num:value")
   // /ko
   // /ko
 span.graphs

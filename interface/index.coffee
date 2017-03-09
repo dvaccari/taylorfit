@@ -9,6 +9,13 @@ global.adapter = require "./adapter/worker"
 # --- setup knockout
 global.ko = require "knockout"
 
+ko.bindingHandlers.num =
+  update: ( element, accessor ) ->
+    value = ko.unwrap accessor()
+    element.textContent = if value < 1
+    then value.toExponential(3)
+    else value.toPrecision(5)
+
 # --- setup lodash
 global._ = require "lodash"
 
