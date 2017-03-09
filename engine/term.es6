@@ -84,7 +84,7 @@ class Term {
     , i;
 
     for (i = 0; i < this[_term].length; i += 1) {
-      sum = sum.add(X.col(this[_term][i][0]).dotPow(this[_term][i][1]));
+      sum = sum.dotMultiply(X.col(this[_term][i][0]).dotPow(this[_term][i][1]));
     }
     return sum;
   }
@@ -147,13 +147,7 @@ class Term {
    * @property {Matrix<n,1>} col
    */
   get rms() {
-    var i, sum = 0;
-
-    for (i = 0; i < this[_col].length; i += 1) {
-      sum += Math.pow(this[i],2);
-    }
-
-    return Math.pow(sum/this[_col].length, 0.5);
+    this[_rms];
   }
 
 }

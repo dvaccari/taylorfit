@@ -88,6 +88,7 @@ class Model {
   constructor(X, y, exponents=[1], multipliers=[1], terms=[], headers=null) {
     //var standardizedX = standardize(X);
     this[_X] = X; //standardizedX.X;
+    this[_rms] = [ ... rms_i for each column i in X ... ]
     //this[_means] = standardizedX.means;
     //this[_variances] = standardizedX.vars;
     this[_y] = y;
