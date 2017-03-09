@@ -1,15 +1,22 @@
 
 require "./index.styl"
+Model = require "../Model"
 
 ko.components.register "tf-app",
   template: do require "./index.pug"
   viewModel: ( params ) ->
-    @model = ko.observable null
+    if model = localStorage.getItem "tf-model"
+      @model = ko.observable new Model JSON.parse model
+    else @model = ko.observable null
+
+    window.tfmo = @model
+
 
     @model.subscribe ( next ) ->
-      if next
-        console.debug "component/app/model:
-        [update]", next.toJS()
+      localStorage.setItem "tf-model",
+        next?.toJSON()
+      console.debug "component/app/model:
+        [update]", next
 
     return this
 
