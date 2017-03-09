@@ -48,7 +48,8 @@ module.exports = class Model
         result =
           selected: ko.observable false
           stats: ({name, value} \
-            for name, value of t.stats)
+            for name, value of t.stats \
+              when name isnt "coeff")
           # TODO, remove hack
           coeff: t.coeff or t.stats.coeff
           term: t.term.map ( term ) ->
