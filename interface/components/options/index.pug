@@ -2,28 +2,33 @@
 .questions
   tf-counter.multiplicands(params="name:'Multiplicands',value:multiplicands,max:9")
   tf-pills.exponents(params="name:'Exponents',values:exponents,style:'check'")
-table.candidates(data-bind="if:candidates().length")
-  thead
-    tr
-      th Term
-      // ko foreach:candidates()[0].stats
-      th(data-bind="text:name")
-      // /ko
-
-  tbody
-    // ko foreach:candidates
-    tr.candidate(data-bind="click:function(){selected(true)},css:{selected:selected}")
-      td.term(data-bind="foreach:term")
-        span.name
-          span(data-bind="text:name||'x'")
-          // ko ifnot:name
-          sub(data-bind="text:index")
-          // /ko
-        // ko if:exp !== 1
-        sup(data-bind="text:exp")
+.candidate-wrapper
+  table.candidates(data-bind="if:candidates().length")
+    thead
+      tr
+        th
+          div.centering
+            div.fixing Term
+        // ko foreach:candidates()[0].stats
+        th
+          div.centering
+            div.fixing(data-bind="text:name")
         // /ko
-      // ko foreach:stats
-      td.stat
-        span.value(data-bind="text:value.toFixed(3)")
+
+    tbody
+      // ko foreach:candidates
+      tr.candidate(data-bind="click:function(){selected(true)},css:{selected:selected}")
+        td.term(data-bind="foreach:term")
+          span.name
+            span(data-bind="text:name||'x'")
+            // ko ifnot:name
+            sub(data-bind="text:index")
+            // /ko
+          // ko if:exp !== 1
+          sup(data-bind="text:exp")
+          // /ko
+        // ko foreach:stats
+        td.stat
+          span.value(data-bind="text:value.toFixed(3)")
+        // /ko
       // /ko
-    // /ko

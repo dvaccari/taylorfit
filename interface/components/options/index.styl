@@ -15,54 +15,80 @@ tf-options
       &:not(:first-child)
         box-shadow -1px 0 0 rgba(black, 0.2)
 
+  .candidate-wrapper
+    position relative
+    height calc(100% - 90px)
+    overflow hidden
 
-  table.candidates
-    padding-bottom 10px
-    margin 10px
-    display block
-    overflow auto
-    height calc(100% - 100px)
-    float right
+    &:before
+      content ""
+      display block
+      width 100%
+      height 28px
+      background rgba(white, 0.9)
+      box-shadow 0 1px 0 0 rgba(black, 0.5)
+      position absolute
+      top 0 left 0
 
-    thead
-      position sticky
-      top 0
-      background white
-      z-index 10
+    & > table.candidates
+      margin 10px
+      padding-bottom 10px
+      box-sizing border-box
+      display block
+      overflow-y auto
+      overflow-x hidden
+      height 100%
+      float right
 
-    td, th
-      padding 4px 6px
-      box-shadow none
-    th
-      text-align right
-      font-size 12pt
-      box-shadow none
-      text-transform uppercase
-      &:first-child
-        text-align left
+      thead
+        top 0
+        background white
+        z-index 10
+        height 18px
 
-    tr.candidate
-      font-size 12pt
-      text-align left
-      transition background 300ms
-      cursor pointer
-      overflow hidden
-      &:hover
-        background rgba(green, 0.3)
-        box-shadow inset 0 0 0 2px green
-      &.selected
-        background green
-        color white
-
-      & > td.term
-        & > .name
-          &:before
-            content "("
-          &:after
-            content ")"
-      & > td.stat
+      td, th
+        padding 4px 6px
+        box-shadow none
+      th
         text-align right
+        font-size 12pt
+        box-shadow none
+        text-transform uppercase
 
-      sub, sup
-        font-family "Muli"
-        font-size 8pt
+        & > div
+          margin 0 auto
+          width 0
+
+          & > div
+            absolute top 0
+            line-height 1.7
+            transform translateX(-50%)
+            text-align center
+        &:first-child
+          text-align left
+
+      tr.candidate
+        font-size 12pt
+        text-align left
+        transition background 300ms
+        cursor pointer
+        overflow hidden
+        &:hover
+          background rgba(green, 0.3)
+          box-shadow inset 0 0 0 2px green
+        &.selected
+          background green
+          color white
+
+        & > td.term
+          & > .name
+            &:before
+              content "("
+            &:after
+              content ")"
+        & > td.stat
+          text-align right
+
+        sub, sup
+          font-family "Muli"
+          font-size 8pt

@@ -10,7 +10,7 @@ span.terms
         span.value(data-bind="text:value.toFixed(3)")
       // /ko
       // ko if:$index() !== 0
-      span.remove(data-bind="click:function(){selected(true)}") Remove
+      span.remove.fa.fa-close(data-bind="click:function(){selected(true)}")
       // /ko
     span.coeff(data-bind="text:coeff.toFixed(3)")
     // ko foreach:term
