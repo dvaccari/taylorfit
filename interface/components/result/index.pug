@@ -2,17 +2,15 @@
 // ko if:result
 span.terms
   // ko foreach: result().terms
-  span.operator(data-bind="text:coeff<0?'-':'+'")
   span.term
+    span.operator(data-bind="text:coeff<0?'-':'+'")
     span.control
       // ko foreach:stats
       span.stat
         span.name(data-bind="text:name")
         span.value(data-bind="num:value")
       // /ko
-      // ko if:$index() !== 0
       span.remove.fa.fa-close(data-bind="click:function(){selected(true)}")
-      // /ko
     span.coeff(data-bind="num:Math.abs(coeff)")
     // ko foreach:term
     // ko if:exp

@@ -1,5 +1,10 @@
 
 .questions
+  span.statlist
+    // ko each:stats
+    div.stat(data-bind="text:$key,css:{selected:$value},\
+    click:function(){$value(!$value())}")
+    // /ko
   tf-counter.multiplicands(params="name:'Multiplicands',value:multiplicands,max:9")
   tf-pills.exponents(params="name:'Exponents',values:exponents,style:'check'")
 .candidate-wrapper
@@ -9,10 +14,12 @@
         th
           div.centering
             div.fixing Term
-        // ko foreach:candidates()[0].stats
+        // ko each:stats
+        // ko if:$value
         th
           div.centering
-            div.fixing(data-bind="text:name")
+            div.fixing(data-bind="text:$key")
+        // /ko
         // /ko
 
     tbody
@@ -32,7 +39,9 @@
           // /ko
           // /ko
         // ko foreach:stats
+        // ko if:$parents[1].stats()[name]
         td.stat
           span.value(data-bind="num:value")
+        // /ko
         // /ko
       // /ko

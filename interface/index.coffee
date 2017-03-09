@@ -9,6 +9,23 @@ global.adapter = require "./adapter/worker"
 # --- setup knockout
 global.ko = require "knockout"
 
+ko.bindingHandlers.each =
+  transform: ( obj ) ->
+    properties = [ ]
+    ko.utils.objectForEach obj, ( key, value ) ->
+      properties.push $key: key, $value: value
+    return properties
+  init: ( element, accessor, all, view, context ) ->
+    properties = ko.pureComputed ( ) ->
+      obj = ko.utils.unwrapObservable accessor()
+      ko.bindingHandlers.each.transform obj
+    ko.applyBindingsToNode element,
+      { foreach: properties }, context
+
+    return controlsDescendantBindings: true
+
+ko.virtualElements.allowedBindings.each = true
+
 ko.bindingHandlers.num =
   update: ( element, accessor ) ->
     value = ko.unwrap(accessor()) or 0

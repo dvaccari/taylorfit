@@ -12,6 +12,7 @@ module.exports = class Model
     multiplicands: 1
     exponents: 1: true
     candidates: [ ]
+    stats: null
     result: null
 
   constructor: ( options ) ->
@@ -43,8 +44,13 @@ module.exports = class Model
 
     mapper = ( terms, fn ) =>
       cols = ko.unwrap @cols
-      terms.map ( t ) ->
+      terms.map ( t ) =>
         return t if t.selected?
+        if @stats() is null
+          stats = { }
+          for name of t.stats when name isnt "coeff"
+            stats[name] = ko.observable (name in ["f", "pf"])
+          @stats stats
         result =
           selected: ko.observable false
           stats: ({name, value} \

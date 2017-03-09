@@ -52,29 +52,34 @@ tf-result
   & > .terms
     display block
 
-    & > .operator
-      color black
+    & > .term > .operator
       display inline-block
-      padding 7px 3px
+      padding 7px 10px
 
-      &:first-child
+    & > .term:first-child
+      & > .operator
         display none
 
     & > .term
       position relative
       display inline-block
-      padding 7px
 
-      & > *:not(:last-child):after
+      & > *:not(:last-child):not(:first-child):after
         content "·"
         margin 0 2px
 
+      &:first-child
+        & > .control
+          top -8px
+          left -6px
+          width calc(100% + 42px)
+
       & > .control
         absolute left 0
-        padding-top 28px
+        padding-top 34px
         text-align center
-        width calc(100% + 30px)
-        box-shadow 0 0 0 2px rgba(black, 0.3)
+        width calc(100% + 34px)
+        box-shadow 0 0 0 2px #CCC
         border-radius 4px
         color black
         overflow hidden
@@ -85,8 +90,8 @@ tf-result
         position reltive
 
         &:after
-          content ""
-          margin 0
+          content "" !important
+          margin 0 !important
 
         & > *
           display inline-block
@@ -109,15 +114,15 @@ tf-result
             width 80%
 
         & > .remove
-          absolute top 2px right 2px
-          width 26px
-          height 24px
+          absolute top 0 right 1px
+          width 30px
+          height 34px
           cursor pointer
           background red
           color white
-          padding 3px
-          box-shadow inset 0 0 0 1px #AAA
-          border-radius 4px
+          box-shadow 0 0 0 1px #CCC
+          padding 8px
+          border-top-right-radius 4px
 
       &:hover
         & > .control
