@@ -71,6 +71,7 @@ class Model extends Observable {
 
   setDependent(dependent) {
     this[_dependent] = dependent;
+    this[_terms] = [];
     this[_cache].X = {};
     this[_cache].y = {};
     this[_cache].highestLag = null;
@@ -181,9 +182,13 @@ class Model extends Observable {
       coeff: stats.weights.get(i, 0),
       stats: {
         t: stats.tstats.get(i, 0),
-        pt: stats.pts.get(i, 0)
+        'p(t)': stats.pts.get(i, 0)
       }
     }));
+
+    // Fix display name for pf to p(f)
+    stats['p(f)'] = stats.pf;
+    delete stats.pf;
 
     return { terms, stats };
   }

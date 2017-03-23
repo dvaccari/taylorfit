@@ -60,6 +60,10 @@ onmessage = function (e) {
       type: 'candidates',
       data: m.getCandidates()
     });
+    postMessage({
+      type: 'model',
+      data: m.getModel()
+    });
     break;
 
   case 'get_terms':

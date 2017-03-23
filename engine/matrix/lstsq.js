@@ -190,7 +190,8 @@ function lstsqSVDWithStats(X, y, predictors) {
   return {
     weights: BHat,
     pf: dist.pf(f, np, nd - np),
-    tstats, mse, rsq, crsq, adjrsq, f, aic, bic, pts
+    f: Math.abs(f),
+    tstats, mse, rsq, crsq, adjrsq, aic, bic, pts
   };
 }
 
