@@ -1,0 +1,46 @@
+
+tf-hamburger
+  & > .fa.fa-bars
+    position absolute
+    top 20px
+    right 20px
+
+  & > .questions
+    box-shadow 0 1px 0 rgba(black, 0.2)
+    background gray
+    position absolute
+    right 0
+    top header-height
+
+    & > .multiplicands
+    & > .exponents
+    & > .statlist
+      padding 10px
+      &:not(:first-child)
+        box-shadow -1px 0 0 rgba(black, 0.2)
+
+    & > .statlist
+      width 320px
+      display inline-block
+      color black
+      & > .stat
+        background #EEE
+        box-shadow 0 0 0 2px #CCC
+        border-radius 100px
+        text-transform uppercase
+        font-size 10pt
+        margin 4px
+        padding 4px 12px
+        display inline-block
+        transition 300ms
+        &:hover
+          box-shadow 0 0 0 2px green
+        &.selected
+          background green
+          box-shadow 0 0 0 2px green
+          color white
+
+  & > .inactive
+    background-color red
+    right -100%
+

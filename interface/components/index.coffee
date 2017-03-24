@@ -11,4 +11,5 @@ require "./options"
 require "./pills"
 require "./result"
 require "./split"
+require "./hamburger"
 
