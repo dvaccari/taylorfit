@@ -14,6 +14,7 @@ module.exports = class Model
     candidates: [ ]
     stats: null
     result: null
+    show_settings: false
 
   constructor: ( options ) ->
     for key, value of DEFAULTS
@@ -83,6 +84,7 @@ module.exports = class Model
     for own key, value of this
       shallow[key] = value
     delete shallow.candidates
+    delete shallow.show_settings
     ko.toJSON shallow
 
   toJS: ( ) ->

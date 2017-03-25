@@ -1,33 +1,52 @@
 
 tf-hamburger
+  z-index 1000
+
   & > .fa.fa-bars
     position absolute
     top 20px
     right 20px
 
   & > .questions
-    box-shadow 0 1px 0 rgba(black, 0.2)
-    background white
-    position absolute
-    right 0
-    top header-height
-    border-style solid
-    border-color black
+    absolute right 0
+    display block
+    transition transform 300ms
+    background green
+    color white
+    size 260px 100%
+    box-shadow 0 0 6px rgba(black, 0.6)
+    padding 10px
+    transform translateX(100%)
+    z-index 1000
+    text-align right
 
-    & > .multiplicands
-    & > .exponents
-    & > .statlist
+    &.active
+      transform translateX(0)
+
+    & > .title
+      font-size 18pt
+
+    & > *
       padding 10px
-      &:not(:first-child)
-        box-shadow -1px 0 0 rgba(black, 0.2)
+      display block
+      text-align right
+      &:not(:last-child)
+        box-shadow 0 1px 0 rgba(black, 0.2)
+
+      header
+        display block
+        margin-bottom 5px
+
+        .title
+          font-size 14pt
+        .subtitle
+          font-size 8pt
+          margin-left 10px
 
     & > .statlist
-      width 320px
-      display inline-block
-      color black
       & > .stat
-        background #EEE
-        box-shadow 0 0 0 2px #CCC
+        background rgba(black, 0.1)
+        box-shadow 0 0 0 2px rgba(black, 0.3)
         border-radius 100px
         text-transform uppercase
         font-size 10pt
@@ -36,12 +55,11 @@ tf-hamburger
         display inline-block
         transition 300ms
         &:hover
-          box-shadow 0 0 0 2px green
+          box-shadow 0 0 0 2px #CCC
         &.selected
-          background green
-          box-shadow 0 0 0 2px green
-          color white
+          background #EEE
+          box-shadow 0 0 0 2px #CCC
+          color black
 
-  & > .inactive
-    right -100%
+
 

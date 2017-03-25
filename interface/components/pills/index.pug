@@ -1,8 +1,8 @@
 
 
 header
-  span.subtitle(data-bind="text:ko.unwrap(style)==='radio'?'Select One':'Select Many'")
   span.title(data-bind="text:name")
+  span.subtitle(data-bind="text:ko.unwrap(style)==='radio'?'Select One':'Select Many'")
 //- TODO: enforce min and max through keypress
 input.custom(type="number" placeholder="Custom..."
 data-bind="textInput:input,event:{change:add},css:{invalid:invalid}")

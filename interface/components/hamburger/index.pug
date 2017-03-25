@@ -1,7 +1,9 @@
 
-a.fa.fa-bars(data-bind="click:clicked")
-.questions(data-bind="css:{inactive:inactive}")
+.questions(data-bind="css:{active:active}")
+  span.title Settings
   span.statlist
+    header
+      span.title Display Statistics
     // ko each:stats
     div.stat(data-bind="text:$key,css:{selected:$value},\
     click:function(){$value(!$value())}")

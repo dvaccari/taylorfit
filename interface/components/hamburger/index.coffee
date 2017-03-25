@@ -11,14 +11,11 @@ ko.components.register "tf-hamburger",
 
     model = params.model() # now static
 
-    @inactive = ko.observable true
+    @active = model.show_settings
     @stats = model.stats
     @exponents = model.exponents
     @multiplicands = model.multiplicands
     @candidates = model.candidates
-
-    @clicked = ( ) ->
-      @inactive !@inactive()
 
     return this
 

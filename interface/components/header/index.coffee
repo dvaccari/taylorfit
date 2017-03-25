@@ -12,6 +12,10 @@ ko.components.register "tf-header",
 
     @clear = ( ) ->
       params.model null
+    @toggle_settings = ( ) ->
+      params.model().show_settings not \
+        params.model().show_settings()
+      console.log params.model().show_settings()
 
     return this
 

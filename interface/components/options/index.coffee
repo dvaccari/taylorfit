@@ -11,8 +11,6 @@ ko.components.register "tf-options",
     model = params.model() # now static
 
     @stats = model.stats
-    @exponents = model.exponents
-    @multiplicands = model.multiplicands
     @candidates = model.candidates
 
     return this
