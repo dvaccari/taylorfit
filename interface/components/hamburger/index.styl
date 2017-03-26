@@ -11,14 +11,15 @@ tf-hamburger
     absolute right 0
     display block
     transition transform 300ms
-    background green
-    color white
+    background #EEE
+    color black
     size 260px 100%
-    box-shadow 0 0 6px rgba(black, 0.6)
+    box-shadow 0 0 0 2px #DDD
     padding 10px
     transform translateX(100%)
     z-index 1000
     text-align right
+    overflow-y auto
 
     &.active
       transform translateX(0)
@@ -35,7 +36,7 @@ tf-hamburger
 
       header
         display block
-        margin-bottom 5px
+        margin-bottom 8px
 
         .title
           font-size 14pt
@@ -55,11 +56,11 @@ tf-hamburger
         display inline-block
         transition 300ms
         &:hover
-          box-shadow 0 0 0 2px #CCC
+          box-shadow 0 0 0 2px green
         &.selected
-          background #EEE
-          box-shadow 0 0 0 2px #CCC
-          color black
+          background green
+          box-shadow 0 0 0 2px green
+          color white
           &:hover
             box-shadow 0 0 0 2px rgba(black, 0.3)
 
