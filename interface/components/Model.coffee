@@ -1,27 +1,33 @@
 
 Papa = require "papaparse"
 
+observable = ( item ) ->
+  if item?.constructor is Object
+    for k, v of item
+      item[k] = observable v
+  if item instanceof Array
+  then ko.observableArray item
+  else ko.observable item
+
 module.exports = class Model
 
   DEFAULTS =
-    id: "model"
-    name: "New Model"
-    cols: [ ]
-    rows: [ ]
-    dependent: 0
-    multiplicands: 1
-    exponents: 1: true
-    candidates: [ ]
-    stats: null
-    result: null
-    show_settings: false
+    id:             "model"
+    name:           "New Model"
+    training:       null
+    test:           null
+    validation:     null
+    dependent:      0
+    multiplicands:  1
+    exponents:      1: true
+    candidates:     [ ]
+    stats:          null
+    result:         null
+    show_settings:  false
 
   constructor: ( options ) ->
     for key, value of DEFAULTS
-      value = options[key] or value
-      value = if value instanceof Array
-      then ko.observableArray value
-      else ko.observable value
+      value = observable options[key] or value
       Object.defineProperty this, key,
         { value, enumerable: true }
 
@@ -29,14 +35,17 @@ module.exports = class Model
       Number key for key, value of exps \
       when ko.unwrap value
 
-    @rows.subscribe init = ( next ) =>
+    unless @training()
+      throw new Error "model: training data not defined"
+
+    @training().rows.subscribe init = ( next ) =>
       return unless next.length
       adapter.post_dataset next,
         @dependent(), @multiplicands(),
         exponents2array @exponents()
-    if @rows().length then init @rows()
+    if @training().rows().length then init @training().rows()
     @dependent.subscribe ( next ) =>
-      return unless @rows().length
+      return unless @training().rows().length
       adapter.post_dependent Number next
     @multiplicands.subscribe ( next ) ->
       adapter.post_multiplicands Number next
@@ -44,7 +53,7 @@ module.exports = class Model
       adapter.post_exponents exponents2array next
 
     mapper = ( terms, fn ) =>
-      cols = ko.unwrap @cols
+      cols = ko.unwrap @training().cols
       terms.map ( t ) =>
         return t if t.selected?
         if @stats() is null
@@ -72,11 +81,12 @@ module.exports = class Model
         b.stats[0].value - a.stats[0].value
 
     adapter.on "model", ( model ) =>
-      @result {
-        terms: mapper model.terms, "remove"
-        stats: ({name, value} \
-          for name, value of model.stats)
-      }
+      if model.terms.length
+        @result {
+          terms: mapper model.terms, "remove"
+          stats: ({name, value} \
+            for name, value of model.stats)
+        }
 
 
   toJSON: ( ) ->

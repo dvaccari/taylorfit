@@ -1,9 +1,14 @@
 
-input#input-dataset(type="file" accept=".csv" data-bind="value:dataset" hidden)
-label.button.input-dataset(for="input-dataset")
-  span Import Data
+input(type="file" accept=".csv" hidden
+  data-bind="attr:{id:id},value:dataset")
+label.button.input-dataset(data-bind="attr:{for:id}")
+  span
+    | Import&nbsp;
+    span(data-bind="text:table")
+    | &nbsp;Data
   hr
   span.small Upload CSV data to begin!
+// ko if: init
 input#input-model(type="file" accept=".json,.tf" data-bind="value:model" hidden)
 label.button.input-model(for="input-model")
   span Import Project
@@ -13,4 +18,5 @@ label.button.output-manual
   span Download Manual
   hr
   span.small Coming Soon
+// /ko
 

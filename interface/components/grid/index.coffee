@@ -36,12 +36,16 @@ ko.components.register "tf-grid",
       throw new TypeError "components/grid:
       expects [model] to be observable"
 
+    unless params.table?
+      throw new TypeError "components/grid:
+      expects [table] to exist"
+
+    @table = params.table
+
     model = params.model() # now static
     @dependent  = model.dependent
-    #@loaded     = params.loaded     or ko.observable false
-    @cols       = model.cols
-    @rows       = model.rows
-    #@name       = ko.observable null
+    @cols       = model[@table]().cols
+    @rows       = model[@table]().rows
 
     @scroll = ( model, event) ->
       if event.deltaY < 0

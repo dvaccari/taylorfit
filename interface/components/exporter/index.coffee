@@ -24,13 +24,11 @@ ko.components.register "tf-exporter",
 
     @download_dataset = ( ) ->
       model = params.model()
-      console.log "d", model
       download (model.id() or "model") + ".csv",
         "type/csv", model.toCSV()
 
     @download_model = ( ) ->
       model = params.model()
-      console.log "m",model
       download (model.id() or "model") + ".tf",
         "application/json", model.toJSON()
 

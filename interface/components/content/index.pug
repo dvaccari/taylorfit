@@ -2,7 +2,7 @@
 span.wrapper
   // ko ifnot:model
   span.loader
-    tf-loader(params="model:model")
+    tf-loader(params="model:model,table:'training',init:true")
   // /ko
   // ko if:model
   tf-hamburger(params="model:model")
@@ -11,7 +11,27 @@ span.wrapper
       tf-result(params="model:model")
     .split-data(data-bind="split:{direction:'horizontal'}")
       .data
-        tf-grid(params="model:model")
+        span.title Training Data
+        tf-grid(params="model:model,table:'training'")
+
+        // ko ifnot:model().test
+        tf-loader(params="model:model,table:'test'")
+        // /ko
+        // ko if:model().test
+        span.title Test Data
+        tf-grid(params="model:model,table:'test'")
+        // /ko
+
+        // ko ifnot:model().validation
+        tf-loader(params="model:model,table:'validation'")
+        // /ko
+        // ko if:model().validation
+        span.title Validation Data
+        tf-grid(params="model:model,table:'validation'")
+        // /ko
+
+        span.buffer
+
       .options
         tf-options(params="model:model")
   // /ko
