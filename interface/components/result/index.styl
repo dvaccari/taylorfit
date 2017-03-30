@@ -12,8 +12,13 @@ tf-result
     display block
     user-select none
 
-  & > .graphs
-    margin 60px auto
+  & > .table-wrapper
+    display inline-block
+    vertical-align top
+    margin-right 10px
+
+
+  span.graphs
     padding 30px
     box-sizing border-box
     width 400px
@@ -31,6 +36,50 @@ tf-result
     & > .subtitle
       font-size 16pt
 
+  table
+    font-size 12pt
+
+    & > thead > tr > th
+    & > tbody > tr > td
+      padding 3px 6px
+      box-shadow inset -1px -1px 0 0 #EEE, inset 1px 1px 0 0 #EEE
+
+  table.stats
+    & > tbody > tr
+      & > td.name
+        text-align left
+        font-weight bold
+      & > td.value
+        text-align right
+
+
+  table.terms
+    & > tbody > tr
+      & > td
+        text-align right
+      & > td.term
+        text-align left
+
+        //& > *:not(:last-child):not(:first-child):after
+        & > span.name:before
+          content "·"
+          margin 0 2px
+
+      &:nth-child(2) > td.term
+        color darken(red,darken-amount)
+      &:nth-child(3) > td.term
+        color darken(blue,darken-amount)
+      &:nth-child(4) > td.term
+        color darken(green,darken-amount)
+      &:nth-child(5) > td.term
+        color darken(orange,darken-amount)
+      &:nth-child(6) > td.term
+        color darken(purple,darken-amount)
+      &:nth-child(7) > td.term
+        color darken(cyan,darken-amount)
+
+
+  /*
   & > .stats
     display block
     margin-top 6px
@@ -141,3 +190,4 @@ tf-result
         color darken(purple,darken-amount)
       &:nth-child(7)
         color darken(cyan,darken-amount)
+  */
