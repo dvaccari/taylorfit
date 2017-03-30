@@ -4,21 +4,20 @@
     thead
       tr
         th
-        th
         // ko foreach: result().terms[0].stats
         th(data-bind="text:name")
         // /ko
     tbody
       // ko foreach: result().terms
       tr
-        td.control
-          span.remove.fa.fa-close(data-bind="click:function(){selected(true)}")
         td.term
+          span.remove.fa.fa-close(data-bind="click:function(){selected(true)}")
           span.operator(data-bind="text:coeff<0?'-':'+'")
           span.coeff(data-bind="num:Math.abs(coeff)")
           // ko foreach:term
           // ko if:exp
           span.name
+            span.lparen (
             span(data-bind="text:name||'x'")
             // ko ifnot:name
             sub(data-bind="text:index")
@@ -26,6 +25,7 @@
             // ko if:exp !== 1
             sup(data-bind="text:exp")
             // /ko
+            span.rparen )
           // /ko
           // /ko
         // ko foreach:stats
