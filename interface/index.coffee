@@ -27,19 +27,23 @@ ko.bindingHandlers.each =
 ko.virtualElements.allowedBindings.each = true
 
 ko.bindingHandlers.num =
+  # If X < 0.0010, then use exponential notation with four digits, e.g. 2.135e-06
+  # If 0.00100 <= X < 1.0, then use fixed to 5 digits (e.g. 0.53621 or 0.00131)
+  # If 1.0 <= X < 100,000., give precision of 5 digits (52,327.86>52,328)
+  # If X => 100,000, use exponential format with four digits, e.g. 2.135e+12
   update: ( element, accessor ) ->
     value = ko.unwrap(accessor()) or 0
     negative = value < 0
     value = Math.abs value
 
-    if value < 0.0001
-      value = value.toExponential 3
+    if value < 0.0010
+      value = value.toExponential 4
     else if value < 1
-      value = value.toFixed 4
-    else if value < 99999
+      value = value.toFixed 5
+    else if value < 100000
       value = value.toPrecision 5
     else
-      value = value.toExponential 3
+      value = value.toExponential 4
 
     if negative
       value = "-" + value
