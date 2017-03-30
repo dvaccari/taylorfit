@@ -2,24 +2,21 @@
 tf-hamburger
   z-index 1000
 
-  & > .fa.fa-bars
-    position absolute
-    top 20px
-    right 20px
-
   & > .questions
     absolute right 0
     display block
     transition transform 300ms
     background #EEE
     color black
-    size 260px 100%
+    width 300px
+    height "calc(100% - %s)" % header-height
     box-shadow 0 0 0 2px #DDD
     padding 10px
     transform translateX(100%)
     z-index 1000
     text-align right
     overflow-y auto
+    box-sizing border-box
 
     &.active
       transform translateX(0)

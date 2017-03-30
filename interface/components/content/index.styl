@@ -1,4 +1,16 @@
 
+@media screen and (min-width: 1270px) {
+  tf-content > span.wrapper {
+    width: calc(100% - 300px) !important;
+  }
+  tf-hamburger > .questions {
+    transform: translateX(0) !important;
+  }
+  tf-header .hamburger {
+    display: none !important;
+  }
+}
+
 tf-content
   position relative
   display block
@@ -36,7 +48,6 @@ tf-content
           border 1px solid white
         & > .small
           font-size 12pt
-
 
     .options
     .data
