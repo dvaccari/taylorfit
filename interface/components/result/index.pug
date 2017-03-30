@@ -4,12 +4,15 @@
     thead
       tr
         th
+        th
         // ko foreach: result().terms[0].stats
         th(data-bind="text:name")
         // /ko
     tbody
       // ko foreach: result().terms
       tr
+        td.control
+          span.remove.fa.fa-close(data-bind="click:function(){selected(true)}")
         td.term
           span.operator(data-bind="text:coeff<0?'-':'+'")
           span.coeff(data-bind="num:Math.abs(coeff)")
@@ -51,46 +54,5 @@
 // /ko
 // ko ifnot:result
 span.nomodel Select candidate terms to create a model.
-// /ko
-
-// ko if:false
-span.terms
-  // ko foreach: result().terms
-  span.term
-    span.operator(data-bind="text:coeff<0?'-':'+'")
-    span.control
-      // ko foreach:stats
-      span.stat
-        span.name(data-bind="text:name")
-        span.value(data-bind="num:value")
-      // /ko
-      span.remove.fa.fa-close(data-bind="click:function(){selected(true)}")
-    span.coeff(data-bind="num:Math.abs(coeff)")
-    // ko foreach:term
-    // ko if:exp
-    span.name
-      span(data-bind="text:name||'x'")
-      // ko ifnot:name
-      sub(data-bind="text:index")
-      // /ko
-      // ko if:exp !== 1
-      sup(data-bind="text:exp")
-      // /ko
-    // /ko
-    // /ko
-  // /ko
-span.stats
-  // ko foreach:result().stats
-  // ko if:"number" === typeof value
-  span.stat
-    span.name(data-bind="text:name")
-    span.value(data-bind="num:value")
-  // /ko
-  // /ko
-  //- TODO: add stats to a tooltip
-  //- ko foreach:stats
-    td.stat
-      span.value(data-bind="text:value.toFixed(3)")
-    // /ko
 // /ko
 
