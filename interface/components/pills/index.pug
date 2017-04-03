@@ -4,8 +4,9 @@ header
   span.title(data-bind="text:name")
   span.subtitle(data-bind="text:ko.unwrap(style)==='radio'?'Select One':'Select Many'")
 //- TODO: enforce min and max through keypress
-input.custom(type="number" placeholder="Custom..."
-data-bind="textInput:input,event:{change:add},css:{invalid:invalid}")
+a.fa.fa-plus(data-bind="click:showinput,css:{hide:hide()}")
+input#custom.custom(type="number" placeholder="Custom..."
+data-bind="textInput:input,event:{change:add},css:{invalid:invalid,hide:!hide()},hasFocus:focus")
 
 //- TODO: replace with each binding
 // ko foreach: Object.keys(values()).sort(function(a,b){return Number(b)<Number(a)})

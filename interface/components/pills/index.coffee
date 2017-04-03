@@ -22,6 +22,8 @@ ko.components.register "tf-pills",
 
     @valid = params.valid or ( ) -> true
     @invalid = ko.observable false
+    @hide = ko.observable false
+    @focus = ko.observable false
 
     @name  = params.name
 
@@ -60,6 +62,15 @@ ko.components.register "tf-pills",
       @update name
 
       @input ""
+      @focus false
+
+    @showinput = ( ) =>
+      @hide true
+      @focus true
+
+    @focus.subscribe ( name ) =>
+      if !name
+        @hide false
 
     return this
 

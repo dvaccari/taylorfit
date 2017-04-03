@@ -32,10 +32,23 @@ tf-pills
       &:hover
         box-shadow 0 0 0 2px rgba(black, 0.3)
 
+  & > a.fa.fa-plus
+    padding 2px 4px
+    transition 300ms
+    &.hide
+      display none
+    &:hover
+      text-shadow 1px 0 0 green, -1px 0 0 green,
+       0 1px 0 green, 0 -1px 0 green
+    &:active
+      color green
+
   & > input.custom
     margin-left 10px
     cursor text
     width 100px
     &.invalid
       box-shadow 0 0 2px red
+    &.hide
+      display none
 
