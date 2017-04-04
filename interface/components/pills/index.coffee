@@ -23,7 +23,7 @@ ko.components.register "tf-pills",
     @valid = params.valid or ( ) -> true
     @invalid = ko.observable false
     @hide = ko.observable false
-    @focus = ko.observable false
+    @focus = ko.observable(false).extend({ rateLimit: 50 })
 
     @name  = params.name
 
@@ -57,20 +57,21 @@ ko.components.register "tf-pills",
         @invalid true
         return undefined
       @invalid false
+      @hide false
 
       values = @values()
       values[name] = ko.observable true
       @update name
 
       @input ""
-      @focus false
 
     @showinput = ( ) =>
       @hide true
       @focus true
 
-    @focus.subscribe ( focused ) =>
-      @hide false unless focused
+    @hideinput = ( ) =>
+      @hide false
+      @focus false
 
     return this
 
