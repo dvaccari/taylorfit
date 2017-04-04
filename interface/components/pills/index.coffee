@@ -54,7 +54,8 @@ ko.components.register "tf-pills",
       name = @input()
 
       unless @valid(name) and name != "0" and name != ""
-        return @invalid true
+        @invalid true
+        return undefined
       @invalid false
 
       values = @values()
@@ -68,9 +69,8 @@ ko.components.register "tf-pills",
       @hide true
       @focus true
 
-    @focus.subscribe ( name ) =>
-      if !name
-        @hide false
+    @focus.subscribe ( focused ) =>
+      @hide false unless focused
 
     return this
 
