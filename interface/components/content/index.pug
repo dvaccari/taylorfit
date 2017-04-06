@@ -5,6 +5,7 @@ tf-hamburger(params="model:model")
 span.wrapper
   // ko ifnot:model
   span.loader
+    //- TODO: move this to app/index.pug
     tf-loader(params="model:model,table:'training',init:true")
   // /ko
   // ko if:model

@@ -10,10 +10,6 @@ ko.components.register "tf-header",
 
     @model = params.model
 
-    @clear_project = ( ) ->
-      params.model null
-    @clear_model = ( ) ->
-      params.model().result null
     @toggle_settings = ( ) ->
       params.model().show_settings not \
         params.model().show_settings()

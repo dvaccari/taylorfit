@@ -20,8 +20,6 @@ ko.components.register "tf-exporter",
       throw new TypeError "components/exporter:
       expects [model] to be observable"
 
-    @model = params.model
-
     @download_dataset = ( ) ->
       model = params.model()
       download (model.id() or "model") + ".csv",
@@ -31,5 +29,11 @@ ko.components.register "tf-exporter",
       model = params.model()
       download (model.id() or "model") + ".tf",
         "application/json", model.toJSON()
+
+    @clear_project = ( ) ->
+      params.model null
+
+    @clear_model = ( ) ->
+      params.model().result null
 
     return this

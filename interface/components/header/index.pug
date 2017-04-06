@@ -1,11 +1,6 @@
 
 span.title TaylorFit
 // ko if:model
-span.button(data-bind="click:clear_project")
-  | Clear Project
-span.button(data-bind="click:clear_model")
-  | Clear Model
-tf-exporter(params="model:model")
 span.name(data-bind="text:model().training().name")
 a.fa.fa-bars.hamburger(data-bind="click:toggle_settings")
 // /ko
