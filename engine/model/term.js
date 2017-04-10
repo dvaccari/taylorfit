@@ -1,7 +1,7 @@
 'use strict';
 
-const lstsq   = require('../matrix').lstsq;
-const Matrix  = require('../matrix').Matrix;
+const lstsq   = require('../regression').lstsq;
+const Matrix  = require('../matrix');
 const bi_md5  = require('blueimp-md5');
 
 const md5     = (x) => bi_md5(x);
@@ -72,13 +72,12 @@ class Term {
     try {
       theStats = lstsq(XLagged, yLagged);
       theStats.coeff = theStats.weights.get(0, theStats.weights.shape[0]-1);
-      theStats.t = theStats.tstats.get(0, theStats.tstats.shape[0]-1);
-      theStats['p(t)'] = theStats.pts.get(0, theStats.pts.shape[0]-1);
-      theStats['p(f)'] = theStats.pf;
+      theStats.t = theStats.t.get(0, theStats.t.shape[0]-1);
+      theStats['p(t)'] = theStats['p(t)'].get(0, theStats['p(t)'].shape[0]-1);
+      theStats['p(f)'] = theStats.pF;
       delete theStats.weights;
-      delete theStats.tstats;
-      delete theStats.pts;
-      delete theStats.pf;
+      delete theStats.t;
+      delete theStats.pF;
 
       return theStats;
 
@@ -92,6 +91,8 @@ class Term {
        */
     } catch (e) {
       console.error(e);
+      console.log(this.valueOf());
+      console.log(this.col());
       return NaN;
     }
   }

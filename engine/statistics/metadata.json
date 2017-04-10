@@ -1,0 +1,35 @@
+{
+  "X"       : { "show": false },
+  "y"       : { "show": false },
+  "VdivwSq" : { "show": false },
+  "BHat"    : { "show": false },
+  "yHat"    : { "show": false },
+  "Vary"    : {},
+
+  "nd"      : { "globalOnly": true },
+  "np"      : { "globalOnly": true },
+
+  "SSE"     : {},
+  "TSS"     : {},
+  "SSR"     : {},
+
+  "MSR"     : {},
+  "MSE"     : {},
+
+  "Rsq"     : { "sort": "<" },
+  "cRsq"    : { "sort": ">" },
+  "adjRsq"  : { "sort": "<" },
+
+  "AIC"     : { "sort": ">" },
+  "BIC"     : { "sort": ">" },
+
+  "F"       : { "sort": ">" },
+  "pF"      : { "displayName": "p(F)", "sort": ">" },
+
+  "t"       : { "sort": "<" },
+  "pt"      : { "displayName": "p(t)", "sort": ">" },
+
+  "stdev"   : {},
+  "mean"    : {},
+  "weights" : {}
+}

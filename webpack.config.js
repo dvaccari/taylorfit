@@ -62,6 +62,9 @@ module.exports = {
       test: /\.txt$/,
       loader: 'raw-loader'
     }, {
+      test: /\.json$/,
+      loader: 'json-loader'
+    }, {
       test: /\.jsx$/,
       exclude: /node_modules/,
       loader: 'babel?presets[]=es2015'
