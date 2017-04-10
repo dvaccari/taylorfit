@@ -1,6 +1,6 @@
 'use strict';
 
-const Matrix  = require('./matrix');
+const Matrix  = require('../matrix');
 
 function pythag(a, b) {
   var absa = Math.abs(a)
