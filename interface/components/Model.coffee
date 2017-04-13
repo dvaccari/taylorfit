@@ -2,7 +2,7 @@
 Papa = require "papaparse"
 
 observable = ( item ) ->
-  if item?.constructor is Object
+  if item?.constructor is Object and item.rows
     for k, v of item
       item[k] = observable v
   if item instanceof Array
