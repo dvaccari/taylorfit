@@ -12,6 +12,12 @@ class Observable {
   }
 
   on(event, handler) {
+    // If an array of events, register for each event
+    if (Array.isArray(event)) {
+      return event.map((ev) => this.on(ev, handler));
+    }
+
+    // Otherwise, register the sole event
     let id = this[_listenerCount] += 1;
 
     this[_listeners][id] = handler;

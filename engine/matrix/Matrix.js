@@ -577,6 +577,21 @@ class Matrix {
   }
 
   /**
+   * Takes the product of all elements.
+   *
+   * @return {number} Product of all elements
+   */
+  prod() {
+    var tot = 1
+      , i;
+
+    for (i = 0; i < this[_data].length; i += 1) {
+      tot *= this[_data][i];
+    }
+    return tot;
+  }
+
+  /**
    * @property {Matrix<n,m>} T The transposition of the matrix
    */
   get T() {

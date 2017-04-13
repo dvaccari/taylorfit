@@ -1,8 +1,9 @@
 /*global onmessage, postMessage*/
 'use strict';
 
-const Model = require('../model/model2');
-const m     = new Model();
+const statsMeta = require('../statistics/metadata.json');
+const Model     = require('../model/model2');
+const m         = new Model();
 
 var log = function () {
   console.debug('[Engine]:', ...arguments);
@@ -31,14 +32,36 @@ m.on('getCandidates.end', () => postMessage({
   data: {}
 }));
 
+// Whenever a parameter changes, let's update the UI
+m.on(['setData', 'setExponents', 'setMultiplicands', 'setDependent',
+      'setLags', 'addTerm', 'removeTerm'],
+     () => {
+       postMessage({ type: 'model', data: m.getModel() });
+       postMessage({ type: 'candidates', data: m.getCandidates() });
+     }
+    );
+
 onmessage = function (e) {
-  var type = e.data.type
-    , data = e.data.data;
+  let type = e.data.type
+    , data = e.data.data
+    , temp;
 
   log(e.data);
 
   switch(type) {
 
+  // only works because the event type is the same as the method name
+  case 'setData':
+  case 'setExponents':
+  case 'setMultiplicands':
+  case 'setDependent':
+  case 'setLags':
+  case 'addTerm':
+  case 'removeTerm':
+    m[type](data);
+    break;
+
+  // XXX: DEPRECATED
   case 'update':
     if (data.dataset != null) {
       m.setData(data.dataset);
@@ -55,49 +78,19 @@ onmessage = function (e) {
     if (data.lags != null) {
       m.setLags(data.lags);
     }
-
-    postMessage({
-      type: 'candidates',
-      data: m.getCandidates()
-    });
-    postMessage({
-      type: 'model',
-      data: m.getModel()
-    });
     break;
 
-  case 'get_terms':
-    postMessage({
-      type: 'candidates',
-      data: m.getCandidates()
-    });
+  case 'getTerms':
+    postMessage({ type: 'candidates', data: m.getCandidates() });
     break;
 
-  case 'add_term':
-    m.addTerm(data);
-
-    postMessage({
-      type: 'candidates',
-      data: m.getCandidates()
-    });
-    postMessage({
-      type: 'model',
-      data: m.getModel()
-    });
-    break;
-
-  case 'remove_term':
-    m.removeTerm(data);
-
-    postMessage({
-      type: 'candidates',
-      data: m.getCandidates()
-    });
-    postMessage({
-      type: 'model',
-      data: m.getModel()
-    });
-    break;
+  case 'getStatisticsMetadata':
+    temp = Object.keys(statsMeta).reduce((meta, stat) => {
+      if (statsMeta[stat].show !== false) {
+        meta[statsMeta[stat].displayName || stat] = statsMeta[stat];
+      }
+    }, {});
+    postMessage({ type: 'statisticsMetadata', data: temp });
 
   default:
     postMessage({ type: 'error', data: 'Invalid type: ' + type });

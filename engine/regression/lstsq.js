@@ -1,8 +1,10 @@
 'use strict';
 
-const Matrix  = require('./matrix');
-const svd     = require('./svd-golub-reinsch');
-const dist    = require('./distributions-socr');
+const Matrix      = require('../matrix');
+const svd         = require('./svd-golub-reinsch');
+const statistics  = require('../statistics');
+const dist        = require('../statistics/distributions-socr');
+const utils       = require('../utils');
 
 /**
  * Computes total least squares regression on the matrix `A`, already decomposed
@@ -112,6 +114,50 @@ function lstsqNEWithStats(X, y) {
   };
 }
 
+function scale(X) {
+  let stdevs = [];
+  let means = [];
+  let intercept = -1;
+
+  for (i = 0; i < X.shape[1]; i += 1) {
+    let col = X.col(i);
+    let nd = col.shape[0];
+    let mean = col.sum() / nd;
+    let newCol = col.sub(mean);
+    let stdev = Math.sqrt(newCol.dotPow(2).sum() / (nd - 1));
+
+    means.push(mean);
+
+    if (stdev <= Number.EPSILON && mean === 1) {
+      stdevs.push(1);
+      intercept = i;
+    } else {
+      X.col(i, newCol.dotDivide(stdev).data);
+      stdevs.push(stdev);
+    }
+  }
+
+  return {
+    stdev: new Matrix(stdevs).T,
+    mean: new Matrix(means).T,
+    intercept
+  };
+}
+
+let scalerms = (col) => {
+  let rms = Math.sqrt(col.dotPow(2).sum() / (col.shape[0] - 1));
+  return col.dotDivide(rms);
+};
+
+let getRMS = (X) => {
+  let i, rms, col;
+  for (i = 0, rms = []; i < X.shape[1]; i += 1) {
+    col = X.col(i);
+    rms.push(Math.sqrt(col.dotPow(2).sum() / (col.shape[0] - 1)));
+  }
+  return new Matrix(rms);
+};
+
 /**
  * Compute least squares regression using singular value decomposition, then
  * compute analytical statistics to determine the quality of the fit for the
@@ -141,58 +187,40 @@ function lstsqNEWithStats(X, y) {
  * @return {object} Regression results
  */
 function lstsqSVDWithStats(X, y, predictors) {
-  var decomposition = svd(X)
+  let i;
+  let { stdev, mean, intercept } = scale(X);
+
+  let decomposition = svd(X)
     , U             = decomposition[0]
     , w             = Matrix.from(decomposition[1])
     , V             = decomposition[2]
-    , BHat          = predictors || lstsqSVD(X, U, w, V, y)
-    , yHat          = X.dot(BHat)
-
-  // fit statistics
-    , nd            = X.shape[0]
-    , np            = X.shape[1]
-    , sse           = y.sub(yHat).dotPow(2).sum()
-    , tss           = y.sub(y.sum() / y.shape[0]).dotPow(2).sum()
-    , ssr           = tss - sse
-    , vary          = tss / (nd - 1)
-    , msr           = ssr / (np - 1)
-    , mse           = sse / (nd - np)
-    , rsq           = 1 - (sse / tss)
-    , crsq          = 1 - rsq
-    , adjrsq        = 1 - (mse / vary)
-    , f             = msr / mse
-    , aic           = Math.log10(mse) + 2*(np / nd)
-    , bic           = Math.log10(mse) + np*(Math.log10(nd) / nd)
-
-  // used for t-stat calculations
     , VdivwSq       = V.dotDivide(w).dotPow(2)
-    , i;
 
+    , BHat          = predictors || lstsqSVD(X, U, w, V, y)
+    , weights       = BHat.dotDivide(stdev);
+
+  // If there is an intercept, un-scale its weight by subtracting the means of
+  // the other columns times the corresponding sign of their weights
+  //
+  //          B_0 = B_0 - sum(mean(i) * sign(weights(i)))
+  //
+  if (intercept >= 0) {
+    let interceptWeight = weights.get(0, intercept) + 1;
+
+    for (i = 0; i < weights.shape[0]; i += 1) {
+      interceptWeight -= mean.data[i] * utils.sign(weights.data[i]);
+    }
+    weights.data[intercept] = interceptWeight;
+  }
+
+  // Remove infinitely high values to work around potential divide-by-zero issue
   for (i = 0; i < VdivwSq.data.length; i += 1) {
     if (Math.abs(VdivwSq.data[i]) === Infinity || isNaN(VdivwSq.data[i])) {
       VdivwSq.data[i] = 0;
     }
   }
 
-  var sec = new Matrix(1, X.shape[1])
-    , stdModelErr;
-
-  for (i = 0; i < X.shape[1]; i += 1) {
-    stdModelErr = Math.sqrt(VdivwSq.row(i).sum() * mse);
-    sec.data[i] = stdModelErr;
-  }
-
-  var tstats        = BHat.dotDivide(sec);
-  var pts           = tstats.clone();
-
-  pts.data.set(pts.data.map((t) => dist.pt(t, nd - np)));
-
-  return {
-    weights: BHat,
-    pf: dist.pf(f, np, nd - np),
-    f: Math.abs(f),
-    tstats, mse, rsq, crsq, adjrsq, aic, bic, pts
-  };
+  return statistics({ X, y, BHat, VdivwSq, stdev, mean, weights });
 }
 
 module.exports.lstsqSVD = lstsqSVDWithStats;

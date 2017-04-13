@@ -87,3 +87,5 @@ let clone = module.exports.clone = (obj) => {
 };
 
 module.exports.join = (arr) => [].concat.apply([], arr);
+
+module.exports.sign = (x) => x < 0 ? -1 : x > 0 ? 1 : 0;

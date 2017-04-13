@@ -1,7 +1,6 @@
 
-
-const Matrix          = require('../matrix').Matrix;
-const lstsq           = require('../matrix').lstsq;
+const Matrix          = require('../matrix');
+const lstsq           = require('../regression').lstsq;
 
 const utils           = require('../utils');
 const Observable      = require('../observable');
@@ -53,6 +52,7 @@ class Model extends Observable {
     this[_cache].y = {};
     this[_cache].data = {};
     this[_cache].highestLag = null;
+    this.termpool.clearCache();
     this.fire('setData', data);
     return this;
   }
@@ -181,14 +181,10 @@ class Model extends Observable {
       term: term.valueOf(),
       coeff: stats.weights.get(i, 0),
       stats: {
-        t: stats.tstats.get(i, 0),
-        'p(t)': stats.pts.get(i, 0)
+        t: stats.t.get(i, 0),
+        'p(t)': stats['p(t)'].get(i, 0)
       }
     }));
-
-    // Fix display name for pf to p(f)
-    stats['p(f)'] = stats.pf;
-    delete stats.pf;
 
     return { terms, stats };
   }
