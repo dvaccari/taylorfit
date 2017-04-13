@@ -6,11 +6,11 @@
         th
           div.centering
             div.fixing Term
-        // ko each:stats
-        // ko if:$value
+        // ko foreach:allstats
+        // ko if:!global && sort && selected()
         th
           div.centering
-            div.fixing(data-bind="text:$key")
+            div.fixing(data-bind="text:name")
         // /ko
         // /ko
 
@@ -21,6 +21,7 @@
           span.coeff
             span(data-bind="num:coeff")
           // ko foreach:term
+          // ko if:exp !== 0
           span.name
             span(data-bind="text:name||'x'")
             // ko ifnot:name
@@ -30,10 +31,11 @@
           sup(data-bind="text:exp")
           // /ko
           // /ko
-        // ko foreach:stats
-        // ko if:$parents[1].stats()[name]
+          // /ko
+        // ko foreach:allstats
+        // ko if:!global && sort && selected()
         td.stat
-          span.value(data-bind="num:value")
+          span.value(data-bind="num:$parent.stats[id]")
         // /ko
         // /ko
       // /ko

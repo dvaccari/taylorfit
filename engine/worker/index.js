@@ -89,8 +89,10 @@ onmessage = function (e) {
       if (statsMeta[stat].show !== false) {
         meta[statsMeta[stat].displayName || stat] = statsMeta[stat];
       }
+      return meta;
     }, {});
     postMessage({ type: 'statisticsMetadata', data: temp });
+    break;
 
   default:
     postMessage({ type: 'error', data: 'Invalid type: ' + type });

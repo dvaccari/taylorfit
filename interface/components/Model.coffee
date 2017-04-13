@@ -21,9 +21,9 @@ module.exports = class Model
     multiplicands:  1
     exponents:      1: true
     candidates:     [ ]
-    stats:          null
     result:         null
     show_settings:  false
+    progress:       30
 
   constructor: ( options ) ->
     for key, value of DEFAULTS
@@ -40,54 +40,56 @@ module.exports = class Model
 
     @training().rows.subscribe init = ( next ) =>
       return unless next.length
-      adapter.post_dataset next,
-        @dependent(), @multiplicands(),
-        exponents2array @exponents()
-    if @training().rows().length then init @training().rows()
+      adapter.setData next
     @dependent.subscribe ( next ) =>
       return unless @training().rows().length
-      adapter.post_dependent Number next
+      adapter.setDependent Number next
     @multiplicands.subscribe ( next ) ->
-      adapter.post_multiplicands Number next
+      adapter.setMultiplicands Number next
     @exponents.subscribe ( next ) ->
-      adapter.post_exponents exponents2array next
+      adapter.setExponents exponents2array next
+
+    if @training().rows().length
+      adapter.setData @training().rows()
+      adapter.setDependent @dependent()
+      adapter.setMultiplicands @multiplicands()
+      adapter.setExponents exponents2array @exponents()
 
     mapper = ( terms, fn ) =>
       cols = ko.unwrap @training().cols
       terms.map ( t ) =>
         return t if t.selected?
-        if @stats() is null
-          stats = { }
-          for name of t.stats when name isnt "coeff"
-            stats[name] = ko.observable (name in ["f", "pf"])
-          @stats stats
         result =
           selected: ko.observable false
-          stats: ({name, value} \
-            for name, value of t.stats \
-              when name isnt "coeff")
+          stats: t.stats
           # TODO, remove hack
           coeff: t.coeff or t.stats.coeff
           term: t.term.map ( term ) ->
             name: cols[term[0]]?.name
             index: term[0]
             exp: term[1]
+            lag: term[2]
         result.selected.subscribe ( ) ->
-          adapter["post_#{fn}_term"] t.term
+          adapter["#{fn}Term"] t.term
         return result
 
     adapter.on "candidates", ( candidates ) =>
-      @candidates (mapper candidates, "add").sort ( a, b ) ->
-        b.stats[0].value - a.stats[0].value
+      @candidates (mapper candidates, "add")
 
     adapter.on "model", ( model ) =>
       if model.terms.length
         @result {
           terms: mapper model.terms, "remove"
-          stats: ({name, value} \
-            for name, value of model.stats)
+          stats: model.stats
         }
 
+    adapter.on "progress", ( { curr, total } ) =>
+      @progress curr / total
+    adapter.on "progress.end", ( ) =>
+      @progress 100
+      setTimeout =>
+        @progress 0
+      , 300
 
   toJSON: ( ) ->
     shallow = { }
@@ -95,6 +97,7 @@ module.exports = class Model
       shallow[key] = value
     delete shallow.candidates
     delete shallow.show_settings
+    delete shallow.progress
     ko.toJSON shallow
 
   toJS: ( ) ->

@@ -32,26 +32,45 @@ ko.bindingHandlers.num =
   # If 1.0 <= X < 100,000., give precision of 5 digits (52,327.86>52,328)
   # If X => 100,000, use exponential format with four digits, e.g. 2.135e+12
   update: ( element, accessor ) ->
-    value = ko.unwrap(accessor()) or 0
-    negative = value < 0
-    value = Math.abs value
+    value = Number ko.unwrap(accessor())
+    unless isNaN value
+      negative = value < 0
+      value = Math.abs value
 
-    if value < 0.0010
-      value = value.toExponential 4
-    else if value < 1
-      value = value.toFixed 5
-    else if value < 100000
-      value = value.toPrecision 5
-    else
-      value = value.toExponential 4
+      if value < 0.0010
+        value = value.toExponential 4
+      else if value < 1
+        value = value.toFixed 5
+      else if value < 100000
+        value = value.toPrecision 5
+      else
+        value = value.toExponential 4
 
-    if negative
-      value = "-" + value
+      # catch too-small numbers
+      if value is "0.0000e+0"
+        value = (0).toFixed 5
+
+      if negative
+        value = "-" + value
 
     element.textContent = value
 
 # --- setup lodash
 global._ = require "lodash"
+
+# --- request statistics
+
+global.allstats = ko.observableArray [ ]
+
+adapter.on "statisticsMetadata", ( data ) ->
+  for id, values of data
+    allstats.push
+      id: id
+      name: values.displayName or id
+      global: values.globalOnly or false
+      sort: values.sort or "<"
+      selected: ko.observable id.toLowerCase() in [ "p(f)", "f" ]
+adapter.requestStatisticsMetadata()
 
 # --- include components
 require "./components"

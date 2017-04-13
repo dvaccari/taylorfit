@@ -10,32 +10,33 @@ span.wrapper
   // /ko
   // ko if:model
   .split-model(data-bind="split:{direction:'vertical'}")
-    .model
-      tf-result(params="model:model")
     .split-data(data-bind="split:{direction:'horizontal'}")
-      .data
-        span.title Training Data
-        tf-grid(params="model:model,table:'training'")
-
-        // ko ifnot:model().test
-        tf-loader(params="model:model,table:'test'")
-        // /ko
-        // ko if:model().test
-        span.title Test Data
-        tf-grid(params="model:model,table:'test'")
-        // /ko
-
-        // ko ifnot:model().validation
-        tf-loader(params="model:model,table:'validation'")
-        // /ko
-        // ko if:model().validation
-        span.title Validation Data
-        tf-grid(params="model:model,table:'validation'")
-        // /ko
-
-        span.buffer
-
+      .model
+        tf-result(params="model:model")
       .options
         tf-options(params="model:model")
+    .data
+      span.title Training Data
+      tf-grid(params="model:model,table:'training'")
+
+      // ko ifnot:model().test
+      tf-loader(params="model:model,table:'test'")
+      // /ko
+      // ko if:model().test
+      span.title Test Data
+      tf-grid(params="model:model,table:'test'")
+      // /ko
+
+      // ko ifnot:model().validation
+      tf-loader(params="model:model,table:'validation'")
+      // /ko
+      // ko if:model().validation
+      span.title Validation Data
+      tf-grid(params="model:model,table:'validation'")
+      // /ko
+
+      span.buffer
+
+
   // /ko
 

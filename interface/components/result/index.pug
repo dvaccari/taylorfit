@@ -4,9 +4,9 @@
     thead
       tr
         th Term
-        // ko foreach: result().terms[0].stats
-        th(data-bind="text:name")
-        // /ko
+        //- ko foreach: result().terms[0].stats
+        //th(data-bind="text:name")
+        //- /ko
     tbody
       // ko foreach: result().terms
       tr
@@ -28,20 +28,24 @@
             span.rparen )
           // /ko
           // /ko
-        // ko foreach:stats
-        td.stat
+        //- ko foreach:stats
+        //-td.stat
           span.value(data-bind="num:value")
-        // /ko
+        //- /ko
       // /ko
 
 .table-wrapper
   table.stats
+    thead
+      tr
+        th Stat
+        th Train
     tbody
-      // ko foreach:result().stats
-      // ko if:"number" === typeof value
+      // ko with:{stats:result().stats()}
+      // ko foreach:allstats
       tr.stat
         td.name(data-bind="text:name")
-        td.value(data-bind="num:value")
+        td.value(data-bind="num:$parent.stats[id]")
       // /ko
       // /ko
 

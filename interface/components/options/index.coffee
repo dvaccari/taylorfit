@@ -10,7 +10,19 @@ ko.components.register "tf-options",
 
     model = params.model() # now static
 
-    @stats = model.stats
     @candidates = model.candidates
+
+    @candidates.maxWidth = ko.observable 0
+    @candidates.maxWidth.subscribe ( next ) ->
+      document.querySelector(".split-model > .split-data > .options")
+        .style.maxWidth = next + "px"
+      document.querySelector(".split-model > .split-data > .model")
+        .style.minWidth = "calc(100% - #{next}px)"
+
+    @candidates.subscribe ( ) =>
+      setTimeout =>
+        @candidates.maxWidth 60 + document.querySelector(
+          ".candidate-wrapper > .candidates").clientWidth
+
 
     return this

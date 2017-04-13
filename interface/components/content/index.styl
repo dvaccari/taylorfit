@@ -19,6 +19,7 @@ tf-content
   padding-top header-height
   box-sizing border-box
   background white
+  overflow hidden
 
   & > span.wrapper
     size 100%
@@ -78,12 +79,9 @@ tf-content
 
     // control min sizes
     .model
+    .options
       min-height 130px
     .split-data
       max-height calc(100% - 130px)
 
-    .options
-    .data
-      min-width 300px
-      max-width calc(100% - 300px)
 

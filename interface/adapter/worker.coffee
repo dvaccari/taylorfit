@@ -39,25 +39,22 @@ module.exports = new class WorkerAdapter extends ME
       type: target
       data: message
 
-  post_add_term: ( term ) ->
-    @post "add_term", term
-  post_remove_term: ( term ) ->
-    @post "remove_term", term
+  setData: ( x ) ->
+    @post "setData", x
+  setExponents: ( x ) ->
+    @post "setExponents", x
+  setMultiplicands: ( x ) ->
+    @post "setMultiplicands", x
+  setDependent: ( x ) ->
+    @post "setDependent", x
+  setLags: ( x ) ->
+    @post "setLags", x
 
-  post_dataset: ( s, d, m, e ) ->
-    @post "update",
-      dataset: s
-      dependent: d
-      multiplicands: m
-      exponents: e
+  addTerm: ( x ) ->
+    @post "addTerm", x
+  removeTerm: ( x ) ->
+    @post "removeTerm", x
 
-  for target in [
-    "dependent"
-    "multiplicands"
-    "exponents"
-  ]
-    do ( target ) ->
-      WorkerAdapter::["post_#{target}"] = ( message ) ->
-        m = { }; m[target] = message
-        @post "update", m
+  requestStatisticsMetadata: ( ) ->
+    @post "getStatisticsMetadata"
 
