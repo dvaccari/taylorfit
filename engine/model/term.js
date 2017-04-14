@@ -54,6 +54,11 @@ class Term {
     this[_model] = model;
 
     this[_cache] = { col: {} };
+
+    this.isIntercept = parts[0][0] === 0 &&
+                       parts[0][1] === 0 &&
+                       parts.length === 1;
+
     this.col();
   }
 
@@ -73,11 +78,8 @@ class Term {
       theStats = lstsq(XLagged, yLagged);
       theStats.coeff = theStats.weights.get(0, theStats.weights.shape[0]-1);
       theStats.t = theStats.t.get(0, theStats.t.shape[0]-1);
-      theStats['p(t)'] = theStats['p(t)'].get(0, theStats['p(t)'].shape[0]-1);
-      theStats['p(f)'] = theStats.pF;
+      theStats.pt = theStats.pt.get(0, theStats.pt.shape[0]-1);
       delete theStats.weights;
-      delete theStats.t;
-      delete theStats.pF;
 
       return theStats;
 

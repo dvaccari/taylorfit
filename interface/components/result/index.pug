@@ -43,17 +43,20 @@
     tbody
       // ko with:{stats:result().stats}
       // ko foreach:allstats
+      // ko ifnot:candidate
       tr.stat
         td.name(data-bind="text:name")
         td.value(data-bind="num:$parent.stats[id]")
       // /ko
       // /ko
+      // /ko
 
 .table-wrapper
-  span.graphs
-    span.title Graphs
-    hr
-    span.subtitle Coming Soon
+  svg.pca-graph
+  //span.graphs
+  //  span.title Graphs
+  //  hr
+  //  span.subtitle Coming Soon
 
 // /ko
 // ko ifnot:result

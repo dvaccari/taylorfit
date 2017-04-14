@@ -64,12 +64,14 @@ global.allstats = ko.observableArray [ ]
 
 adapter.on "statisticsMetadata", ( data ) ->
   for id, values of data
-    allstats.push
-      id: id
-      name: values.displayName or id
-      global: values.globalOnly or false
-      sort: values.sort or "<"
-      selected: ko.observable id.toLowerCase() in [ "p(f)", "f" ]
+    if values.show != false
+      allstats.push
+        id: id
+        name: values.displayName or id
+        global: values.globalOnly or false
+        candidate: values.candidateOnly or false
+        sort: values.sort or "<"
+        selected: ko.observable id.toLowerCase() in [ "p(f)", "f" ]
 adapter.requestStatisticsMetadata()
 
 # --- include components

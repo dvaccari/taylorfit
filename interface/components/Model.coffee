@@ -55,6 +55,14 @@ module.exports = class Model
       adapter.setMultiplicands @multiplicands()
       adapter.setExponents exponents2array @exponents()
 
+      # Tell model which terms have been restored from localStorage
+      for { term } in @result().terms
+        term = term.map ({ index, exp, lag }) -> [index, exp, lag]
+        console.log "TERM", term
+        adapter.addTerm term
+
+
+
     mapper = ( terms, fn ) =>
       cols = ko.unwrap @training().cols
       terms.map ( t ) =>

@@ -93,7 +93,7 @@ function pf(f, n1, n2) {
     c *= k/(k-0.5);
     k += 1;
   }
-  return 1 - (a + c);
+  return 1 - a + c;
 }
 
 module.exports.pt = pt;

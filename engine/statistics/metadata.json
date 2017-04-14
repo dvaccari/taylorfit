@@ -1,10 +1,12 @@
 {
   "X"       : { "show": false },
   "y"       : { "show": false },
+  "V"       : { "show": false },
+  "w"       : { "show": false },
   "VdivwSq" : { "show": false },
   "BHat"    : { "show": false },
   "yHat"    : { "show": false },
-  "Vary"    : {},
+  "Vary"    : { "show": false },
 
   "nd"      : { "globalOnly": true },
   "np"      : { "globalOnly": true },
@@ -26,10 +28,10 @@
   "F"       : { "sort": ">" },
   "pF"      : { "displayName": "p(F)", "sort": ">" },
 
-  "t"       : { "sort": "<" },
-  "pt"      : { "displayName": "p(t)", "sort": ">" },
+  "t"       : { "sort": "<", "candidateOnly": true },
+  "pt"      : { "displayName": "p(t)", "sort": ">", "candidateOnly": true },
 
-  "stdev"   : {},
-  "mean"    : {},
-  "weights" : {}
+  "stdev"   : { "show": false },
+  "mean"    : { "show": false },
+  "weights" : { "show": false }
 }

@@ -10,7 +10,6 @@ module.exports = [
   Statistic('X', [], ({X}) => X),
   Statistic('y', [], ({y}) => y),
   Statistic('BHat', [], ({BHat}) => BHat),
-  Statistic('VdivwSq', [], ({VdivwSq}) => VdivwSq),
 
   Statistic('yHat', ['X', 'BHat'], ({X, BHat}) => X.dot(BHat)),
 
@@ -60,5 +59,6 @@ module.exports = [
       return pt;
     }),
 
-  Statistic('pF', ['F', 'np', 'nd'], ({F, np, nd}) => dist.pf(F, nd - np, np))
+  Statistic('pF', ['F', 'np', 'nd'],
+    ({F, np, nd}) => dist.pf(Math.abs(F), nd - np, np))
 ];

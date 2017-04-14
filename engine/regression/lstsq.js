@@ -167,23 +167,6 @@ let getRMS = (X) => {
  *    B'      = V(U'b ./ s)                       See svd.lstsq for more
  *    y'      = XB'
  *
- *    Nd      = # of data
- *    Np      = # of params (coefs) in model
- *
- *    SSE     = sum((y - y')^2)                   ^2 is element-wise
- *    TSS     = sum((y - mean(y))^2)
- *    SSR     = TSS - SSE
- *    Var y   = TSS / (Nd - 1)
- *    MSR     = SSM / (Np - 1)
- *    MSE     = SSE / (Nd - Np)
- *    RSQ     = 1 - (SSE / TSS)
- *    cRSQ    = 1 - R^2
- *    adj-RSQ = 1 - (MSE / Var y)
- *    F       = MSR / MSE
- *    AIC     = log(MSE) + 2*(Np/Nd)
- *    BIC     = log(MSE) + Np*log(Nd)/Nd
- *    t_i     = it's complicated...see code
- *
  * @return {object} Regression results
  */
 function lstsqSVDWithStats(X, y, predictors) {
@@ -220,7 +203,7 @@ function lstsqSVDWithStats(X, y, predictors) {
     }
   }
 
-  return statistics({ X, y, BHat, VdivwSq, stdev, mean, weights });
+  return statistics({ X, y, BHat, VdivwSq, stdev, mean, weights, V, w });
 }
 
 module.exports.lstsqSVD = lstsqSVDWithStats;

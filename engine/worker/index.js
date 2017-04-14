@@ -85,13 +85,7 @@ onmessage = function (e) {
     break;
 
   case 'getStatisticsMetadata':
-    temp = Object.keys(statsMeta).reduce((meta, stat) => {
-      if (statsMeta[stat].show !== false) {
-        meta[statsMeta[stat].displayName || stat] = statsMeta[stat];
-      }
-      return meta;
-    }, {});
-    postMessage({ type: 'statisticsMetadata', data: temp });
+    postMessage({ type: 'statisticsMetadata', data: statsMeta });
     break;
 
   default:

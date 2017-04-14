@@ -403,6 +403,20 @@ class Matrix {
   }
 
   /**
+   * Converts to nested array format
+   *
+   * @return {[][]} Nested arrays, where each child array is a row
+   */
+  toJSON() {
+    let i, rows;
+
+    for (i = 1, rows = []; i < this[_m]; i += 1) {
+      rows.push(Array.from(this[_data].slice((i-1)*this[_n], i*this[_n])));
+    }
+    return rows;
+  }
+
+  /**
    * Stringifies the matrix into a pretty format
    *
    * @return {string} Representation of the matrix

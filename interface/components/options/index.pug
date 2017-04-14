@@ -15,7 +15,7 @@
         // /ko
 
     tbody
-      // ko foreach:candidates
+      // ko foreach:candidates().sort(sort())
       tr.candidate(data-bind="click:function(){selected(true)},css:{selected:selected}")
         td.term
           span.coeff
@@ -35,7 +35,7 @@
         // ko foreach:allstats
         // ko if:!global && sort && selected()
         td.stat
-          span.value(data-bind="num:$parent.stats[id]")
+          span.value(data-bind="text:$parent.stats[id]")
         // /ko
         // /ko
       // /ko

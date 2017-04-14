@@ -177,16 +177,36 @@ class Model extends Observable {
       stats = lstsq(this.X(testSubset), this.y(testSubset), stats.weights);
     }
 
+    let predicted = Array.from(stats.yHat.data);
+
     let terms = this[_terms].map((term, i) => ({
       term: term.valueOf(),
       coeff: stats.weights.get(i, 0),
       stats: {
         t: stats.t.get(i, 0),
-        'p(t)': stats['p(t)'].get(i, 0)
+        pt: stats.pt.get(i, 0)
       }
     }));
 
-    return { terms, stats };
+    // Do PCA, find the most important eigenvector, and transform the data
+    let interceptCol = this[_terms].findIndex((term) => term.isIntercept);
+    stats.w.data[interceptCol] = 0; // Don't consider intercept column
+    let mostValuableCol = utils.argmax(stats.w.data.map(Math.abs));
+    let pca = stats.X.dot(stats.V.col(mostValuableCol));
+
+    // Duplicate set, stacking each with y (predicted and actual)
+    // [ x0, y0_true ],
+    // [ x1, y1_true ],
+    //   ...
+    // [ x0, y0_pred ],
+    // [ x1, y1_pred ]
+    let actualGraphData = pca.hstack(stats.y)
+          .toJSON().map((d) => d.concat('actual'));
+    let predictedGraphData = pca.hstack(stats.yHat)
+          .toJSON().map((d) => d.concat('predicted'));
+    let graphdata = actualGraphData.concat(predictedGraphData);
+
+    return { terms, stats, predicted, graphdata };
   }
 
   highestLag() {
