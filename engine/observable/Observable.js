@@ -31,11 +31,17 @@ class Observable {
   }
 
   removeListener(id) {
+    // If an array of ids, unregister for each id
+    if (Array.isArray(id)) {
+      return id.every((ev) => this.removeListener(ev, id));
+    }
+
     delete this[_listeners][id];
 
     Object.keys(this[_events]).forEach(
       (event) => this[_events][event] = this[_events][event].filter(
         (handlerId) => handlerId !== id));
+    return true;
   }
 
   fire(event, data) {

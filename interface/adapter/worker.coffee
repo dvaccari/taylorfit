@@ -58,3 +58,8 @@ module.exports = new class WorkerAdapter extends ME
   requestStatisticsMetadata: ( ) ->
     @post "getStatisticsMetadata"
 
+  subscribeToChanges: ( ) ->
+    @post "subscribeToChanges"
+  unsubscribeToChanges: ( ) ->
+    @post "unsubscribeToChanges"
+

@@ -17,6 +17,7 @@ m.on('getCandidates.start', () => postMessage({
 m.on('getCandidates.start', () => console.time('getCandidates'));
 m.on('getCandidates.end', () => console.timeEnd('getCandidates'));
 
+// Subscribe to progress changes
 let getCandidateProgressInterval = 100;
 let onGetCandidateId = m.on('getCandidates.each', (data) => {
   if (data.curr % getCandidateProgressInterval === 0) {
@@ -33,13 +34,24 @@ m.on('getCandidates.end', () => postMessage({
 }));
 
 // Whenever a parameter changes, let's update the UI
-m.on(['setData', 'setExponents', 'setMultiplicands', 'setDependent',
-      'setLags', 'addTerm', 'removeTerm'],
-     () => {
-       postMessage({ type: 'model', data: m.getModel() });
-       postMessage({ type: 'candidates', data: m.getCandidates() });
-     }
-    );
+let subscriptionIds = [];
+let subscribeToChanges = () => {
+  m.removeListener(subscriptionIds);
+
+  subscriptionIds = m.on([
+    'setData', 'setExponents', 'setMultiplicands', 'setDependent',
+    'setLags', 'addTerm', 'removeTerm'
+  ], () => {
+    postMessage({ type: 'candidates', data: m.getCandidates() });
+    postMessage({ type: 'model', data: m.getModel() });
+  });
+  m.fire('setData');
+};
+let unsubscribeToChanges = () => m.removeListener(subscriptionIds);
+
+// By default, subscribe
+subscribeToChanges();
+
 
 onmessage = function (e) {
   let type = e.data.type
@@ -86,6 +98,14 @@ onmessage = function (e) {
 
   case 'getStatisticsMetadata':
     postMessage({ type: 'statisticsMetadata', data: statsMeta });
+    break;
+
+  case 'subscribeToChanges':
+    subscribeToChanges();
+    break;
+
+  case 'unsubscribeToChanges':
+    unsubscribeToChanges();
     break;
 
   default:
