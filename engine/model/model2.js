@@ -200,11 +200,13 @@ class Model extends Observable {
     //   ...
     // [ x0, y0_pred ],
     // [ x1, y1_pred ]
-    let actualGraphData = pca.hstack(stats.y)
-          .toJSON().map((d) => d.concat('actual'));
-    let predictedGraphData = pca.hstack(stats.yHat)
-          .toJSON().map((d) => d.concat('predicted'));
-    let graphdata = actualGraphData.concat(predictedGraphData);
+    let truthGraphData = pca.hstack(stats.y).toJSON();
+    let predictedGraphData = pca.hstack(stats.yHat).toJSON();
+    let graphdata = { truth: truthGraphData, predicted: predictedGraphData };
+
+    if (interceptCol === mostValuableCol) {
+      graphdata = { error: 'Only the intercept is selected' };
+    }
 
     return { terms, stats, predicted, graphdata };
   }

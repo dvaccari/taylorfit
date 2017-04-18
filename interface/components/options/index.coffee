@@ -8,8 +8,7 @@ SORT =
   ">"  : ( stat, a, b ) -> a.stats[stat] - b.stats[stat]
   "<"  : ( stat, a, b ) -> b.stats[stat] - a.stats[stat]
 
-sortBy = ( stat ) ->
-  return SORT[stat?.sort ? '*'].bind null, stat?.id
+sortBy = ( stat ) -> SORT[stat?.sort ? '*'].bind null, stat?.id
 
 ko.components.register "tf-options",
   template: do require "./index.pug"

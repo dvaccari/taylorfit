@@ -50,18 +50,24 @@ module.exports = class Model
       adapter.setExponents exponents2array next
 
     if @training().rows().length
+      # Don't compute candidates or the model right now
+      adapter.unsubscribeToChanges()
+
       adapter.setData @training().rows()
       adapter.setDependent @dependent()
       adapter.setMultiplicands @multiplicands()
       adapter.setExponents exponents2array @exponents()
 
       # Tell model which terms have been restored from localStorage
-      for { term } in @result().terms
-        term = term.map ({ index, exp, lag }) -> [index, exp, lag]
-        console.log "TERM", term
-        adapter.addTerm term
+      result = @result()
+      if result?.terms?
+        for { term } in result.terms
+          term = term.map ({ index, exp, lag }) -> [index, exp, lag]
+          console.log "TERM", term
+          adapter.addTerm term
 
-
+      # Subscribe, and also compute the model & candidates
+      adapter.subscribeToChanges()
 
     mapper = ( terms, fn ) =>
       cols = ko.unwrap @training().cols
@@ -89,10 +95,13 @@ module.exports = class Model
         @result {
           terms: mapper model.terms, "remove"
           stats: model.stats
+          predicted: model.predicted
+          graphdata: model.graphdata
         }
 
     adapter.on "progress", ( { curr, total } ) =>
       @progress curr / total
+      console.log "PROG", curr / total
     adapter.on "progress.end", ( ) =>
       @progress 100
       setTimeout =>
