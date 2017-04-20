@@ -171,7 +171,8 @@ let getRMS = (X) => {
  */
 function lstsqSVDWithStats(X, y, predictors) {
   let i;
-  let { stdev, mean, intercept } = scale(X);
+  let stdev = 1, mean = 0, intercept = -1;
+  //let { stdev, mean, intercept } = scale(X);
 
   let decomposition = svd(X)
     , U             = decomposition[0]

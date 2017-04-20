@@ -18,5 +18,15 @@ ko.components.register "tf-hamburger",
     @lags = model.lags
     @candidates = model.candidates
 
+    @subscribedToChanges = ko.observable true
+    @subscribedToChanges.subscribe ( next ) ->
+      if next
+      then adapter.subscribeToChanges()
+      else adapter.unsubscribeToChanges()
+
+    @otherSettings =
+      subscribedToChanges: @subscribedToChanges
+
+
     return this
 

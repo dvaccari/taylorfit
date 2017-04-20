@@ -18,7 +18,7 @@ m.on('getCandidates.start', () => console.time('getCandidates'));
 m.on('getCandidates.end', () => console.timeEnd('getCandidates'));
 
 // Subscribe to progress changes
-let getCandidateProgressInterval = 100;
+let getCandidateProgressInterval = 50;
 let onGetCandidateId = m.on('getCandidates.each', (data) => {
   if (data.curr % getCandidateProgressInterval === 0) {
     postMessage({
@@ -44,6 +44,10 @@ let subscribeToChanges = () => {
   ], () => {
     postMessage({ type: 'candidates', data: m.getCandidates() });
     postMessage({ type: 'model', data: m.getModel() });
+
+    m.subsets.forEach((subset) =>
+      postMessage({ type: `model:${subset}`, data: m.getModel(subset) })
+    );
   });
   m.fire('setData');
 };
@@ -106,6 +110,10 @@ onmessage = function (e) {
 
   case 'unsubscribeToChanges':
     unsubscribeToChanges();
+    break;
+
+  case 'subset':
+    m.subset(data.label, data.start, data.end);
     break;
 
   default:

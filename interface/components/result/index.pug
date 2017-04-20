@@ -4,9 +4,9 @@
     thead
       tr
         th Term
-        //- ko foreach: result().terms[0].stats
-        //th(data-bind="text:name")
-        //- /ko
+        // ko foreach: _.entries(result().terms[0].stats)
+        th(data-bind="text:$data[0]")
+        // /ko
     tbody
       // ko foreach: result().terms
       tr
@@ -28,10 +28,10 @@
             span.rparen )
           // /ko
           // /ko
-        //- ko foreach:stats
-        //-td.stat
-          span.value(data-bind="num:value")
-        //- /ko
+        // ko foreach: _.entries(stats)
+        td.stat
+          span.value(data-bind="num:$data[1]")
+        // /ko
       // /ko
 
 .table-wrapper
