@@ -18,8 +18,8 @@ ko.components.register "tf-result",
     # Maybe move all of this into a separate module so we can just plop
     # graphs wherever    |   and however with different data
     #                    v
-    width = 600
-    height = 400
+    width = 300
+    height = 267
     svg = d3.select(".pca-graph")
             .attr "viewBox", "0 0 #{width} #{height}"
 
@@ -64,7 +64,6 @@ ko.components.register "tf-result",
         .attr "y1", ( d ) -> scaleY(d[1])
         .attr "x2", ( _, i ) -> scaleX(truth[i][0])
         .attr "y2", ( _, i ) -> scaleY(truth[i][1])
-        .attr "stroke", "#ddd"
 
       truthCircles.enter()
         .append "circle"
@@ -74,7 +73,6 @@ ko.components.register "tf-result",
         .duration(750)
         .attr "cx", ( d ) -> scaleX(d[0])
         .attr "cy", ( d ) -> scaleY(d[1])
-        .attr "fill", "blue"
         .attr "r", 2
 
       predictedCircles.enter()
@@ -85,7 +83,6 @@ ko.components.register "tf-result",
         .duration(750)
         .attr "cx", ( d ) -> scaleX(d[0])
         .attr "cy", ( d ) -> scaleY(d[1])
-        .attr "fill", "red"
         .attr "r", 2
 
 
