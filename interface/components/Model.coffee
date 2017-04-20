@@ -88,25 +88,28 @@ module.exports = class Model
         return result
 
     adapter.on "candidates", ( candidates ) =>
-      @candidates (mapper candidates, "add")
+      setTimeout =>
+        @candidates (mapper candidates, "add")
+        @progress 0
+      , 100
 
     adapter.on "model", ( model ) =>
       if model.terms.length
-        @result {
-          terms: mapper model.terms, "remove"
-          stats: model.stats
-          predicted: model.predicted
-          graphdata: model.graphdata
-        }
+        setTimeout =>
+          console.log mapper model.terms, "remove"
+          @result {
+            terms: mapper model.terms, "remove"
+            stats: model.stats
+            predicted: model.predicted
+            graphdata: model.graphdata
+          }
+        , 100
 
     adapter.on "progress", ( { curr, total } ) =>
       @progress curr / total
-      console.log "PROG", curr / total
+
     adapter.on "progress.end", ( ) =>
-      @progress 100
-      setTimeout =>
-        @progress 0
-      , 300
+      @progress 1
 
   toJSON: ( ) ->
     shallow = { }

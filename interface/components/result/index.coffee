@@ -20,7 +20,12 @@ ko.components.register "tf-result",
     svg = d3.select(".pca-graph")
             .attr "viewBox", "0 0 #{width} #{height}"
 
+    console.info "starting graphs"
+
     g = svg.append("g")
+
+    g.exit().remove()
+    svg.exit().remove()
 
     scaleX = d3.scaleLinear().range([0, width])
     scaleY = d3.scaleLinear().range([height, 0])
@@ -28,6 +33,8 @@ ko.components.register "tf-result",
     @result.subscribe ( next ) ->
       if next == null
         return
+
+      console.info "NEXT", next
 
       { truth, predicted, error } = next.graphdata
 
