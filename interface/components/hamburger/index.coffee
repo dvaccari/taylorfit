@@ -20,13 +20,11 @@ ko.components.register "tf-hamburger",
 
     @subscribedToChanges = ko.observable true
     @subscribedToChanges.subscribe ( next ) ->
-      if next
-      then adapter.subscribeToChanges()
+      if next then adapter.subscribeToChanges()
       else adapter.unsubscribeToChanges()
 
     @otherSettings =
-      subscribedToChanges: @subscribedToChanges
-
+      "Subscribed to Changes": @subscribedToChanges
 
     return this
 

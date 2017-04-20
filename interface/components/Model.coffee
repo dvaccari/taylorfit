@@ -17,8 +17,8 @@ module.exports = class Model
   DEFAULTS =
     id:             "model"
     name:           "New Model"
-    training:       null
-    test:           null
+    fit:            null
+    cross:          null
     validation:     null
     dependent:      0
     multiplicands:  1
@@ -39,14 +39,14 @@ module.exports = class Model
       Number key for key, value of exps \
       when ko.unwrap value
 
-    unless @training()
-      throw new Error "model: training data not defined"
+    unless @fit()
+      throw new Error "model: fit data not defined"
 
-    @training().rows.subscribe init = ( next ) =>
+    @fit().rows.subscribe init = ( next ) =>
       return unless next.length
       adapter.setData next
     @dependent.subscribe ( next ) =>
-      return unless @training().rows().length
+      return unless @fit().rows().length
       adapter.setDependent Number next
     @multiplicands.subscribe ( next ) ->
       adapter.setMultiplicands Number next
@@ -55,11 +55,11 @@ module.exports = class Model
     @lags.subscribe ( next ) ->
       adapter.setLags exponents2array next
 
-    if @training().rows().length
+    if @fit().rows().length
       # Don't compute candidates or the model right now
       adapter.unsubscribeToChanges()
 
-      adapter.setData @training().rows()
+      adapter.setData @fit().rows()
       adapter.setDependent @dependent()
       adapter.setMultiplicands @multiplicands()
       adapter.setExponents exponents2array @exponents()
@@ -76,7 +76,7 @@ module.exports = class Model
       adapter.subscribeToChanges()
 
     mapper = ( terms, fn ) =>
-      cols = ko.unwrap @training().cols
+      cols = ko.unwrap @fit().cols
       terms.map ( t ) =>
         return t if t.selected?
         result =

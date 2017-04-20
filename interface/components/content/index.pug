@@ -1,12 +1,15 @@
 
 // ko if:model
 tf-hamburger(params="model:model")
+// ko if:model().progress()
+include loader.pug
+// /ko
 // /ko
 span.wrapper
   // ko ifnot:model
   span.loader
     //- TODO: move this to app/index.pug
-    tf-loader(params="model:model,table:'training',init:true")
+    tf-loader(params="model:model,table:'fit',init:true")
   // /ko
   // ko if:model
   .split-model(data-bind="split:{direction:'vertical'}")
@@ -16,15 +19,15 @@ span.wrapper
       .options
         tf-options(params="model:model")
     .data
-      span.title Training Data
-      tf-grid(params="model:model,table:'training'")
+      span.title Fit Data
+      tf-grid(params="model:model,table:'fit'")
 
-      // ko ifnot:model().test
-      tf-loader(params="model:model,table:'test'")
+      // ko ifnot:model().cross
+      tf-loader(params="model:model,table:'cross'")
       // /ko
-      // ko if:model().test
-      span.title Test Data
-      tf-grid(params="model:model,table:'test'")
+      // ko if:model().cross
+      span.title Cross Data
+      tf-grid(params="model:model,table:'cross'")
       // /ko
 
       // ko ifnot:model().validation
