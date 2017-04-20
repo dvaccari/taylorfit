@@ -39,8 +39,8 @@ module.exports = new class WorkerAdapter extends ME
       type: target
       data: message
 
-  setData: ( x ) ->
-    @post "setData", x
+  setData: ( x, label ) ->
+    @post "setData", { data: x, label }
   setExponents: ( x ) ->
     @post "setExponents", x
   setMultiplicands: ( x ) ->
@@ -62,13 +62,6 @@ module.exports = new class WorkerAdapter extends ME
     @post "subscribeToChanges"
   unsubscribeToChanges: ( ) ->
     @post "unsubscribeToChanges"
-
-  setFitRows: ( start, end ) ->
-    @post "subset", { label: "fit", start, end }
-  setTestRows: ( start, end ) ->
-    @post "subset", { label: "test", start, end }
-  setValidationRows: ( start, end ) ->
-    @post "subset", { label: "validation", start, end }
 
   clear: ( ) ->
     @post "clear"

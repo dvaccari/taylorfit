@@ -40,13 +40,12 @@ let subscribeToChanges = () => {
 
   subscriptionIds = m.on([
     'setData', 'setExponents', 'setMultiplicands', 'setDependent',
-    'setLags', 'addTerm', 'removeTerm', 'clear'
+    'setLags', 'addTerm', 'removeTerm', 'clear', 'subset'
   ], () => {
     postMessage({ type: 'candidates', data: m.getCandidates() });
-    postMessage({ type: 'model', data: m.getModel() });
 
-    m.subsets.forEach((subset) =>
-      postMessage({ type: `model:${subset}`, data: m.getModel(subset) })
+    m.labels.forEach((label) =>
+      postMessage({ type: `model:${label}`, data: m.getModel(label) })
     );
   });
   m.fire('setData');
@@ -67,7 +66,6 @@ onmessage = function (e) {
   switch(type) {
 
   // only works because the event type is the same as the method name
-  case 'setData':
   case 'setExponents':
   case 'setMultiplicands':
   case 'setDependent':
@@ -76,6 +74,11 @@ onmessage = function (e) {
   case 'removeTerm':
   case 'clear':
     m[type](data);
+    break;
+
+  // this one's special
+  case 'setData':
+    m[type](data.data, data.label);
     break;
 
   // XXX: DEPRECATED

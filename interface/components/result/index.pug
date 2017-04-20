@@ -5,7 +5,7 @@
       tr
         th Term
         // ko foreach: _.entries(result().terms[0].stats)
-        th(data-bind="text:$data[0]")
+        th(data-bind="text:(allstats().find((x) => x.id === $data[0]) || {name:null}).name")
         // /ko
     tbody
       // ko foreach: result().terms

@@ -18,20 +18,23 @@ const _terms          = Symbol('terms');
 const _cache          = Symbol('cache');
 
 const INTERCEPT       = [[0, 0, 0]];
-const DEFAULT_SUBSET  = 'fit';
+const DEFAULT_LABEL   = 'fit';
 
 class Model extends Observable {
 
   constructor() {
     super();
 
-    this[_data] = new Matrix(0, 0);
+    this[_data] = {};
+    this[_data][DEFAULT_LABEL] = new Matrix(0, 0);
+
     this[_exponents] = [1];
     this[_multiplicands] = [1];
     this[_lags] = [];
     this[_dependent] = 0;
+
     this[_subsets] = {};
-    this[_subsets][DEFAULT_SUBSET] = [];
+    this[_subsets][DEFAULT_LABEL] = [];
 
     this[_cache] = { X: {}, y: {}, data: {} };
 
@@ -41,25 +44,38 @@ class Model extends Observable {
 
   clear() {
     this[_terms] = [];
+    this[_cache].X = {};
+    this[_cache].y = {};
+    this[_cache].highestLag = 0;
+
     this.fire('clear');
     return this;
   }
 
-  setData(data) {
+  setData(data, label=DEFAULT_LABEL) {
+    label = (label == null) ? DEFAULT_LABEL : label;
+
     if (!(data instanceof Matrix)) {
       data = new Matrix(data);
     }
-    this[_data] = data;
-    this[_subsets] = {};
-    this[_subsets][DEFAULT_SUBSET] = utils.range(0, data.shape[0]);
+
+    if (label !== DEFAULT_LABEL &&
+        data.shape[0] !== this[_data][DEFAULT_LABEL].shape[0]) {
+      throw new Error(
+        `Data for '${label}' is not the same shape as '${DEFAULT_LABEL}'`
+      );
+    }
+
+    this[_data][label] = data;
+    this[_subsets][label] = utils.range(0, data.shape[0]);
 
     this[_terms] = [];
-    this[_cache].X = {};
-    this[_cache].y = {};
-    this[_cache].data = {};
+    delete this[_cache].X[label];
+    delete this[_cache].y[label];
+    delete this[_cache].data[label];
     this[_cache].highestLag = null;
     this.termpool.clearCache();
-    this.fire('setData', data);
+    this.fire('setData', { data, label });
     return this;
   }
 
@@ -91,16 +107,19 @@ class Model extends Observable {
     return this;
   }
 
-  subset(name, startRow, endRow) {
-    if (!Array.isArray(startRow)) {
-      startRow = utils.range(startRow, endRow || this[_data].shape[0]);
+  subset(label=DEFAULT_LABEL, start, end) {
+    delete this[_cache].X[label];
+    delete this[_cache].y[label];
+    delete this[_cache].data[label];
+
+    if (!Array.isArray(start)) {
+      start = utils.range(start, end);
+    } else {
+      start = start.slice();
     }
-    this.termpool.clearCache();
-    this[_cache].X = {};
-    this[_cache].y = {};
-    this[_cache].data = {};
-    this[_subsets][name] = startRow;
-    this.fire('subset', { name, startRow, endRow });
+    this[_subsets][label] = start;
+
+    this.fire('subset', start);
     return this;
   }
 
@@ -136,7 +155,7 @@ class Model extends Observable {
 
     let independentCols = utils.join([
       utils.range(0, this[_dependent]),
-      utils.range(this[_dependent] + 1, this[_data].shape[1])
+      utils.range(this[_dependent] + 1, this[_data][DEFAULT_LABEL].shape[1])
     ]);
 
     // Candidates from exp / mults / lag
@@ -172,15 +191,15 @@ class Model extends Observable {
     return results;
   }
 
-  getModel(testSubset) {
+  getModel(testLabel) {
     let highestLag = this.highestLag()
       , X = this.X().lo(highestLag)
       , y = this.y().lo(highestLag);
 
     let stats = lstsq(X, y);
 
-    if (testSubset) {
-      stats = lstsq(this.X(testSubset), this.y(testSubset), stats.weights);
+    if (testLabel) {
+      stats = lstsq(this.X(testLabel), this.y(testLabel), stats.weights);
     }
 
     let predicted = Array.from(stats.yHat.data);
@@ -226,39 +245,43 @@ class Model extends Observable {
     return this[_cache].highestLag;
   }
 
-  X(subset=DEFAULT_SUBSET) {
-    if (this[_cache].X[subset] == null) {
-      this[_cache].X[subset] = this[_terms]
-        .reduce((prev, curr) => prev.hstack(curr.col(subset)),
-                new Matrix(this[_subsets][subset].length, 0));
+  X(label=DEFAULT_LABEL) {
+    if (this[_cache].X[label] == null) {
+      this[_cache].X[label] = this[_terms]
+        .reduce((prev, curr) => prev.hstack(curr.col(label)),
+                new Matrix(this[_subsets][label].length, 0));
     }
 
-    return this[_cache].X[subset];
+    return this[_cache].X[label];
   }
 
-  y(subset=DEFAULT_SUBSET) {
-    if (this[_cache].y[subset] == null) {
-      this[_cache].y[subset] = this.data(subset).subset(':', this[_dependent]);
+  y(label=DEFAULT_LABEL) {
+    if (this[_cache].y[label] == null) {
+      this[_cache].y[label] = this.data(label).subset(':', this[_dependent]);
     }
-    return this[_cache].y[subset];
+    return this[_cache].y[label];
   }
 
-  data(subset=DEFAULT_SUBSET) {
-    if (!this[_cache].data[subset]) {
+  data(label=DEFAULT_LABEL) {
+    if (!this[_cache].data[label]) {
       this[_cache].data = {};
       for (let subset in this[_subsets]) {
-        this[_cache].data[subset] = this[_data].subset(this[_subsets][subset]);
+        // subset subset subset -- basically, get the fit/test/validation data
+        // and take the rows picked by the user (if the user didn't pick any,
+        // it defaults to all of the rows)
+        this[_cache].data[subset] = this[_data][subset]
+          .subset(this[_subsets][subset]);
       }
     }
-    return this[_cache].data[subset];
+    return this[_cache].data[label];
   }
 
-  get subsets() {
+  get labels() {
     return Object.keys(this[_subsets]);
   }
 
 }
 
-Model.prototype.DEFAULT_SUBSET = DEFAULT_SUBSET;
+Model.prototype.DEFAULT_LABEL = DEFAULT_LABEL;
 
 module.exports = Model;

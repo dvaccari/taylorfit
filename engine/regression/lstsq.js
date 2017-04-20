@@ -65,7 +65,7 @@ function lstsqSVD(A, U, S, V, b) {
  *    F       = MSR / MSE
  *    AIC     = log(MSE) + 2*(Np/Nd)
  *    BIC     = log(MSE) + Np*log(Nd)/Nd
- *    t_i = B' / sqrt( inv(X'X)[i,i] * MSE )      / is element-wise
+ *    t_i     = B' / sqrt( inv(X'X)[i,i] * MSE )   / is element-wise
  *
  * @return {object} Regression results
  */

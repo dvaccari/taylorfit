@@ -99,7 +99,7 @@ module.exports = class Model
         @progress 0
       , 100
 
-    adapter.on "model", ( model ) =>
+    adapter.on "model:fit", ( model ) =>
       if model.terms.length
         setTimeout =>
           console.log mapper model.terms, "remove"
