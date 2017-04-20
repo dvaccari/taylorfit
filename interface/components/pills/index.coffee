@@ -20,6 +20,7 @@ ko.components.register "tf-pills",
       unless ko.isObservable value
         object[key] = ko.observable value
 
+    @fixed = params.fixed or [ ]
     @valid = params.valid or ( ) -> true
     @invalid = ko.observable false
     @hide = ko.observable false
@@ -40,13 +41,13 @@ ko.components.register "tf-pills",
 
     @toggle = ( name ) =>
       values = @values()
-      unless name == "1"
+      unless name in @fixed
         values[name] not values[name]()
         @update name
 
     @delete = ( name ) =>
       values = @values()
-      unless name == "1"
+      unless name in @fixed
         delete values[name]
         do @update
 

@@ -15,6 +15,7 @@ ko.components.register "tf-hamburger",
     @stats = model.stats
     @exponents = model.exponents
     @multiplicands = model.multiplicands
+    @lags = model.lags
     @candidates = model.candidates
 
     return this
