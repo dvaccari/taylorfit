@@ -247,6 +247,10 @@ class Model extends Observable {
     return this[_cache].data[subset];
   }
 
+  get subsets() {
+    return Object.keys(this[_subsets]);
+  }
+
 }
 
 Model.prototype.DEFAULT_SUBSET = DEFAULT_SUBSET;

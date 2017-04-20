@@ -11,11 +11,11 @@
   "nd"      : { "globalOnly": true },
   "np"      : { "globalOnly": true },
 
-  "SSE"     : {},
+  "SSE"     : { "sort": ">" },
   "TSS"     : {},
   "SSR"     : {},
 
-  "MSR"     : {},
+  "MSR"     : { "sort": ">" },
   "MSE"     : {},
 
   "Rsq"     : { "sort": "<" },
@@ -28,8 +28,8 @@
   "F"       : { "sort": ">" },
   "pF"      : { "displayName": "p(F)", "sort": ">" },
 
-  "t"       : { "sort": "<", "candidateOnly": true },
-  "pt"      : { "displayName": "p(t)", "sort": ">", "candidateOnly": true },
+  "t"       : { "sort": "|<|", "candidateOnly": true },
+  "pt"      : { "displayName": "p(t)", "sort": ">", "candidateOnly": true, "default": true },
 
   "stdev"   : { "show": false },
   "mean"    : { "show": false },
