@@ -11,6 +11,9 @@ observable = ( item ) ->
 
 module.exports = class Model
 
+  @transient: [ "candidates",
+  "show_settings", "progress" ]
+
   DEFAULTS =
     id:             "model"
     name:           "New Model"
@@ -123,9 +126,8 @@ module.exports = class Model
     shallow = { }
     for own key, value of this
       shallow[key] = value
-    delete shallow.candidates
-    delete shallow.show_settings
-    delete shallow.progress
+    for term in Model.transient
+      delete shallow[term]
     ko.toJSON shallow
 
   toJS: ( ) ->

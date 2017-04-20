@@ -1,4 +1,5 @@
 
+tf-pager(params="source:source,result:result")
 .candidate-wrapper
   table.candidates(data-bind="if:candidates().length")
     thead
@@ -10,12 +11,12 @@
         // ko if:!global && sort && selected()
         th
           div.centering
-            div.fixing(data-bind="text:name")
+            div.fixing(data-bind="text:name,click:function(){$parent.sortby($data)}")
         // /ko
         // /ko
 
     tbody
-      // ko foreach:candidates().sort(sort())
+      // ko foreach:result
       tr.candidate(data-bind="click:function(){selected(true)},css:{selected:selected}")
         td.term
           span.coeff

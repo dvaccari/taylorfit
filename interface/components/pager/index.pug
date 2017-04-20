@@ -1,0 +1,20 @@
+
+// ko if:hasFirst
+span.first.fa.fa-angle-double-left(data-bind="click:first")
+// /ko
+
+// ko if:hasPrev
+span.prev.fa.fa-angle-left(data-bind="click:prev")
+// /ko
+
+// ko foreach:range
+span.page(data-bind="text:1 + $data,css:{selected:$parent.current()==$data},click:function(){$parent.goto($data)}")
+// /ko
+
+// ko if:hasNext
+span.next.fa.fa-angle-right(data-bind="click:next")
+// /ko
+
+// ko if:hasLast
+span.last.fa.fa-angle-double-right(data-bind="click:last")
+// /ko

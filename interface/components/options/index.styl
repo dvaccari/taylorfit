@@ -1,7 +1,7 @@
 
 tf-options
   position relative
-  display inline-block
+  display block
   size 100%
 
   .candidate-wrapper
@@ -24,7 +24,7 @@ tf-options
       display block
       overflow-y auto
       overflow-x hidden
-      height 100%
+      height calc(100% - 16px)
       float right
       white-space nowrap
 
@@ -42,6 +42,8 @@ tf-options
       th
         text-align right
         font-size 12pt
+        .fixing
+          cursor pointer
 
         & > div
           margin 0 auto

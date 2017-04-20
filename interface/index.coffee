@@ -9,6 +9,10 @@ global.adapter = require "./adapter/worker"
 # --- setup knockout
 global.ko = require "knockout"
 
+ko.isObservableArray ?= ( value ) ->
+  ko.isObservable(value) and
+  value.push instanceof Function
+
 ko.bindingHandlers.each =
   transform: ( obj ) ->
     properties = [ ]

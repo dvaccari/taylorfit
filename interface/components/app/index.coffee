@@ -17,9 +17,8 @@ ko.components.register "tf-app",
 
     register = ( model ) ->
       for own key, value of model
-        if ko.isObservable value
-          value.subscribe ( ) ->
-            update model
+        if not (key in Model.transient) and ko.isObservable value
+          value.subscribe ( ) -> update model
 
     if model = localStorage?.getItem "tf-model"
       @model = ko.observable new Model JSON.parse model

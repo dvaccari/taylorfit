@@ -8,7 +8,7 @@ SORT =
   ">"  : ( stat, a, b ) -> a.stats[stat] - b.stats[stat]
   "<"  : ( stat, a, b ) -> b.stats[stat] - a.stats[stat]
 
-sortBy = ( stat ) -> SORT[stat?.sort ? '*'].bind null, stat?.id
+sortBy = ( stat ) -> SORT[stat?.sort ? "*"].bind null, stat?.id
 
 ko.components.register "tf-options",
   template: do require "./index.pug"
@@ -19,23 +19,34 @@ ko.components.register "tf-options",
 
     readjust = ( ) =>
       setTimeout =>
-        @candidates.maxWidth 60 + document.querySelector(
+        @result.maxWidth 60 + document.querySelector(
           ".candidate-wrapper > .candidates").clientWidth
 
     model = params.model() # now static
 
-    @candidates = model.candidates
+    @result = ko.observableArray [ ]
+    @result.subscribe readjust
 
-    @candidates.maxWidth = ko.observable 0
-    @candidates.maxWidth.subscribe ( next ) ->
+    @candidates = model.candidates
+    @source = ko.observableArray [ ]
+
+    @sort = ko.observable SORT["*"]
+    @sort.subscribe ( method ) =>
+      @source @candidates().sort method
+
+    @candidates.subscribe ( next ) =>
+      @source next.sort @sort()
+
+    @result.maxWidth = ko.observable 0
+    @result.maxWidth.subscribe ( next ) ->
       document.querySelector(".split-model > .split-data > .options")
         .style.maxWidth = next + "px"
       document.querySelector(".split-model > .split-data > .model")
         .style.minWidth = "calc(100% - #{next}px)"
 
-    @candidates.subscribe readjust
-
-    @sort = ko.observable SORT['*']
+    @sortby = ( stat ) =>
+      console.log "SORT", stat
+      @sort sortBy stat
 
     # Whenever a statistic is discovered, subscribe to when it is selected
     allstats.subscribe ( changes ) =>
@@ -43,7 +54,7 @@ ko.components.register "tf-options",
         value.selected.subscribe readjust
         value.selected.subscribe ( ) =>
           stats = allstats().filter ( stat ) -> stat.selected()
-          @sort (sortBy stats[stats.length - 1])
+          # @sort (sortBy stats[stats.length - 1])
     , null, "arrayChange"
 
     return this
