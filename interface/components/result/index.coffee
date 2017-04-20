@@ -15,12 +15,13 @@ ko.components.register "tf-result",
 
     @result = model.result
 
+    # Maybe move all of this into a separate module so we can just plop
+    # graphs wherever    |   and however with different data
+    #                    v
     width = 600
     height = 400
     svg = d3.select(".pca-graph")
             .attr "viewBox", "0 0 #{width} #{height}"
-
-    console.info "starting graphs"
 
     g = svg.append("g")
 
@@ -33,8 +34,6 @@ ko.components.register "tf-result",
     @result.subscribe ( next ) ->
       if next == null
         return
-
-      console.info "NEXT", next
 
       { truth, predicted, error } = next.graphdata
 

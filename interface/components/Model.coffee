@@ -22,7 +22,7 @@ module.exports = class Model
     exponents:      1: true
     lags:           { }
     candidates:     [ ]
-    result:         null
+    result:         null # perhaps fit: null, test: null, validation: null ?
     show_settings:  false
     progress:       30
 
@@ -107,6 +107,12 @@ module.exports = class Model
             graphdata: model.graphdata
           }
         , 100
+
+    adapter.on "model:test", ( model ) =>
+      # handle test model
+
+    adapter.on "model:validation", ( model ) =>
+      # handle validation model
 
     adapter.on "progress", ( { curr, total } ) =>
       @progress 100 * curr / total

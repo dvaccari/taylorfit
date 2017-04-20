@@ -63,3 +63,10 @@ module.exports = new class WorkerAdapter extends ME
   unsubscribeToChanges: ( ) ->
     @post "unsubscribeToChanges"
 
+  setFitRows: ( start, end ) ->
+    @post "subset", { label: "fit", start, end }
+  setTestRows: ( start, end ) ->
+    @post "subset", { label: "test", start, end }
+  setValidationRows: ( start, end ) ->
+    @post "subset", { label: "validation", start, end }
+
