@@ -39,6 +39,12 @@ class Model extends Observable {
     this.termpool = new TermPool(this);
   }
 
+  clear() {
+    this[_terms] = [];
+    this.fire('clear');
+    return this;
+  }
+
   setData(data) {
     if (!(data instanceof Matrix)) {
       data = new Matrix(data);

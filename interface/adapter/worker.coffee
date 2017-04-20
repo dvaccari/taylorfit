@@ -70,3 +70,6 @@ module.exports = new class WorkerAdapter extends ME
   setValidationRows: ( start, end ) ->
     @post "subset", { label: "validation", start, end }
 
+  clear: ( ) ->
+    @post "clear"
+

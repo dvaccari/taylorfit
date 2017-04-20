@@ -35,5 +35,6 @@ ko.components.register "tf-exporter",
 
     @clear_model = ( ) ->
       params.model().result null
+      adapter.clear()
 
     return this

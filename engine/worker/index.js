@@ -40,7 +40,7 @@ let subscribeToChanges = () => {
 
   subscriptionIds = m.on([
     'setData', 'setExponents', 'setMultiplicands', 'setDependent',
-    'setLags', 'addTerm', 'removeTerm'
+    'setLags', 'addTerm', 'removeTerm', 'clear'
   ], () => {
     postMessage({ type: 'candidates', data: m.getCandidates() });
     postMessage({ type: 'model', data: m.getModel() });
@@ -74,6 +74,7 @@ onmessage = function (e) {
   case 'setLags':
   case 'addTerm':
   case 'removeTerm':
+  case 'clear':
     m[type](data);
     break;
 
