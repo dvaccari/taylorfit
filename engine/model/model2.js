@@ -234,8 +234,9 @@ class Model extends Observable {
       graphdata = { error: 'Only the intercept is selected' };
     }
      */
-    let residuals = stats.y.sub(stats.yHat).toJSON();
+    let residuals = stats.y.sub(stats.yHat);
     let graphdata = stats.y.hstack(residuals).toJSON();
+    residuals = residuals.toJSON();
 
     return { terms, stats, predicted, graphdata, residuals };
   }

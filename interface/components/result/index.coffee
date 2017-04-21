@@ -1,6 +1,6 @@
 
 require "./index.styl"
-ResidualGraph = require "./residual-graph.coffee"
+ResidualGraph = require "./ResidualGraph.coffee"
 
 ko.components.register "tf-result",
   template: do require "./index.pug"

@@ -5,10 +5,12 @@ class ResidualGraph
   width: 300
   height: 267
 
-  constructor: ( svgSelector ) ->
-    @svg = d3.select(svgSelector).attr "viewBox", "0 0 #{@width} #{@height}"
+  constructor: ( @svgSelector ) ->
+    @svg = d3.select(@svgSelector).attr "viewBox", "0 0 #{@width} #{@height}"
+    @svg.selectAll("*").remove()
+
     @g = @svg.append("g")
-    @g.exit().remove()
+
     @scaleX = d3.scaleLinear().range([0, @width]).domain([0, 0])
     @scaleY = d3.scaleLinear().range([@height, 0]).domain([0, 0])
 
@@ -38,6 +40,9 @@ class ResidualGraph
                     .attr "stroke", "black"
 
   update: ( next ) ->
+    if @svg.node() is null or not @svg.node().isConnected
+      this.constructor.call this, @svgSelector
+
     if next == null
       return
 
