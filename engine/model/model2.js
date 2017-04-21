@@ -213,6 +213,7 @@ class Model extends Observable {
       }
     }));
 
+    /*
     // Do PCA, find the most important eigenvector, and transform the data
     let interceptCol = this[_terms].findIndex((term) => term.isIntercept);
     stats.w.data[interceptCol] = 0; // Don't consider intercept column
@@ -232,8 +233,11 @@ class Model extends Observable {
     if (interceptCol === mostValuableCol) {
       graphdata = { error: 'Only the intercept is selected' };
     }
+     */
+    let residuals = stats.y.sub(stats.yHat).toJSON();
+    let graphdata = stats.y.hstack(residuals).toJSON();
 
-    return { terms, stats, predicted, graphdata };
+    return { terms, stats, predicted, graphdata, residuals };
   }
 
   highestLag() {

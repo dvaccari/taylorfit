@@ -64,8 +64,6 @@ ko.bindingHandlers.num =
     format = allBindings().fmt || "float"
     value = Number ko.unwrap(accessor())
 
-    console.log allBindings()
-
     unless isNaN value
       value = numFormatters[format] value
 
