@@ -36,7 +36,7 @@ tf-pager(params="source:source,result:result")
         // ko foreach:allstats
         // ko if:!global && sort && selected()
         td.stat
-          span.value(data-bind="num:$parent.stats[id]")
+          span.value(data-bind="num:$parent.stats[id], fmt: format")
         // /ko
         // /ko
       // /ko

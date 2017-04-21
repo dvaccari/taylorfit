@@ -1,37 +1,37 @@
-{
-  "X"       : { "show": false },
-  "y"       : { "show": false },
-  "V"       : { "show": false },
-  "w"       : { "show": false },
-  "VdivwSq" : { "show": false },
-  "BHat"    : { "show": false },
-  "yHat"    : { "show": false },
-  "Vary"    : { "show": false },
+[
+  { "id": "X", "show": false },
+  { "id": "y", "show": false },
+  { "id": "v", "show": false },
+  { "id": "w", "show": false },
+  { "id": "VdivwSq", "show": false },
+  { "id": "BHat", "show": false },
+  { "id": "yHat", "show": false },
+  { "id": "Vary", "show": false },
 
-  "nd"      : { "globalOnly": true },
-  "np"      : { "globalOnly": true },
+  { "id": "nd", "globalOnly": true, "format": "int" },
+  { "id": "np", "globalOnly": true, "format": "int" },
 
-  "SSE"     : { "sort": ">" },
-  "TSS"     : {},
-  "SSR"     : {},
+  { "id": "SSE", "sort": ">" },
+  { "id": "TSS" },
+  { "id": "SSR" },
 
-  "MSR"     : { "sort": ">" },
-  "MSE"     : {},
+  { "id": "MSR", "sort": ">" },
+  { "id": "MSE" },
 
-  "Rsq"     : { "sort": "<" },
-  "cRsq"    : { "sort": ">" },
-  "adjRsq"  : { "sort": "<" },
+  { "id": "Rsq", "sort": "<" },
+  { "id": "cRsq", "sort": ">" },
+  { "id": "adjRsq", "sort": "<" },
 
-  "AIC"     : { "sort": ">" },
-  "BIC"     : { "sort": ">" },
+  { "id": "AIC", "sort": ">" },
+  { "id": "BIC", "sort": ">" },
 
-  "F"       : { "sort": ">" },
-  "pF"      : { "displayName": "p(F)", "sort": ">" },
+  { "id": "F", "sort": ">" },
+  { "id": "pF", "displayName": "p(F)", "sort": ">" },
 
-  "t"       : { "sort": "|<|", "candidateOnly": true },
-  "pt"      : { "displayName": "p(t)", "sort": ">", "candidateOnly": true, "default": true },
+  { "id": "t", "sort": "|<|", "candidateOnly": true, "default": true },
+  { "id": "pt", "displayName": "p(t)", "sort": ">", "candidateOnly": true, "default": true },
 
-  "stdev"   : { "show": false },
-  "mean"    : { "show": false },
-  "weights" : { "show": false }
-}
+  { "id": "stdev", "show": false },
+  { "id": "mean", "show": false },
+  { "id": "weights", "show": false }
+]

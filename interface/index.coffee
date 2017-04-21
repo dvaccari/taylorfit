@@ -30,32 +30,44 @@ ko.bindingHandlers.each =
 
 ko.virtualElements.allowedBindings.each = true
 
+numFormatters =
+  float: ( value ) ->
+    negative = value < 0
+    value = Math.abs value
+
+    if value < 0.0010
+      value = value.toExponential 4
+    else if value < 1
+      value = value.toFixed 5
+    else if value < 100000
+      value = value.toPrecision 5
+    else
+      value = value.toExponential 4
+
+    # catch too-small numbers
+    if value is "0.0000e+0"
+      value = (0).toFixed 5
+
+    if negative
+      value = "-" + value
+    value
+
+  int: ( value ) ->
+    Math.round value
+
 ko.bindingHandlers.num =
   # If X < 0.0010, then use exponential notation with four digits, e.g. 2.135e-06
   # If 0.00100 <= X < 1.0, then use fixed to 5 digits (e.g. 0.53621 or 0.00131)
   # If 1.0 <= X < 100,000., give precision of 5 digits (52,327.86>52,328)
   # If X => 100,000, use exponential format with four digits, e.g. 2.135e+12
-  update: ( element, accessor ) ->
+  update: ( element, accessor, allBindings ) ->
+    format = allBindings().fmt || "float"
     value = Number ko.unwrap(accessor())
+
+    console.log allBindings()
+
     unless isNaN value
-      negative = value < 0
-      value = Math.abs value
-
-      if value < 0.0010
-        value = value.toExponential 4
-      else if value < 1
-        value = value.toFixed 5
-      else if value < 100000
-        value = value.toPrecision 5
-      else
-        value = value.toExponential 4
-
-      # catch too-small numbers
-      if value is "0.0000e+0"
-        value = (0).toFixed 5
-
-      if negative
-        value = "-" + value
+      value = numFormatters[format] value
 
     element.textContent = value
 
@@ -67,15 +79,16 @@ global._ = require "lodash"
 global.allstats = ko.observableArray [ ]
 
 adapter.on "statisticsMetadata", ( data ) ->
-  for id, values of data
-    if values.show != false
+  for stat in data
+    if stat.show != false
       allstats.push
-        id: id
-        name: values.displayName or id
-        global: values.globalOnly or false
-        candidate: values.candidateOnly or false
-        sort: values.sort or "<"
-        selected: ko.observable id.toLowerCase() in [ "p(f)", "f" ]
+        id: stat.id
+        name: stat.displayName or stat.id
+        global: stat.globalOnly or false
+        candidate: stat.candidateOnly or false
+        sort: stat.sort or ">"
+        selected: ko.observable stat.default == true
+        format: stat.format or "float"
 adapter.requestStatisticsMetadata()
 
 # --- include components

@@ -46,7 +46,7 @@
       // ko ifnot:candidate
       tr.stat
         td.name(data-bind="text:name")
-        td.value(data-bind="num:$parent.stats[id]")
+        td.value(data-bind="num:$parent.stats[id], fmt: format")
       // /ko
       // /ko
       // /ko
