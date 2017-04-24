@@ -25,8 +25,14 @@ tf-pager(params="source:source,result:result")
           // ko if:exp !== 0
           span.name
             span(data-bind="text:name||'x'")
+
             // ko ifnot:name
+            | (
             sub(data-bind="text:index")
+            | )
+            // /ko
+            // ko if:lag
+            sub(data-bind="text:lag")
             // /ko
           // ko if:exp !== 1
           sup(data-bind="text:exp")
