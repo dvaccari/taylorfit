@@ -41,6 +41,7 @@ ko.components.register "tf-grid",
       expects [table] to exist"
 
     @table = params.table
+    @result = ko.observableArray [ ]
 
     model = params.model() # now static
     @dependent  = model.dependent

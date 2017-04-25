@@ -1,4 +1,5 @@
 
+tf-pager(params="source:rows,result:result")
 .table-wrapper
   table.grid
     thead
@@ -20,8 +21,8 @@
             span.mark(data-bind="click:function(){dependent($index())}")
               | Mark as Dependant
         // /ko
-    tbody(data-bind="event:{mousewheel:scroll}")
-      // ko foreach:rows
+    tbody
+      // ko foreach:result
       // ko if:$parent.location() <= $index() && $index() < $parent.location() + $parent.pagesize()
       tr
         td.static
