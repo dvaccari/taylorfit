@@ -28,10 +28,10 @@
           span(data-bind="text:1+$index()")
         // ko foreach: $data
         td
-          // ko if: $data != null
+          // ko if: $data
           span(data-bind="text:$data")
           // /ko
-          // ko if: $data == null
+          // ko ifnot: $data
           span.placeholder No Data
           // /ko
         // /ko
