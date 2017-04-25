@@ -19,23 +19,20 @@ span.wrapper
       .options
         tf-options(params="model:model")
     .data
-      span.title Fit Data
-      tf-grid(params="model:model,table:'fit'")
+      tf-grid(params="model:model,table:'fit',name:'Fit Data'")
 
       // ko ifnot:model().cross
       tf-loader(params="model:model,table:'cross'")
       // /ko
       // ko if:model().cross
-      span.title Cross Data
-      tf-grid(params="model:model,table:'cross'")
+      tf-grid(params="model:model,table:'cross',name:'Cross Data'")
       // /ko
 
       // ko ifnot:model().validation
       tf-loader(params="model:model,table:'validation'")
       // /ko
       // ko if:model().validation
-      span.title Validation Data
-      tf-grid(params="model:model,table:'validation'")
+      tf-grid(params="model:model,table:'validation',name:'Validation Data'")
       // /ko
 
       span.buffer

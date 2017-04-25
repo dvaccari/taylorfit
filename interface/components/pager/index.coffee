@@ -23,6 +23,8 @@ ko.components.register "tf-pager",
     ko.computed ( ) =>
       pagesize = @pagesize()
       start = @current() * pagesize
+      if ko.isObservable params.start
+        params.start start
       @result @source().slice start, start + pagesize
       return undefined
 

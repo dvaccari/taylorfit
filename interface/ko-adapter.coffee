@@ -48,7 +48,7 @@ formatters =
 
     # catch too-small numbers
     if 0 is Number value
-      value = (0).toFixed precision
+      value = (0).toPrecision precision
 
     if negative
       value = "-" + value
