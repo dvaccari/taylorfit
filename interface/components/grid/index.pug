@@ -34,7 +34,7 @@
       tr
         td.static
           span(data-bind="text:1+$index()")
-          tf-dropdown(params="shallow:1,align:'left'")
+          //tf-dropdown(params="shallow:1,align:'left'")
             //-span.insert(data-bind="click:function(){rows.ins($index())}")
               | Insert Row Before
             //-span.insert(data-bind="click:function(){rows.ins($index()+1)}")
@@ -46,7 +46,9 @@
           // ko if: $data != null
           span(data-bind="text:$data")
           // /ko
-          span.placeholder(data-bind="if:$data == null") No Data
+          // ko if: $data == null
+          span.placeholder No Data
+          // /ko
         // /ko
       // /ko
       // /ko
