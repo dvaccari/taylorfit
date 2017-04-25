@@ -23,8 +23,5 @@ ko.components.register "tf-hamburger",
       if next then adapter.subscribeToChanges()
       else adapter.unsubscribeToChanges()
 
-    @otherSettings =
-      "Subscribed to Changes": @subscribedToChanges
-
     return this
 

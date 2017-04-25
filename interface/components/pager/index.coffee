@@ -13,8 +13,6 @@ ko.components.register "tf-pager",
     unless ko.isObservable params.pagesize
       params.pagesize = ko.observable params.pagesize or 10
 
-    global.pager = this
-
     @pagesize = params.pagesize
 
     @source = params.source

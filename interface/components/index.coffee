@@ -13,5 +13,5 @@ require "./pills"
 require "./result"
 require "./split"
 require "./hamburger"
-require "./other-settings"
+require "./checkbox"
 
