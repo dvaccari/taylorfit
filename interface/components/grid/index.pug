@@ -29,10 +29,10 @@ tf-pager(params="source:rows,result:result")
           span(data-bind="text:1+$index()")
         // ko foreach: $data
         td
-          // ko if: $data
+          // ko if: $data !== null && $data !== ""
           span(data-bind="text:$data")
           // /ko
-          // ko ifnot: $data
+          // ko if: $data === null || $data === ""
           span.placeholder No Data
           // /ko
         // /ko
