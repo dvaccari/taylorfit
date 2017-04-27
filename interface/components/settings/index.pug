@@ -10,9 +10,9 @@
     click:function(){selected(!selected())}")
     // /ko
     // /ko
-  tf-counter.multiplicands(params="name:'Max No. of Multiplicands',value:multiplicands,max:9")
-  tf-multiselect.exponents(params="name:'Exponents',values:exponents,style:'check',fixed:['1']")
-  tf-multiselect.lags(params="name:'Lags',values:lags,style:'check'")
+  tf-counter.multiplicands(params="name:'Max No. of Multiplicands',value:multiplicands,max:max_multiplicands")
+  tf-multiselect.exponents(params="name:'Exponents',values:exponents,fixed:['1']")
+  tf-multiselect.lags(params="name:'Lags',values:lags")
 
   tf-checkbox(params="name:'Subscribe to Changes',value:subscribedToChanges")
   tf-counter(params="name:'Precision',value:ko.precision,min:1,max:9")
@@ -25,5 +25,4 @@
   //  | Export Data
   span.button.export-model(data-bind="click:download_model")
     | Export Project
-  a.button.info(href="http://www.simetrica-llc.com" target="window")
-    | Info: Simetrica LLC.
+

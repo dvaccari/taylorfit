@@ -1,9 +1,8 @@
 
-
 header
   span.title(data-bind="text:name")
+a.counter(data-bind="text:value")
 div.chevrons
   a.fa.fa-chevron-up(data-bind="click:increment,css:{disable:upperlimit}")
   a.fa.fa-chevron-down(data-bind="click:decrement,css:{disable:lowerlimit}")
-a.counter(data-bind="text:value")
 

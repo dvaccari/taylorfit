@@ -29,6 +29,7 @@ ko.components.register "tf-settings",
     @multiplicands = model.multiplicands
     @lags = model.lags
     @candidates = model.candidates
+    @max_multiplicands = model.fit().cols().length - 1
 
     @subscribedToChanges = ko.observable true
     @subscribedToChanges.subscribe ( next ) ->
