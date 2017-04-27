@@ -28,15 +28,9 @@ ko.components.register "tf-multiselect",
 
     @name  = params.name
 
-    @style = params.style
-
     @input = ko.observable ""
 
     @update = ( name ) =>
-      if name and "radio" is ko.unwrap @style
-        values = @values()
-        for key, value of values when key isnt name
-          value false
       @values(@values())
 
     @toggle = ( name ) =>
