@@ -1,7 +1,7 @@
 
 require "./index.styl"
 
-ko.components.register "tf-pills",
+ko.components.register "tf-multiselect",
   template: do require "./index.pug"
   viewModel: ( params ) ->
 
