@@ -11,6 +11,7 @@ ko.components.register "tf-app",
         localStorage?.setItem "tf-model", json
       else
         localStorage?.removeItem "tf-model"
+        adapter.clear()
 
       console.debug "component/app/model:
         [update]", model

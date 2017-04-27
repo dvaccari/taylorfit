@@ -1,6 +1,5 @@
 
 require "./index.styl"
-ResidualGraph = require "./ResidualGraph.coffee"
 
 ko.components.register "tf-result",
   template: do require "./index.pug"
@@ -13,8 +12,10 @@ ko.components.register "tf-result",
 
     @result = model.result
 
-    resiGraph = new ResidualGraph ".pca-graph"
+    @graphdata = ko.observable @result().graphdata
 
-    @result.subscribe ( next ) -> resiGraph.update next
+    @result.subscribe ( next ) =>
+      @graphdata next.graphdata
+
 
     return this

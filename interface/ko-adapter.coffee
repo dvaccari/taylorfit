@@ -23,7 +23,7 @@ ko.bindingHandlers.each =
 
 ko.precision = ko.observable 5
 
-formatters =
+ko.formatters =
   # If X < 0.0010, then use exponential notation with four digits, e.g. 2.135e-06
   # If 0.00100 <= X < 1.0, then use fixed to 5 digits (e.g. 0.53621 or 0.00131)
   # If 1.0 <= X < 100,000., give precision of 5 digits (52,327.86>52,328)
@@ -60,14 +60,14 @@ formatters =
 
 ko.bindingHandlers.int =
   update: ( element, accessor ) ->
-    element.textContent = formatters.int ko.unwrap do accessor
+    element.textContent = ko.formatters.int ko.unwrap do accessor
 
 ko.bindingHandlers.float =
   update: ( element, accessor ) ->
-    element.textContent = formatters.float ko.unwrap do accessor
+    element.textContent = ko.formatters.float ko.unwrap do accessor
 
 ko.bindingHandlers.num =
 
   update: ( element, accessor, allBindings ) ->
     format = allBindings().fmt or "float"
-    element.textContent = formatters[format] ko.unwrap do accessor
+    element.textContent = ko.formatters[format] ko.unwrap do accessor
