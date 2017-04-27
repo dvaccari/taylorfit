@@ -1,7 +1,7 @@
 
 require "./index.styl"
 
-ko.components.register "tf-hamburger",
+ko.components.register "tf-settings",
   template: do require "./index.pug"
   viewModel: ( params ) ->
 

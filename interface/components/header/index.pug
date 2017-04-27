@@ -2,7 +2,7 @@
 span.title TaylorFit
 // ko if:model
 span.name(data-bind="text:model().fit().name")
-a.fa.fa-bars.hamburger(data-bind="click:toggle_settings")
+a.fa.fa-bars.settings(data-bind="click:toggle_settings")
 span.loader(data-bind="style:{width:model().progress() + '%'}")
 // /ko
 

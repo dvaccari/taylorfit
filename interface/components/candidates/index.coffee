@@ -10,11 +10,11 @@ SORT =
 
 sortBy = ( stat ) -> SORT[stat?.sort ? "*"].bind null, stat?.id
 
-ko.components.register "tf-options",
+ko.components.register "tf-candidates",
   template: do require "./index.pug"
   viewModel: ( params ) ->
     unless ko.isObservable params.model
-      throw new TypeError "components/options:
+      throw new TypeError "components/candidates:
       expects [model] to be observable"
 
     readjust = ( ) =>
@@ -39,7 +39,7 @@ ko.components.register "tf-options",
 
     @result.maxWidth = ko.observable 0
     @result.maxWidth.subscribe ( next ) ->
-      document.querySelector(".split-model > .split-data > .options")
+      document.querySelector(".split-model > .split-data > .candidates")
         .style.maxWidth = next + "px"
       document.querySelector(".split-model > .split-data > .model")
         .style.minWidth = "calc(100% - #{next}px)"
