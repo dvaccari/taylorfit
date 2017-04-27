@@ -1,6 +1,18 @@
 
 require "./index.styl"
 
+download = ( name, type, content ) ->
+  a = document.createElement "a"
+  a.href = URL.createObjectURL \
+    new Blob [ content ], { type }
+  a.download = name
+
+  document.body.appendChild a
+  a.click()
+
+  URL.revokeObjectURL a.href
+  document.body.removeChild a
+
 ko.components.register "tf-settings",
   template: do require "./index.pug"
   viewModel: ( params ) ->
