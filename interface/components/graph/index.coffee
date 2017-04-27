@@ -22,7 +22,7 @@ ko.components.register "tf-graph",
           type: "scatter"
           xs:
             y: "x"
-          rows: [["x", "y"]].concat data()
+          rows: [["x", "y"]].concat data() or [ ]
         axis:
           x:
             label: params.xlabel

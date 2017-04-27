@@ -105,7 +105,6 @@ module.exports = class Model
     adapter.on "model:fit", ( model ) =>
       if model.terms.length
         setTimeout =>
-          console.log mapper model.terms, "remove"
           @result {
             terms: mapper model.terms, "remove"
             stats: model.stats

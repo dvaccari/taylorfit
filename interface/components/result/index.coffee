@@ -12,7 +12,7 @@ ko.components.register "tf-result",
 
     @result = model.result
 
-    @graphdata = ko.observable @result().graphdata
+    @graphdata = ko.observable @result()?.graphdata
 
     @result.subscribe ( next ) =>
       @graphdata next.graphdata
