@@ -10,23 +10,23 @@ label.button.input-dataset(data-bind="attr:{for:id}")
   span.small Upload CSV data to begin!
 // ko if: init
 input#input-model(type="file" accept=".json,.tf" data-bind="value:model" hidden)
-label.button.input-model(for="input-model")
+a.button.input-model(for="input-model")
   span Import Project
   hr
   span.small Already have a project?
-label.button.output-manual
+a.button.output-manual
   span Download Manual
   hr
   span.small Coming Soon
-label.button.info(href="http://www.simetrica-llc.com" target="window")
+a.button.info(href="http://www.simetrica-llc.com" target="window")
   span Simetrica LLC.
   hr
   span.small "simetrica-llc.com"
-label.button.example-1(href="")
+a.button.example-1(href="")
   span Auto MPG
   hr
   span.small Download Example Data
-label.button.example-2(href="")
+a.button.example-2(href="")
   span Lydia Pinkham
   hr
   span.small Download Example Data
