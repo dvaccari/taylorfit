@@ -59,7 +59,11 @@ class Term {
                        parts[0][1] === 0 &&
                        parts.length === 1;
 
-    this.col();
+    try {
+      this.col();
+    } catch (e) {
+      // TODO: Pass up errors so that suspicious columns can be marked
+    }
   }
 
   /**
@@ -82,15 +86,6 @@ class Term {
       delete theStats.weights;
 
       return theStats;
-
-      // XXX: Obsolete
-      /*
-      return {
-        coeff : theStats.weights.get(0, theStats.weights.shape[0]-1),
-        t     : theStats.tstats.data[[theStats.tstats.shape[0] - 1]],
-        mse   : theStats.mse
-      };
-       */
     } catch (e) {
       console.error(e);
       console.log(this.valueOf());
@@ -137,17 +132,21 @@ class Term {
 
     let data = this[_model].data(subset)
       , prod = Matrix.zeros(data.shape[0], 1).add(1)
-      , i;
+      , i, col;
 
     for (i = 0; i < this[_parts].length; i += 1) {
-      prod = prod.dotMultiply(
-        data.col(this[_parts][i][0])
-          .dotPow(this[_parts][i][1])
-          .shift(this[_parts][i][2]));
+      col = data.col(this[_parts][i][0]);
+
+      // Check for negative exponent & potential 0 value
+      if (col.max() * col.min() <= 0 && this[_parts][i][1] < 0) {
+        throw new Error(`Divide by zero error for column ${this[_parts][i][0]}`);
+      }
+
+      prod = prod.dotMultiply(col.dotPow(this[_parts][i][1])
+                                 .shift(this[_parts][i][2]));
     }
 
     this[_cache].col[subset] = prod;
-
     return this[_cache].col[subset];
   }
 

@@ -26,7 +26,7 @@ class Model extends Observable {
     super();
 
     this[_data] = {};
-    this[_data][DEFAULT_LABEL] = new Matrix(0, 0);
+    this[_data][DEFAULT_LABEL] = new Matrix(1, 0);
 
     this[_exponents] = [1];
     this[_multiplicands] = [1];
@@ -102,6 +102,10 @@ class Model extends Observable {
   }
 
   setLags(lags) {
+    if (!lags.every((lag) => lag >= 0)) {
+      this.fire('error', 'Cannot have negative lag');
+      return this;
+    }
     this[_lags] = lags.slice();
     this.fire('setLags', lags);
     return this;
@@ -131,8 +135,8 @@ class Model extends Observable {
       this[_terms].push(found);
       this[_cache].X = {};
       this[_cache].y = {};
-      this[_cache].highestLag = null;
     }
+    this[_cache].highestLag = null;
     this.fire('addTerm', term);
     return this;
   }
@@ -169,7 +173,8 @@ class Model extends Observable {
     // Intercept candidate (column of 1s)
     candidates.unshift(this.termpool.get(INTERCEPT));
 
-    // Dependent column for each lag
+    // Dependent column for each lag (TODO: include all combos w/ this guy
+    // where lag >= 1)
     [].push.apply(candidates, this[_lags].map(
       (lag) => this.termpool.get([[this[_dependent], 1, lag]])));
 
@@ -179,26 +184,31 @@ class Model extends Observable {
       .map((candidate, i) => {
         this.fire('getCandidates.each', { curr: i, total: candidates.length });
 
-        let stats = candidate.getStats();
-        return {
-          term: candidate.valueOf(),
-          coeff: stats.coeff,
-          stats
-        };
-      });
+        try {
+          let stats = candidate.getStats();
+          return {
+            term: candidate.valueOf(),
+            coeff: stats.coeff,
+            stats
+          };
+        } catch (e) {
+          return null;
+        }
+      })
+      .filter((cand) => cand != null);
 
     this.fire('getCandidates.end');
     return results;
   }
 
-  getModel(testLabel) {
+  getModel(testLabel=DEFAULT_LABEL) {
     let highestLag = this.highestLag()
       , X = this.X().lo(highestLag)
       , y = this.y().lo(highestLag);
 
     let stats = lstsq(X, y);
 
-    if (testLabel) {
+    if (testLabel !== DEFAULT_LABEL) {
       stats = lstsq(this.X(testLabel), this.y(testLabel), stats.weights);
     }
 
@@ -238,7 +248,7 @@ class Model extends Observable {
     let graphdata = stats.y.hstack(residuals).toJSON();
     residuals = residuals.toJSON();
 
-    return { terms, stats, predicted, graphdata, residuals };
+    return { highestLag: this.highestLag(), terms, stats, predicted, graphdata, residuals };
   }
 
   highestLag() {
@@ -262,7 +272,9 @@ class Model extends Observable {
 
   y(label=DEFAULT_LABEL) {
     if (this[_cache].y[label] == null) {
-      this[_cache].y[label] = this.data(label).subset(':', this[_dependent]);
+      this[_cache].y[label] = this
+        .data(label)
+        .subset(':', this[_dependent]);
     }
     return this[_cache].y[label];
   }

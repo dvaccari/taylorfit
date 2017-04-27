@@ -606,6 +606,34 @@ class Matrix {
   }
 
   /**
+   * Get minimum value in matrix
+   *
+   * @return {number} Minimum value
+   */
+  min() {
+    let i, min;
+
+    for (i = 0, min = Infinity; i < this[_data].length; i += 1) {
+      min = Math.min(min, this[_data][i]);
+    }
+    return min;
+  }
+
+  /**
+   * Get maximum value in matrix
+   *
+   * @return {number} Maximum value
+   */
+  max() {
+    let i, max;
+
+    for (i = 0, max = -Infinity; i < this[_data].length; i += 1) {
+      max = Math.max(max, this[_data][i]);
+    }
+    return max;
+  }
+
+  /**
    * @property {Matrix<n,m>} T The transposition of the matrix
    */
   get T() {
