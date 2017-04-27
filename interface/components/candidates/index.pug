@@ -33,8 +33,8 @@ tf-pager(params="source:source,result:result")
             sub(data-bind="text:index")
             | )
             // /ko
-            // ko if:lag
-            sub(data-bind="text:lag")
+            // ko if:$parents[1].show_lags || lag
+            sub(data-bind="text:lag || 0")
             // /ko
           // ko if:exp !== 1
           sup(data-bind="text:exp")

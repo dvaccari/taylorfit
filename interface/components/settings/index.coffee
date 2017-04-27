@@ -28,6 +28,7 @@ ko.components.register "tf-settings",
     @exponents = model.exponents
     @multiplicands = model.multiplicands
     @lags = model.lags
+    @show_lags = model.show_lags
     @candidates = model.candidates
     @max_multiplicands = model.fit().cols().length - 1
 

@@ -12,7 +12,7 @@ observable = ( item ) ->
 module.exports = class Model
 
   @transient: [ "candidates",
-  "show_settings", "progress" ]
+  "show_settings", "progress", "show_lags" ]
 
   DEFAULTS =
     id:             "model"
@@ -27,6 +27,7 @@ module.exports = class Model
     candidates:     [ ]
     result:         null # perhaps fit: null, test: null, validation: null ?
     show_settings:  false
+    show_lags:      true
     progress:       30
 
   constructor: ( options ) ->
