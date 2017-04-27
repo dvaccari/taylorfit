@@ -4,10 +4,18 @@ tf-candidates
   display block
   size 100%
 
+  tf-pager
+  header
+    display inline-block
+    margin-left 16px
+    margin-bottom 10px
+    float right
+
   .candidate-wrapper
     position relative
     height 100%
     overflow hidden
+    clear both
 
     &:before
       content ""
@@ -24,7 +32,7 @@ tf-candidates
       display block
       overflow-y auto
       overflow-x hidden
-      height calc(100% - 16px)
+      height calc(100% - 32px)
       float right
       white-space nowrap
 

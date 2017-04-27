@@ -6,11 +6,11 @@ include loader.pug
 span.wrapper
   .split-model(data-bind="split:{direction:'vertical'}")
     .split-data(data-bind="split:{direction:'horizontal'}")
-      .model
+      .model-pane
         tf-result(params="model:model")
-      .candidates
+      .candidates-pane
         tf-candidates(params="model:model")
-    .data
+    .data-pane
       tf-grid(params="model:model,table:'fit',name:'Fit Data'")
 
       // ko ifnot:model().cross

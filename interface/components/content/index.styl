@@ -43,20 +43,19 @@ tf-content
     overflow hidden
     position relative
 
-
-    .candidates
-    .data
-    .model
+    .candidates-pane
+    .data-pane
+    .model-pane
       padding 20px
       box-sizing border-box
       display block
 
-    .candidates
+    .candidates-pane
       float right
       text-align right
       overflow hidden
 
-    .data
+    .data-pane
       float left
       white-space normal
       & > .buffer
@@ -72,9 +71,11 @@ tf-content
           display none
 
     // control min sizes
-    .model
-    .candidates
+    .model-pane
+    .candidates-pane
       min-height 130px
+      min-width 220px
+      max-width calc(100% - 220px)
     .split-data
       max-height calc(100% - 130px)
 

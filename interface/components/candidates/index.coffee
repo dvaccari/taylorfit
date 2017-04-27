@@ -39,9 +39,9 @@ ko.components.register "tf-candidates",
 
     @result.maxWidth = ko.observable 0
     @result.maxWidth.subscribe ( next ) ->
-      document.querySelector(".split-model > .split-data > .candidates")
+      document.querySelector(".split-model > .split-data > .candidates-pane")
         .style.maxWidth = next + "px"
-      document.querySelector(".split-model > .split-data > .model")
+      document.querySelector(".split-model > .split-data > .model-pane")
         .style.minWidth = "calc(100% - #{next}px)"
 
     @sortby = ( stat ) =>
