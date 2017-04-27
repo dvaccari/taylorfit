@@ -33,9 +33,11 @@ m.on('getCandidates.end', () => postMessage({
   data: {}
 }));
 
+m.on('error', (error) => postMessage({ type: 'error', data: error }));
+
 // Whenever a parameter changes, let's update the UI
 let subscriptionIds = [];
-let subscribeToChanges = () => {
+let subscribeToChanges = (updateNow = true) => {
   m.removeListener(subscriptionIds);
 
   subscriptionIds = m.on([
@@ -48,12 +50,15 @@ let subscribeToChanges = () => {
       postMessage({ type: `model:${label}`, data: m.getModel(label) })
     );
   });
-  m.fire('setData');
+
+  if (updateNow) {
+    m.fire('setData');
+  }
 };
 let unsubscribeToChanges = () => m.removeListener(subscriptionIds);
 
 // By default, subscribe
-subscribeToChanges();
+subscribeToChanges(false);
 
 
 onmessage = function (e) {

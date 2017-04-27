@@ -55,7 +55,7 @@ module.exports = [
   Statistic('pt', ['t', 'np', 'nd'],
     ({t, np, nd}) => {
       let pt = t.clone();
-      pt.data.set(pt.data.map((t) => dist.pt(t, nd - np)));
+      pt.data.set(pt.data.map((t) => Math.max(0, dist.pt(t, nd - np))));
       return pt;
     }),
 
