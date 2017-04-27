@@ -12,7 +12,7 @@
   { "id": "np", "globalOnly": true, "format": "int" },
 
   { "id": "SSE", "sort": ">" },
-  { "id": "TSS" },
+  { "id": "TSS", "globalOnly": true },
   { "id": "SSR" },
 
   { "id": "MSR", "sort": ">" },

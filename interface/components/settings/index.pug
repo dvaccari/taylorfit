@@ -3,9 +3,9 @@
   span.title Settings
   span.statlist
     header
-      span.title Display Statistics
+      span.title Goodness-of-Fit Statistics
     // ko foreach:allstats
-    // ko if:!global && sort
+    // ko if:!global && !$data.default
     div.stat(data-bind="text:name,css:{selected:selected},\
     click:function(){selected(!selected())}")
     // /ko

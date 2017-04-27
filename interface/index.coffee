@@ -25,7 +25,8 @@ adapter.on "statisticsMetadata", ( data ) ->
         global: stat.globalOnly or false
         candidate: stat.candidateOnly or false
         sort: stat.sort or ">"
-        selected: ko.observable stat.default == true
+        default: stat.default
+        selected: ko.observable stat.default is true
         format: stat.format or "float"
 adapter.requestStatisticsMetadata()
 
