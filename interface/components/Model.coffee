@@ -54,6 +54,8 @@ module.exports = class Model
       adapter.setExponents exponents2array next
     @lags.subscribe ( next ) ->
       adapter.setLags exponents2array next
+    @cross.subscribe observable
+    @validation.subscribe observable
 
     if @fit().rows().length
       # Don't compute candidates or the model right now
