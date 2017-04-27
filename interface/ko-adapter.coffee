@@ -40,7 +40,7 @@ formatters =
     if value < Math.pow 10, 2 - precision
       value = value.toExponential precision - 1
     else if value < 1
-      value = value.toFixed precision
+      value = value.toFixed precision - 1
     else if value < Math.pow 10, precision
       value = value.toPrecision precision
     else

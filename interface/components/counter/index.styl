@@ -4,11 +4,6 @@ tf-counter
   position relative
   max-width 100%
 
-  header
-    & > span.title
-      font-family "Anonymous Pro", sans-serif
-      font-size 14pt
-
   & > div.chevrons
     color #333
     display inline-block
@@ -16,9 +11,20 @@ tf-counter
     padding 2px 4px
     cursor pointer
     user-select none
+    position relative
 
     & > a
       transition 300ms
+      font-size 12pt
+      &.fa-chevron-up
+        position relative
+        top -5px
+        right 0
+      &.fa-chevron-down
+        position absolute
+        right 4px
+        top 12px
+
       &:hover
         text-shadow 2px 0 0 green, -2px 0 0 green,
          0 2px 0 green, 0 -2px 0 green
@@ -31,8 +37,9 @@ tf-counter
 
   & > a.counter
     font-size 12pt
-    padding 2px 12px
+    padding 2px 10px 2px 12px
     margin 4px
+    margin-right 0
     border-radius 1000px
     transition 300ms
     cursor pointer

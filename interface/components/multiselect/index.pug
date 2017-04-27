@@ -2,7 +2,6 @@
 
 header
   span.title(data-bind="text:name")
-  span.subtitle(data-bind="text:ko.unwrap(style)==='radio'?'Select One':'Select Many'")
 //- TODO: enforce min and max through keypress
 a.fa.fa-plus(data-bind="click:showinput,css:{hide:hide}")
 input.custom(data-bind="textInput:input,event:{change:add,blur:hideinput},css:{invalid:invalid,hide:!hide()},hasFocus:focus")
