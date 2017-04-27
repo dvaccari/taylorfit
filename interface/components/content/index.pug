@@ -1,17 +1,9 @@
 
-// ko if:model
 tf-settings(params="model:model")
 // ko if:model().progress()
 include loader.pug
 // /ko
-// /ko
 span.wrapper
-  // ko ifnot:model
-  span.loader
-    //- TODO: move this to app/index.pug
-    tf-loader(params="model:model,table:'fit',init:true")
-  // /ko
-  // ko if:model
   .split-model(data-bind="split:{direction:'vertical'}")
     .split-data(data-bind="split:{direction:'horizontal'}")
       .model
@@ -36,7 +28,3 @@ span.wrapper
       // /ko
 
       span.buffer
-
-
-  // /ko
-

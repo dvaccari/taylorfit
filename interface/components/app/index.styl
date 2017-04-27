@@ -70,3 +70,29 @@ input
 .placeholder
   color #999
   pointer-events none
+
+tf-loader
+  size 100%
+  display block
+  padding 30px
+  box-sizing border-box
+  text-align center
+  padding-top header-height
+
+  .button
+    font-size 18pt
+    padding 40px
+    min-width 240px
+    text-align center
+    background green
+    margin 15px
+    &.output-manual
+      background purple
+    &.info
+      background blue
+    &.example-1, &.example-2
+      background orange
+    & > hr
+      border 1px solid white
+    & > .small
+      font-size 12pt

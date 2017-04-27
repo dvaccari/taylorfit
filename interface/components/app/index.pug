@@ -1,4 +1,8 @@
 
 tf-header(params="model:model")
+// ko if:model
 tf-content(params="model:model")
-
+// /ko
+// ko ifnot:model
+tf-loader(params="model:model,table:'fit',init:true")
+// /ko
