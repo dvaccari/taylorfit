@@ -23,5 +23,22 @@ ko.components.register "tf-settings",
       if next then adapter.subscribeToChanges()
       else adapter.unsubscribeToChanges()
 
+    @download_dataset = ( ) ->
+      model = params.model()
+      download (model.id() or "model") + ".csv",
+        "type/csv", model.toCSV()
+
+    @download_model = ( ) ->
+      model = params.model()
+      download (model.id() or "model") + ".tf",
+        "application/json", model.toJSON()
+
+    @clear_project = ( ) ->
+      params.model null
+
+    @clear_model = ( ) ->
+      params.model().result null
+      adapter.clear()
+
     return this
 

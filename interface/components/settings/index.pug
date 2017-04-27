@@ -16,5 +16,14 @@
 
   tf-checkbox(params="name:'Subscribe to Changes',value:subscribedToChanges")
   tf-counter(params="name:'Precision',value:ko.precision,min:1,max:9")
-
-  tf-exporter(params="model:model")
+  
+  span.button.warning(data-bind="click:clear_project")
+    | Clear Project
+  span.button.warning(data-bind="click:clear_model")
+    | Clear Model
+  span.button.export-dataset(data-bind="click:download_dataset")
+    | Export Data
+  span.button.export-model(data-bind="click:download_model")
+    | Export Project
+  a.button.info(href="http://www.simetrica-llc.com" target="window")
+    | Info: Simetrica LLC.
