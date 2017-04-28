@@ -445,4 +445,5 @@ hs_err_pid*
 build/**/*
 !build/readme.md
 !build/index.html
+engine-pnacl/pnacl
 
