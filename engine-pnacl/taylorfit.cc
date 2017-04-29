@@ -6,6 +6,7 @@
 #include "ppapi/cpp/var_dictionary.h"
 #include "ppapi/cpp/var_array.h"
 #include "json/json.h"
+#include "utils/utils.h"
 #include "model/model.h"
 
 #include <iostream>
@@ -42,12 +43,24 @@ class TFEngineAdapter : public pp::Instance {
       pp::Var message_data = dict_message.Get(pp::Var("data"));
 
       try {
+        // modify parameters
         if (message_type == "setData") {
           m->set_data(pp::VarArray(message_data));
         } else if (message_type == "setMultiplicands") {
           m->set_multiplicands(message_data.AsInt());
         } else if (message_type == "setExponents") {
           m->set_exponents(pp::VarArray(message_data));
+
+        // modify terms
+        } else if (message_type == "addTerm") {
+          m->add_term(
+            tf_utils::ppvar_to_part_set(pp::VarArray(message_data))
+          );
+        } else if (message_type == "removeTerm") {
+          m->remove_term(
+            tf_utils::ppvar_to_part_set(pp::VarArray(message_data))
+          );
+
         } else if (message_type == "lstsq") {
           PostMessage(pp::Var(writer.write(m->lstsq())));
         } else {
@@ -55,15 +68,7 @@ class TFEngineAdapter : public pp::Instance {
           return;
         }
 
-        std::vector<Term*> terms = m->get_candidates();
-        Json::Value terms_json = Json::Value(Json::arrayValue);
-
-        for (Term *t : terms) {
-          terms_json.append(t->toJSON());
-        }
-
-        PostMessage(pp::Var(writer.write(m->toJSON())));
-        PostMessage(pp::Var(writer.write(terms_json)));
+        PostMessage(pp::Var(writer.write(m->get_candidates())));
 
       } catch (std::string &e) {
         PostMessage("{\"error\":" + e + "}");

@@ -1,28 +1,15 @@
 
 #include "model.h"
+#include "../statistics/statistics.h"
 #include "../regression/lstsq.h"
-#include "../utils/utils.h"
-
 
 Json::Value Model::lstsq() {
-  std::vector<int> cols = range(0, _data->n());
+  Matrix *X = this->X(DEFAULT_LABEL);
+  Matrix *y = this->y(DEFAULT_LABEL);
 
-  cols.erase(std::remove(cols.begin(), cols.end(), _dependent), cols.end());
+  stats_bundle stats = ::lstsq(X, y);
 
-  Matrix *X = _data->cols(cols);
-  Matrix *y = _data->col(_dependent);
-
-  Matrix *U;
-  Matrix *S;
-  Matrix *V;
-
-  svd(X, &U, &S, &V);
-
-  Matrix *beta = lstsq_svd(X, U, S, V, y);
-
-  return beta->toJSON();
+  Matrix *bhat = stats["BHat"].matrix_val();
+  return bhat->toJSON();
 }
-
-
-
 

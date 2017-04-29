@@ -1,7 +1,6 @@
 
 #include <thread>
 #include <mutex>
-#include <unistd.h>
 #include <queue>
 
 #include "model.h"
@@ -15,10 +14,12 @@ std::mutex read_mtx;
 std::mutex write_mtx;
 
 void compute_candidates(
-    std::queue<Term*> *terms,
-    std::vector<Term*> *results
+    std::queue<Term*>         *terms,
+    std::vector<Json::Value>  *results
 ) {
-  Term *t;
+  stats_bundle  stats;
+  Json::Value   result;
+  Term         *t;
 
   while (true) {
     read_mtx.lock();
@@ -31,38 +32,47 @@ void compute_candidates(
     read_mtx.unlock();
 
     // Compute statistics!!
-    usleep(500000);
+    stats = t->get_stats();
+    result = Json::Value(Json::objectValue);
+    result["stats"] = tf_utils::stats_bundle_to_json(stats);
+    result["term"] = t->toJSON();
 
     write_mtx.lock();
-    results->push_back(t);
+    results->push_back(result);
     write_mtx.unlock();
   }
   return; // lel
 }
 
-std::vector<Term*> Model::get_candidates() {
-  std::vector<Term*>    candidates;
-  std::vector<int>      cols = range(0, _data->n());
-  std::queue<Term*>     terms;
+Json::Value Model::get_candidates() {
+  std::queue<Term*>     candidates;
+  std::vector<int>      cols = tf_utils::range(0, data_.at(DEFAULT_LABEL)->n());
   std::vector<part_set> loose_terms;
+  std::vector<Json::Value> result;
 
-  cols.erase(std::remove(cols.begin(), cols.end(), _dependent), cols.end());
-  loose_terms = generate_terms(cols, _exponents, _multiplicands, _lags);
+  cols.erase(std::remove(cols.begin(), cols.end(), dependent_), cols.end());
+  loose_terms = generate_terms(cols, exponents_, multiplicands_, lags_);
 
   for (part_set p : loose_terms) {
-    terms.push(_termpool.get(p));
+    candidates.push(termpool_.get(p));
   }
 
   std::thread pool[THREADS];
 
   for (int i = 0; i < THREADS; i++) {
-    pool[i] = std::thread(compute_candidates, &terms, &candidates);
+    pool[i] = std::thread(compute_candidates, &candidates, &result);
   }
 
   for (int i = 0; i < THREADS; i++) {
     pool[i].join();
   }
 
-  return candidates;
+  Json::Value result_json = Json::Value(Json::arrayValue);
+
+  for (Json::Value &stats : result) {
+    result_json.append(stats);
+  }
+
+  return result_json;
 }
 

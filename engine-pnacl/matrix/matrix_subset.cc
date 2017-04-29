@@ -9,3 +9,4 @@ Matrix *Matrix::cols(const std::vector<int> &cols) {
   }
   return subset;
 }
+

@@ -3,7 +3,9 @@
 
 #include <stdint.h>
 #include <limits.h>
-#include <assert.h>
+#include <cassert>
+
+namespace tf_utils {
 
 static inline uint32_t rotl32 (uint32_t n, unsigned int c) {
   const unsigned int mask = (CHAR_BIT * sizeof(n) - 1);
@@ -19,6 +21,8 @@ static inline uint32_t rotr32 (uint32_t n, unsigned int c) {
   assert ( (c <= mask) && "rotate by type width or more" );
   c &= mask;
   return (n >> c) | (n << ( (-c)&mask ));
+}
+
 }
 
 #endif

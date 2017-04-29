@@ -3,21 +3,23 @@
 
 #include <vector>
 #include "json/json.h"
+//#include "model.h"
 #include "../utils/bitops.h"
 #include "../matrix/matrix.h"
+#include "../statistics/statistics.h"
 
 class Model;
 
 // Define type for [ col, exp, lag ] type
-typedef struct  s_part {
+struct part {
   int   col;
   float exp;
   int   lag;
 
-  bool operator==(const struct s_part &other) const {
+  bool operator==(const part &other) const {
     return other.col == col && other.exp == exp && other.lag == lag;
   }
-}               part;
+};
 
 typedef std::vector<part> part_set;
 
@@ -29,19 +31,19 @@ class Term {
                      && p[0].col == 0
                      && p[0].exp == 0
                      && p[0].lag == 0),
-        _parts(p),
-        _model(model) { }
+        parts_(p),
+        model_(model) { }
 
-    Matrix     *col();
-    bool        operator==(const part_set) const;
-    Json::Value toJSON();
-    Json::Value get_stats();
+    Matrix       *col();
+    bool          operator==(const part_set) const;
+    Json::Value   toJSON();
+    stats_bundle  get_stats();
 
-    bool        is_intercept;
-    part_set    _parts;
+    bool          is_intercept;
+    part_set      parts_;
 
   private:
-    Model      *_model;
+    Model        *model_;
 };
 
 
@@ -57,10 +59,10 @@ namespace std {
       int i;
 
       for (i = 0; i < parts.size(); i++) {
-        value ^= rotl32(hash<int>()(parts[i].col), i);
-        value ^= rotl32(hash<float>()(parts[i].exp), i);
-        value ^= rotl32(hash<int>()(parts[i].lag), i);
-        value = rotr32(value, i);
+        value ^= tf_utils::rotl32(hash<int>()(parts[i].col), i);
+        value ^= tf_utils::rotl32(hash<float>()(parts[i].exp), i);
+        value ^= tf_utils::rotl32(hash<int>()(parts[i].lag), i);
+        value = tf_utils::rotr32(value, i);
       }
       return value;
     }
@@ -70,7 +72,7 @@ namespace std {
   struct hash<Term>
   {
     size_t operator()(const Term &t) const {
-      return std::hash<part_set>()(t._parts);
+      return std::hash<part_set>()(t.parts_);
     }
   };
 }

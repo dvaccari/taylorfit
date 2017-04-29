@@ -5,7 +5,7 @@ Json::Value Term::toJSON() {
   Json::Value json = Json::Value(Json::arrayValue);
   Json::Value part_json;
 
-  for (part p : _parts) {
+  for (part p : parts_) {
     part_json = Json::Value(Json::arrayValue);
     part_json.append(Json::Value(p.col));
     part_json.append(Json::Value(p.exp));

@@ -5,19 +5,18 @@
 #include <vector>
 #include "term.h"
 
-class Model; // placeholder
-
+class Model;
 
 class TermPool {
   public:
-    TermPool(Model *model) : _model(model) { }
+    TermPool(Model *model) : model_(model) { }
 
     Term   *get(part_set);
     void    clear_cache();
 
   private:
-    Model  *_model;
-    std::unordered_map<part_set, Term*> _terms;
+    Model  *model_;
+    std::unordered_map<part_set, Term*> terms_;
 };
 
 #endif

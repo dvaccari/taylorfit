@@ -10,40 +10,55 @@
 
 #include "../matrix/matrix.h"
 #include "combos.h"
-#include "term.h"
 #include "termpool.h"
 
+#define DEFAULT_LABEL "fit"
+
+template <typename T>
+using str_map = std::unordered_map<std::string, T>;
+
+class Term;
+class TermPool;
+struct part;
+typedef std::vector<part> part_set;
 
 class Model {
   public:
-    Model()   : _data(new Matrix(0, 0)),
-                _dependent(0),
-                _exponents({ 1 }),
-                _multiplicands({ 1 }),
-                _termpool(this) { }
+    Model()   : dependent_(0),
+                exponents_({ 1 }),
+                multiplicands_({ 1 }),
+                termpool_(this)
+                { data_.insert({ DEFAULT_LABEL, new Matrix(3, 1) }); }
 
     Model              *set_data(const pp::VarArray&);
+    Model              *set_data(const pp::VarArray&, const std::string&);
     Model              *set_multiplicands(int);
     Model              *set_exponents(const pp::VarArray&);
     Model              *set_lags(const pp::VarArray&);
 
-    Model              *add_term(part_set&);
-    Model              *remove_term(part_set&);
+    Model              *add_term(const part_set&);
+    Model              *remove_term(const part_set&);
 
-    std::vector<Term*>  get_candidates();
+    Json::Value         get_candidates();
     Json::Value         lstsq();
 
+    Matrix             *data(std::string);
     Matrix             *data();
+    Matrix             *X(std::string);
+    Matrix             *X();
+    Matrix             *y(std::string);
+    Matrix             *y();
 
     Json::Value         toJSON();
 
   private:
-    Matrix             *_data;
-    int                 _dependent;
-    std::vector<float>  _exponents;
-    std::vector<int>    _lags;
-    std::vector<int>    _multiplicands;
-    TermPool            _termpool;
+    str_map<Matrix*>    data_;
+    int                 dependent_;
+    std::vector<float>  exponents_;
+    std::vector<int>    lags_;
+    std::vector<int>    multiplicands_;
+    TermPool            termpool_;
+    std::vector<Term*>  terms_;
 };
 
 
@@ -68,6 +83,5 @@ namespace Json {
   }
 
 }
-
 
 #endif

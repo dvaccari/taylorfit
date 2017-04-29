@@ -51,12 +51,24 @@
       TFModule.postMessage({ type: 'setExponents', data: m });
     }
 
+    function addTerm(term) {
+      console.time('candidates');
+      waiting += 1;
+      TFModule.postMessage({ type: 'addTerm', data: term });
+    }
+
+    function removeTerm(term) {
+      console.time('candidates');
+      waiting += 1;
+      TFModule.postMessage({ type: 'removeTerm', data: term });
+    }
+
     // The 'message' event handler.  This handler is fired when the NaCl module
     // posts a message to the browser by calling PPB_Messaging.PostMessage()
     // (in C) or pp::Instance.PostMessage() (in C++).  This implementation
     // simply displays the content of the message in an alert panel.
     function handleMessage(message_event) {
-      console.debug("[Engine]:", message_event.data);
+      console.debug("[Engine]:", JSON.parse(message_event.data));
       if (waiting > 0) {
         waiting -= 1;
         console.timeEnd('candidates');

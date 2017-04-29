@@ -1,13 +1,17 @@
 
+#include "model.h"
 #include "term.h"
+#include "../regression/lstsq.h"
 
-Json::Value Term::get_stats() {
-  Json::Value json = toJSON();
+stats_bundle Term::get_stats() {
+  Matrix *X = model_->X();
+  Matrix *y = model_->y();
 
-  // mimic heavy computation
-  usleep(1000);
+  X = *X | *col(); // append this term to the matrix
 
-  return json;
+  stats_bundle stats = lstsq(X, y);
+
+  return stats;
 }
 
 

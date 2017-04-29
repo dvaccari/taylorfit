@@ -7,7 +7,7 @@ bool Term::operator==(const part_set parts) const {
   for (part other_p : parts) {
     found = false;
 
-    for (part my_p : _parts) {
+    for (part my_p : parts_) {
       found = found || (other_p == my_p);
     }
     if (!found) {
