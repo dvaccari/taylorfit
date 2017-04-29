@@ -18,8 +18,9 @@
       TFModule = document.getElementById('taylorfit');
       updateStatus('SUCCESS');
       TFModule.postMessage({ type: 'setData', data: [
-        [1, 2, 3, 4],
-        [5, 6, 7, 8]
+        [3, 2, 1],
+        [5, 1, 4],
+        [7, 4, 3]
       ] });
       TFModule.postMessage({ type: 'setMultiplicands', data: 3 });
     }
@@ -30,6 +31,18 @@
       console.time('candidates');
       waiting += 1;
       TFModule.postMessage({ type: 'setExponents', data: e });
+    }
+
+    function setData(d) {
+      console.time('candidates');
+      waiting += 1;
+      TFModule.postMessage({ type: 'setData', data: d });
+    }
+
+    function lstsq() {
+      console.time('candidates');
+      waiting += 1;
+      TFModule.postMessage({ type: 'lstsq' });
     }
 
     function setMult(m) {

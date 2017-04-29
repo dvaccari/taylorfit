@@ -48,6 +48,8 @@ class TFEngineAdapter : public pp::Instance {
           m->set_multiplicands(message_data.AsInt());
         } else if (message_type == "setExponents") {
           m->set_exponents(pp::VarArray(message_data));
+        } else if (message_type == "lstsq") {
+          PostMessage(pp::Var(writer.write(m->lstsq())));
         } else {
           PostMessage("{\"error\": \"Bad message type\"}");
           return;

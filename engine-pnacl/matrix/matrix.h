@@ -24,6 +24,8 @@ class Matrix {
     Matrix         *operator*(const Matrix&);   // elem-wise multiplication
     Matrix         *operator*(const double);    // scalar multiplication
     Matrix         *dot(const Matrix&);         // matrix multiplication
+    Matrix         *operator/(const Matrix&);   // elem-wise division
+    Matrix         *operator/(const double);    // elem-wise division
     Matrix         *operator+(const Matrix&);   // elem-wise addition
     Matrix         *operator+(const double);    // scalar addition
     Matrix         *operator-(const Matrix&);   // elem-wise subtraction
@@ -33,6 +35,8 @@ class Matrix {
 
     Matrix         *col(int);
     Matrix         *row(int);
+    Matrix         *T();
+    Matrix         *cols(const std::vector<int>&);
 
     static Matrix  *zeros(int, int);
 

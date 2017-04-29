@@ -25,15 +25,12 @@ Matrix *Matrix::dot(const Matrix &other) {
 
 
 Matrix *Matrix::operator*(const Matrix &other) {
-  if (other.m() != _m || other.n() != _n) {
-    throw "Matrix multiplication failed (misaligned)";
-  }
-
   Matrix *product = new Matrix(*this);
+  int other_size = other.m() * other.n();
   int i;
 
   for (i = 0; i < _m * _n; i++) {
-    product->_data[i] *= other._data[i];
+    product->_data[i] *= other._data[i % other_size];
   }
 
   return product;

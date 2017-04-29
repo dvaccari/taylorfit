@@ -30,6 +30,7 @@ void compute_candidates(
     terms->pop();
     read_mtx.unlock();
 
+    // Compute statistics!!
     usleep(500000);
 
     write_mtx.lock();

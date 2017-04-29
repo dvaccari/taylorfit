@@ -31,6 +31,7 @@ class Model {
     Model              *remove_term(part_set&);
 
     std::vector<Term*>  get_candidates();
+    Json::Value         lstsq();
 
     Matrix             *data();
 

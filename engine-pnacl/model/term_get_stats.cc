@@ -1,5 +1,4 @@
 
-#include <unistd.h>
 #include "term.h"
 
 Json::Value Term::get_stats() {
