@@ -24,6 +24,9 @@ class stat {
     double    double_val() const { return double_value_; }
     type      type() const { return type_; }
 
+    operator  Matrix&() const { return matrix_val(); }
+    operator  double() const { return double_val(); }
+
   private:
     Matrix   *matrix_value_;
     double    double_value_;
