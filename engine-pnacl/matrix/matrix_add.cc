@@ -1,53 +1,53 @@
 
 #include "matrix.h"
 
-Matrix *Matrix::operator+(const Matrix &other) {
-  if (other.m() != _m || other.n() != _n) {
+Matrix Matrix::operator+(const Matrix &other) {
+  if (other.m() != m_ || other.n() != n_) {
     throw "Matrix addition failed (misaligned)";
   }
 
-  Matrix *sum = new Matrix(*this);
+  Matrix sum(*this);
   int i;
 
-  for (i = 0; i < _m * _n; i++) {
-    sum->_data[i] += other._data[i];
+  for (i = 0; i < m_ * n_; i++) {
+    sum.data_[i] += other.data_[i];
   }
 
   return sum;
 }
 
-Matrix *Matrix::operator+(const double n) {
-  Matrix *sum = new Matrix(*this);
+Matrix Matrix::operator+(const double n) {
+  Matrix sum(*this);
   int i;
 
-  for (i = 0; i < _m * _n; i++) {
-    sum->_data[i] += n;
+  for (i = 0; i < m_ * n_; i++) {
+    sum.data_[i] += n;
   }
 
   return sum;
 }
 
-Matrix *Matrix::operator-(const Matrix &other) {
-  if (other.m() != _m || other.n() != _n) {
+Matrix Matrix::operator-(const Matrix &other) {
+  if (other.m() != m_ || other.n() != n_) {
     throw "Matrix addition failed (misaligned)";
   }
 
-  Matrix *sum = new Matrix(*this);
+  Matrix sum(*this);
   int i;
 
-  for (i = 0; i < _m * _n; i++) {
-    sum->_data[i] -= other._data[i];
+  for (i = 0; i < m_ * n_; i++) {
+    sum.data_[i] -= other.data_[i];
   }
 
   return sum;
 }
 
-Matrix *Matrix::operator-(const double n) {
-  Matrix *sum = new Matrix(*this);
+Matrix Matrix::operator-(const double n) {
+  Matrix sum(*this);
   int i;
 
-  for (i = 0; i < _m * _n; i++) {
-    sum->_data[i] -= n;
+  for (i = 0; i < m_ * n_; i++) {
+    sum.data_[i] -= n;
   }
 
   return sum;

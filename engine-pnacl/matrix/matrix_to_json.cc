@@ -6,10 +6,10 @@ Json::Value Matrix::toJSON() {
   Json::Value row;
   int i, j;
 
-  for (i = 0; i < _m; i++) {
+  for (i = 0; i < m_; i++) {
     row = Json::Value(Json::arrayValue);
-    for (j = 0; j < _n; j++) {
-      row.append(Json::Value(_data[i * _n + j]));
+    for (j = 0; j < n_; j++) {
+      row.append(Json::Value(data_[i * n_ + j]));
     }
     json.append(row);
   }

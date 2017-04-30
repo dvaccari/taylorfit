@@ -42,12 +42,12 @@ class Model {
     Json::Value         get_candidates();
     Json::Value         lstsq();
 
-    Matrix             *data(std::string);
-    Matrix             *data();
-    Matrix             *X(std::string);
-    Matrix             *X();
-    Matrix             *y(std::string);
-    Matrix             *y();
+    Matrix             &data(std::string) const;
+    Matrix             &data() const;
+    Matrix              X(std::string);
+    Matrix              X();
+    Matrix              y(std::string);
+    Matrix              y();
 
     Json::Value         toJSON();
 

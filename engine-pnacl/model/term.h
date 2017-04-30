@@ -34,7 +34,7 @@ class Term {
         parts_(p),
         model_(model) { }
 
-    Matrix       *col();
+    Matrix        col();
     bool          operator==(const part_set) const;
     Json::Value   toJSON();
     stats_bundle  get_stats();

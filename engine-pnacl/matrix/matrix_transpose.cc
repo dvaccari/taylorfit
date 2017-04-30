@@ -1,13 +1,13 @@
 
 #include "matrix.h"
 
-Matrix *Matrix::T() {
-  Matrix *transpose = new Matrix(_n, _m);
+Matrix Matrix::T() const {
+  Matrix transpose(n_, m_);
   int i, j;
 
-  for (i = 0; i < _m; i += 1) {
-    for (j = 0; j < _n; j += 1) {
-      transpose->_data[j * _m + i] = _data[i * _n + j];
+  for (i = 0; i < m_; i += 1) {
+    for (j = 0; j < n_; j += 1) {
+      transpose.data_[j * m_ + i] = data_[i * n_ + j];
     }
   }
   return transpose;

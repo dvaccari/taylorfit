@@ -6,9 +6,7 @@
 #include "model.h"
 #include "../utils/utils.h"
 
-#include <iostream>
-
-const int THREADS = 100;
+const int THREADS = 1;
 
 std::mutex read_mtx;
 std::mutex write_mtx;

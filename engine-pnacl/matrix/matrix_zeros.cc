@@ -2,10 +2,10 @@
 #include <cstring>
 #include "matrix.h"
 
-Matrix *Matrix::zeros(int m, int n) {
-  Matrix *result = new Matrix(m, n);
+Matrix Matrix::zeros(int m, int n) {
+  Matrix result(m, n);
 
-  memset(result->_data, 0, m*n*sizeof(double));
+  memset(result.data_, 0, m*n*sizeof(double));
   return result;
 }
 

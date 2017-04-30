@@ -6,12 +6,18 @@
 #include "../statistics/statistics.h"
 
 // Decomposes A into U, e, and V
-void svd(Matrix *A, Matrix **U, Matrix **S, Matrix **V);
+void svd(const Matrix &A, Matrix **U, Matrix **S, Matrix **V);
 
 // Computes the coefficients for Ax = b using U, S, and V (from svd)
-Matrix *lstsq_svd(Matrix *A, Matrix *U, Matrix *S, Matrix *V, Matrix *b);
+Matrix lstsq_svd(
+  const Matrix &A,
+  const Matrix &U,
+  const Matrix &S,
+  const Matrix &V,
+  const Matrix &b
+);
 
 // Compute lstsq, with statistics
-stats_bundle lstsq(Matrix *X, Matrix *y);
+stats_bundle lstsq(const Matrix &X, const Matrix &y);
 
 #endif

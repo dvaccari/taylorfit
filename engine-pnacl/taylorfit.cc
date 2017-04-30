@@ -8,8 +8,7 @@
 #include "json/json.h"
 #include "utils/utils.h"
 #include "model/model.h"
-
-#include <iostream>
+#include "statistics/statistics.h"
 
 /// The Instance class.  One of these exists for each instance of your NaCl
 /// module on the web page.  The browser will ask the Module object to create
@@ -25,9 +24,11 @@ class TFEngineAdapter : public pp::Instance {
     Model *m;
     /// The constructor creates the plugin-side instance.
     /// @param[in] instance the handle to the browser-side plugin instance.
-    explicit TFEngineAdapter(PP_Instance instance) : pp::Instance(instance),
-    m(new Model())
-    {}
+    explicit TFEngineAdapter(PP_Instance instance)
+      : pp::Instance(instance),
+        m(new Model())
+        { Statistic::init(); }
+
     virtual ~TFEngineAdapter() {}
 
     /// Handler for messages coming in from the browser via postMessage()
@@ -62,13 +63,13 @@ class TFEngineAdapter : public pp::Instance {
           );
 
         } else if (message_type == "lstsq") {
-          PostMessage(pp::Var(writer.write(m->lstsq())));
+          PostMessage(writer.write(m->lstsq()));
         } else {
           PostMessage("{\"error\": \"Bad message type\"}");
           return;
         }
 
-        PostMessage(pp::Var(writer.write(m->get_candidates())));
+        PostMessage(writer.write(m->get_candidates()));
 
       } catch (std::string &e) {
         PostMessage("{\"error\":" + e + "}");

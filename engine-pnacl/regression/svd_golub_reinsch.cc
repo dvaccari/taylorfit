@@ -22,7 +22,7 @@ double pythag(double a, double b) {
  * @param {Matrix<m,n>} A Matrix to decompose (m >= n)
  * @return {[Matrix<m,m>, Matrix<m,n>, Matrix<n,n>]} [U, E, V] s.t. A = U*E*V
  */
-void svd(Matrix *A, Matrix **U, Matrix **S, Matrix **V) {
+void svd(const Matrix &A, Matrix **U, Matrix **S, Matrix **V) {
   double eps = std::numeric_limits<double>::epsilon();
   double tol = std::numeric_limits<double>::min() / eps;
 
@@ -34,19 +34,15 @@ void svd(Matrix *A, Matrix **U, Matrix **S, Matrix **V) {
   }
 
   int itmax = 50;
-  int m = A->m();
-  int n = A->n();
+  int m = A.m();
+  int n = A.n();
   double g = 0.0;
   double x = 0.0;
   std::vector<double> e(n, 0);
 
-  *S = new Matrix(n, 1);
-  *U = new Matrix(A);
-  *V = new Matrix(n, n);
-
-  double *q = (*S)->_data;
-  Matrix *u = *U;
-  Matrix *v = *V;
+  double *q = new double[n];
+  Matrix *u = new Matrix(A);
+  Matrix *v = new Matrix(n, n);
 
   int i, j, k, l, iteration, l1;
   double s, f, h, y, z, c;
@@ -60,44 +56,44 @@ void svd(Matrix *A, Matrix **U, Matrix **S, Matrix **V) {
     e[i] = g;
     s = 0.0;
     l = i + 1;
-    for (j = i; j < m; j++) s += u->_data[j*n+i] * u->_data[j*n+i];
+    for (j = i; j < m; j++) s += u->data_[j*n+i] * u->data_[j*n+i];
     if (s < tol) {
       g = 0.0;
     } else {
-      f = u->_data[i*n+i];
+      f = u->data_[i*n+i];
       if (f < 0.0) {
         g = std::sqrt(s);
       } else {
         g = -std::sqrt(s);
       }
       h = f*g-s;
-      u->_data[i*n+i] = f-g;
+      u->data_[i*n+i] = f-g;
       for (j = l; j < n; j++) {
         s = 0.0;
-        for (k = i; k < m; k++) s += u->_data[k*n+i] * u->_data[k*n+j];
+        for (k = i; k < m; k++) s += u->data_[k*n+i] * u->data_[k*n+j];
         f = s/h;
-        for (k = i; k < m; k++) u->_data[k*n+j] = u->_data[k*n+j] + f*u->_data[k*n+i];
+        for (k = i; k < m; k++) u->data_[k*n+j] = u->data_[k*n+j] + f*u->data_[k*n+i];
       }
     }
     q[i] = g;
     s = 0.0;
-    for (j = l; j < n; j++) s = s + u->_data[i*n+j] * u->_data[i*n+j];
+    for (j = l; j < n; j++) s = s + u->data_[i*n+j] * u->data_[i*n+j];
     if (s <= tol) {
       g = 0.0;
     } else {
-      f = u->_data[i*n+i+1];
+      f = u->data_[i*n+i+1];
       if (f < 0.0) {
         g = std::sqrt(s);
       } else {
         g = -std::sqrt(s);
       }
       h = f*g - s;
-      u->_data[i*n+i+1] = f-g;
-      for (j = l; j < n; j++) e[j] = u->_data[i*n+j]/h;
+      u->data_[i*n+i+1] = f-g;
+      for (j = l; j < n; j++) e[j] = u->data_[i*n+j]/h;
       for (j = l; j < m; j++) {
         s = 0.0;
-        for (k = l; k < n; k++) s = s + (u->_data[j*n+k] * u->_data[i*n+k]);
-        for (k = l; k < n; k++) u->_data[j*n+k] = u->_data[j*n+k]+(s*e[k]);
+        for (k = l; k < n; k++) s = s + (u->data_[j*n+k] * u->data_[i*n+k]);
+        for (k = l; k < n; k++) u->data_[j*n+k] = u->data_[j*n+k]+(s*e[k]);
       }
     }
     y = std::fabs(q[i]) + std::abs(e[i]);
@@ -108,19 +104,19 @@ void svd(Matrix *A, Matrix **U, Matrix **S, Matrix **V) {
   // accumulation of right hand transformations
   for (i = n-1; i > -1; i--) {
     if (g != 0) {
-      h = g*u->_data[i*n+i+1];
-      for (j = l; j < n; j++) v->_data[j*n+i] = u->_data[i*n+j]/h;
+      h = g*u->data_[i*n+i+1];
+      for (j = l; j < n; j++) v->data_[j*n+i] = u->data_[i*n+j]/h;
       for (j = l; j < n; j++) {
         s = 0.0;
-        for (k = l; k < n; k++) s += (u->_data[i*n+k]*v->_data[k*n+j]);
-        for (k = l; k < n; k++) v->_data[k*n+j] += (s*v->_data[k*n+i]);
+        for (k = l; k < n; k++) s += (u->data_[i*n+k]*v->data_[k*n+j]);
+        for (k = l; k < n; k++) v->data_[k*n+j] += (s*v->data_[k*n+i]);
       }
     }
     for (j = l; j < n; j++) {
-      v->_data[i*n+j] = 0.0;
-      v->_data[j*n+i] = 0.0;
+      v->data_[i*n+j] = 0.0;
+      v->data_[j*n+i] = 0.0;
     }
-    v->_data[i*n+i] = 1.0;
+    v->data_[i*n+i] = 1.0;
     g = e[i];
     l = i;
   }
@@ -128,20 +124,20 @@ void svd(Matrix *A, Matrix **U, Matrix **S, Matrix **V) {
   for (i = n-1; i > -1; i--) {
     l = i+1;
     g = q[i];
-    for (j = l; j < n; j++) u->_data[i*n+j] = 0.0;
+    for (j = l; j < n; j++) u->data_[i*n+j] = 0.0;
     if (g != 0.0) {
-      h = u->_data[i*n+i]*g;
+      h = u->data_[i*n+i]*g;
       for (j = l; j < n; j++)  {
         s = 0.0;
-        for (k = l; k < m; k++) s += (u->_data[k*n+i]*u->_data[k*n+j]);
+        for (k = l; k < m; k++) s += (u->data_[k*n+i]*u->data_[k*n+j]);
         f = s/h;
-        for (k = i; k < m; k++) u->_data[k*n+j] += (f*u->_data[k*n+i]);
+        for (k = i; k < m; k++) u->data_[k*n+j] += (f*u->data_[k*n+i]);
       }
-      for (j = i; j < m; j++) u->_data[j*n+i] = u->_data[j*n+i] / g;
+      for (j = i; j < m; j++) u->data_[j*n+i] = u->data_[j*n+i] / g;
     } else {
-      for (j = i; j < m; j++) u->_data[j*n+i] = 0.0;
+      for (j = i; j < m; j++) u->data_[j*n+i] = 0.0;
     }
-    u->_data[i*n+i] += 1.0;
+    u->data_[i*n+i] += 1.0;
   }
   // diagonalization of the bidiagonal form
   eps = eps*x;
@@ -178,10 +174,10 @@ void svd(Matrix *A, Matrix **U, Matrix **S, Matrix **V) {
           c = g/h;
           s = -f/h;
           for (j = 0; j < m; j++) {
-            y = u->_data[j*n+l1];
-            z = u->_data[j*n+i];
-            u->_data[j*n+l1] = y*c+z*s;
-            u->_data[j*n+i] = -y*s+z*c;
+            y = u->data_[j*n+l1];
+            z = u->data_[j*n+i];
+            u->data_[j*n+l1] = y*c+z*s;
+            u->data_[j*n+i] = -y*s+z*c;
           }
         }
       }
@@ -193,7 +189,7 @@ void svd(Matrix *A, Matrix **U, Matrix **S, Matrix **V) {
           // q[k] is made non-negative
           q[k] = -z;
           for (j = 0; j < n; j++) {
-            v->_data[j*n+k] = -v->_data[j*n+k];
+            v->data_[j*n+k] = -v->data_[j*n+k];
           }
         }
         break; // break out of iteration loop and move on to next k value
@@ -230,10 +226,10 @@ void svd(Matrix *A, Matrix **U, Matrix **S, Matrix **V) {
         h = y*s;
         y = y*c;
         for (j = 0; j < n; j++) {
-          x = v->_data[j*n+i-1];
-          z = v->_data[j*n+i];
-          v->_data[j*n+i-1] = x*c+z*s;
-          v->_data[j*n+i] = -x*s+z*c;
+          x = v->data_[j*n+i-1];
+          z = v->data_[j*n+i];
+          v->data_[j*n+i-1] = x*c+z*s;
+          v->data_[j*n+i] = -x*s+z*c;
         }
         z = pythag(f, h);
         q[i-1] = z;
@@ -242,10 +238,10 @@ void svd(Matrix *A, Matrix **U, Matrix **S, Matrix **V) {
         f = c*g+s*y;
         x = -s*g+c*y;
         for (j = 0; j < m; j++) {
-          y = u->_data[j*n+i-1];
-          z = u->_data[j*n+i];
-          u->_data[j*n+i-1] = y*c+z*s;
-          u->_data[j*n+i] = -y*s+z*c;
+          y = u->data_[j*n+i-1];
+          z = u->data_[j*n+i];
+          u->data_[j*n+i-1] = y*c+z*s;
+          u->data_[j*n+i] = -y*s+z*c;
         }
       }
       e[l] = 0.0;
@@ -254,6 +250,10 @@ void svd(Matrix *A, Matrix **U, Matrix **S, Matrix **V) {
       // goto test f splitting
     }
   }
+
+  *S = new Matrix(n, 1, q);
+  *U = u;
+  *V = v;
 
   //return [u, q, v];
 }

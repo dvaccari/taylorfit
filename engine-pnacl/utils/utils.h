@@ -74,7 +74,7 @@ inline Json::Value stats_bundle_to_json(const stats_bundle &stats) {
   for (auto it = stats.begin(); it != stats.end(); it++) {
     switch (it->second.type()) {
       case stat::MATRIX:
-        json[it->first] = it->second.matrix_val()->toJSON();
+        json[it->first] = it->second.matrix_val().toJSON();
         break;
 
       case stat::DOUBLE:

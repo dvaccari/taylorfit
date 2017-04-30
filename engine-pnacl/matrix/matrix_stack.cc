@@ -4,21 +4,21 @@
 /**
  * Horizontally stack matrices
  */
-Matrix *Matrix::operator|(const Matrix &other) {
-  if (_m != other.m()) {
+Matrix Matrix::operator|(const Matrix &other) {
+  if (m_ != other.m()) {
     throw "Matrix hstack failed (misalignment)";
   }
 
-  int newN = _n + other.n();
+  int newN = n_ + other.n();
   int i, j;
-  Matrix *stacked = new Matrix(_m, newN);
+  Matrix stacked(m_, newN);
 
-  for (i = 0; i < _m; i++) {
-    for (j = 0; j < _n; j++) {
-      stacked->_data[i*newN + j] = _data[i*_n + j];
+  for (i = 0; i < m_; i++) {
+    for (j = 0; j < n_; j++) {
+      stacked.data_[i*newN + j] = data_[i*n_ + j];
     }
     for (j = 0; j < other.n(); j++) {
-      stacked->_data[i*newN + _n + j] = other._data[i*other.n() + j];
+      stacked.data_[i*newN + n_ + j] = other.data_[i*other.n() + j];
     }
   }
 
@@ -29,18 +29,18 @@ Matrix *Matrix::operator|(const Matrix &other) {
 /**
  * Vertically stack matrices
  */
-Matrix *Matrix::operator||(const Matrix &other) {
-  if (_n != other.n()) {
+Matrix Matrix::operator||(const Matrix &other) {
+  if (n_ != other.n()) {
     throw "Matrix vstack failed (misalignment)";
   }
 
-  Matrix *stacked = new Matrix(_m + other.m(), _n);
+  Matrix stacked(m_ + other.m(), n_);
 
-  std::copy(_data, _data + (_m * _n), stacked->_data);
+  std::copy(data_, data_ + (m_ * n_), stacked.data_);
   std::copy(
-    other._data,
-    other._data + (other.m() * other.n()),
-    stacked->_data + (_m * _n)
+    other.data_,
+    other.data_ + (other.m() * other.n()),
+    stacked.data_ + (m_ * n_)
   );
 
   return stacked;

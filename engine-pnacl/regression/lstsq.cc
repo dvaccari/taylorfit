@@ -1,25 +1,26 @@
 
-#include "lstsq.h"
-#include <iostream>
 #include "json/json.h"
+#include "lstsq.h"
+#include "../statistics/statistics.h"
 
-stats_bundle lstsq(Matrix *X, Matrix *y) {
+stats_bundle lstsq(const Matrix &X, const Matrix &y) {
   Json::FastWriter writer;
   Matrix *U;
-  Matrix *S;
+  Matrix *w;
   Matrix *V;
 
-  svd(X, &U, &S, &V);
-  Matrix *beta = lstsq_svd(X, U, S, V, y);
+  svd(X, &U, &w, &V);
+  Matrix beta = lstsq_svd(X, *U, *w, *V, y);
 
   stats_bundle stats;
 
+  // Note: no scaling being done here
   stats["BHat"] = beta;
+  stats["weights"] = beta; // to conform with JS version
+  stats["X"] = X;
+  stats["y"] = y;
+  stats["VdivwSq"] = (*V / *w) ^ 2;
 
-  Matrix *bhat = stats["BHat"].matrix_val();
-
-  std::cout << writer.write(bhat->toJSON()) << std::endl;
-
-  return stats;
+  return Statistic::compute(stats);
 }
 
