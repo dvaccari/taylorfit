@@ -1,0 +1,47 @@
+#!/bin/bash
+
+usage() {
+  echo "Usage: $0 port [...OPTIONS]"
+  echo "  port    : port the app is being served on (localhost:port)"
+  echo ""
+  echo "OPTIONS:"
+  echo "  --debug : run pnacl debug modules for nacl-gdb"
+  echo "  --help  : show this message"
+  echo ""
+  echo "Opens a separate chrome session with devtools already open and"
+  echo "other settings ideal for developing with pnacl"
+}
+
+OPTS=`getopt -o "" -l debug,help -- "$@"`
+
+eval set -- "$OPTS"
+
+PORT=
+DEBUG=
+
+while true; do
+  case "$1" in
+    --debug)
+      DEBUG="debug" ; shift 1 ;;
+    --help)
+      usage ; exit 2 ;;
+    --)
+      shift 1 ;;
+    '')
+      break ;;
+    *)
+      PORT="$1" ; shift 1 ;;
+  esac
+done
+
+if [ -z "$PORT" ]; then
+  usage
+  exit 1
+fi
+
+google-chrome \
+  --user-data-dir=/tmp/temp-chrome-data \
+  --disable-pnacl-crash-throttling \
+  --auto-open-devtools-for-tabs \
+  "${DEBUG:+--enable-nacl-debug}" \
+  http://localhost:$PORT
