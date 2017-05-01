@@ -10,6 +10,7 @@ Model *Model::add_term(const part_set &parts) {
   }
 
   terms_.push_back(termpool_.get(parts));
+  fire("addTerm");
   return this;
 }
 
@@ -22,6 +23,7 @@ Model *Model::remove_term(const part_set &parts) {
       return this;
     }
   }
+  fire("removeTerm");
   return this;
 }
 

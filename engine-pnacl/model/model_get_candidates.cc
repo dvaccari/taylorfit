@@ -5,6 +5,7 @@
 
 #include "model.h"
 #include "../utils/utils.h"
+#include "../observable/progress.h"
 
 const int THREADS = 1;
 
@@ -13,7 +14,8 @@ std::mutex write_mtx;
 
 void compute_candidates(
     std::queue<Term*>         *terms,
-    std::vector<Json::Value>  *results
+    std::vector<Json::Value>  *results,
+    Progress                  *progress
 ) {
   stats_bundle  stats;
   Json::Value   result;
@@ -37,12 +39,13 @@ void compute_candidates(
 
     write_mtx.lock();
     results->push_back(result);
+    progress->tick();
     write_mtx.unlock();
   }
   return; // lel
 }
 
-Json::Value Model::get_candidates() {
+Json::Value Model::get_candidates(Observer<Progress> &observer) {
   std::queue<Term*>     candidates;
   std::vector<int>      cols = tf_utils::range(0, data_.at(DEFAULT_LABEL)->n());
   std::vector<part_set> loose_terms;
@@ -55,10 +58,14 @@ Json::Value Model::get_candidates() {
     candidates.push(termpool_.get(p));
   }
 
+  // Set progress to nil
+  Progress p(candidates.size());
+  p.on_progress(observer);
+
   std::thread pool[THREADS];
 
   for (int i = 0; i < THREADS; i++) {
-    pool[i] = std::thread(compute_candidates, &candidates, &result);
+    pool[i] = std::thread(compute_candidates, &candidates, &result, &p);
   }
 
   for (int i = 0; i < THREADS; i++) {

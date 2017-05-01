@@ -70,7 +70,11 @@
     function handleMessage(message_event) {
       let response = message_event.data
         .replace(/nan/g, 'null')       // TODO: represent NaN somehow
-        .replace(/inf/g, '1.79e+308'); // TODO: represent infinity somehow
+        .replace(/inf/g, '1.79e+308')  // TODO: represent infinity somehow
+
+        // work-around because the json writer writes (double) numbers poorly
+        .replace(/(\d+)\.([,\]\} ])/g, '$1.0$2');
+
 
       try {
         console.debug("[Engine]:", JSON.parse(response));

@@ -1,5 +1,5 @@
-#ifndef _MODEL_H_
-#define _MODEL_H_
+#ifndef _TF_MODEL_H_
+#define _TF_MODEL_H_
 
 #include <vector>
 #include <unordered_map>
@@ -11,6 +11,8 @@
 #include "../matrix/matrix.h"
 #include "combos.h"
 #include "termpool.h"
+#include "../observable/observable.h"
+#include "../observable/progress.h"
 
 #define DEFAULT_LABEL "fit"
 
@@ -22,7 +24,7 @@ class TermPool;
 struct part;
 typedef std::vector<part> part_set;
 
-class Model {
+class Model : public Observable<Model> {
   public:
     Model()   : dependent_(0),
                 exponents_({ 1 }),
@@ -32,14 +34,16 @@ class Model {
 
     Model              *set_data(const pp::VarArray&);
     Model              *set_data(const pp::VarArray&, const std::string&);
-    Model              *set_multiplicands(int);
     Model              *set_exponents(const pp::VarArray&);
+    Model              *set_multiplicands(int);
+    Model              *set_dependent(int);
     Model              *set_lags(const pp::VarArray&);
 
     Model              *add_term(const part_set&);
     Model              *remove_term(const part_set&);
+    void                clear() { terms_.clear(); }
 
-    Json::Value         get_candidates();
+    Json::Value         get_candidates(Observer<Progress>&);
     Json::Value         lstsq();
 
     Matrix             &data(std::string) const;

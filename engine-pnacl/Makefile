@@ -25,7 +25,8 @@ SOURCES = taylorfit.cc \
           $(wildcard model/*.cc) \
           $(wildcard matrix/*.cc) \
           $(wildcard regression/*.cc) \
-          $(wildcard statistics/*.cc)
+          $(wildcard statistics/*.cc) \
+          $(wildcard observable/*.cc)
 
 # The PNaCl toolchain adds -O2 by default, but it kills some debug symbols
 POSIX_CFLAGS := $(filter-out -O2,$(POSIX_CFLAGS))
