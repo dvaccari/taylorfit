@@ -29,12 +29,14 @@ tf-pager(params="source:source,result:result")
             span(data-bind="text:name||'x'")
 
             // ko ifnot:name
-            | (
-            sub(data-bind="text:index")
-            | )
+            sub
+              span(data-bind="text:index")
+              span &nbsp;
             // /ko
-            // ko if:$parents[1].show_lags || lag
-            sub(data-bind="text:lag || 0")
+            // ko if:$parents[1].show_lags() || lag
+            sub
+              span lag
+              span(data-bind="text:lag || 0")
             // /ko
           // ko if:exp !== 1
           sup(data-bind="text:exp")
