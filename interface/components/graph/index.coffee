@@ -25,11 +25,17 @@ ko.components.register "tf-graph",
           rows: [["x", "y"]].concat data() or [ ]
         axis:
           x:
-            label: params.xlabel
+            label:
+              text: params.xlabel
+              position: "outer-center"
             tick:
               fit: false
+              count: 8
+              format: Math.round
           y:
-            label: params.ylabel
+            label:
+              text: params.ylabel
+              position: "outer-middle"
         legend:
           show: false
         tooltip:

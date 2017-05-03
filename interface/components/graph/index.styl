@@ -6,14 +6,21 @@ tf-graph
   height 200px
   display inline-block
 
-  .c3 path, .c3 line
-    fill none
-    stroke black
+  .c3
+    svg
+      overflow visible !important
 
-  .c3-tooltip-container
-    background white
-    padding 2px 4px
-    box-shadow 0 0 0 1px rgba(black, 0.3)
-    border-radius 3px
-    position relative
-    transform translateX(-20px)
+    .c3-axis
+      clip-path unset !important
+
+    path, line
+      fill none
+      stroke black
+
+    .c3-tooltip-container
+      background white
+      padding 2px 4px
+      box-shadow 0 0 0 1px rgba(black, 0.3)
+      border-radius 3px
+      position relative
+      transform translateX(-20px)
