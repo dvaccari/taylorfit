@@ -36,6 +36,11 @@ ko.components.register "tf-graph",
             label:
               text: params.ylabel
               position: "outer-middle"
+        grid:
+          y:
+            lines: [
+              value: 0
+            ]
         legend:
           show: false
         tooltip:
