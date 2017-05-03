@@ -43,6 +43,9 @@ module.exports = class Model
     unless @fit()
       throw new Error "model: fit data not defined"
 
+    document.title = "TF - #{@fit().name()}"
+    @fit.subscribe ( next ) ->
+      document.title = "TF - #{next.name()}"
     @fit().rows.subscribe init = ( next ) =>
       return unless next.length
       adapter.setData next
