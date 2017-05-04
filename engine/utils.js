@@ -11,12 +11,18 @@ function pad(width, val) {
 }
 
 
-module.exports.range = (start, end) => {
+let range = module.exports.range = (start, end) => {
   if (start >= end) {
     return [];
   }
   return Array(end - start).join(' ').split(' ').map((_, i) => i + start);
 };
+
+let zeros = module.exports.zeros = (n) =>
+      Array(n).join(' ').split(' ').map(() => 0);
+
+let sum = module.exports.sum = (arr) =>
+      arr.reduce((tot, curr) => tot + curr);
 
 module.exports.convertRange = (str, length) => {
   var range, start, end;
@@ -64,9 +70,9 @@ module.exports.formatNum = (leftwidth, rightwidth, val) => {
   return repr;
 };
 
-module.exports.padAll = (lwidth, str) => {
+let padAll = module.exports.padAll = (lwidth, str) => {
   if (Array.isArray(str)) {
-    return str.map((s) => module.exports.padAll(lwidth + s.length, s));
+    return str.map((s) => padAll(lwidth + s.length, s));
   } else if (typeof str === 'string') {
     return str.split('\n').map((s) => pad(lwidth + s.length, s)).join('\n');
   }
@@ -84,6 +90,34 @@ let clone = module.exports.clone = (obj) => {
   let newObj = {};
   Object.keys(obj).forEach((key) => newObj[key] = clone(obj[key]));
   return newObj;
+};
+
+let split = module.exports.split = (arr, n) => {
+  let results = range(0, n).map(() => []);
+  let i;
+
+  for (i = 0; i < arr.length; i += 1) {
+    results[i % n].push(arr[i]);
+  }
+  return results;
+};
+
+let splitToSize = module.exports.splitToSize = (arr, n) => {
+  let results = [];
+  let subset;
+  let i;
+
+  for (i = 0, subset = []; i < arr.length; i += 1) {
+    subset.push(arr[i]);
+    if ((i + 1) % n === 0) {
+      results.push(subset);
+      subset = [];
+    }
+  }
+  if (i % n !== 0) {
+    results.push(subset);
+  }
+  return results;
 };
 
 module.exports.join = (arr) => [].concat.apply([], arr);

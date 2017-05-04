@@ -84,7 +84,6 @@ let generateTerms = function(features, exponents, multipliers, lags) {
     (i) => utils.join(exponents.map(
       (e) => [0].concat(lags).map(
         (l) => [i, e, l]))))
-
     , combosForMults = utils.join(multipliers.map(
       (m) => combinationsFromBins(bins, m)));
 

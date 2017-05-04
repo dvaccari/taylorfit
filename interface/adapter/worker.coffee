@@ -29,7 +29,10 @@ module.exports = new class WorkerAdapter extends ME
       console.debug "Worker/res [error]", error
       @fire "error", error
 
-    @worker.onmessage = ( { data: { type, data } } ) =>
+    @worker.onmessage = ( { data: message } ) =>
+      if message._subworker
+        return
+      { type, data } = message
       console.debug "Worker/res [#{type}]", data
       @fire type, data
 

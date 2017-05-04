@@ -94,6 +94,16 @@ class Term {
     }
   }
 
+  X(subset=this[_model].DEFAULT_SUBSET) {
+    let lag = Math.max(this[_model].highestLag(), this.lag);
+    return this[_model].X(subset).hstack(this.col(subset)).lo(lag);
+  }
+
+  y(subset=this[_model].DEFAULT_SUBSET) {
+    let lag = Math.max(this[_model].highestLag(), this.lag);
+    return this[_model].y(subset).lo(lag);
+  }
+
   clearCache() {
     this[_cache].col = {};
     return this;

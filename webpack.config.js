@@ -10,7 +10,9 @@ const CONTEXT = rel('.');
 const ENGINE = rel('./engine');
 const INTERFACE = rel('./interface');
 const BUILD = rel('./build');
-const WORKER = rel('./engine/worker');
+const WORKER = rel('./engine/worker/index.js');
+const SUBWORKERS = rel('./engine/worker/subworkers.js');
+const CANDIDATE_WORKER = rel('./engine/worker/candidate-worker.js');
 
 module.exports = {
   target: 'web',
@@ -32,7 +34,9 @@ module.exports = {
   },
   entry: {
     'interface': INTERFACE,
-    'engine-worker': WORKER
+    'engine-worker': WORKER,
+    'candidate-worker': CANDIDATE_WORKER,
+    'subworkers': [SUBWORKERS]
   },
   output: {
     path: BUILD,

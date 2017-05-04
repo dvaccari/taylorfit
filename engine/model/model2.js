@@ -8,6 +8,8 @@ const Observable      = require('../observable');
 const TermPool        = require('./termpool');
 const combos          = require('./combos');
 
+const CandidateWorker = require('./CandidateWorker');
+
 const _data           = Symbol('data');
 const _exponents      = Symbol('exponents');
 const _multiplicands  = Symbol('multiplicands');
@@ -16,9 +18,14 @@ const _dependent      = Symbol('dependent');
 const _subsets        = Symbol('subsets');
 const _terms          = Symbol('terms');
 const _cache          = Symbol('cache');
+const _cand_workers   = Symbol('candWorkers');
 
 const INTERCEPT       = [[0, 0, 0]];
 const DEFAULT_LABEL   = 'fit';
+
+const N_CANDIDATE_WORKERS     = 8;
+const CANDIDATE_WORKER_SCRIPT = "candidate-worker.js";
+
 
 class Model extends Observable {
 
@@ -37,6 +44,10 @@ class Model extends Observable {
     this[_subsets][DEFAULT_LABEL] = [];
 
     this[_cache] = { X: {}, y: {}, data: {} };
+
+    this[_cand_workers] = utils
+      .range(0, N_CANDIDATE_WORKERS)
+      .map(() => new CandidateWorker(CANDIDATE_WORKER_SCRIPT));
 
     this[_terms] = [];
     this.termpool = new TermPool(this);
@@ -154,7 +165,7 @@ class Model extends Observable {
     return this[_terms].slice();
   }
 
-  getCandidates() {
+  getCandidates(useWorkers=false) {
     this.fire('getCandidates.start');
 
     let independentCols = utils.join([
@@ -178,27 +189,55 @@ class Model extends Observable {
     [].push.apply(candidates, this[_lags].map(
       (lag) => this.termpool.get([[this[_dependent], 1, lag]])));
 
+    let results;
+
     // For each candidate, get the stats for it alongside terms in the model
-    let results = candidates
-      .filter((cand) => !this[_terms].includes(cand))
-      .map((candidate, i) => {
-        this.fire('getCandidates.each', { curr: i, total: candidates.length });
 
-        try {
-          let stats = candidate.getStats();
-          return {
-            term: candidate.valueOf(),
-            coeff: stats.coeff,
-            stats
-          };
-        } catch (e) {
-          return null;
-        }
-      })
-      .filter((cand) => cand != null);
+    // If using workers, distribute the terms among them
+    if (useWorkers) {
+      candidates = candidates.filter((cand) => !this[_terms].includes(cand));
+      let groups = utils.split(candidates, this[_cand_workers].length);
 
-    this.fire('getCandidates.end');
-    return results;
+      let progress = utils.zeros(this[_cand_workers].length);
+
+      let onProgress = (workerId, numFinished) => {
+        progress[workerId] = numFinished;
+        this.fire('getCandidates.each', {
+          curr: utils.sum(progress),
+          total: candidates.length
+        });
+      };
+
+      return Promise.all(groups.map(
+        (cands, i) => this[_cand_workers][i].compute(cands, onProgress)
+      )).then((candidates) => {
+        this.fire('getCandidates.end');
+        return utils.join(candidates);
+      });
+
+    // Otherwise, do it all on this thread
+    } else {
+      results = candidates
+        .filter((cand) => !this[_terms].includes(cand))
+        .map((candidate, i) => {
+          this.fire('getCandidates.each', { curr: i, total: candidates.length });
+
+          try {
+            let stats = candidate.getStats();
+            return {
+              term: candidate.valueOf(),
+              coeff: stats.coeff,
+              stats
+            };
+          } catch (e) {
+            return null;
+          }
+        })
+        .filter((cand) => cand != null);
+
+      this.fire('getCandidates.end');
+    }
+    return Promise.resolve(results);
   }
 
   getModel(testLabel=DEFAULT_LABEL) {

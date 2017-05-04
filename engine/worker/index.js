@@ -1,6 +1,10 @@
 /*global onmessage, postMessage*/
 'use strict';
 
+require('./subworkers');
+
+const USE_MANY_WORKERS = true;
+
 const statsMeta = require('../statistics/metadata.json');
 const Model     = require('../model/model2');
 const m         = new Model();
@@ -44,7 +48,8 @@ let subscribeToChanges = (updateNow = true) => {
     'setData', 'setExponents', 'setMultiplicands', 'setDependent',
     'setLags', 'addTerm', 'removeTerm', 'clear', 'subset'
   ], () => {
-    postMessage({ type: 'candidates', data: m.getCandidates() });
+    m.getCandidates(USE_MANY_WORKERS)
+     .then((cands) => postMessage({ type: 'candidates', data: cands }));
 
     m.labels.forEach((label) =>
       postMessage({ type: `model:${label}`, data: m.getModel(label) })
@@ -62,6 +67,11 @@ subscribeToChanges(false);
 
 
 onmessage = function (e) {
+  // If it's for a sub-worker, just ignore it
+  if (e.data._from != null) {
+    return;
+  }
+
   let type = e.data.type
     , data = e.data.data
     , temp;
