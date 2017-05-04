@@ -25,7 +25,7 @@
   { "id": "AIC", "sort": ">" },
   { "id": "BIC", "sort": ">" },
 
-  { "id": "F", "sort": ">" },
+  { "id": "F", "sort": "<" },
   { "id": "pF", "displayName": "p(F)", "sort": ">" },
 
   { "id": "t", "sort": "|<|", "candidateOnly": true, "default": true },
