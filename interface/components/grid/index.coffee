@@ -1,30 +1,5 @@
 
 require "./index.styl"
-Papa = require "papaparse"
-
-read = ( file ) ->
-  new Promise ( accept, reject ) ->
-    Papa.parse file,
-      dynamicTyping: true
-      complete: ( { errors, data } ) ->
-        if errors.length
-          reject errors
-        else
-          data.pop() # remove \n
-          data.name = file.name
-          data.headless = not data[0].every ( value ) ->
-            (typeof value is "string")# and (value isnt "")
-          accept data
-
-write = ( table ) ->
-  Papa.unparse table
-
-once = false
-once_guard = ( ) ->
-  return true if once
-  once = true
-  setTimeout -> once = false
-  return false
 
 ko.components.register "tf-grid",
   template: do require "./index.pug"
@@ -44,6 +19,7 @@ ko.components.register "tf-grid",
 
     model = params.model() # now static
     @dependent  = model.dependent
+    @results    = model.result
     @cols       = model[@table]().cols
     @rows       = model[@table]().rows
 
