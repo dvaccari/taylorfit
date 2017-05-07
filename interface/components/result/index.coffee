@@ -15,7 +15,10 @@ ko.components.register "tf-result",
     @graphdata = ko.observable @result()?.graphdata
 
     @result.subscribe ( next ) =>
-      @graphdata next.graphdata
+      if not next?.terms.length
+        @result null
+      else
+        @graphdata next.graphdata
 
 
     return this

@@ -1,4 +1,4 @@
-// ko if:result
+// ko if:(result && result())
 .table-wrapper
   table.terms
     thead
@@ -6,8 +6,8 @@
         th(colspan="3") Current Model
       tr
         th Term
-        // ko each: result().terms[0].stats
-        th(data-bind="text:(allstats().find((x) => x.id === $key) || {name:null}).name")
+        // ko foreach: allstats().filter((x) => x.candidate)
+        th(data-bind="text: name")
         // /ko
     tbody
       // ko foreach: result().terms
@@ -59,7 +59,7 @@
   tf-graph(params="data:graphdata,ylabel:'Residuals',xlabel:'Predicted Values'")
 
 // /ko
-// ko ifnot:result
+// ko ifnot:(result && result())
 span.nomodel Select candidate terms to create a model.
 // /ko
 

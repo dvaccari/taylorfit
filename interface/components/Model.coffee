@@ -106,15 +106,14 @@ module.exports = class Model
       , 100
 
     adapter.on "model:fit", ( model ) =>
-      if model.terms.length
-        setTimeout =>
-          @result {
-            terms: mapper model.terms, "remove"
-            stats: model.stats
-            predicted: model.predicted
-            graphdata: model.graphdata
-          }
-        , 100
+      setTimeout =>
+        @result {
+          terms: mapper model.terms, "remove"
+          stats: model.stats
+          predicted: model.predicted
+          graphdata: model.graphdata
+        }
+      , 100
 
     adapter.on "model:test", ( model ) =>
       # handle test model
