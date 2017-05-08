@@ -3,52 +3,58 @@
 
 require('./subworkers');
 
-const USE_MANY_WORKERS = true;
-
 const statsMeta = require('../statistics/metadata.json');
-const Model     = require('../model/model2');
-const m         = new Model();
+const Model     = require('../model/model2.js');
 
-var log = function () {
+const getCandidateProgressInterval  = 50;
+let   onGetCandidateId              = 0;
+let   m         = initializeModel();
+
+function log() {
   console.debug('[Engine]:', ...arguments);
 };
 
-m.on('getCandidates.start', () => postMessage({
-  type: 'progress.start',
-  data: {}
-}));
+function initializeModel() {
+  let m = new Model();
 
-m.on('getCandidates.start', () => console.time('getCandidates'));
-m.on('getCandidates.end', () => console.timeEnd('getCandidates'));
+  m.on('getCandidates.start', () => postMessage({
+    type: 'progress.start',
+    data: {}
+  }));
 
-// Subscribe to progress changes
-let getCandidateProgressInterval = 50;
-let onGetCandidateId = m.on('getCandidates.each', (data) => {
-  if (data.curr % getCandidateProgressInterval === 0) {
-    postMessage({
-      type: 'progress',
-      data: { curr: data.curr, total: data.total }
-    });
-  }
-});
+  m.on('getCandidates.start', () => console.time('getCandidates'));
+  m.on('getCandidates.end', () => console.timeEnd('getCandidates'));
 
-m.on('getCandidates.end', () => postMessage({
-  type: 'progress.end',
-  data: {}
-}));
+  // Subscribe to progress changes
+  onGetCandidateId = m.on('getCandidates.each', (data) => {
+    if (data.curr % getCandidateProgressInterval === 0) {
+      postMessage({
+        type: 'progress',
+        data: { curr: data.curr, total: data.total }
+      });
+    }
+  });
 
-m.on('error', (error) => postMessage({ type: 'error', data: error }));
+  m.on('getCandidates.end', () => postMessage({
+    type: 'progress.end',
+    data: {}
+  }));
+
+  m.on('error', (error) => postMessage({ type: 'error', data: error }));
+
+  return m;
+}
 
 // Whenever a parameter changes, let's update the UI
 let subscriptionIds = [];
-let subscribeToChanges = (updateNow = true) => {
+let subscribeToChanges = (m, updateNow = true) => {
   m.removeListener(subscriptionIds);
 
   subscriptionIds = m.on([
     'setData', 'setExponents', 'setMultiplicands', 'setDependent',
     'setLags', 'addTerm', 'removeTerm', 'clear', 'subset'
   ], () => {
-    m.getCandidates(USE_MANY_WORKERS)
+    m.getCandidates()
      .then((cands) => postMessage({ type: 'candidates', data: cands }));
 
     m.labels.forEach((label) =>
@@ -60,10 +66,10 @@ let subscribeToChanges = (updateNow = true) => {
     m.fire('setData');
   }
 };
-let unsubscribeToChanges = () => m.removeListener(subscriptionIds);
+let unsubscribeToChanges = (m) => m.removeListener(subscriptionIds);
 
 // By default, subscribe
-subscribeToChanges(false);
+subscribeToChanges(m, false);
 
 
 onmessage = function (e) {
@@ -94,25 +100,7 @@ onmessage = function (e) {
   // this one's special
   case 'setData':
     m[type](data.data, data.label);
-    break;
-
-  // XXX: DEPRECATED
-  case 'update':
-    if (data.dataset != null) {
-      m.setData(data.dataset);
-    }
-    if (data.exponents != null) {
-      m.setExponents(data.exponents);
-    }
-    if (data.multiplicands != null) {
-      m.setMultiplicands(data.multiplicands);
-    }
-    if (data.dependent != null) {
-      m.setDependent(data.dependent);
-    }
-    if (data.lags != null) {
-      m.setLags(data.lags);
-    }
+    console.warn('set data', data.label, data.data);
     break;
 
   case 'getTerms':
@@ -124,16 +112,19 @@ onmessage = function (e) {
     break;
 
   case 'subscribeToChanges':
-    subscribeToChanges();
+    subscribeToChanges(m);
     break;
 
   case 'unsubscribeToChanges':
-    unsubscribeToChanges();
+    unsubscribeToChanges(m);
     break;
 
   case 'subset':
     m.subset(data.label, data.start, data.end);
     break;
+
+  case 'reset':
+    m = new Model();
 
   default:
     postMessage({ type: 'error', data: 'Invalid type: ' + type });
