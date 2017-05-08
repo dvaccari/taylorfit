@@ -4,7 +4,7 @@
 require('./subworkers');
 
 const statsMeta = require('../statistics/metadata.json');
-const Model     = require('../model/model2.js');
+const Model     = require('../model');
 
 const getCandidateProgressInterval  = 50;
 let   onGetCandidateId              = 0;

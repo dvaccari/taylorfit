@@ -1,6 +1,12 @@
 /*global Worker*/
 
-var i = 0;
+const { FIT_LABEL, CROSS_LABEL }  = require('../labels.json');
+const CandidateWorkerScript       = require('../worker/candidate-worker.js');
+
+let counter = (() => {
+  let next = 0;
+  return () => next += 1;
+})();
 
 function unwrapMatrix(matrix) {
   return {
@@ -10,18 +16,18 @@ function unwrapMatrix(matrix) {
   };
 }
 
-
 class CandidateWorker {
 
-  constructor(scriptName) {
-    if (!Worker) {
+  constructor(model) {
+    if (typeof Worker === 'undefined' || !Worker) {
       throw new Error('Web workers unavailable');
     }
-    this.id = i++;
-    this.worker = new Worker(scriptName);
+    this.id = counter();
+    this.worker = new CandidateWorkerScript();
+    this.model = model;
   }
 
-  compute(terms, update) {
+  compute(candidates, update) {
     return new Promise((resolve, reject) => {
       this.worker.onmessage = ({ data: { data, type } }) => {
         switch (type) {
@@ -31,7 +37,7 @@ class CandidateWorker {
 
         case 'result':
           resolve(data.map((stats, i) => ({
-            term: terms[i].valueOf(),
+            term: candidates[i].valueOf(),
             coeff: stats.coeff,
             stats
           })));
@@ -47,16 +53,44 @@ class CandidateWorker {
 
       let transferables = [];
 
-      let transformedTerms = terms.map((term) => {
-        let X = unwrapMatrix(term.X());
-        let y = unwrapMatrix(term.y());
+      let fit = {
+        X: unwrapMatrix(this.model.X(FIT_LABEL)),
+        y: unwrapMatrix(this.model.y(FIT_LABEL))
+      };
 
-        transferables.push(X.data, y.data);
+      let cross;
+      try {
+        cross = {
+          X: unwrapMatrix(this.model.X(CROSS_LABEL)),
+          y: unwrapMatrix(this.model.y(CROSS_LABEL))
+        };
+      } catch (e) {
+        cross = fit;
+      }
 
-        return { X, y };
+      console.time('TERMINATRIX' + this.id);
+      let unwrappedCandidates = candidates.map((term) => {
+        let fit = unwrapMatrix(term.col(FIT_LABEL));
+        let lag = Math.max(this.model.highestLag(), term.lag);
+        let cross;
+
+        try {
+          cross = unwrapMatrix(term.col(CROSS_LABEL));
+        } catch (e) {
+          cross = fit;
+        }
+
+        transferables.push(fit.data, cross.data);
+
+        return { fit, lag, cross };
       });
+      console.timeEnd('TERMINATRIX' + this.id);
 
-      this.worker.postMessage(transformedTerms, transferables);
+      this.worker.postMessage({
+        fit,
+        cross,
+        candidates: unwrappedCandidates
+      }, transferables);
     });
   }
 
