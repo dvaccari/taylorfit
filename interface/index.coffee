@@ -1,6 +1,7 @@
 
 # --- include core libraries
 require "core-js"
+require "../engine/worker/subworkers.js"
 
 # --- choose correct adapter
 # TODO: make selection based on build model
