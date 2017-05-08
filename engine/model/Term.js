@@ -1,28 +1,28 @@
 'use strict';
 
-const lstsq   = require('../regression').lstsq;
-const Matrix  = require('../matrix');
-const bi_md5  = require('blueimp-md5');
-
-const md5     = (x) => bi_md5(x);
-
+const CacheMixin  = require('./CacheMixin');
+const lstsq       = require('../regression').lstsq;
+const Matrix      = require('../matrix');
+const {
+  FIT_LABEL,
+  CROSS_LABEL
+}                 = require('../labels.json');
 
 /**
  * Private members
  *
  * @private
  */
-const _parts  = Symbol('parts');
-const _model  = Symbol('model');
-const _cache  = Symbol('cache');
+const _parts      = Symbol('parts');
+const _model      = Symbol('model');
 
 
 /**
- * Term is a combination of input columns and exponents, such as x^2*y^3.
+ * Term is a combination of input columns, exponents, and lags, such as x^2*y^3.
  *
  * @class Term
  */
-class Term {
+class Term extends CacheMixin() {
 
   /**
    * Creates a new Term.
@@ -37,6 +37,7 @@ class Term {
    *                                          column
    */
   constructor(model, parts) {
+    super();
     if (!parts.every(Array.isArray)) {
       throw new TypeError('Part does not match: [col, exp (,lag)]');
     }
@@ -52,9 +53,6 @@ class Term {
     });
 
     this[_model] = model;
-
-    this[_cache] = { col: {} };
-
     this.isIntercept = parts[0][0] === 0 &&
                        parts[0][1] === 0 &&
                        parts.length === 1;
@@ -72,20 +70,33 @@ class Term {
    *
    * @return {t: number, mse: number} Statistics for the regression
    */
-  getStats(subset=this[_model].DEFAULT_SUBSET) {
+  getStats(subset=this[_model].DEFAULT_) {
     let lag = Math.max(this[_model].highestLag(), this.lag)
-      , XLagged = this[_model].X(subset).hstack(this.col(subset)).lo(lag)
-      , yLagged = this[_model].y(subset).lo(lag)
-      , theStats;
+      , XLagged = this.X(subset)
+      , yLagged = this.y(subset)
+      , stats;
 
     try {
-      theStats = lstsq(XLagged, yLagged);
-      theStats.coeff = theStats.weights.get(0, theStats.weights.shape[0]-1);
-      theStats.t = theStats.t.get(0, theStats.t.shape[0]-1);
-      theStats.pt = theStats.pt.get(0, theStats.pt.shape[0]-1);
-      delete theStats.weights;
+      // If we have cross data, use that to compute stats on lstsq
+      // Otherwise, just use the fit data
+      if (this[_model].labels.includes(CROSS_LABEL)) {
+        stats = lstsq(
+          XLagged,
+          yLagged,
+          null,
+          this.X(CROSS_LABEL),
+          this.y(CROSS_LABEL)
+        );
+      } else {
+        stats = lstsq(XLagged, yLagged);
+      }
 
-      return theStats;
+      stats.coeff = stats.weights.get(0, stats.weights.shape[0]-1);
+      stats.t = stats.t.get(0, stats.t.shape[0]-1);
+      stats.pt = stats.pt.get(0, stats.pt.shape[0]-1);
+      delete stats.weights;
+
+      return stats;
     } catch (e) {
       console.error(e);
       console.log(this.valueOf());
@@ -94,19 +105,29 @@ class Term {
     }
   }
 
-  X(subset=this[_model].DEFAULT_SUBSET) {
+  X(subset=FIT_LABEL) {
     let lag = Math.max(this[_model].highestLag(), this.lag);
-    return this[_model].X(subset).hstack(this.col(subset)).lo(lag);
+
+    try {
+      return this[_model].X(subset).hstack(this.col(subset)).lo(lag);
+    } catch (e) {
+      if (subset !== FIT_LABEL) {
+        return this.X(FIT_LABEL);
+      }
+      throw e;
+    }
   }
 
-  y(subset=this[_model].DEFAULT_SUBSET) {
+  y(subset=FIT_LABEL) {
     let lag = Math.max(this[_model].highestLag(), this.lag);
-    return this[_model].y(subset).lo(lag);
-  }
-
-  clearCache() {
-    this[_cache].col = {};
-    return this;
+    try {
+      return this[_model].y(subset).lo(lag);
+    } catch (e) {
+      if (subset !== FIT_LABEL) {
+        return this.y(FIT_LABEL);
+      }
+      throw e;
+    }
   }
 
   /**
@@ -135,29 +156,31 @@ class Term {
    *
    * @return {Matrix<n,1>} n x 1 Matrix -- polynomial combo of columns in term
    */
-  col(subset=this[_model].DEFAULT_SUBSET) {
-    if (this[_cache].col[subset] != null) {
-      return this[_cache].col[subset];
-    }
+  col(subset=FIT_LABEL) {
+    try {
+      let data = this[_model].data(subset)
+        , prod = Matrix.zeros(data.shape[0], 1).add(1)
+        , i, col;
 
-    let data = this[_model].data(subset)
-      , prod = Matrix.zeros(data.shape[0], 1).add(1)
-      , i, col;
+      for (i = 0; i < this[_parts].length; i += 1) {
+        col = data.col(this[_parts][i][0]);
 
-    for (i = 0; i < this[_parts].length; i += 1) {
-      col = data.col(this[_parts][i][0]);
+        // Check for negative exponent & potential 0 value
+        if (col.max() * col.min() <= 0 && this[_parts][i][1] < 0) {
+          throw new Error(`Divide by zero error for column ${this[_parts][i][0]}`);
+        }
 
-      // Check for negative exponent & potential 0 value
-      if (col.max() * col.min() <= 0 && this[_parts][i][1] < 0) {
-        throw new Error(`Divide by zero error for column ${this[_parts][i][0]}`);
+        prod = prod.dotMultiply(col.dotPow(this[_parts][i][1])
+                                  .shift(this[_parts][i][2]));
       }
 
-      prod = prod.dotMultiply(col.dotPow(this[_parts][i][1])
-                                 .shift(this[_parts][i][2]));
+      return prod;
+    } catch (e) {
+      if (subset !== FIT_LABEL) {
+        return this.col(FIT_LABEL);
+      }
+      throw e;
     }
-
-    this[_cache].col[subset] = prod;
-    return this[_cache].col[subset];
   }
 
   get lag() {
@@ -178,19 +201,11 @@ class Term {
   }
 
   static hash(term) {
-    term = term.valueOf().map((part) => {
-      if (part.length < 2) {
-        throw new TypeError('Part does not match: [col, exp (,lag)]');
-      }
-      if (part.length < 3) {
-        return part.concat(0);
-      }
-      return part.slice();
-    });
-
-    return md5(term.map(md5).sort().join());
+    return term.valueOf().map((part) => `(${part.toString()})`).toString();
   }
 
 }
+
+CacheMixin.cache(Term, 'col', [FIT_LABEL]);
 
 module.exports = Term;
