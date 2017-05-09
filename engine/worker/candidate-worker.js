@@ -1,6 +1,8 @@
 /*global postMessage, onmessage*/
 
-require('./subworkers');
+if (typeof window !== 'undefined') {
+  require('./subworkers');
+}
 
 const UPDATE_INTERVAL = 200;
 

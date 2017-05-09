@@ -1,6 +1,7 @@
 'use strict';
 
 const CacheMixin  = require('./CacheMixin');
+const statistics  = require('../statistics');
 const lstsq       = require('../regression').lstsq;
 const Matrix      = require('../matrix');
 const {
@@ -70,26 +71,18 @@ class Term extends CacheMixin() {
    *
    * @return {t: number, mse: number} Statistics for the regression
    */
-  getStats(subset=this[_model].DEFAULT_) {
-    let lag = Math.max(this[_model].highestLag(), this.lag)
-      , XLagged = this.X(subset)
-      , yLagged = this.y(subset)
-      , stats;
-
+  getStats() {
     try {
       // If we have cross data, use that to compute stats on lstsq
       // Otherwise, just use the fit data
-      if (this[_model].labels.includes(CROSS_LABEL)) {
-        stats = lstsq(
-          XLagged,
-          yLagged,
-          null,
-          this.X(CROSS_LABEL),
-          this.y(CROSS_LABEL)
-        );
-      } else {
-        stats = lstsq(XLagged, yLagged);
-      }
+      let regression = lstsq(this.X(FIT_LABEL), this.y(FIT_LABEL));
+
+      Object.assign(regression, {
+        X: this.X(CROSS_LABEL),
+        y: this.y(CROSS_LABEL)
+      });
+
+      let stats = statistics(regression);
 
       stats.coeff = stats.weights.get(0, stats.weights.shape[0]-1);
       stats.t = stats.t.get(0, stats.t.shape[0]-1);
@@ -99,8 +92,6 @@ class Term extends CacheMixin() {
       return stats;
     } catch (e) {
       console.error(e);
-      console.log(this.valueOf());
-      console.log(this.col());
       return NaN;
     }
   }
@@ -137,7 +128,11 @@ class Term extends CacheMixin() {
    * @return {boolean} True if the terms are equivalent, false otherwise
    */
   equals(other) {
-    other = other.valueOf();
+    other = other.valueOf().map((part) => {
+      part = part.concat(0);
+      part.length = 3;
+      return part;
+    });
     return Term.hash(other) === Term.hash(this);
   }
 
@@ -201,7 +196,9 @@ class Term extends CacheMixin() {
   }
 
   static hash(term) {
-    return term.valueOf().map((part) => `(${part.toString()})`).toString();
+    return term.valueOf().map(
+      (part) => `(${part.concat(0).slice(0, 3).toString()})`
+    ).toString();
   }
 
 }

@@ -24,12 +24,12 @@ module.exports = [
   Statistic('SSR', ['TSS', 'SSE'], ({TSS, SSE}) => TSS - SSE),
 
   Statistic('Vary', ['TSS', 'nd'], ({TSS, nd}) => TSS / (nd - 1)),
-  Statistic('MSR', ['SSR', 'np'], ({SSR, np}) => SSR / (np - 0)),
+  Statistic('MSR', ['SSR', 'np'], ({SSR, np}) => SSR / (np - 1)),
   Statistic('MSE', ['SSE', 'nd', 'np'], ({SSE, nd, np}) => SSE / (nd - np)),
   Statistic('Rsq', ['SSE', 'TSS'], ({SSE, TSS}) => 1 - (SSE / TSS)),
   Statistic('cRsq', ['Rsq'], ({Rsq}) => 1 - Rsq),
   Statistic('adjRsq', ['Rsq', 'np', 'nd'],
-    ({Rsq, nd, np}) => 1 - ((1 - Rsq)*(nd - 1) / (nd - np - 1))),
+    ({Rsq, nd, np}) => 1 - ((1 - Rsq)*(nd - 1) / (nd - np))),
   Statistic('F', ['MSR', 'MSE'], ({MSR, MSE}) => MSR / MSE),
 
   Statistic('AIC', ['MSE', 'np', 'nd'],
@@ -60,5 +60,5 @@ module.exports = [
     }),
 
   Statistic('pF', ['F', 'np', 'nd'],
-    ({F, np, nd}) => dist.pf(Math.abs(F), nd - np, np))
+    ({F, np, nd}) => dist.pf(Math.abs(F), np, nd - np))
 ];

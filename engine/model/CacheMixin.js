@@ -12,18 +12,23 @@ const CacheMixin = (superclass=class{}) => class extends superclass {
   uncache(functionName, ...args) {
     let argsKey = args.toString();
 
-    if (this[_cache][functionName] == null) {
-      return this;
-    }
-
     if (functionName == null) {
       this[_cache] = {};
       return this;
     }
 
+    if (this[_cache][functionName] == null) {
+      return this;
+    }
+
+    if (args.length <= 0) {
+      this[_cache][functionName] = {};
+      return this;
+    }
+
     let { defaultArgs, originalLength } = this[functionName];
 
-    args = args.concat(defaultArgs);
+    args = args.concat(defaultArgs.slice(args.length));
     args.length = originalLength + defaultArgs.length;
 
     delete this[_cache][functionName][args.toString()];
@@ -52,7 +57,8 @@ CacheMixin.cache = (clazz, functionName, defaultArgs=[]) => {
 
   // Overwrite prototype definition with wrapper that caches results
   clazz.prototype[functionName] = function () {
-    let args = Array.prototype.slice.apply(arguments).concat(defaultArgs);
+    let args = Array.prototype.slice.apply(arguments)
+          .concat(defaultArgs.slice(arguments.length));
     args.length = originalFunction.length + defaultArgs.length;
 
     let argsKey = args.toString();

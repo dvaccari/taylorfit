@@ -36,6 +36,7 @@ class Model extends CacheMixin(Observable) {
     super();
 
     this[_data] = {};
+    this[_data][FIT_LABEL] = new Matrix(0, 0);
     this[_exponents] = [1];
 
     this[_multiplicands] = [1];
@@ -162,10 +163,7 @@ class Model extends CacheMixin(Observable) {
       , X = this.X().lo(highestLag)
       , y = this.y().lo(highestLag);
 
-    console.log(X.inspect());
-    console.log(y.inspect());
-
-    let stats = lstsq(X, y);
+    let stats = statistics(lstsq(X, y));
 
     // If the model we want is not the default label (fit data), compute lstsq
     // with whichever dataset is requested
@@ -178,8 +176,6 @@ class Model extends CacheMixin(Observable) {
     }
 
     let predicted = Array.from(stats.yHat.data);
-    console.warn(stats.t);
-    console.warn(stats.pt);
     let terms = this[_terms].map((term, i) => ({
       term: term.valueOf(),
       coeff: stats.weights.get(i, 0),
@@ -237,6 +233,14 @@ class Model extends CacheMixin(Observable) {
 
   setDependent(dependent) {
     this[_dependent] = dependent;
+
+    if (this[_data][FIT_LABEL]) {
+      this[_independent] = utils.join([
+        utils.range(0, this[_dependent]),
+        utils.range(this[_dependent] + 1, this[_data][FIT_LABEL].shape[1])
+      ]);
+    }
+
     this[_terms] = [];
     this.uncache();
     this.fire('setDependent', dependent);
@@ -258,8 +262,12 @@ class Model extends CacheMixin(Observable) {
     this.uncache('y');
     this.uncache('data');
 
+    if (this[_data][label] == null) {
+      throw new ReferenceError('Cannot find data for \'' + label + '\'');
+    }
+
     if (!Array.isArray(start)) {
-      start = utils.range(start, end);
+      start = utils.range(start, end || this[_data][label].shape[0]);
     } else {
       start = start.slice();
     }
@@ -298,7 +306,7 @@ class Model extends CacheMixin(Observable) {
   }
 
   X(label=FIT_LABEL) {
-    if (this[_subsets][label] == null) {
+    if (this[_data][label] == null) {
       throw new ReferenceError('Cannot find data for \'' + label + '\'');
     }
     return this[_terms].reduce(
@@ -320,6 +328,10 @@ class Model extends CacheMixin(Observable) {
 
   get labels() {
     return Object.keys(this[_subsets]);
+  }
+
+  get terms() {
+    return this[_terms].slice();
   }
 
 }
