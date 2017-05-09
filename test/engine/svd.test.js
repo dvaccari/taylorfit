@@ -4,8 +4,8 @@ const chai    = require('chai')
     , expect  = chai.expect
     , should  = chai.should;
 
-const Matrix  = require('../../engine/matrix').Matrix
-    , svd     = require('../../engine/matrix').svd
+const Matrix  = require('../../engine/matrix')
+    , svd     = require('../../engine/regression').svd
     , dataset = require('./testdata/svd.data.json');
 
 describe('svd', () => {
