@@ -37,7 +37,7 @@ onmessage = ({ data: { fit, cross, candidates, jobId } }) => {
     };
 
     if (i % UPDATE_INTERVAL === 0) {
-      postMessage({ type: 'progress', data: i });
+      postMessage({ type: 'progress', data: i, jobId });
     }
 
     try {
