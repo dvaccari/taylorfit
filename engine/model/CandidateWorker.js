@@ -3,6 +3,8 @@
 const { FIT_LABEL, CROSS_LABEL }  = require('../labels.json');
 const CandidateWorkerScript       = require('../worker/candidate-worker.js');
 
+const randomId = () => Math.floor(Math.random() * 1e16).toString(16);
+
 let counter = (() => {
   let next = 0;
   return () => next += 1;
@@ -28,27 +30,36 @@ class CandidateWorker {
   }
 
   compute(candidates, update) {
+    let thisJobId = randomId();
+
     return new Promise((resolve, reject) => {
-      this.worker.onmessage = ({ data: { data, type } }) => {
-        switch (type) {
-        case 'progress':
-          update && update(this.id, data);
-          break;
+      this.worker.addEventListener(
+        'message',
+        ({ data: { data, type, jobId } }) => {
+          if (jobId !== thisJobId) {
+            return;
+          }
 
-        case 'result':
-          resolve(data.map((stats, i) => ({
-            term: candidates[i].valueOf(),
-            coeff: stats.coeff,
-            stats
-          })));
-          console.timeEnd(`CANDIDATEWORKER[${this.id}]`);
-          break;
+          switch (type) {
+          case 'progress':
+            update && update(this.id, data);
+            break;
 
-        default:
-          console.error(`[CandidateWorker${this.id}]: Invalid type '${type}'`);
-          break;
+          case 'result':
+            resolve(data.map((stats, i) => ({
+              term: candidates[i].valueOf(),
+              coeff: stats.coeff,
+              stats
+            })));
+            console.timeEnd(`CANDIDATEWORKER[${this.id}]`);
+            break;
+
+          default:
+            console.error(`[CandidateWorker${this.id}]: Invalid type '${type}'`);
+            break;
+          }
         }
-      };
+      );
       console.time(`CANDIDATEWORKER[${this.id}]`);
 
       let transferables = [];
@@ -68,7 +79,6 @@ class CandidateWorker {
         cross = fit;
       }
 
-      console.time('TERMINATRIX' + this.id);
       let unwrappedCandidates = candidates.map((term) => {
         let fit = unwrapMatrix(term.col(FIT_LABEL));
         let lag = Math.max(this.model.highestLag(), term.lag);
@@ -84,12 +94,12 @@ class CandidateWorker {
 
         return { fit, lag, cross };
       });
-      console.timeEnd('TERMINATRIX' + this.id);
 
       this.worker.postMessage({
         fit,
         cross,
-        candidates: unwrappedCandidates
+        candidates: unwrappedCandidates,
+        jobId: thisJobId
       }, transferables);
     });
   }

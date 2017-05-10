@@ -10,7 +10,7 @@ const Matrix      = require('../matrix');
 const lstsq       = require('../regression').lstsq;
 const statistics  = require('../statistics');
 
-onmessage = ({ data: { fit, cross, candidates } }) => {
+onmessage = ({ data: { fit, cross, candidates, jobId } }) => {
   fit.X = new Matrix(fit.X.m, fit.X.n, fit.X.data);
   fit.y = new Matrix(fit.y.m, fit.y.n, fit.y.data);
 
@@ -57,6 +57,6 @@ onmessage = ({ data: { fit, cross, candidates } }) => {
       return NaN;
     }
   });
-  postMessage({ type: 'result', data: results });
+  postMessage({ type: 'result', data: results, jobId });
 };
 

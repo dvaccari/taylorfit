@@ -12,7 +12,7 @@ const CONTEXT = rel('.');
 const ENGINE = rel('./engine');
 const INTERFACE = rel('./interface');
 const BUILD = rel('./build');
-//const ENGINE_WORKER = rel('./engine/worker/engine-worker.js');
+const ENGINE_WORKER = rel('./engine/worker/engine-worker.js');
 //const SUBWORKERS = rel('./engine/worker/subworkers.js');
 //const CANDIDATE_WORKER = rel('./engine/worker/candidate-worker.js');
 
@@ -34,10 +34,10 @@ module.exports = {
     setImmediate: false
   },
   entry: {
-    //'engine-worker': ENGINE_WORKER,
+    'engine-worker': ENGINE_WORKER,
     //'candidate-worker': CANDIDATE_WORKER,
     //'subworkers': [SUBWORKERS],
-    interface: INTERFACE
+    'interface': INTERFACE
   },
   output: {
     path: BUILD,
@@ -99,7 +99,10 @@ module.exports = {
       entryOnly: true
     }),
     new webpack.optimize.UglifyJsPlugin(),
-    new HtmlWebpackPlugin({ title: 'TaylorFit' })
+    new HtmlWebpackPlugin({
+      title: 'TaylorFit',
+      chunks: ['interface']
+    })
   ]
 };
 

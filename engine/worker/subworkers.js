@@ -29,7 +29,7 @@
         });
 
         var location = self.location.pathname;
-        var absPath = location.substring(0, location.lastIndexOf('/')) + '/' + path;
+        var absPath = path;//location.substring(0, location.lastIndexOf('/')) + '/' + path;
         self.postMessage({
           _subworker: true,
           cmd: 'newWorker',
@@ -85,7 +85,7 @@
         var envelope = {
           _from: event.data.id,
           message: e.data
-        }
+        };
         event.target.postMessage(envelope);
       });
       allWorkers[event.data.id] = worker;
@@ -96,7 +96,7 @@
     passMessage: function(event){
       allWorkers[event.data.id].postMessage(event.data.message);
     }
-  }
+  };
   var messageRecieved = function(event){
     if (event.data._subworker){
       cmds[event.data.cmd](event);
@@ -112,7 +112,7 @@
     }
 
     var blobIndex = path.indexOf('blob:');
-    
+
     if (blobIndex !== -1 && blobIndex !== 0 ) {
       path = path.substring(blobIndex);
     }
