@@ -31,11 +31,14 @@ ko.components.register "tf-graph",
             tick:
               fit: false
               count: 8
-              format: Math.round
+              format: ko.formatters.int
+              rotate: -90
           y:
             label:
               text: params.ylabel
               position: "outer-middle"
+            tick:
+              format: ko.formatters.int
         grid:
           y:
             lines: [
