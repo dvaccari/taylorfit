@@ -12,8 +12,10 @@ ko.components.register "tf-graph",
 
       # TODO: check for observability
       data = params.data
+      console.log data()
 
       data.subscribe ( next ) ->
+        console.log next
         chart.load
           rows: [["x", "y"]].concat next
 
@@ -22,7 +24,7 @@ ko.components.register "tf-graph",
           type: "scatter"
           xs:
             y: "x"
-          rows: [["x", "y"]].concat data() or [ ]
+          rows: [["x", "y"]].concat data() or [ 0, 0 ]
         axis:
           x:
             label:

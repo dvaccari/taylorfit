@@ -11,14 +11,16 @@ ko.components.register "tf-result",
     model = params.model() # now static
 
     @result = model.result
+    @fit = model.fit
+    @dependent = model.dependent
 
-    @graphdata = ko.observable @result()?.graphdata
-
-    @result.subscribe ( next ) =>
-      if not next?.terms.length
-        @result null
-      else
-        @graphdata next.graphdata
+    @graphdata = ko.computed ( ) =>
+      data = [ ]; pred = @result().predicted
+      dep = @dependent()
+      # TODO: use coffee for creation
+      for row, index in @fit().rows()
+        data.push [ row[dep], pred[index] ]
+      return data
 
 
     return this
