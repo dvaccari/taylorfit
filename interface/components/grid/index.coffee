@@ -23,5 +23,12 @@ ko.components.register "tf-grid",
     @cols       = model[@table]().cols
     @rows       = model[@table]().rows
 
+    @save = ( ) =>
+      header = @cols()
+        .map ( v ) -> v.name
+        .concat [ "Dependent", "Predicted", "Error" ]
+        .join ","
+      alert "Not Implemented"
+
     return this
 

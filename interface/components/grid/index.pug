@@ -1,6 +1,7 @@
 
 span.title(data-bind="text:name")
 tf-pager(params="source:rows,result:result,start:start")
+a.save(data-bind="click:save") Export Data
 table.grid
   thead
     tr
@@ -21,17 +22,16 @@ table.grid
             | Mark as Dependant
       // /ko
       // ko if:results
-      th.dependent Dependent
-      th.predicted Predicted
-      th.error Error
+      th.dep Dependent
+      th.prd Predicted
+      th.err Error
       // /ko
   tbody
     // ko foreach:result
-    // ko with:{row:$index, root:$parent, data:$data, dep:$data[$parent.dependent()], pred:(r = $parent.results()) ? r.predicted[$index()] : null}
     tr
       td.static
-        span(data-bind="text:1+root.start()+row()")
-      // ko foreach: data
+        span(data-bind="text:1+$parent.start()+$index()")
+      // ko foreach: $data
       td
         // ko if: $data !== null && $data !== ""
         span(data-bind="float:$data")
@@ -40,11 +40,12 @@ table.grid
         span.placeholder No Data
         // /ko
       // /ko
-      // ko if:root.results
-      td.dependent(data-bind="float:dep")
-      td.predicted(data-bind="float:pred")
-      td.error(data-bind="float:dep-pred")
+      // ko if:$parent.results
+      // ko with:{dep:$data[$parent.dependent()], pred:(r = $parent.results()) ? r.predicted[$index()] : null}
+      td.dep(data-bind="float:dep")
+      td.prd(data-bind="float:pred")
+      td.ere(data-bind="float:dep-pred")
       // /ko
-    // /ko
+      // /ko
     // /ko
 
