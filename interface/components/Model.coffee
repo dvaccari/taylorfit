@@ -61,6 +61,10 @@ module.exports = class Model
     @cross.subscribe observable
     @validation.subscribe observable
 
+    @result.subscribe ( next ) =>
+      unless next?.terms.length
+        @result null
+
     @cross.subscribe ( next ) ->
       if next
         adapter.setData next.rows(), "cross"

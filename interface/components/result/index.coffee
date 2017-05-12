@@ -15,7 +15,9 @@ ko.components.register "tf-result",
     @dependent = model.dependent
 
     @graphdata = ko.computed ( ) =>
-      data = [ ]; pred = @result().predicted
+      result = @result()
+      unless result then return [ ]
+      data = [ ]; pred = result.predicted
       dep = @dependent()
       # TODO: use coffee for creation
       for row, index in @fit().rows()
