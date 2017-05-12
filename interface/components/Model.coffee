@@ -61,11 +61,17 @@ module.exports = class Model
     @cross.subscribe observable
     @validation.subscribe observable
 
+    @cross.subscribe ( next ) ->
+      if next
+        adapter.setData next.rows(), "cross"
+
     if @fit().rows().length
       # Don't compute candidates or the model right now
       adapter.unsubscribeToChanges()
 
       adapter.setData @fit().rows()
+      if cross = @cross()
+        adapter.setData cross.rows(), "cross"
       adapter.setDependent @dependent()
       adapter.setMultiplicands @multiplicands()
       adapter.setExponents exponents2array @exponents()

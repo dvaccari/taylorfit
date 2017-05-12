@@ -17,14 +17,17 @@ ko.components.register "tf-grid",
     @result = ko.observableArray [ ]
     @start = ko.observable 0
 
-    model = params.model() # now static
+    model       = params.model() # now static
     @dependent  = model.dependent
     @results    = model.result
-    @cols       = model[@table]().cols
-    @rows       = model[@table]().rows
+    @tbl        = model[@table]
+    @cols       = @tbl().cols
+    @rows       = @tbl().rows
 
     # TODO: make this computed data for rows
     # to avoid strange logic in save and jade
+    @clear = ( ) =>
+      @tbl null
 
     @save = ( ) =>
       csv = @cols()

@@ -2,6 +2,9 @@
 span.title(data-bind="text:name")
 tf-pager(params="source:rows,result:result,start:start")
 a.save(data-bind="click:save") Export Data
+// ko if:table != "fit"
+a.clear(data-bind="click:clear") Clear Data
+// /ko
 table.grid
   thead
     tr
