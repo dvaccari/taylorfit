@@ -104,7 +104,6 @@ onmessage = function (e) {
   // this one's special
   case 'setData':
     m[type](data.data, data.label);
-    console.warn('set data', data.label, data.data);
     break;
 
   case 'getTerms':
