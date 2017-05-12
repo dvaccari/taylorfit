@@ -23,12 +23,33 @@ ko.components.register "tf-grid",
     @cols       = model[@table]().cols
     @rows       = model[@table]().rows
 
+    # TODO: make this computed data for rows
+    # to avoid strange logic in save and jade
+
     @save = ( ) =>
-      header = @cols()
+      csv = @cols()
         .map ( v ) -> v.name
         .concat [ "Dependent", "Predicted", "Error" ]
         .join ","
-      alert "Not Implemented"
+
+      pred = @results().predicted
+      dep = @dependent()
+
+      for row, index in @rows()
+        d = row[dep]; p = pred[index]
+        csv += "\n" + row.concat([d, p, d - p]).join ","
+
+      blob = new Blob [ csv ]
+      uri = URL.createObjectURL blob
+      link = document.createElement "a"
+      link.setAttribute "href", uri
+      link.setAttribute "download", "data.csv"
+      document.body.appendChild link
+
+      link.click()
+      document.body.removeChild link
+
+      return undefined
 
     return this
 
