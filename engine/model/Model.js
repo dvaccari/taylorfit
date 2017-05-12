@@ -187,7 +187,7 @@ class Model extends CacheMixin(Observable) {
     }));
 
     let residuals = stats.y.sub(stats.yHat);
-    residuals = residuals.toJSON();
+    residuals = residuals.data;
 
     return { highestLag: this.highestLag(), terms, stats, predicted, residuals };
   }
