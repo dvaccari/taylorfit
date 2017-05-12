@@ -12,10 +12,8 @@ ko.components.register "tf-graph",
 
       # TODO: check for observability
       data = params.data
-      console.log data()
 
       data.subscribe ( next ) ->
-        console.log next
         chart.load
           rows: [["x", "y"]].concat next
 
