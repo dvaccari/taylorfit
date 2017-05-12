@@ -15,14 +15,15 @@ ko.components.register "tf-graph",
 
       data.subscribe ( next ) ->
         chart.load
-          rows: [["x", "y"]].concat next
+          rows: [["x", "y", "y2" ]].concat next
 
       chart = c3.generate
         data:
           type: "scatter"
           xs:
             y: "x"
-          rows: [["x", "y"]].concat data() or [ 0, 0 ]
+            y2: "x"
+          rows: [["x", "y", "y2"]].concat data() or [ 0, 0, 0 ]
         axis:
           x:
             label:
