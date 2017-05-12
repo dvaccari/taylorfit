@@ -20,7 +20,6 @@ module.exports = {
   target: 'web',
   profile: true,
   cache: true,
-  devtool: '#eval',
   devServer: {
     contentBase: BUILD,
     inline: true,
