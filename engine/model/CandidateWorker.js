@@ -2,6 +2,7 @@
 
 const { FIT_LABEL, CROSS_LABEL }  = require('../labels.json');
 const CandidateWorkerScript       = require('../worker/candidate-worker.js');
+const perf                        = require('../perf');
 
 const randomId = () => Math.floor(Math.random() * 1e16).toString(16);
 
@@ -51,7 +52,7 @@ class CandidateWorker {
               coeff: stats.coeff,
               stats
             })));
-            console.timeEnd(`CANDIDATEWORKER[${this.id}]`);
+            perf.end('candidate-worker');
             break;
 
           default:
@@ -60,7 +61,7 @@ class CandidateWorker {
           }
         }
       );
-      console.time(`CANDIDATEWORKER[${this.id}]`);
+      perf.start('candidate-worker');
 
       let transferables = [];
 

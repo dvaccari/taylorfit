@@ -1,9 +1,11 @@
 'use strict';
 
-function nspaces(n) {
+function nchars(n, char) {
   n = Math.max(0, n);
-  return Array(n + 1).join(' ');
+  return Array(n + 1).join(char);
 }
+
+let nspaces = (n) => nchars(n, ' ');
 
 function pad(width, val) {
   val = val || '';
@@ -50,7 +52,7 @@ module.exports.convertRange = (str, length) => {
   throw new TypeError('Invalid range');
 };
 
-module.exports.formatNum = (leftwidth, rightwidth, val) => {
+module.exports.formatNum = (leftwidth, rightwidth, val, nilDecimalChar=' ') => {
   val = ''+val;
   var match = val.match(/(NaN|-?Infinity|-?\d*)\.?(\d*)/)
     , whole = match[1]
@@ -63,7 +65,8 @@ module.exports.formatNum = (leftwidth, rightwidth, val) => {
   repr += nspaces(leftwidth - whole.length) + whole;
   if (frac !== '' || rightwidth > 0) {
     repr += '.';
-    repr += frac.slice(0, rightwidth) + nspaces(rightwidth - frac.length);
+    repr += frac.slice(0, rightwidth) +
+      nchars(rightwidth - frac.length, nilDecimalChar);
   } else {
     repr += nspaces(rightwidth + 1);
   }

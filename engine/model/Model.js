@@ -4,6 +4,7 @@ const lstsq           = require('../regression').lstsq;
 const statistics      = require('../statistics');
 
 const utils           = require('../utils');
+const perf            = require('../perf');
 const Observable      = require('../observable');
 const {
   FIT_LABEL,
@@ -126,9 +127,9 @@ class Model extends CacheMixin(Observable) {
 
     this.fire('getCandidates.start');
 
-    console.time('CANDIES');
+    perf.start('get-candidate-terms');
     let candidates = this.getCandidateTerms();
-    console.timeEnd('CANDIES');
+    perf.end('get-candidate-terms');
 
     // For each candidate, get the stats for it alongside terms in the model
     // If using workers, distribute the terms among them

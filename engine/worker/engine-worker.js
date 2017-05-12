@@ -3,6 +3,7 @@
 
 require('./subworkers');
 
+const perf      = require('../perf');
 const statsMeta = require('../statistics/metadata.json');
 const Model     = require('../model');
 
@@ -22,8 +23,11 @@ function initializeModel() {
     data: {}
   }));
 
-  m.on('getCandidates.start', () => console.time('getCandidates'));
-  m.on('getCandidates.end', () => console.timeEnd('getCandidates'));
+  m.on('getCandidates.start', () => perf.start('get-candidates'));
+  m.on('getCandidates.end', () => {
+    perf.end('get-candidates');
+    perf.report('get-candidates', 3);
+  });
 
   // Subscribe to progress changes
   onGetCandidateId = m.on('getCandidates.each', (data) => {
