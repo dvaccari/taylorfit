@@ -19,14 +19,15 @@ table.grid
         tf-dropdown(params="shallow:1,align:'right'")
           span.mark(data-bind="click:function(){dependent($index())}")
             | Mark as Dependant
-      // ko if:$parent.results() && $index() === $parent.dependent()
+      // /ko
+      // ko if:results
+      th.dependent Dependent
       th.predicted Predicted
       th.error Error
       // /ko
-      // /ko
   tbody
     // ko foreach:result
-    // ko with:{row:$index, root:$parent, data:$data, pred:(r = $parent.results()) ? r.predicted[$index()] : null}
+    // ko with:{row:$index, root:$parent, data:$data, dep:$data[$parent.dependent()], pred:(r = $parent.results()) ? r.predicted[$index()] : null}
     tr
       td.static
         span(data-bind="text:1+root.start()+row()")
@@ -38,10 +39,11 @@ table.grid
         // ko if: $data === null || $data === ""
         span.placeholder No Data
         // /ko
-      // ko if:"number" === typeof $parent.pred && $index() === $parent.root.dependent()
-      td.predicted(data-bind="float:$parent.pred")
-      td.error(data-bind="float:$data-$parent.pred")
       // /ko
+      // ko if:root.results
+      td.dependent(data-bind="float:dep")
+      td.predicted(data-bind="float:pred")
+      td.error(data-bind="float:dep-pred")
       // /ko
     // /ko
     // /ko
