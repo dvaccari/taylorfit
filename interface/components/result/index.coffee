@@ -21,7 +21,8 @@ ko.components.register "tf-result",
       dep = @dependent()
       # TODO: use coffee for creation
       for row, index in @fit().rows()
-        data.push [ row[dep], pred[index] ]
+        d = row[dep]; p = pred[index]
+        data.push [ p, d - p ]
       return data
 
 

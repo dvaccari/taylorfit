@@ -32,7 +32,7 @@ ko.components.register "tf-grid",
     @save = ( ) =>
       csv = @cols()
         .map ( v ) -> v.name
-        .concat [ "Dependent", "Predicted", "Error" ]
+        .concat [ "Dependent", "Predicted", "Residual" ]
         .join ","
 
       pred = @results().predicted

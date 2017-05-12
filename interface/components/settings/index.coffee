@@ -32,10 +32,9 @@ ko.components.register "tf-settings",
     @candidates = model.candidates
     @max_multiplicands = model.fit().cols().length - 1
 
-    @subscribedToChanges = ko.observable true
-    @subscribedToChanges.subscribe ( next ) ->
-      if next then adapter.subscribeToChanges()
-      else adapter.unsubscribeToChanges()
+    @active.subscribe ( next ) ->
+      if next then adapter.unsubscribeToChanges()
+      else adapter.subscribeToChanges()
 
     @download_dataset = ( ) ->
       model = params.model()

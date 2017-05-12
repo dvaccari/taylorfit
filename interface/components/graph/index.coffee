@@ -30,15 +30,17 @@ ko.components.register "tf-graph",
               position: "outer-center"
             tick:
               fit: false
-              count: 8
-              format: ko.formatters.int
-              rotate: -90
+              count: 2
+              format: ko.formatters.float
+              rotate: 0
           y:
             label:
               text: params.ylabel
               position: "outer-middle"
             tick:
-              format: ko.formatters.int
+              count: 2
+              format: ko.formatters.float
+              rotate: 90
         grid:
           y:
             lines: [
@@ -48,7 +50,8 @@ ko.components.register "tf-graph",
           show: false
         tooltip:
           contents: ( [ d ] ) ->
-            return ko.formatters.float d.value
+            return "(#{ko.formatters.float d.x},
+            #{ko.formatters.float d.value})"
 
       global.chart = chart
 

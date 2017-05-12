@@ -15,8 +15,7 @@
   tf-multiselect.lags(params="name:'Lags',values:lags")
   span.title Advanced
   tf-checkbox(params="name:'Always Show Lags',value:show_lags")
-  tf-counter(params="name:'Precision',value:ko.precision,min:1,max:9")
-  tf-checkbox(params="name:'Subscribe to Changes',value:subscribedToChanges")
+  tf-counter(params="name:'Display Precision',value:ko.precision,min:1,max:9")
 
   span.button.warning(data-bind="click:clear_project")
     | Clear Project
