@@ -107,8 +107,8 @@
 
 
   /* Hijack Worker */
-  var oldWorker = Worker;
-  Worker = function(path){
+  var oldWorker = window.Worker;
+  window.Worker = function(path){
 
     var blobIndex = path.indexOf('blob:');
 
