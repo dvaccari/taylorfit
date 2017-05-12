@@ -109,9 +109,9 @@
   /* Hijack Worker */
   var oldWorker = Worker;
   Worker = function(path){
-    if (this.constructor !== Worker){
-      throw new TypeError("Failed to construct 'Worker': Please use the 'new' operator, this DOM object constructor cannot be called as a function.");
-    }
+    //if (this.constructor !== Worker){
+    //  throw new TypeError("Failed to construct 'Worker': Please use the 'new' operator, this DOM object constructor cannot be called as a function.");
+    //}
 
     var blobIndex = path.indexOf('blob:');
 
