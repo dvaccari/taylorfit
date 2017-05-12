@@ -1,3 +1,3 @@
 
-module.exports = new require('./singleton');
+module.exports = require('./Model');
 

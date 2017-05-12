@@ -70,22 +70,27 @@ let combinationsFromBins = function(bins, k) {
  * Generates all possible combinations of exponentiated terms given a list of
  * exponents, a list of # of multiplicands, and a list of lags
  *
- * @param {number[]}  features    Independent column indices from the original
- *                                dataset
+ * @param {number[]}  dep         Dependent column index from the dataset
+ * @param {number[]}  indep       Independent column indices from the dataset
  * @param {number[]}  exponents   Array of exponents ([1, 2] means x, x^2)
  * @param {number[]}  multipliers Array of # of multiplicands ([1] means only
  *                                one multiplicand per term)
- * @param {number[]}  lags        Array of # of multiplicands ([1] means only
- *                                one multiplicand per term)
+ * @param {number[]}  lags        Array of lags (similar to exponents)
  * @return {[number, number][][]} List of terms
  */
-let generateTerms = function(features, exponents, multipliers, lags) {
-  var bins = features.map(
+let generateTerms = function(dep, indep, exponents, multipliers, lags) {
+  let bins = indep.map(
     (i) => utils.join(exponents.map(
       (e) => [0].concat(lags).map(
-        (l) => [i, e, l]))))
-    , combosForMults = utils.join(multipliers.map(
-      (m) => combinationsFromBins(bins, m)));
+        (l) => [i, e, l]))));
+
+  // Include dependent column, but only with lag > 0
+  bins.unshift(utils.join(exponents.map(
+    (e) => lags.map(
+      (l) => [dep, e, l]))));
+
+  let combosForMults = utils.join(multipliers.map(
+    (m) => combinationsFromBins(bins, m)));
 
   return combosForMults;
 };

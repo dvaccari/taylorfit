@@ -1,6 +1,5 @@
 
-const Term  = require('./term');
-const md5   = require('blueimp-md5');
+const Term  = require('./Term');
 
 class TermPool {
 
@@ -20,11 +19,11 @@ class TermPool {
     return found;
   }
 
-  clearCache() {
-    Object.values(this.terms).forEach((term) => term.clearCache());
+  uncache() {
+    Object.values(this.terms).forEach((term) => term.uncache('col'));
   }
 
 }
 
-
 module.exports = TermPool;
+

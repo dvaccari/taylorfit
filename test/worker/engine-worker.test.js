@@ -1,5 +1,8 @@
 /*global describe, it, before, expect, Worker*/
 
+require('../../engine/worker/subworkers.js');
+const EngineWorker = require('../../engine/worker/engine-worker.js');
+
 
 let sendThenCheck = (worker, messages, after) => {
   let expectedMessages = messages.length;
@@ -18,15 +21,15 @@ let sendThenCheck = (worker, messages, after) => {
 
 describe('worker adapter', () => {
 
-  describe('update(dataset)', () => {
+  describe('setData()', () => {
 
     it('updates the model\'s dataset and returns candidates', (done) => {
-      let worker = new Worker('/base/build/engine-worker.js');
+      let worker = new EngineWorker();
 
       sendThenCheck(worker, [
-        { type: 'update', data: { dataset: [[1, 2, 3],
-                                            [4, 5, 6],
-                                            [7, 8, 9]] } }
+        { type: 'setData', data: { data: [[1, 2, 3],
+                                          [4, 5, 6],
+                                          [7, 8, 9]] } }
       ], (message) => {
         expect(message.data).to.be.an('array');
         expect(message.data.length).to.equal(3);
@@ -36,18 +39,18 @@ describe('worker adapter', () => {
 
   });
 
-  describe('update(exponents)', () => {
+  describe('setExponents()', () => {
 
     it('updates model\'s exponents, returns proper candidates', (done) => {
-      let worker = new Worker('/base/build/engine-worker.js');
+      let worker = new EngineWorker();
 
       sendThenCheck(worker, [
-        { type: 'update', data: { dataset: [[ 1,  2,  3],
-                                            [ 4,  5,  6],
-                                            [ 7,  8,  9],
-                                            [10, 11, 12],
-                                            [13, 14, 15]] } },
-        { type: 'update', data: { exponents: [1, 2] } }
+        { type: 'setData', data: { data: [[ 1,  2,  3],
+                                          [ 4,  5,  6],
+                                          [ 7,  8,  9],
+                                          [10, 11, 12],
+                                          [13, 14, 15]] } },
+        { type: 'setExponents', data: [1, 2] }
       ], (message) => {
         expect(message.data).to.be.an('array');
         expect(message.data.length).to.equal(5);
@@ -62,18 +65,18 @@ describe('worker adapter', () => {
 
   });
 
-  describe('update(multiplicands)', () => {
+  describe('setMultiplicands()', () => {
 
     it('updates model\'s multiplicands, returns proper candidates', (done) => {
-      let worker = new Worker('/base/build/engine-worker.js');
+      let worker = new EngineWorker();
 
       sendThenCheck(worker, [
-        { type: 'update', data: { dataset: [[ 1,  2,  3],
-                                            [ 4,  5,  6],
-                                            [ 7,  8,  9],
-                                            [10, 11, 12],
-                                            [13, 14, 15]] } },
-        { type: 'update', data: { multiplicands: 2 } }
+        { type: 'setData', data: { data: [[ 1,  2,  3],
+                                          [ 4,  5,  6],
+                                          [ 7,  8,  9],
+                                          [10, 11, 12],
+                                          [13, 14, 15]] } },
+        { type: 'setMultiplicands', data: 2 }
       ], (message) => {
         expect(message.data).to.be.an('array');
         expect(message.data.length).to.equal(4);
@@ -88,20 +91,20 @@ describe('worker adapter', () => {
 
   });
 
-  describe('update(dependent)', () => {
+  describe('setDependent()', () => {
 
     it('updates model\'s dependent col, returns proper candidates', (done) => {
-      let worker = new Worker('/base/build/engine-worker.js');
+      let worker = new EngineWorker();
       let next;
 
       sendThenCheck(worker, [
-        { type: 'update', data: { dataset: [[ 1,  2,  3],
-                                            [ 4,  5,  6],
-                                            [ 7,  8,  9],
-                                            [10, 11, 12],
-                                            [13, 14, 15]] } },
-        { type: 'update', data: { exponents: [1, 2] } },
-        { type: 'update', data: { dependent: 2 } }
+        { type: 'setData', data: { data: [[ 1,  2,  3],
+                                          [ 4,  5,  6],
+                                          [ 7,  8,  9],
+                                          [10, 11, 12],
+                                          [13, 14, 15]] } },
+        { type: 'setExponents', data: [1, 2] },
+        { type: 'setDependent', data: 2 }
       ], (message) => {
         expect(message.data).to.be.an('array');
         expect(message.data.length).to.equal(5);

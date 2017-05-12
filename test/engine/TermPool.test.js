@@ -4,10 +4,10 @@ const chai      = require('chai')
     , expect    = chai.expect
     , should    = chai.should;
 
-const Matrix    = require('../../engine/matrix').Matrix
-    , Model     = require('../../engine/model/model2')
-    , TermPool  = require('../../engine/model/termpool')
-    , Term      = require('../../engine/model/term')
+const Matrix    = require('../../engine/matrix')
+    , Model     = require('../../engine/model')
+    , TermPool  = require('../../engine/model/TermPool')
+    , Term      = require('../../engine/model/Term')
     , utils     = require('../../engine/utils')
     , dataset   = require('./testdata/test.data.json');
 
@@ -38,7 +38,7 @@ describe('TermPool', () => {
 
       let term = tp.get([[1, 2, 0]]);
       expect(term.valueOf()).to.eql([[1, 2, 0]]);
-      expect(tp.terms).to.include(term);
+      expect(tp.terms).to.have.property(Term.hash(term), term);
     });
 
     it('returns a found term instance', () => {

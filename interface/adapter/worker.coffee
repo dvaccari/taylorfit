@@ -1,4 +1,8 @@
 
+SILENT_MESSAGE_TYPES = [ "progress" ]
+
+EngineWorker = require "../../engine/worker/engine-worker"
+
 class ME
 
   constructor: ( ) ->
@@ -10,7 +14,8 @@ class ME
     undefined
 
   fire: ( target, message ) ->
-    console.debug "ME/fire", target
+    unless target in SILENT_MESSAGE_TYPES
+      console.debug "ME/fire", target
     if listeners = @listeners[target]
       for listener in listeners
         listener.call this, message
@@ -23,7 +28,7 @@ module.exports = new class WorkerAdapter extends ME
   constructor: ( ) ->
     super
 
-    @worker = new Worker "engine-worker.js"
+    @worker = new EngineWorker
 
     @worker.onerror = ( error ) =>
       console.debug "Worker/res [error]", error
@@ -33,7 +38,10 @@ module.exports = new class WorkerAdapter extends ME
       if message._subworker
         return
       { type, data } = message
-      console.debug "Worker/res [#{type}]", data
+
+      unless type in SILENT_MESSAGE_TYPES
+        console.debug "Worker/res [#{type}]", data
+
       @fire type, data
 
   post: ( target, message ) ->

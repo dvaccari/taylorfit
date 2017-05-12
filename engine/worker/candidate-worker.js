@@ -1,39 +1,62 @@
 /*global postMessage, onmessage*/
 
-require('./subworkers');
+if (typeof window !== 'undefined') {
+  require('./subworkers');
+}
 
 const UPDATE_INTERVAL = 200;
 
-const Matrix  = require('../matrix');
-const lstsq   = require('../regression').lstsq;
+const Matrix      = require('../matrix');
+const lstsq       = require('../regression').lstsq;
+const statistics  = require('../statistics');
 
-onmessage = ({ data }) => {
-  let results = data.map(({ X, y }, i) => {
-    let theStats;
+onmessage = ({ data: { fit, cross, candidates, jobId } }) => {
+  fit.X = new Matrix(fit.X.m, fit.X.n, fit.X.data);
+  fit.y = new Matrix(fit.y.m, fit.y.n, fit.y.data);
 
+  if (cross !== fit) {
+    cross.X = new Matrix(cross.X.m, cross.X.n, cross.X.data);
+    cross.y = new Matrix(cross.y.m, cross.y.n, cross.y.data);
+  }
+
+  let model = { fit, cross };
+
+  let results = candidates.map(({ fit, cross, lag }, i) => {
     // reconstruct matrices (they were deconstructed for transport)
-    X = new Matrix(X.m, X.n, X.data);
-    y = new Matrix(y.m, y.n, y.data);
+    fit = {
+      X: model.fit.X
+        .hstack(new Matrix(fit.m, fit.n, fit.data))
+        .lo(lag),
+      y: model.fit.y.lo(lag)
+    };
+    cross = {
+      X: model.cross.X
+        .hstack(new Matrix(cross.m, cross.n, cross.data))
+        .lo(lag),
+      y: model.cross.y.lo(lag)
+    };
 
     if (i % UPDATE_INTERVAL === 0) {
-      postMessage({ type: 'progress', data: i });
+      postMessage({ type: 'progress', data: i, jobId });
     }
 
     try {
-      theStats = lstsq(X, y);
-      theStats.coeff = theStats.weights.get(0, theStats.weights.shape[0]-1);
-      theStats.t = theStats.t.get(0, theStats.t.shape[0]-1);
-      theStats.pt = theStats.pt.get(0, theStats.pt.shape[0]-1);
-      delete theStats.weights;
+      let regression = lstsq(fit.X, fit.y);
+      Object.assign(regression, { X: cross.X, y: cross.y });
 
-      return theStats;
+      let stats = statistics(regression);
+
+      stats.coeff = stats.weights.get(0, stats.weights.shape[0]-1);
+      stats.t = stats.t.get(0, stats.t.shape[0]-1);
+      stats.pt = stats.pt.get(0, stats.pt.shape[0]-1);
+      delete stats.weights;
+
+      return stats;
     } catch (e) {
       console.error(e);
-      console.log(this.valueOf());
-      console.log(this.col());
       return NaN;
     }
   });
-  postMessage({ type: 'result', data: results });
+  postMessage({ type: 'result', data: results, jobId });
 };
 

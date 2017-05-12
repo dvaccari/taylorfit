@@ -1,16 +1,14 @@
-/*global describe, it, before*/
+/*global describe, it, before, beforeEach*/
 
 const chai    = require('chai')
     , expect  = chai.expect
     , should  = chai.should;
 
-const Matrix  = require('../../engine/matrix').Matrix
-    , Model   = require('../../engine/model/model2')
-    , Term    = require('../../engine/model/term')
+const Matrix  = require('../../engine/matrix')
+    , Model   = require('../../engine/model')
+    , Term    = require('../../engine/model/Term')
     , utils   = require('../../engine/utils')
-    , dataset = require('./testdata/test.data.json')
-    , bi_md5  = require('blueimp-md5')
-    , md5     = (x) => bi_md5(x);
+    , dataset = require('./testdata/test.data.json');
 
 describe('Term', () => {
 
@@ -50,33 +48,39 @@ describe('Term', () => {
 
     let m;
 
-    before(() => {
+    beforeEach(() => {
       m = new Model()
         .setData(data)
+        .setData(data, 'cross')
         .setExponents([1, 2])
-        .setMultiplicands(1);
-      m.subset('fit', 0, 10);
-      m.subset('test', 10);
+        .setMultiplicands(1)
+        .subset('fit', 0, 10)
+        .subset('cross', 10);
     });
 
-    it('returns the t-statistic and MSE when the candidate term is included', () => {
+    it('returns the statistics when the candidate term is included', () => {
       let t = new Term(m, [[1, 1], [2, 1]]);
       let stats = t.getStats();
 
-      ['mse', 'rsq', 'crsq', 'adjrsq', 'f', 'pf', 'aic', 'bic']
+      ['MSE', 'Rsq', 'cRsq', 'adjRsq', 'F', 'pF', 'AIC', 'BIC']
         .forEach((stat) => expect(stats).to.have.property(stat));
     });
 
-    it('gets the proper stats for the given subset label', () => {
+    it('fits with "fit", but gets the stats using the "cross" data', () => {
       let t = new Term(m, [[1, 1]]);
-      let fitStats = t.getStats('fit');
-      let testStats = t.getStats('test');
+      let termStats = t.getStats();
 
-      // The training and test statistics should *most likely* not be equal
-      expect(fitStats.mse).not.to.equal(testStats.mse);
+      m.addTerm([[1, 1]]);
+      let crossModelStatsWithTerm = m.getModel('cross').stats;
+      let fitModelStatsWithTerm = m.getModel('fit').stats;
+
+      // With the term included, cross validation stats should equal what
+      // Term.getStats() gave us. Fit stats, on the other hand, should not
+      expect(termStats.MSE).to.equal(crossModelStatsWithTerm.MSE);
+      expect(termStats.MSE).not.to.equal(fitModelStatsWithTerm.MSE);
     });
 
-    // FIXME : need to cross check t-statistic values for accuracy
+    // TODO : need to cross check t-statistic values for accuracy
 
   });
 
@@ -122,8 +126,8 @@ describe('Term', () => {
 
     let m;
 
-    before(() => {
-      m = new Model().setData(data);
+    beforeEach(() => {
+      m = new Model().setData(data).setData(data, 'test');
       m.subset('fit', 0, 10);
       m.subset('test', 10);
     });
@@ -162,10 +166,17 @@ describe('Term', () => {
 
   describe('static hash()', () => {
 
-    it('returns the md5 hash of the sorted md5 hashes of the term\'s parts', () => {
+    it('returns an ordered stringy representation of the term\'s parts', () => {
       let t = new Term(new Model(), [[1, 2, 3], [4, 5, 6]]);
-      let partHashes = [md5([1, 2, 3]), md5([4, 5, 6])];
-      expect(Term.hash(t)).to.equal(md5(partHashes.sort().join()));
+      expect(Term.hash(t)).to.equal('(1,2,3),(4,5,6)');
+    });
+
+    it('will fix missing lags in a part (by appending 0)', () => {
+      expect(Term.hash([[0, 1, 0]]))
+        .to.equal(Term.hash([[0, 1]]));
+
+      expect(Term.hash([[0, 1, 0], [1, 2]]))
+        .to.equal(Term.hash([[0, 1], [1, 2, 0]]));
     });
 
   });

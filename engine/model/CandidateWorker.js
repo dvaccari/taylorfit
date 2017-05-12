@@ -1,6 +1,15 @@
 /*global Worker*/
 
-var i = 0;
+const { FIT_LABEL, CROSS_LABEL }  = require('../labels.json');
+const CandidateWorkerScript       = require('../worker/candidate-worker.js');
+const perf                        = require('../perf');
+
+const randomId = () => Math.floor(Math.random() * 1e16).toString(16);
+
+let counter = (() => {
+  let next = 0;
+  return () => next += 1;
+})();
 
 function unwrapMatrix(matrix) {
   return {
@@ -10,53 +19,89 @@ function unwrapMatrix(matrix) {
   };
 }
 
-
 class CandidateWorker {
 
-  constructor(scriptName) {
-    if (!Worker) {
+  constructor(model) {
+    if (typeof Worker === 'undefined' || !Worker) {
       throw new Error('Web workers unavailable');
     }
-    this.id = i++;
-    this.worker = new Worker(scriptName);
+    this.id = counter();
+    this.worker = new CandidateWorkerScript();
+    this.model = model;
   }
 
-  compute(terms, update) {
+  compute(candidates, update) {
+    let thisJobId = randomId();
+
     return new Promise((resolve, reject) => {
-      this.worker.onmessage = ({ data: { data, type } }) => {
-        switch (type) {
-        case 'progress':
-          update && update(this.id, data);
-          break;
+      this.worker.addEventListener(
+        'message',
+        ({ data: { data, type, jobId } }) => {
+          if (jobId !== thisJobId) {
+            return;
+          }
 
-        case 'result':
-          resolve(data.map((stats, i) => ({
-            term: terms[i].valueOf(),
-            coeff: stats.coeff,
-            stats
-          })));
-          console.timeEnd(`CANDIDATEWORKER[${this.id}]`);
-          break;
+          switch (type) {
+          case 'progress':
+            update && update(this.id, data);
+            break;
 
-        default:
-          console.error(`[CandidateWorker${this.id}]: Invalid type '${type}'`);
-          break;
+          case 'result':
+            resolve(data.map((stats, i) => ({
+              term: candidates[i].valueOf(),
+              coeff: stats.coeff,
+              stats
+            })));
+            perf.end('candidate-worker');
+            break;
+
+          default:
+            console.error(`[CandidateWorker${this.id}]: Invalid type '${type}'`);
+            break;
+          }
         }
-      };
-      console.time(`CANDIDATEWORKER[${this.id}]`);
+      );
+      perf.start('candidate-worker');
 
       let transferables = [];
 
-      let transformedTerms = terms.map((term) => {
-        let X = unwrapMatrix(term.X());
-        let y = unwrapMatrix(term.y());
+      let fit = {
+        X: unwrapMatrix(this.model.X(FIT_LABEL)),
+        y: unwrapMatrix(this.model.y(FIT_LABEL))
+      };
 
-        transferables.push(X.data, y.data);
+      let cross;
+      try {
+        cross = {
+          X: unwrapMatrix(this.model.X(CROSS_LABEL)),
+          y: unwrapMatrix(this.model.y(CROSS_LABEL))
+        };
+      } catch (e) {
+        cross = fit;
+      }
 
-        return { X, y };
+      let unwrappedCandidates = candidates.map((term) => {
+        let fit = unwrapMatrix(term.col(FIT_LABEL));
+        let lag = Math.max(this.model.highestLag(), term.lag);
+        let cross;
+
+        try {
+          cross = unwrapMatrix(term.col(CROSS_LABEL));
+        } catch (e) {
+          cross = fit;
+        }
+
+        transferables.push(fit.data, cross.data);
+
+        return { fit, lag, cross };
       });
 
-      this.worker.postMessage(transformedTerms, transferables);
+      this.worker.postMessage({
+        fit,
+        cross,
+        candidates: unwrappedCandidates,
+        jobId: thisJobId
+      }, transferables);
     });
   }
 
