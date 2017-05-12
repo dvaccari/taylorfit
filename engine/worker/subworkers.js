@@ -9,8 +9,10 @@
   }
 
   if (isWorker){
-    if (!self.Worker){
-      self.Worker = function(path){
+    // For some reason, nested workers on firefox sucks. So, just polyfill all
+    // of the browsers to make this work
+    if (true || !self.Worker /* we don't really need to check this */) {
+      self.Worker = function(path) {
         var that = this;
         this.id = Math.random().toString(36).substr(2, 5);
 
