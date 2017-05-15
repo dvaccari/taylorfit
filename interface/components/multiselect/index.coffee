@@ -48,7 +48,7 @@ ko.components.register "tf-multiselect",
     @add = ( ) =>
       name = @input()
 
-      unless @valid(name) and name != "0" and name != ""
+      unless @valid(name) and name != ""
         @invalid true
         return undefined
       @invalid false

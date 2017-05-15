@@ -23,14 +23,34 @@ ko.components.register "tf-settings",
 
     model = params.model() # now static
 
+    update_multiplicands_max = ( next ) ->
+      active = 0
+      zero = false
+      for key, value of @lags()
+        if value() then active++
+        if value() and key == '0' then zero = true
+      unless @timeseries() and active
+        @multiplicands_max @ncols - 1
+      else
+        unless zero
+          @multiplicands_max @ncols * active
+        else
+          @multiplicands_max (@ncols - 1) * active + active - 1
+      unless @multiplicands() < @multiplicands_max()
+        @multiplicands @multiplicands_max()
+
     @active = model.show_settings
     @stats = model.stats
     @exponents = model.exponents
     @multiplicands = model.multiplicands
     @lags = model.lags
-    @show_lags = model.show_lags
+    @timeseries = model.timeseries
     @candidates = model.candidates
-    @max_multiplicands = model.fit().cols().length - 1
+    @multiplicands_max = model.multiplicands_max
+    @ncols = model.fit().cols().length
+
+    @lags.subscribe update_multiplicands_max, this
+    @timeseries.subscribe update_multiplicands_max, this
 
     @active.subscribe ( next ) ->
       if next then adapter.unsubscribeToChanges()

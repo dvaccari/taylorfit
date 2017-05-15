@@ -34,6 +34,12 @@ ko.components.register "tf-counter",
     @upperlimit = ko.observable value() is max()
     @lowerlimit = ko.observable value() is 1
 
+    check_limit = ( next ) ->
+      @upperlimit value() is max()
+
+    max.subscribe check_limit, this
+    value.subscribe check_limit, this
+
     @increment = ( ) ->
       unless @upperlimit()
         value value() + 1

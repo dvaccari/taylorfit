@@ -12,23 +12,24 @@ observable = ( item ) ->
 module.exports = class Model
 
   @transient: [ "candidates",
-  "show_settings", "progress", "show_lags" ]
+  "show_settings", "progress", "timeseries" ]
 
   DEFAULTS =
-    id:             "model"
-    name:           "New Model"
-    fit:            null
-    cross:          null
-    validation:     null
-    dependent:      0
-    multiplicands:  1
-    exponents:      1: true
-    lags:           { }
-    candidates:     [ ]
-    result:         null # perhaps fit: null, test: null, validation: null ?
-    show_settings:  false
-    show_lags:      true
-    progress:       30
+    id:                 "model"
+    name:               "New Model"
+    fit:                null
+    cross:              null
+    validation:         null
+    dependent:          0
+    multiplicands:      1
+    multiplicands_max:  10
+    exponents:          1: true
+    lags:               { }
+    candidates:         [ ]
+    result:             null # perhaps fit: null, test: null, validation: null ?
+    show_settings:      false
+    timeseries:         false
+    progress:           30
 
   constructor: ( options ) ->
     for key, value of DEFAULTS
@@ -43,6 +44,7 @@ module.exports = class Model
     unless @fit()
       throw new Error "model: fit data not defined"
 
+    @multiplicands_max @fit().cols().length - 1
     document.title = "TF - #{@fit().name()}"
     @fit.subscribe ( next ) ->
       document.title = "TF - #{next.name()}"

@@ -33,7 +33,7 @@ tf-pager(params="source:source,result:result")
               span(data-bind="text:index")
               span &nbsp;
             // /ko
-            // ko if:$parents[1].show_lags() || lag
+            // ko if:$parents[1].timeseries() || lag
             sub
               span lag
               span(data-bind="text:lag || 0")
