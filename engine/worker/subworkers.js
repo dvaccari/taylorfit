@@ -9,6 +9,17 @@
   }
 
   if (isWorker){
+    // Replace self.postMessage because webpack-dev-server doesn't recognize
+    // workers
+    let oldPostMessage = self.postMessage;
+    self.postMessage = (msg, otherthing) => {
+      try {
+        oldPostMessage(msg, otherthing);
+      } catch (e) {
+        console.warn(e.message);
+      }
+    };
+
     // For some reason, nested workers on firefox sucks. So, just polyfill all
     // of the browsers to make this work
     if (true || !self.Worker /* we don't really need to check this */) {

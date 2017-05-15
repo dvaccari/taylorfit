@@ -13,13 +13,14 @@ const ENGINE = rel('./engine');
 const INTERFACE = rel('./interface');
 const BUILD = rel('./build');
 const ENGINE_WORKER = rel('./engine/worker/engine-worker.js');
-//const SUBWORKERS = rel('./engine/worker/subworkers.js');
-//const CANDIDATE_WORKER = rel('./engine/worker/candidate-worker.js');
+const SUBWORKERS = rel('./engine/worker/subworkers.js');
+const CANDIDATE_WORKER = rel('./engine/worker/candidate-worker.js');
 
 module.exports = {
   target: 'web',
   profile: true,
   cache: true,
+  devtool: '#eval',
   devServer: {
     contentBase: BUILD,
     inline: true,
@@ -34,8 +35,8 @@ module.exports = {
   },
   entry: {
     'engine-worker': ENGINE_WORKER,
-    //'candidate-worker': CANDIDATE_WORKER,
-    //'subworkers': [SUBWORKERS],
+    'candidate-worker': CANDIDATE_WORKER,
+    'subworkers': [SUBWORKERS],
     'interface': INTERFACE
   },
   output: {
@@ -83,9 +84,6 @@ module.exports = {
       test: /\.json$/,
       loader: 'json-loader'
     }, {
-      test: /worker\.js$/,
-      loader: 'worker-loader'
-    }, {
       test: /\.jsx?$/,
       exclude: /node_modules/,
       loader: 'babel-loader?presets[]=es2017'
@@ -100,7 +98,7 @@ module.exports = {
     new webpack.optimize.UglifyJsPlugin(),
     new HtmlWebpackPlugin({
       title: 'TaylorFit',
-      chunks: ['interface']
+      chunks: ['interface', 'subworkers']
     })
   ]
 };

@@ -1,7 +1,7 @@
 /*global Worker*/
 
 const { FIT_LABEL, CROSS_LABEL }  = require('../labels.json');
-const CandidateWorkerScript       = require('../worker/candidate-worker.js');
+//const CandidateWorkerScript       = require('../worker/candidate-worker.js');
 const perf                        = require('../perf');
 
 const randomId = () => Math.floor(Math.random() * 1e16).toString(16);
@@ -26,7 +26,7 @@ class CandidateWorker {
       throw new Error('Web workers unavailable');
     }
     this.id = counter();
-    this.worker = new CandidateWorkerScript();
+    this.worker = new Worker('candidate-worker.js');
     this.model = model;
   }
 

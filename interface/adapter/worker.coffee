@@ -1,7 +1,7 @@
 
 SILENT_MESSAGE_TYPES = [ "progress" ]
 
-EngineWorker = require "../../engine/worker/engine-worker"
+#EngineWorker = require "../../engine/worker/engine-worker"
 
 class ME
 
@@ -28,7 +28,7 @@ module.exports = new class WorkerAdapter extends ME
   constructor: ( ) ->
     super
 
-    @worker = new EngineWorker
+    @worker = new Worker "engine-worker.js"
 
     @worker.onerror = ( error ) =>
       console.debug "Worker/res [error]", error
