@@ -51,7 +51,7 @@ ko.components.register "tf-settings",
 
 
     @timeseries.subscribe ( next ) =>
-      @lags { } unless next
+      @lags { 0: true } unless next
 
     @active.subscribe ( next ) ->
       if next then adapter.unsubscribeToChanges()

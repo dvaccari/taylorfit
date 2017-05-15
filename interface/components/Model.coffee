@@ -12,7 +12,7 @@ observable = ( item ) ->
 module.exports = class Model
 
   @transient: [ "candidates",
-  "show_settings", "progress", "timeseries" ]
+  "show_settings", "progress" ]
 
   DEFAULTS =
     id:                 "model"
@@ -23,7 +23,7 @@ module.exports = class Model
     dependent:          0
     multiplicands:      1
     exponents:          1: true
-    lags:               { }
+    lags:               0: true
     candidates:         [ ]
     result:             null
     result_cross:       null
