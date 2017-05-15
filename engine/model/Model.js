@@ -18,7 +18,7 @@ const _exponents      = Symbol('exponents');
 const _multiplicands  = Symbol('multiplicands');
 const _lags           = Symbol('lags');
 const _dependent      = Symbol('dependent');
-const _independent    = Symbol('independent');
+const _use_cols       = Symbol('useCols');
 const _subsets        = Symbol('subsets');
 const _terms          = Symbol('terms');
 const _cand_workers   = Symbol('candWorkers');
@@ -39,7 +39,7 @@ class Model extends CacheMixin(Observable) {
     this[_multiplicands] = [1];
     this[_lags] = [0];
     this[_dependent] = 0;
-    this[_independent] = [];
+    this[_use_cols] = [];
 
     this[_subsets] = {};
     this[_subsets][FIT_LABEL] = [];
@@ -80,10 +80,7 @@ class Model extends CacheMixin(Observable) {
         `Data for '${label}' is not the same shape as '${FIT_LABEL}'`
       );
     } else {
-      this[_independent] = utils.join([
-        utils.range(0, this[_dependent]),
-        utils.range(this[_dependent] + 1, data.shape[1])
-      ]);
+      this[_use_cols] = utils.range(0, data.shape[1]);
     }
 
     this[_data][label] = data;
@@ -102,9 +99,12 @@ class Model extends CacheMixin(Observable) {
 
   getCandidateTerms() {
     // Candidates from exp / mults / lag
+    let independent = this[_use_cols].filter(
+      (col) => col !== this[_dependent]);
+
     let candidates = combos.generateTerms(
       this[_dependent],
-      this[_independent],
+      independent,
       this[_exponents],
       this[_multiplicands],
       this[_lags]
@@ -230,17 +230,18 @@ class Model extends CacheMixin(Observable) {
 
   setDependent(dependent) {
     this[_dependent] = dependent;
-
-    if (this[_data][FIT_LABEL]) {
-      this[_independent] = utils.join([
-        utils.range(0, this[_dependent]),
-        utils.range(this[_dependent] + 1, this[_data][FIT_LABEL].shape[1])
-      ]);
-    }
-
     this[_terms] = [this.termpool.get(INTERCEPT)];
     this.uncache();
     this.fire('setDependent', dependent);
+    return this;
+  }
+
+  setColumns(cols) {
+    this[_use_cols] = cols.slice();
+
+    this[_terms] = [this.termpool.get(INTERCEPT)];
+    this.uncache();
+    this.fire('setColumns', cols);
     return this;
   }
 
