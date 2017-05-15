@@ -23,22 +23,6 @@ ko.components.register "tf-settings",
 
     model = params.model() # now static
 
-    update_multiplicands_max = ( next ) ->
-      active = 0
-      zero = false
-      for key, value of @lags() when ko.unwrap value
-        active++
-        zero = true if key is "0"
-      unless @timeseries() and active
-        @multiplicands_max @ncols - 1
-      else
-        unless zero
-          @multiplicands_max @ncols * active
-        else
-          @multiplicands_max (@ncols - 1) * active + active - 1
-      unless @multiplicands() <= @multiplicands_max()
-        @multiplicands @multiplicands_max()
-
     @active = model.show_settings
     @stats = model.stats
     @exponents = model.exponents
@@ -46,11 +30,25 @@ ko.components.register "tf-settings",
     @lags = model.lags
     @timeseries = model.timeseries
     @candidates = model.candidates
-    @multiplicands_max = model.multiplicands_max
-    @ncols = model.fit().cols().length
 
-    @lags.subscribe update_multiplicands_max, this
-    @timeseries.subscribe update_multiplicands_max, this
+    @multiplicands_max = ko.observable 0
+    ko.computed ( ) =>
+      active = 0
+      zero = false
+      ncols = model.fit().cols().length
+      for key, value of @lags() when ko.unwrap value
+        active++
+        zero = true if key is "0"
+      unless @timeseries() and active
+        @multiplicands_max ncols - 1
+      else
+        unless zero
+          @multiplicands_max ncols * active
+        else
+          @multiplicands_max (ncols - 1) * active + active - 1
+      unless @multiplicands.peek() <= @multiplicands_max()
+        @multiplicands @multiplicands_max()
+
 
     @timeseries.subscribe ( next ) =>
       @lags { } unless next

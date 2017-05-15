@@ -22,7 +22,6 @@ module.exports = class Model
     validation:         null
     dependent:          0
     multiplicands:      1
-    multiplicands_max:  10
     exponents:          1: true
     lags:               { }
     candidates:         [ ]
@@ -45,7 +44,6 @@ module.exports = class Model
     unless @fit()
       throw new Error "model: fit data not defined"
 
-    @multiplicands_max @fit().cols().length - 1
     document.title = "TF - #{@fit().name()}"
     @fit.subscribe ( next ) ->
       document.title = "TF - #{next.name()}"
