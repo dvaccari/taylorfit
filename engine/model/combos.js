@@ -81,10 +81,11 @@ let combinationsFromBins = function(bins, k) {
 let generateTerms = function(dep, indep, exponents, multipliers, lags) {
   let bins = indep.map(
     (i) => utils.join(exponents.map(
-      (e) => [0].concat(lags).map(
+      (e) => lags.map(
         (l) => [i, e, l]))));
 
   // Include dependent column, but only with lag > 0
+  lags = lags.filter((l) => l > 0);
   bins.unshift(utils.join(exponents.map(
     (e) => lags.map(
       (l) => [dep, e, l]))));

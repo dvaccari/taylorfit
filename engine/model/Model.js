@@ -37,7 +37,7 @@ class Model extends CacheMixin(Observable) {
     this[_exponents] = [1];
 
     this[_multiplicands] = [1];
-    this[_lags] = [];
+    this[_lags] = [0];
     this[_dependent] = 0;
     this[_independent] = [];
 
