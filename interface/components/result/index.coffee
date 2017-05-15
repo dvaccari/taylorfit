@@ -11,6 +11,7 @@ ko.components.register "tf-result",
     model = params.model() # now static
 
     @result = model.result
+    @result_cross = model.result_cross
     @fit = model.fit
     @cross = model.cross
     @dependent = model.dependent

@@ -26,7 +26,8 @@ module.exports = class Model
     exponents:          1: true
     lags:               { }
     candidates:         [ ]
-    result:             null # perhaps fit: null, test: null, validation: null ?
+    result:             null
+    result_cross:       null
     show_settings:      false
     timeseries:         false
     progress:           30
@@ -123,9 +124,14 @@ module.exports = class Model
           terms: mapper model.terms, "remove"
           stats: model.stats
           predicted: model.predicted
-          graphdata: model.graphdata
         }
       , 100
+    adapter.on "model:cross", ( model ) =>
+      setTimeout =>
+        @result_cross {
+          stats: model.stats
+          predicted: model.predicted
+        }
 
     adapter.on "model:test", ( model ) =>
       # handle test model
