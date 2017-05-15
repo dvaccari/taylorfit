@@ -36,7 +36,7 @@ ko.components.register "tf-settings",
           @multiplicands_max @ncols * active
         else
           @multiplicands_max (@ncols - 1) * active + active - 1
-      unless @multiplicands() < @multiplicands_max()
+      unless @multiplicands() <= @multiplicands_max()
         @multiplicands @multiplicands_max()
 
     @active = model.show_settings
