@@ -76,17 +76,20 @@ class Term extends CacheMixin() {
       // If we have cross data, use that to compute stats on lstsq
       // Otherwise, just use the fit data
       let regression = lstsq(this.X(FIT_LABEL), this.y(FIT_LABEL));
+      let stats = statistics(regression);
+      let t = stats.t.get(0, stats.t.shape[0]-1);
+      let pt = stats.pt.get(0, stats.pt.shape[0]-1);
 
       Object.assign(regression, {
         X: this.X(CROSS_LABEL),
         y: this.y(CROSS_LABEL)
       });
 
-      let stats = statistics(regression);
+      stats = statistics(regression);
 
       stats.coeff = stats.weights.get(0, stats.weights.shape[0]-1);
-      stats.t = stats.t.get(0, stats.t.shape[0]-1);
-      stats.pt = stats.pt.get(0, stats.pt.shape[0]-1);
+      stats.t = t;
+      stats.pt = pt;
       delete stats.weights;
 
       return stats;

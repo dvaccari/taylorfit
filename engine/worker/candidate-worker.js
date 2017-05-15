@@ -42,13 +42,20 @@ onmessage = ({ data: { fit, cross, candidates, jobId } }) => {
 
     try {
       let regression = lstsq(fit.X, fit.y);
+
+      // Compute stats for fit, then take t and P(t) (these come from fit data)
+      let stats = statistics(regression);
+      let t = stats.t.get(0, stats.t.shape[0]-1);
+      let pt = stats.pt.get(0, stats.pt.shape[0]-1);
+
+      // Then, use the cross data to compute the rest of the statistics
       Object.assign(regression, { X: cross.X, y: cross.y });
 
-      let stats = statistics(regression);
+      stats = statistics(regression);
 
       stats.coeff = stats.weights.get(0, stats.weights.shape[0]-1);
-      stats.t = stats.t.get(0, stats.t.shape[0]-1);
-      stats.pt = stats.pt.get(0, stats.pt.shape[0]-1);
+      stats.t = t;
+      stats.pt = pt;
       delete stats.weights;
 
       return stats;

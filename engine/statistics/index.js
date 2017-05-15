@@ -25,3 +25,13 @@ module.exports = (predefinedStats) => {
   return stats;
 };
 
+module.exports.compute = (stat, args) => {
+  stat = definitions.find((s) => s.name === stat);
+
+  if (stat == null) {
+    throw new ReferenceError('Cannot find statistic \'' + stat + '\'');
+  }
+
+  return stat.calc(args)[stat];
+};
+
