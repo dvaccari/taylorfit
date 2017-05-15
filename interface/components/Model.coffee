@@ -12,7 +12,7 @@ observable = ( item ) ->
 module.exports = class Model
 
   @transient: [ "candidates",
-  "show_settings", "progress", "timeseries" ]
+  "show_settings", "progress" ]
 
   DEFAULTS =
     id:                 "model"
@@ -22,11 +22,11 @@ module.exports = class Model
     validation:         null
     dependent:          0
     multiplicands:      1
-    multiplicands_max:  10
     exponents:          1: true
-    lags:               { }
+    lags:               0: true
     candidates:         [ ]
-    result:             null # perhaps fit: null, test: null, validation: null ?
+    result:             null
+    result_cross:       null
     show_settings:      false
     timeseries:         false
     progress:           30
@@ -44,7 +44,6 @@ module.exports = class Model
     unless @fit()
       throw new Error "model: fit data not defined"
 
-    @multiplicands_max @fit().cols().length - 1
     document.title = "TF - #{@fit().name()}"
     @fit.subscribe ( next ) ->
       document.title = "TF - #{next.name()}"
@@ -123,9 +122,14 @@ module.exports = class Model
           terms: mapper model.terms, "remove"
           stats: model.stats
           predicted: model.predicted
-          graphdata: model.graphdata
         }
       , 100
+    adapter.on "model:cross", ( model ) =>
+      setTimeout =>
+        @result_cross {
+          stats: model.stats
+          predicted: model.predicted
+        }
 
     adapter.on "model:test", ( model ) =>
       # handle test model
