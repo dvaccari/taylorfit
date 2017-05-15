@@ -54,8 +54,8 @@ class Model extends CacheMixin(Observable) {
       this[_cand_workers] = null;
     }
 
-    this[_terms] = [];
     this.termpool = new TermPool(this);
+    this[_terms] = [this.termpool.get(INTERCEPT)];
   }
 
   clear() {
@@ -89,7 +89,7 @@ class Model extends CacheMixin(Observable) {
     this[_data][label] = data;
     this[_subsets][label] = utils.range(0, data.shape[0]);
 
-    this[_terms] = [];
+    this[_terms] = [this.termpool.get(INTERCEPT)];
     this.uncache('X');
     this.uncache('y');
     this.uncache('data');
@@ -238,7 +238,7 @@ class Model extends CacheMixin(Observable) {
       ]);
     }
 
-    this[_terms] = [];
+    this[_terms] = [this.termpool.get(INTERCEPT)];
     this.uncache();
     this.fire('setDependent', dependent);
     return this;
