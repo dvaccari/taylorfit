@@ -6,10 +6,7 @@ const statistics      = require('../statistics');
 const utils           = require('../utils');
 const perf            = require('../perf');
 const Observable      = require('../observable');
-const {
-  FIT_LABEL,
-  CROSS_LABEL
-}                     = require('../labels.json');
+const { FIT_LABEL }   = require('../labels.json');
 
 const CandidateWorker = require('./CandidateWorker');
 const TermPool        = require('./TermPool');
@@ -24,7 +21,6 @@ const _dependent      = Symbol('dependent');
 const _independent    = Symbol('independent');
 const _subsets        = Symbol('subsets');
 const _terms          = Symbol('terms');
-const _cache          = Symbol('cache');
 const _cand_workers   = Symbol('candWorkers');
 
 const INTERCEPT       = [[0, 0, 0]];
@@ -94,9 +90,9 @@ class Model extends CacheMixin(Observable) {
     this[_subsets][label] = utils.range(0, data.shape[0]);
 
     this[_terms] = [];
-    this.uncache('X', label);
-    this.uncache('y', label);
-    this.uncache('data', label);
+    this.uncache('X');
+    this.uncache('y');
+    this.uncache('data');
     this.uncache('highestLag');
 
     this.termpool.uncache();
