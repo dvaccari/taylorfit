@@ -12,7 +12,9 @@
     // /ko
   tf-counter.multiplicands(params="name:'Max Multiplicands',value:multiplicands,max:multiplicands_max")
   tf-multiselect.exponents(params="name:'Exponents',values:exponents,fixed:['1']")
+  // ko if:timeseries
   tf-multiselect.lags(params="name:'Lags',values:lags")
+  // /ko
   span.title Advanced
   tf-checkbox(params="name:'Time Series',value:timeseries")
   tf-counter(params="name:'Display Precision',value:ko.precision,min:1,max:9")
@@ -21,8 +23,6 @@
     | Clear Project
   span.button.warning(data-bind="click:clear_model")
     | Clear Model
-  //span.button.export-dataset(data-bind="click:download_dataset")
-  //  | Export Data
   span.button.export-model(data-bind="click:download_model")
     | Export Project
   a.button.manual(href="resources/TaylorFit Manual 2017.pdf" target="window")

@@ -26,9 +26,9 @@ ko.components.register "tf-settings",
     update_multiplicands_max = ( next ) ->
       active = 0
       zero = false
-      for key, value of @lags()
-        if value() then active++
-        if value() and key == '0' then zero = true
+      for key, value of @lags() when ko.unwrap value
+        active++
+        zero = true if key is "0"
       unless @timeseries() and active
         @multiplicands_max @ncols - 1
       else
@@ -52,14 +52,12 @@ ko.components.register "tf-settings",
     @lags.subscribe update_multiplicands_max, this
     @timeseries.subscribe update_multiplicands_max, this
 
+    @timeseries.subscribe ( next ) =>
+      @lags { } unless next
+
     @active.subscribe ( next ) ->
       if next then adapter.unsubscribeToChanges()
       else adapter.subscribeToChanges()
-
-    @download_dataset = ( ) ->
-      model = params.model()
-      download (model.id() or "model") + ".csv",
-        "type/csv", model.toCSV()
 
     @download_model = ( ) ->
       model = params.model()

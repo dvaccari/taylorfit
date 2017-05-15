@@ -20,12 +20,14 @@ ko.components.register "tf-result",
       cross = @cross()?.rows()
       unless result then return [ ]
       data = [ ]; pred = result.predicted
+      rows = @fit().rows()
+      diff = rows.length - pred.length
       dep = @dependent()
       # TODO: use coffee for creation
-      for row, index in @fit().rows()
-        p = pred[index]
+      for p, index in pred
+        row = rows[index + diff]
         res = [ p, row[dep] - p ]
-        if cross then res.push cross[index][dep] - p
+        if cross then res.push cross[index + diff][dep] - p
         data.push res
       return data
 
