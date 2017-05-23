@@ -13,7 +13,11 @@ tf-pager(params="source:source,result:result")
         // ko if:!global && sort && selected()
         th
           div.centering
-            div.fixing(data-bind="text:name,click:function(){$parent.sortby($data)}")
+            div.fixing(data-bind="click:function(){$parent.sortby($data)}")
+              span(data-bind="text:name")
+              // ko if: sorting
+              i.fa.fa-sort
+              // /ko
         // /ko
         // /ko
 

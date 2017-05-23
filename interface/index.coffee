@@ -28,6 +28,7 @@ adapter.on "statisticsMetadata", ( data ) ->
         sort: stat.sort or ">"
         default: stat.default
         selected: ko.observable stat.default is true
+        sorting: ko.observable false
         format: stat.format or "float"
 adapter.requestStatisticsMetadata()
 
@@ -38,6 +39,3 @@ document.body.appendChild \
   document.createElement "tf-app"
 
 ko.applyBindings()
-
-
-

@@ -55,4 +55,3 @@ ko.components.register "tf-grid",
       return undefined
 
     return this
-

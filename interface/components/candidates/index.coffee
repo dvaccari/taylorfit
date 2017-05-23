@@ -47,7 +47,9 @@ ko.components.register "tf-candidates",
         .style.minWidth = "calc(100% - #{next}px)"
 
     @sortby = ( stat ) =>
-      console.log "SORT", stat
+      for s in allstats()
+        s.sorting false
+      stat.sorting true
       @sort sortBy stat
 
     # Whenever a statistic is discovered, subscribe to when it is selected
