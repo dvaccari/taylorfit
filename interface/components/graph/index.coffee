@@ -14,8 +14,11 @@ ko.components.register "tf-graph",
       data = params.data
 
       data.subscribe ( next ) ->
-        chart.load
-          rows: [["x", "y", "y2" ]].concat next
+        try
+          chart.load
+            rows: [["x", "y", "y2" ]].concat next
+        catch error
+          console.error error
 
       chart = c3.generate
         data:

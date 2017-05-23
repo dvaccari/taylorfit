@@ -9,47 +9,53 @@ tf-checkbox
     vertical-align middle
     margin-right 5px
 
-  & > a.checkbox
-    vertical-align middle
-    background rgba(black, 0.1)
-    box-shadow 0 0 0 2px rgba(black, 0.3)
-    padding 2px 12px
-    margin 4px
-    border-radius 1000px
-    transition 300ms
-    cursor pointer
-    user-select none
-    display inline-block
-    position relative
-    overflow hidden
+  & > .box
+    & > .before
+    & > .after
+      font-size 10pt
+      color grey
+      margin 5px
+      text-transform uppercase
 
-    height 15px
-    width 20px
-
-    &:before, &:after
-      content ''
-      position absolute
-      top 0
-      height 19px
-      width 19px
+    & > a.checkbox
+      vertical-align middle
+      background rgba(black, 0.1)
+      box-shadow 0 0 0 2px rgba(black, 0.3)
+      padding 2px 12px
+      margin 4px
       border-radius 1000px
-      transition left 150ms
-      box-sizing border-box
+      transition 300ms
+      cursor pointer
+      user-select none
+      display inline-block
+      position relative
+      overflow hidden
 
-    &:before
-      width 44px
-      left -25px
-      background lightgreen
+      height 15px
+      width 20px
 
-    &:after
-      left 0
-      background green
+      &:before, &:after
+        content ''
+        position absolute
+        top 0
+        height 19px
+        width 19px
+        border-radius 1000px
+        transition left 150ms
+        box-sizing border-box
 
-    &.active
       &:before
-        left 0
+        width 44px
+        left -25px
+        background lightgreen
 
       &:after
-        left 25px
+        left 0
+        background green
 
+      &.active
+        &:before
+          left 0
 
+        &:after
+          left 25px
