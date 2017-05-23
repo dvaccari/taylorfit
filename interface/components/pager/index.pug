@@ -1,6 +1,6 @@
 
 // ko if:hasFirst
-span.first.fa.fa-angle-double-left(data-bind="click:first")
+span.first(data-bind="click:first") 1
 // /ko
 
 // ko if:hasPrev
@@ -16,5 +16,5 @@ span.next.fa.fa-angle-right(data-bind="click:next")
 // /ko
 
 // ko if:hasLast
-span.last.fa.fa-angle-double-right(data-bind="click:last")
+span.last(data-bind="click:last,text:length")
 // /ko
