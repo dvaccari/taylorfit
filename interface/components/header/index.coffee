@@ -11,9 +11,7 @@ ko.components.register "tf-header",
     @model = params.model
 
     @toggle_settings = ( ) ->
-      params.model().show_settings not \
-        params.model().show_settings()
+      settings = params.model().show_settings
+      settings not settings()
 
     return this
-
-

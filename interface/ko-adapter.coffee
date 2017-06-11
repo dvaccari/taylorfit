@@ -5,21 +5,28 @@ ko.isObservableArray ?= ( value ) ->
   ko.isObservable(value) and
   value.push instanceof Function
 
-ko.virtualElements.allowedBindings.each = true
-ko.bindingHandlers.each =
-  transform: ( obj ) ->
-    properties = [ ]
-    ko.utils.objectForEach obj, ( key, value ) ->
-      properties.push $key: key, $value: value
-    return properties
-  init: ( element, accessor, all, view, context ) ->
-    properties = ko.pureComputed ( ) ->
-      obj = ko.utils.unwrapObservable accessor()
-      ko.bindingHandlers.each.transform obj
-    ko.applyBindingsToNode element,
-      { foreach: properties }, context
+iteration_binding = ( name, transform ) ->
+  ko.virtualElements.allowedBindings[name] = true
+  ko.bindingHandlers[name] =
+    init: ( element, accessor, all, view, context ) ->
+      properties = ko.pureComputed ( ) ->
+        transform ko.utils.unwrapObservable accessor()
+      ko.applyBindingsToNode element,
+        { foreach: properties }, context
+      return controlsDescendantBindings: true
 
-    return controlsDescendantBindings: true
+iteration_binding "iter", ( obj ) ->
+  # object should have from, to, by
+  _from = ko.unwrap obj.from or 0
+  _to = ko.unwrap obj.to
+  _by = ko.unwrap obj.by or 1
+  {index} for index in [_from.._to] by _by
+
+iteration_binding "each", ( obj ) ->
+  properties = [ ]
+  ko.utils.objectForEach obj, ( key, value ) ->
+    properties.push $key: key, $value: value
+  return properties
 
 ko.precision = ko.observable 5
 

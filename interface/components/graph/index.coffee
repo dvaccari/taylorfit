@@ -16,7 +16,7 @@ ko.components.register "tf-graph",
       data.subscribe ( next ) ->
         try
           chart.load
-            rows: [["x", "y", "y2" ]].concat next
+            rows: [["x", "y", "x2", "y2" ]].concat next
         catch error
           console.error error
 
@@ -25,8 +25,8 @@ ko.components.register "tf-graph",
           type: "scatter"
           xs:
             y: "x"
-            y2: "x"
-          rows: [["x", "y", "y2"]].concat data() or [ 0, 0, 0 ]
+            y2: "x2"
+          rows: [["x", "y", "x2", "y2"]].concat data() or [ 0, 0, 0 ]
         axis:
           x:
             label:

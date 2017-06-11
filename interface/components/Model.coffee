@@ -1,99 +1,116 @@
 
-Papa = require "papaparse"
+WRAP_O = ( v ) -> ko.observable v
+WRAP_A = ( v ) -> ko.observableArray v
+UNWRAP = ( v ) -> ko.unwrap v
+UNWRAP_O = ( v ) ->
+  o = ko.unwrap v
+  for k of o
+    o[k] = ko.unwrap o[k]
+  return o
+IGNORE = ( v ) -> undefined
+DATA = ( type ) -> ( v ) ->
+  o = ko.observable()
+  o.subscribe ( next ) ->
+    return unless next?.length
+    adapter.setData next, type
+  o v
+  return o
+SEND = ( name, converter ) -> ( v ) ->
+  o = ko.observable()
+  o.subscribe ( next ) ->
+    adapter[name] converter next
+  o v
+  return o
 
-observable = ( item ) ->
-  if item?.constructor is Object and item.rows
-    for k, v of item
-      item[k] = observable v
-  if item instanceof Array
-  then ko.observableArray item
-  else ko.observable item
+object2array = ( exps ) ->
+  Number key for key, value of ko.unwrap exps \
+  when ko.unwrap value
+
+CTRL =
+  id:
+    [ "model"     , WRAP_O                            , UNWRAP ]
+  name:
+    [ "New Model" , WRAP_O                            , UNWRAP ]
+
+  progress:
+    [ 0           , WRAP_O                            , IGNORE ]
+  show_settings:
+    [ false       , WRAP_O                            , IGNORE ]
+
+  columns:
+    [ [ ]         , WRAP_A                            , UNWRAP ]
+  data_fit:
+    [ undefined   , DATA("fit")                       , UNWRAP ]
+  data_cross:
+    [ undefined   , DATA("cross")                     , UNWRAP ]
+  data_valid:
+    [ undefined   , DATA("validation")                , UNWRAP ]
+
+  candidates:
+    [ [ ]         , WRAP_A                            , IGNORE ]
+
+  result_fit:
+    [ undefined   , WRAP_O                            , UNWRAP ]
+  result_cross:
+    [ undefined   , WRAP_O                            , IGNORE ]
+  result_valid:
+    [ undefined   , WRAP_O                            , IGNORE ]
+
+  dependent:
+    [ 0           , SEND("setDependent", Number)      , UNWRAP ]
+  multiplicands:
+    [ 1           , SEND("setMultiplicands", Number)  , UNWRAP ]
+
+  exponents:
+    [ 1: true     , SEND("setExponents", object2array), UNWRAP_O ]
+  timeseries:
+    [ false       , WRAP_O                            , UNWRAP ]
+  lags:
+    [ 0: true     , SEND("setLags"     , object2array), UNWRAP_O ]
+
 
 module.exports = class Model
 
-  @transient: [ "candidates",
-  "show_settings", "progress" ]
+  constructor: ( o ) ->
 
-  DEFAULTS =
-    id:                 "model"
-    name:               "New Model"
-    fit:                null
-    cross:              null
-    validation:         null
-    dependent:          0
-    multiplicands:      1
-    exponents:          1: true
-    lags:               0: true
-    candidates:         [ ]
-    result:             null
-    result_cross:       null
-    show_settings:      false
-    timeseries:         false
-    progress:           30
+    console.debug "model/input", o
 
-  constructor: ( options ) ->
-    for key, value of DEFAULTS
-      value = observable options[key] or value
-      Object.defineProperty this, key,
-        { value, enumerable: true }
+    adapter.unsubscribeToChanges()
 
-    exponents2array = ( exps ) ->
-      Number key for key, value of exps \
-      when ko.unwrap value
+    for k, v of CTRL
+      @[k] = v[1] if o.hasOwnProperty k
+      then o[k] else v[0]
 
-    unless @fit()
-      throw new Error "model: fit data not defined"
+    result = ko.unwrap @result_fit
+    if result?.terms?
+      for { term } in result.terms
+        adapter.addTerm term.map ({ index, exp, lag }) ->
+          [index, exp, lag]
 
-    document.title = "TF - #{@fit().name()}"
-    @fit.subscribe ( next ) ->
-      document.title = "TF - #{next.name()}"
-    @fit().rows.subscribe init = ( next ) =>
-      return unless next.length
-      adapter.setData next
-    @dependent.subscribe ( next ) =>
-      return unless @fit().rows().length
-      adapter.setDependent Number next
-    @multiplicands.subscribe ( next ) ->
-      adapter.setMultiplicands Number next
-    @exponents.subscribe ( next ) ->
-      adapter.setExponents exponents2array next
-    @lags.subscribe ( next ) ->
-      adapter.setLags exponents2array next
-    @cross.subscribe observable
-    @validation.subscribe observable
+    adapter.subscribeToChanges()
 
-    @result.subscribe ( next ) =>
-      unless next?.terms.length
-        @result null
+    for type in [ "fit", "cross", "valid" ]
+      do ( type ) =>
+        @["extra_#{type}"] = ko.computed ( ) =>
 
-    @cross.subscribe ( next ) ->
-      if next
-        adapter.setData next.rows(), "cross"
+          data = @["data_#{type}"]()
+          res = @["result_#{type}"]()
+          if res
+            pred = (NaN for i in [0...res.lag]).concat res.predicted
 
-    if @fit().rows().length
-      # Don't compute candidates or the model right now
-      adapter.unsubscribeToChanges()
+          if (not data) or (not pred) then return undefined
 
-      adapter.setData @fit().rows()
-      if cross = @cross()
-        adapter.setData cross.rows(), "cross"
-      adapter.setDependent @dependent()
-      adapter.setMultiplicands @multiplicands()
-      adapter.setExponents exponents2array @exponents()
-      adapter.setLags exponents2array @lags()
+          results = [ ]
+          dep = @dependent()
 
-      # Tell model which terms have been restored from localStorage
-      result = @result()
-      if result?.terms?
-        for { term } in result.terms
-          term = term.map ({ index, exp, lag }) -> [index, exp, lag]
-          adapter.addTerm term
+          for row, index in data
+            d = row[dep]; p = pred[index]
+            results.push [ d, p, d - p ]
 
-      # Subscribe, and also compute the model & candidates
-      adapter.subscribeToChanges()
+          return results
 
     mapper = ( terms, fn ) =>
-      cols = ko.unwrap @fit().cols
+      cols = ko.unwrap @columns
       terms.map ( t ) =>
         return t if t.selected?
         result =
@@ -118,43 +135,33 @@ module.exports = class Model
 
     adapter.on "model:fit", ( model ) =>
       setTimeout =>
-        @result {
+        @result_fit
+          lag: model.highestLag
           terms: mapper model.terms, "remove"
           stats: model.stats
           predicted: model.predicted
-        }
       , 100
     adapter.on "model:cross", ( model ) =>
       setTimeout =>
-        @result_cross {
+        @result_cross
           stats: model.stats
           predicted: model.predicted
-        }
-
-    adapter.on "model:test", ( model ) =>
-      # handle test model
-
+      , 100
     adapter.on "model:validation", ( model ) =>
-      # handle validation model
+      setTimeout =>
+        @result_valid
+          stats: model.stats
+          predicted: model.predicted
+      , 100
 
     adapter.on "progress", ( { curr, total } ) =>
       @progress 100 * curr / total
     adapter.on "progress.end", ( ) =>
       @progress 100
 
-  toJSON: ( ) ->
-    shallow = { }
-    for own key, value of this
-      shallow[key] = value
-    for term in Model.transient
-      delete shallow[term]
-    ko.toJSON shallow
-
-  toJS: ( ) ->
-    ko.toJS this
-
-  toCSV: ( ) ->
-    data = @rows()
-    data.unshift _.map @cols(), "name"
-    Papa.unparse data
-
+  out: ( ) ->
+    result = { }
+    for k, v of CTRL
+      if v = v[2] @[k]
+        result[k] = v
+    return result

@@ -1,4 +1,4 @@
-// ko if:(result && result())
+// ko if:(result_fit && result_fit())
 .table-wrapper
   table.terms
     thead
@@ -10,7 +10,7 @@
         th(data-bind="text: name")
         // /ko
     tbody
-      // ko foreach: result().terms
+      // ko foreach: result_fit().terms
       tr
         td.term
           span.remove.fa.fa-close(data-bind="click:function(){selected(true)}")
@@ -53,7 +53,7 @@
         th Cross
         // /ko
     tbody
-      // ko with:{fit:result, cross:result_cross}
+      // ko with:{fit:result_fit, cross:result_cross}
       // ko foreach:allstats
       // ko ifnot:candidate
       tr.stat
@@ -70,7 +70,6 @@
   tf-graph(params="data:graphdata,ylabel:'Residuals',xlabel:'Predicted Values'")
 
 // /ko
-// ko ifnot:(result && result())
+// ko ifnot:(result_fit && result_fit())
 span.nomodel Select candidate terms to create a model.
 // /ko
-

@@ -4,11 +4,8 @@ require "./index.styl"
 ko.components.register "tf-pager",
   template: do require "./index.pug"
   viewModel: ( params ) ->
-    unless ko.isObservableArray params.source
-      throw new TypeError "components/pager: source must be observable array"
-
-    unless ko.isObservableArray params.result
-      throw new TypeError "components/pager: result must be observable array"
+    unless ko.isObservable params.source
+      throw new TypeError "components/pager: source must be observable"
 
     unless ko.isObservable params.pagesize
       params.pagesize = ko.observable params.pagesize or 10
@@ -16,16 +13,15 @@ ko.components.register "tf-pager",
     @pagesize = params.pagesize
 
     @source = params.source
-    @result = params.result
 
     @current = ko.observable null
 
     ko.computed ( ) =>
       pagesize = @pagesize()
       start = @current() * pagesize
-      if ko.isObservable params.start
-        params.start start
-      @result @source().slice start, start + pagesize
+      params.start? start
+      params.end? Math.min start + pagesize - 1, @source().length - 1
+      params.result? @source().slice start, start + pagesize
       return undefined
 
     # invoke computation

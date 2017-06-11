@@ -1,6 +1,6 @@
 
 span.title(data-bind="text:name")
-tf-pager(params="source:rows,result:result,start:start")
+tf-pager(params="source:rows,start:start,end:end")
 a.save(data-bind="click:save") Export Data
 // ko if:table != "fit"
 a.clear(data-bind="click:clear") Clear Data
@@ -24,17 +24,19 @@ table.grid
           span.mark(data-bind="click:function(){dependent($index())}")
             | Mark as Dependant
       // /ko
-      // ko if:results
+    
+      // ko if: extra
       th.dep Dependent
       th.prd Predicted
       th.err Residual
       // /ko
   tbody
-    // ko foreach:result
+    // ko iter:{from:start,to:end}
     tr
       td.static
-        span(data-bind="text:1+$parent.start()+$index()")
-      // ko foreach: $data
+        span(data-bind="text:1+index")
+      
+      // ko foreach: $parent.rows()[index]
       td
         // ko if: $data !== null && $data !== ""
         span(data-bind="float:$data")
@@ -43,6 +45,14 @@ table.grid
         span.placeholder No Data
         // /ko
       // /ko
+      // ko if:$parent.extra
+      // ko foreach: $parent.extra()[index]
+      td
+        span(data-bind="float:$data")
+      // /ko
+      // /ko
+      
+    //-
       // ko if:$parent.results
       // ko with:{dep:$data[$parent.dependent()], pred:(r = $parent.results()) ? r.predicted[$index()] : null}
       td.dep(data-bind="float:dep")
@@ -51,4 +61,3 @@ table.grid
       // /ko
       // /ko
     // /ko
-

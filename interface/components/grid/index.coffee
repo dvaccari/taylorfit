@@ -14,36 +14,29 @@ ko.components.register "tf-grid",
 
     @name = params.name
     @table = params.table
-    @result_table = params.result_table or "result"
-    @result = ko.observableArray [ ]
     @start = ko.observable 0
+    @end = ko.observable 0
 
     model       = params.model() # now static
     @dependent  = model.dependent
-    @results    = model[@result_table]
-    @tbl        = model[@table]
-    @cols       = @tbl().cols
-    @rows       = @tbl().rows
+    @cols       = model.columns
+    @rows       = model["data_#{@table}"]
+    @extra      = model["extra_#{@table}"]
+    @result     = model["result_#{@table}"]
 
-    console.log(@result_table, @results())
-
-    # TODO: make this computed data for rows
-    # to avoid strange logic in save and jade
     @clear = ( ) =>
-      @tbl null
+      try @rows null
+      try @result null
+      return undefined
 
     @save = ( ) =>
-      csv = @cols()
-        .map ( v ) -> v.name
-        .concat [ "Dependent", "Predicted", "Residual" ]
-        .join ","
-
-      pred = @results().predicted
-      dep = @dependent()
-
-      for row, index in @rows()
-        d = row[dep]; p = pred[index]
-        csv += "\n" + row.concat([d, p, d - p]).join ","
+      cols = @cols(); rows = @rows(); extra = @extra()
+      csv = @cols().map(( v ) -> v.name).join ","
+      if extra
+        csv += ",Dependent,Predicted,Residual"
+      for row, index in rows
+        csv += "\n" + row.join ","
+        if extra then csv += "," + extra[index].join ","
 
       blob = new Blob [ csv ]
       uri = URL.createObjectURL blob

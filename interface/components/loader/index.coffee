@@ -23,7 +23,7 @@ read_csv = ( file ) ->
           else cols = new Array(rows[0].length).fill ""
           cols = cols.map ( name, index ) -> { name, index }
 
-          name = _.startCase file.name.replace /.csv$/, ""
+          name = file.name
           accept { name, rows, cols }
 
 
@@ -55,9 +55,14 @@ ko.components.register "tf-loader",
       read_csv document.getElementById(@id).files[0]
       .then ( model ) =>
         if @init
-          params.model new Model "#{@table}": model
+          params.model new Model
+            "data_#{@table}": model.rows
+            name: model.name
+            columns: model.cols
         else
-          params.model()[@table] model
+          m = params.model()
+          # TODO: check for column length
+          m["data_#{@table}"] model.rows
 
     # --- for loading entire model
     unless @init
@@ -67,4 +72,3 @@ ko.components.register "tf-loader",
         .then ( model ) -> params.model new Model model
 
     return this
-

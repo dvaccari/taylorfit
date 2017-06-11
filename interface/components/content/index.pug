@@ -13,18 +13,18 @@ span.wrapper
     .data-pane
       tf-grid(params="model:model,table:'fit',name:'Fit Data'")
 
-      // ko ifnot:model().cross
+      // ko ifnot:model().data_cross
       tf-loader(params="model:model,table:'cross'")
       // /ko
-      // ko if:model().cross
+      // ko if:model().data_cross
       tf-grid(params="model:model,table:'cross',name:'Cross Data',result_table:'result_cross'")
       // /ko
 
-      // ko ifnot:model().validation
+      // ko ifnot:model().data_validation
       tf-loader(params="model:model,table:'validation'")
       // /ko
-      // ko if:model().validation
-      tf-grid(params="model:model,table:'validation',name:'Validation Data'")
+      // ko if:model().data_validation
+      tf-grid(params="model:model,table:'validation',name:'Validation Data',result_table:'result_valid'")
       // /ko
 
       span.buffer

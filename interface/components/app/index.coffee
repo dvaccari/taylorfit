@@ -7,8 +7,8 @@ ko.components.register "tf-app",
   viewModel: ( params ) ->
 
     update = ( model ) ->
-      if json = model?.toJSON()
-        localStorage?.setItem "tf-model", json
+      if json = model?.out()
+        localStorage?.setItem "tf-model", JSON.stringify json
       else
         localStorage?.removeItem "tf-model"
         adapter.clear()
@@ -18,7 +18,7 @@ ko.components.register "tf-app",
 
     register = ( model ) ->
       for own key, value of model
-        if not (key in Model.transient) and ko.isObservable value
+        if ko.isObservable value
           value.subscribe ( ) -> update model
 
     if model = localStorage?.getItem "tf-model"
@@ -33,4 +33,3 @@ ko.components.register "tf-app",
       register next
 
     return this
-

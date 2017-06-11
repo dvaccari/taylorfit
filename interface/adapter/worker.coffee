@@ -9,6 +9,9 @@ class ME
     @listeners = { }
     undefined
 
+  reset: ( ) ->
+    @listners = { }
+
   on: ( target, listener ) ->
     (@listeners[target] or= [ ]).push listener
     undefined
@@ -76,4 +79,3 @@ module.exports = new class WorkerAdapter extends ME
 
   clear: ( ) ->
     @post "clear"
-

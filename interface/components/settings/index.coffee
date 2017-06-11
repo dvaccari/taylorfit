@@ -24,7 +24,7 @@ ko.components.register "tf-settings",
     model = params.model() # now static
 
     @active = model.show_settings
-    @stats = model.stats
+
     @exponents = model.exponents
     @multiplicands = model.multiplicands
     @lags = model.lags
@@ -35,7 +35,7 @@ ko.components.register "tf-settings",
     ko.computed ( ) =>
       active = 0
       zero = false
-      ncols = model.fit().cols().length
+      ncols = model.columns().length
       for key, value of @lags() when ko.unwrap value
         active++
         zero = true if key is "0"
@@ -60,14 +60,14 @@ ko.components.register "tf-settings",
     @download_model = ( ) ->
       model = params.model()
       download (model.id() or "model") + ".tf",
-        "application/json", model.toJSON()
+        "application/json", model.out()
 
     @clear_project = ( ) ->
       params.model null
+      adapter.reset()
 
     @clear_model = ( ) ->
       params.model().result null
       adapter.clear()
 
     return this
-
