@@ -101,7 +101,7 @@ class CandidateWorker {
         }
 
         return { fit, lag, cross };
-      }).filter(term => term.fit); // Filter out items that failed to find a fit such as -1 exponents with 0 divisors
+      });
 
       this.worker.postMessage({
         fit,

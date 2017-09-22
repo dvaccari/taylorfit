@@ -111,7 +111,8 @@ module.exports = class Model
 
     mapper = ( terms, fn ) =>
       cols = ko.unwrap @columns
-      terms.map ( t ) =>
+      # filter out terms that couldn't get a coefficient calculated
+      terms.filter((t) => t.coeff).map (t) =>
         return t if t.selected?
         result =
           selected: ko.observable false
