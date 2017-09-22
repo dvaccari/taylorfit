@@ -17,6 +17,11 @@ to download or install anything and no need to create an account. In order to
 be reasonably efficient, TaylorFit utilizes specific JavaScript primitives and
 browser capabilities that emulate native execution.
 
+## Frameworks used
+
+- Knockoutjs
+- CoffeeScript
+
 ## Installation
 
 1. Ensure npm is installed

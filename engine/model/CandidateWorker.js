@@ -63,6 +63,7 @@ class CandidateWorker {
       );
       perf.start('candidate-worker');
 
+      // 2d array of each column and its values
       let transferables = [];
 
       let fit = {
@@ -81,7 +82,11 @@ class CandidateWorker {
       }
 
       let unwrappedCandidates = candidates.map((term) => {
-        let fit = unwrapMatrix(term.col(FIT_LABEL));
+        let fit;
+        try {
+          fit = unwrapMatrix(term.col(FIT_LABEL));
+        } catch (e) {}
+        
         let lag = Math.max(this.model.highestLag(), term.lag);
         let cross;
 
@@ -91,10 +96,12 @@ class CandidateWorker {
           cross = fit;
         }
 
-        transferables.push(fit.data, cross.data);
+        if (fit) {
+          transferables.push(fit.data, cross.data);
+        }
 
         return { fit, lag, cross };
-      });
+      }).filter(term => term.fit); // Filter out items that failed to find a fit such as -1 exponents with 0 divisors
 
       this.worker.postMessage({
         fit,
