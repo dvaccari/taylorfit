@@ -165,4 +165,4 @@ module.exports = class Model
     for k, v of CTRL
       if v = v[2] @[k]
         result[k] = v
-    return result
+    return JSON.stringify(result)
