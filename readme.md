@@ -37,3 +37,12 @@ browser capabilities that emulate native execution.
     - Run `npm run debug` to start the development server (includes hot reloading)
     - Run `npm start` to start the production server
 7. Run `npm run test` to run the test suite
+
+## Export to gh-pages
+
+1. Run `npm run build`
+2. Copy the build directory
+3. Run `git checkout gh-pages`
+4. Paste the build directory files into the main directory
+5. Push up the code
+6. Run `git checkout master`
