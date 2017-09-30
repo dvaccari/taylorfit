@@ -8,7 +8,7 @@ ko.components.register "tf-app",
 
     update = ( model ) ->
       if json = model?.out()
-        localStorage?.setItem "tf-model", JSON.stringify json
+        localStorage?.setItem "tf-model", json
       else
         localStorage?.removeItem "tf-model"
         adapter.clear()
