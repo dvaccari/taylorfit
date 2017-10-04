@@ -22,6 +22,10 @@ onmessage = ({ data: { fit, cross, candidates, jobId } }) => {
   let model = { fit, cross };
 
   let results = candidates.map(({ fit, cross, lag }, i) => {
+    // Can't find a fit if exponent is -1 and divisor is 0
+    if (!fit) {
+      return NaN;
+    }
     // reconstruct matrices (they were deconstructed for transport)
     fit = {
       X: model.fit.X

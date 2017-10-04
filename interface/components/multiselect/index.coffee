@@ -36,7 +36,7 @@ ko.components.register "tf-multiselect",
     @toggle = ( name ) =>
       values = @values()
       unless name in @fixed
-        values[name] not values[name]()
+        values[name] = not values[name]
         @update name
 
     @delete = ( name ) =>

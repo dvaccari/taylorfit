@@ -65,7 +65,7 @@ ko.components.register "tf-loader",
           m["data_#{@table}"] model.rows
 
     # --- for loading entire model
-    unless @init
+    if @init
       @model = ko.observable null
       @model.subscribe ( next ) ->
         read_model document.getElementById("input-model").files[0]
