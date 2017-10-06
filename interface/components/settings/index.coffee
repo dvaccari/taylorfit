@@ -1,5 +1,6 @@
 
 require "./index.styl"
+Model = require "../Model"
 
 download = ( name, type, content ) ->
   a = document.createElement "a"
@@ -67,7 +68,13 @@ ko.components.register "tf-settings",
       adapter.reset()
 
     @clear_model = ( ) ->
-      params.model().result null
+      model.result_fit(null)
+      model.exponents({1: true})
+      model.multiplicands(1)
+      model.lags({0: true})
+      model.show_settings(false)
+      model.timeseries(false)
       adapter.clear()
+      adapter.addTerm([[0, 0, 0]])
 
     return this
