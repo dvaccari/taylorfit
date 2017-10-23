@@ -64,17 +64,23 @@ ko.components.register "tf-settings",
         "application/json", model.out()
 
     @clear_project = ( ) ->
+      @clear_settings()
       params.model null
       adapter.reset()
 
     @clear_model = ( ) ->
       model.result_fit(null)
+      model.show_settings(false)
+      adapter.clear()
+      adapter.addTerm([[0, 0, 0]])
+
+    @clear_settings = ( ) ->
       model.exponents({1: true})
       model.multiplicands(1)
       model.lags({0: true})
-      model.show_settings(false)
       model.timeseries(false)
-      adapter.clear()
-      adapter.addTerm([[0, 0, 0]])
+      ko.precision(5)
+      # Clear the selected stats to the default
+      allstats().forEach((stat) => stat.selected(stat.default))
 
     return this
