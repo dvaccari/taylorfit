@@ -21,21 +21,32 @@ ko.components.register "tf-histogram",
     @close = ( ) ->
       model.show_histogram undefined
 
+    @bucket_size = ko.observable(10);
+
     @charthtml = ko.computed () =>
-      column = []
-      if @column_index()
-        column = [@column_name()].concat(
-          model.data_fit().map((row) => row[@column_index()])
-        )
+      unless @active()
+        return ""
+
+      sorted = model.data_fit().map((row) => row[@column_index()]).sort((a, b) => a - b)
+      min = sorted[0]
+      max = sorted[sorted.length - 1] + 1
+      buckets = Array(@bucket_size()).fill(0)
+      bucket_width = Math.ceil((max - min) / @bucket_size())
+      sorted.forEach((x) => buckets[Math.floor((x - min) / bucket_width)]++)
+      labels = Array(@bucket_size()).fill(0).map((x, index) => index * bucket_width + min)
+
       chart = c3.generate
         bindto: "#histogram"
         data:
+          x: "x"
           columns: [
-            column
+            ["x"].concat(labels),
+            [@column_name()].concat(buckets)
           ]
           type: "bar"
         size:
           height: 370
+          width: 600
         legend:
           show: false
 
@@ -44,5 +55,8 @@ ko.components.register "tf-histogram",
     @column_index.subscribe ( next ) =>
       if next then adapter.unsubscribeToChanges()
       else adapter.subscribeToChanges()
+
+    @inc = ( ) -> @bucket_size @bucket_size() + 1
+    @dec = ( ) -> @bucket_size ((@bucket_size() - 1) || 1)
 
     return this
