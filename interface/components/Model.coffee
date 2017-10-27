@@ -36,6 +36,8 @@ CTRL =
     [ 0           , WRAP_O                            , IGNORE ]
   show_settings:
     [ false       , WRAP_O                            , IGNORE ]
+  show_histogram:
+    [ undefined   , WRAP_O                            , IGNORE ]
 
   columns:
     [ [ ]         , WRAP_A                            , UNWRAP ]

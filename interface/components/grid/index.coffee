@@ -29,6 +29,9 @@ ko.components.register "tf-grid",
       try @result null
       return undefined
 
+    @histogram = ( index ) ->
+      model.show_histogram(index)
+
     @save = ( ) =>
       cols = @cols(); rows = @rows(); extra = @extra()
       csv = @cols().map(( v ) -> v.name).join ","

@@ -23,6 +23,8 @@ table.grid
         tf-dropdown(params="shallow:1,align:'right'")
           span.mark(data-bind="click:function(){dependent($index())}")
             | Mark as Dependant
+          span.mark(data-bind="click:function(){histogram($index())}")
+            | Histogram
       // /ko
     
       // ko if: extra

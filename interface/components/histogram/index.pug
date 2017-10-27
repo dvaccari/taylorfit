@@ -1,0 +1,4 @@
+.background(data-bind="css:{active:active}, click:close")
+.histogram(data-bind="css:{active:active}")
+  span.title(data-bind="text: column_name() + ' Histogram'")
+  <div id="histogram" data-bind="html: charthtml"></div>
