@@ -39,7 +39,7 @@ table.grid
       // ko foreach: $parent.rows()[index]
       td
         // ko if: $data !== null && $data !== ""
-        span(data-bind="float:$data")
+        span(data-bind="text:$data")
         // /ko
         // ko if: $data === null || $data === ""
         span.placeholder No Data
