@@ -32,6 +32,11 @@ ko.components.register "tf-grid",
     @histogram = ( index ) ->
       model.show_histogram(index)
 
+    # @exponent_col = ( index ) -> 
+    #   old_cols = @cols()
+    #   old_cols.push {name: "Potato", index: 35}
+    #   console.log(@cols())
+
     @save = ( ) =>
       cols = @cols(); rows = @rows(); extra = @extra()
       csv = @cols().map(( v ) -> v.name).join ","

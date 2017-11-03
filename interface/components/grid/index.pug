@@ -2,6 +2,7 @@
 span.title(data-bind="text:name")
 tf-pager(params="source:rows,start:start,end:end")
 a.save(data-bind="click:save") Export Data
+span.name(data-bind="text:model().name")
 // ko if:table != "fit"
 a.clear(data-bind="click:clear") Clear Data
 // /ko
@@ -25,6 +26,8 @@ table.grid
             | Mark as Dependant
           span.mark(data-bind="click:function(){histogram($index())}")
             | Histogram
+          span.mark(data-bind="click:function(){exponent_col($index())}")
+            | Exponent
       // /ko
     
       // ko if: extra
