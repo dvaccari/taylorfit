@@ -16,7 +16,26 @@ ko.components.register "tf-histogram",
 
     @active = ko.computed ( ) => @column_index() != undefined
     
-    @column_name = ko.computed ( ) => if @active() then model.columns()[@column_index()].name else undefined
+    @column_name = ko.computed ( ) => 
+      if !@active()
+        return undefined
+      if typeof @column_index() == "string"
+        return @column_index()
+      return model.columns()[@column_index()].name
+    
+    @values = ko.computed ( ) => 
+      if !@active()
+        return undefined
+      index = @column_index()
+      if typeof index == "string"
+        if index == "Dependent"
+          index = 0
+        if index == "Predicted"
+          index = 1
+        if index == "Residual"
+          index = 2
+        return model.extra_fit().map((row) => row[index])
+      return model.data_fit().map((row) => row[index])
 
     @close = ( ) ->
       model.show_histogram undefined
@@ -27,7 +46,7 @@ ko.components.register "tf-histogram",
       unless @active()
         return ""
 
-      sorted = model.data_fit().map((row) => row[@column_index()]).sort((a, b) => a - b)
+      sorted = @values().sort((a, b) => a - b)
       min = sorted[0]
       max = sorted[sorted.length - 1] + 1
       buckets = Array(@bucket_size()).fill(0)
@@ -47,6 +66,10 @@ ko.components.register "tf-histogram",
         size:
           height: 370
           width: 600
+        axis:
+          x:
+            tick:
+              format: d3.format('.3s')
         legend:
           show: false
 

@@ -16,7 +16,7 @@ ko.components.register "tf-graph",
       data.subscribe ( next ) ->
         try
           chart.load
-            rows: [["x", "y", "x2", "y2" ]].concat next
+            rows: [["x", "Fit Data", "x2", "Cross Data" ]].concat next
         catch error
           console.error error
 
@@ -24,9 +24,9 @@ ko.components.register "tf-graph",
         data:
           type: "scatter"
           xs:
-            y: "x"
-            y2: "x2"
-          rows: [["x", "y", "x2", "y2"]].concat data() or [ 0, 0, 0 ]
+            "Fit Data": "x"
+            "Cross Data": "x2"
+          rows: [["x", "Fit Data", "x2", "Cross Data"]].concat data() or [ 0, 0, 0 ]
         axis:
           x:
             label:
@@ -45,13 +45,14 @@ ko.components.register "tf-graph",
               count: 2
               format: ko.formatters.float
               rotate: 90
+        legend:
+          show: true
+          position: "inset"
         grid:
           y:
             lines: [
               value: 0
             ]
-        legend:
-          show: false
         tooltip:
           contents: ( [ d ] ) ->
             return "(#{ko.formatters.float d.x},

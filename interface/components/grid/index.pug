@@ -31,9 +31,21 @@ table.grid
       // /ko
     
       // ko if: extra
-      th.dep Dependent
-      th.prd Predicted
-      th.err Residual
+      th.dep
+        span Dependent
+        tf-dropdown(params="align:'right'")
+          span.mark(data-bind="click:function(){histogram('Dependent')}")
+            | Histogram
+      th.prd
+        span Predicted
+        tf-dropdown(params="align:'right'")
+          span.mark(data-bind="click:function(){histogram('Predicted')}")
+            | Histogram
+      th.err
+        span Residual
+        tf-dropdown(params="align:'right'")
+          span.mark(data-bind="click:function(){histogram('Residual')}")
+            | Histogram
       // /ko
   tbody
     // ko iter:{from:start,to:end}
