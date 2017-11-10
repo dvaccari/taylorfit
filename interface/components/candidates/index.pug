@@ -49,7 +49,7 @@ tf-pager(params="source:source,result:result")
           // /ko
         // ko foreach:allstats
         // ko if:!global && sort && selected()
-        td.stat
+        td.stat(data-bind="css: { green: id == 'pt' && $parent.stats[id] <= $parents[1].psig() }")
           span.value(data-bind="num:$parent.stats[id], fmt: format")
         // /ko
         // /ko

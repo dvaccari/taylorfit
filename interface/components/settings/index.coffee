@@ -31,6 +31,7 @@ ko.components.register "tf-settings",
     @lags = model.lags
     @timeseries = model.timeseries
     @candidates = model.candidates
+    @psig = model.psig
 
     @multiplicands_max = ko.observable 0
     ko.computed ( ) =>
@@ -79,6 +80,7 @@ ko.components.register "tf-settings",
       model.multiplicands(1)
       model.lags({0: true})
       model.timeseries(false)
+      model.psig(0.05)
       ko.precision(5)
       # Clear the selected stats to the default
       allstats().forEach((stat) => stat.selected(stat.default))

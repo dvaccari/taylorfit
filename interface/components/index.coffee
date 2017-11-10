@@ -15,4 +15,5 @@ require "./pager"
 require "./result"
 require "./settings"
 require "./split"
+require "./input"
 
