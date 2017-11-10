@@ -18,6 +18,8 @@ tf-grid
           background #EEE
   & > .title
     margin-right 10px
+  & > span.name
+    padding-left 12px
   & > a.save
   & > a.clear
     background green
@@ -43,19 +45,15 @@ tf-grid
       font-weight 700
       transition 400ms
       &.prd
-        padding-right 6px
         color orange
         box-shadow inset 0 -2px 0 orange
       &.err
-        padding-right 6px
         color purple
         box-shadow inset 0 -2px 0 purple
       &.dep
       &.dependent
         color blue
         box-shadow inset 0 -2px 0 blue
-      &.dep
-        padding-right 6px
       tf-dropdown
         absolute right 4px top 0px
     td

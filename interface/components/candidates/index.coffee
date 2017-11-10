@@ -25,6 +25,7 @@ ko.components.register "tf-candidates",
     model = params.model() # now static
 
     @timeseries = model.timeseries
+    @psig = model.psig
 
     @result = ko.observableArray [ ]
     @result.subscribe readjust

@@ -87,9 +87,9 @@ class Matrix {
    * If `stuff` is a Float64Array, then the reference will be used. Otherwise,
    * its contents will be copied into a new Float64Array.
    *
-   * @param {number | number[][]}       n     Number of rows (or nested arrays
+   * @param {number | number[][]}       n     Number of columns (or nested arrays
    *                                          that look like a matrix)
-   * @param {number}                    m     Number of columns
+   * @param {number}                    m     Number of rows
    * @param {Float64Array | number[][]} stuff Items to populate the matrix
    */
   constructor(m, n, stuff) {
@@ -109,6 +109,38 @@ class Matrix {
     } else {
       stuff = new Float64Array(m * n);
     }
+
+    // Filter Out NaN Columns
+    let valid_columns = new Array(n).fill(true);
+    let valid_column_count = n;
+    
+    //i: Iterate over columns
+    for(let i = 0; i < n; i++){
+      // j: iterate over rows
+      for(let j = 0; j < m; j++){
+        if(isNaN(stuff[j*n + i])){
+          valid_columns[i] = false;
+          valid_column_count -= 1;
+          break;
+        }
+      }
+    }
+
+    // If NaN Column Found, create new Float64 Array & Populate
+    if(valid_column_count != n){
+      let new_stuff = new Float64Array(valid_column_count * m);
+      let iterator = 0;
+      for(let i = 0; i < m * n; i++){
+        let curr_col = i % n;
+        if(valid_columns[curr_col]){
+          new_stuff[iterator++] = stuff[i];
+        }
+        
+      }
+      stuff = new_stuff;
+      n = valid_column_count;
+    }
+
     this[_data] = stuff;
     this[_m] = m;
     this[_n] = n;

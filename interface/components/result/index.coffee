@@ -20,6 +20,7 @@ ko.components.register "tf-result",
     @extra_fit = model.extra_fit
     @extra_cross = model.extra_cross
     @dependent = model.dependent
+    @psig = model.psig
 
     @graphdata = ko.computed ( ) =>
       fit = @extra_fit()

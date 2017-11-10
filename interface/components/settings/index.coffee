@@ -1,5 +1,6 @@
 
 require "./index.styl"
+Model = require "../Model"
 
 download = ( name, type, content ) ->
   a = document.createElement "a"
@@ -30,6 +31,7 @@ ko.components.register "tf-settings",
     @lags = model.lags
     @timeseries = model.timeseries
     @candidates = model.candidates
+    @psig = model.psig
 
     @multiplicands_max = ko.observable 0
     ko.computed ( ) =>
@@ -63,11 +65,24 @@ ko.components.register "tf-settings",
         "application/json", model.out()
 
     @clear_project = ( ) ->
+      @clear_settings()
       params.model null
       adapter.reset()
 
     @clear_model = ( ) ->
-      params.model().result null
+      model.result_fit(null)
+      model.show_settings(false)
       adapter.clear()
+      adapter.addTerm([[0, 0, 0]])
+
+    @clear_settings = ( ) ->
+      model.exponents({1: true})
+      model.multiplicands(1)
+      model.lags({0: true})
+      model.timeseries(false)
+      model.psig(0.05)
+      ko.precision(5)
+      # Clear the selected stats to the default
+      allstats().forEach((stat) => stat.selected(stat.default))
 
     return this

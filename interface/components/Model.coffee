@@ -36,6 +36,8 @@ CTRL =
     [ 0           , WRAP_O                            , IGNORE ]
   show_settings:
     [ false       , WRAP_O                            , IGNORE ]
+  show_histogram:
+    [ undefined   , WRAP_O                            , IGNORE ]
 
   columns:
     [ [ ]         , WRAP_A                            , UNWRAP ]
@@ -55,6 +57,9 @@ CTRL =
     [ undefined   , WRAP_O                            , IGNORE ]
   result_valid:
     [ undefined   , WRAP_O                            , IGNORE ]
+
+  psig:
+    [ 0.05        , WRAP_O                            , UNWRAP ]
 
   dependent:
     [ 0           , SEND("setDependent", Number)      , UNWRAP ]

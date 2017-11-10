@@ -2,6 +2,7 @@
 span.title(data-bind="text:name")
 tf-pager(params="source:rows,start:start,end:end")
 a.save(data-bind="click:save") Export Data
+span.name(data-bind="text:model().name")
 // ko if:table != "fit"
 a.clear(data-bind="click:clear") Clear Data
 // /ko
@@ -23,12 +24,28 @@ table.grid
         tf-dropdown(params="shallow:1,align:'right'")
           span.mark(data-bind="click:function(){dependent($index())}")
             | Mark as Dependant
+          span.mark(data-bind="click:function(){histogram($index())}")
+            | Histogram
+          span.mark(data-bind="click:function(){exponent_col($index())}")
+            | Exponent
       // /ko
     
       // ko if: extra
-      th.dep Dependent
-      th.prd Predicted
-      th.err Residual
+      th.dep
+        span Dependent
+        tf-dropdown(params="align:'right'")
+          span.mark(data-bind="click:function(){histogram('Dependent')}")
+            | Histogram
+      th.prd
+        span Predicted
+        tf-dropdown(params="align:'right'")
+          span.mark(data-bind="click:function(){histogram('Predicted')}")
+            | Histogram
+      th.err
+        span Residual
+        tf-dropdown(params="align:'right'")
+          span.mark(data-bind="click:function(){histogram('Residual')}")
+            | Histogram
       // /ko
   tbody
     // ko iter:{from:start,to:end}
@@ -39,7 +56,7 @@ table.grid
       // ko foreach: $parent.rows()[index]
       td
         // ko if: $data !== null && $data !== ""
-        span(data-bind="float:$data")
+        span(data-bind="text:$data")
         // /ko
         // ko if: $data === null || $data === ""
         span.placeholder No Data
