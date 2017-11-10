@@ -1,6 +1,7 @@
 
 require "./index.styl"
 Model = require "../Model"
+Combintations = require "combinations-js"
 
 download = ( name, type, content ) ->
   a = document.createElement "a"
@@ -33,6 +34,21 @@ ko.components.register "tf-settings",
     @candidates = model.candidates
 
     @multiplicands_max = ko.observable 0
+    @num_terms = ko.observable 0
+    ko.computed ( ) =>
+      ncols = model.columns().length
+      accum = 0
+      i = 0
+      e = 0
+      for key, value of @exponents()
+        if value then e++
+      while i <= @multiplicands()
+        c = Combintations ncols - 1, i
+        accum += c * Math.pow(e, i)
+        i++
+      @num_terms accum
+
+
     ko.computed ( ) =>
       active = 0
       zero = false
