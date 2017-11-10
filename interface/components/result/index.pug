@@ -36,7 +36,11 @@
           // /ko
           // /ko
         // ko each: stats
-        td.stat
+        td.stat(data-bind="css: { \
+          red: allstats().filter((x) => x.candidate).length > $index() \
+                  && allstats().filter((x) => x.candidate)[$index()].id == 'pt' \
+                  && $value > $parents[1].psig() \
+        }")
           span.value(data-bind="num:$value")
         // /ko
       // /ko

@@ -58,6 +58,9 @@ CTRL =
   result_valid:
     [ undefined   , WRAP_O                            , IGNORE ]
 
+  psig:
+    [ 0.05        , WRAP_O                            , UNWRAP ]
+
   dependent:
     [ 0           , SEND("setDependent", Number)      , UNWRAP ]
   multiplicands:
