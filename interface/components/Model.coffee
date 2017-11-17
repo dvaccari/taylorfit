@@ -32,6 +32,11 @@ CTRL =
   name:
     [ "New Model" , WRAP_O                            , UNWRAP ]
 
+  name_cross:
+    [ "Cross Data", WRAP_O                            , UNWRAP ]
+  name_validation:
+    [ "Validation Data", WRAP_O                       , UNWRAP ]
+
   progress:
     [ 0           , WRAP_O                            , IGNORE ]
   show_settings:

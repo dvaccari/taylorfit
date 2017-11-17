@@ -2,8 +2,15 @@
 span.title(data-bind="text:name")
 tf-pager(params="source:rows,start:start,end:end")
 a.save(data-bind="click:save") Export Data
+// ko if:table == "fit"
 span.name(data-bind="text:model().name")
-// ko if:table != "fit"
+// /ko
+// ko if:table == "cross"
+span.name(data-bind="text:model().name_cross")
+a.clear(data-bind="click:clear") Clear Data
+// /ko
+// ko if:table == "validation"
+span.name(data-bind="text:model().name_cross")
 a.clear(data-bind="click:clear") Clear Data
 // /ko
 table.grid
