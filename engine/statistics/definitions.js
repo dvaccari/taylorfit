@@ -60,5 +60,5 @@ module.exports = [
     }),
 
   Statistic('pF', ['F', 'np', 'nd'],
-    ({F, np, nd}) => dist.pf(Math.abs(F), np, nd - np))
+    ({F, np, nd}) => Math.max(dist.pf(Math.abs(F), np, nd - np) - 1e-15, 0))
 ];
