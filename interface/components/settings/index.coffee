@@ -38,14 +38,43 @@ ko.components.register "tf-settings",
     @num_terms = ko.observable 0
     ko.computed ( ) =>
       ncols = model.columns().length
+      n_lags = 0
+      zero_lag = false
+      for key, value of @lags()
+        if key == "0" and value != false then zero_lag = true
+        if value != false then n_lags++
       accum = 0
       i = 0
       e = 0
       for key, value of @exponents()
         if value then e++
+      if n_lags == 0 or (n_lags == 1 and zero_lag)
+        comb_vals = ncols - 1
+        base = e
+      else if n_lags == 1 and zero_lag == false
+        comb_vals = ncols
+        base = e
+      else if n_lags > 1 and zero_lag == false
+        comb_vals = ncols
+        base = e * n_lags
+      else
+        comb_vals = ncols - 1
+        base = e * n_lags
       while i <= @multiplicands()
-        c = Combintations ncols - 1, i
-        accum += c * Math.pow(e, i)
+
+        if n_lags <= 1 or (zero_lag == false)
+          c = Combintations comb_vals, i
+          p = Math.pow(base, i)
+          accum += c * p
+        else
+          if i == 0
+            accum += 1
+          else
+            c1 = Combintations comb_vals, i
+            p1 = Math.pow(base, i)
+            c2 = Combintations comb_vals, i - 1
+            p2 = Math.pow(base, i-1) * e * (n_lags - 1)
+            accum += (c1 * p1) + (c2 * p2)
         i++
       @num_terms accum
 
