@@ -26,7 +26,7 @@ object2array = ( exps ) ->
   Number key for key, value of ko.unwrap exps \
   when ko.unwrap value
 
-CTRL =
+CTRL = () ->
   id:
     [ "model"     , WRAP_O                            , UNWRAP ]
   name:
@@ -87,7 +87,7 @@ module.exports = class Model
 
     adapter.unsubscribeToChanges()
 
-    for k, v of CTRL
+    for k, v of CTRL()
       @[k] = v[1] if o.hasOwnProperty k
       then o[k] else v[0]
 
@@ -172,7 +172,7 @@ module.exports = class Model
 
   out: ( ) ->
     result = { }
-    for k, v of CTRL
+    for k, v of CTRL()
       if v = v[2] @[k]
         result[k] = v
     return JSON.stringify(result)

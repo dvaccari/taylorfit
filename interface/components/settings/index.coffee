@@ -110,9 +110,7 @@ ko.components.register "tf-settings",
         "application/json", model.out()
 
     @clear_project = ( ) ->
-      @clear_settings()
       params.model null
-      adapter.reset()
 
     @clear_model = ( ) ->
       model.result_fit(null)
