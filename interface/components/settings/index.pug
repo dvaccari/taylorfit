@@ -18,7 +18,7 @@
   span.title Advanced
   tf-checkbox(params="name:'Time Series',value:timeseries")
   tf-counter(params="name:'Display Precision',value:ko.precision,min:1,max:9")
-  tf-input(params="name:'Alpha',value:psig,type:'decimal',decimals:4")
+  tf-input(params="name:'Alpha',value:psig,type:'decimal',decimals:4,min:0,max:1")
 
   span.button.warning(data-bind="click:clear_settings")
     | Clear Settings
