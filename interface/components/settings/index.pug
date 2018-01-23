@@ -11,6 +11,10 @@
     // /ko
     // /ko
   tf-counter.multiplicands(params="name:'Max Multiplicands',value:multiplicands,max:multiplicands_max")
+  span
+    header
+      span N<sub>Candidates</sub> 
+    span(data-bind="text:num_terms")
   tf-multiselect.exponents(params="name:'Exponents',values:exponents,fixed:['1']")
   // ko if:timeseries
   tf-multiselect.lags(params="name:'Lags',values:lags")
@@ -30,6 +34,3 @@
     | Export Project
   a.button.manual(href="resources/TaylorFit Manual 2017.pdf" target="window")
     | Open Users' Manual
-  span
-    | N<sub>Candidates</sub> 
-  span(data-bind="text:num_terms")
