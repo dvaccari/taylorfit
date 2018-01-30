@@ -46,7 +46,7 @@ ko.components.register "tf-histogram",
       unless @active()
         return ""
 
-      sorted = @values().sort((a, b) => a - b)
+      sorted = @values().filter((x) => !isNaN(x)).sort((a, b) => a - b)
       min = sorted[0]
       max = sorted[sorted.length - 1] + 1
       buckets = Array(@bucket_size()).fill(0)
