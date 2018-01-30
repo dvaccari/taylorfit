@@ -27,7 +27,6 @@ module.exports = [
   Statistic('MSR', ['SSR', 'np'], ({SSR, np}) => SSR / (np - 1)),
   Statistic('MSE', ['SSE', 'nd', 'np'], ({SSE, nd, np}) => SSE / (nd - np)),
   Statistic('Rsq', ['SSE', 'TSS'], ({SSE, TSS}) => 1 - (SSE / TSS)),
-  Statistic('cRsq', ['Rsq'], ({Rsq}) => 1 - Rsq),
   Statistic('adjRsq', ['Rsq', 'np', 'nd'],
     ({Rsq, nd, np}) => 1 - ((1 - Rsq)*(nd - 1) / (nd - np))),
   Statistic('F', ['MSR', 'MSE'], ({MSR, MSE}) => MSR / MSE),
@@ -38,6 +37,7 @@ module.exports = [
   Statistic('BIC', ['MSE', 'np', 'nd'],
     ({MSE, np, nd}) => Math.log10(MSE) + np*(Math.log10(nd) / nd)),
 
+  Statistic('Max|Err|', ['y', 'yHat'], ({y, yHat}) => y.sub(yHat).abs().max()),
 
   Statistic('t', ['X', 'VdivwSq', 'MSE', 'BHat'],
     ({X, VdivwSq, MSE, BHat}) => {

@@ -60,12 +60,23 @@
       // ko with:{fit:result_fit, cross:result_cross}
       // ko foreach:allstats
       // ko ifnot:candidate
+
+      // ko ifnot:name=='PLACEHOLDER'
       tr.stat
         td.name(data-bind="text:name")
         td.value(data-bind="num:$parent.fit().stats[id], fmt: format")
         // ko if: $parent.cross
         td.value(data-bind="num:$parent.cross().stats[id], fmt: format")
         // /ko
+      // /ko
+      // ko if:name=='PLACEHOLDER'
+      tr.placeholder
+        td.name
+        td.value
+        // ko if: $parent.cross
+        td.value(data-bind="num:$parent.cross().stats[id], fmt: format")
+        // /ko
+      // /ko
       // /ko
       // /ko
       // /ko

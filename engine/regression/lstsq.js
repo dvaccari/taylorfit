@@ -66,6 +66,8 @@ function lstsqSVD(A, U, S, V, b) {
  *    AIC     = log(MSE) + 2*(Np/Nd)
  *    BIC     = log(MSE) + Np*log(Nd)/Nd
  *    t_i     = B' / sqrt( inv(X'X)[i,i] * MSE )   / is element-wise
+ *    SKEW    = sum((y-y')^3/N/s^3)
+ *    KURT    = sum((y-y')^4/N/s^4)
  *
  * @return {object} Regression results
  */
@@ -85,12 +87,12 @@ function lstsqNEWithStats(X, y) {
     , msr           = ssr / (np - 1)
     , mse           = sse / (nd - np)
     , rsq           = 1 - (sse / tss)
-    , crsq          = 1 - rsq
     , adjrsq        = 1 - (mse / vary)
     , f             = msr / mse
     , aic           = Math.log10(mse) + 2*(np / nd)
     , bic           = Math.log10(mse) + np*(Math.log10(nd) / nd)
 
+    
   // for t-statistics
     , rtmse         = Math.sqrt(mse)
     , sec           = pseudoInverse.diag().abs().dotPow(0.5).dotMultiply(rtmse)
@@ -104,7 +106,6 @@ function lstsqNEWithStats(X, y) {
     tstats  : tstats,
     mse     : mse,
     rsq     : rsq,
-    crsq    : crsq,
     adjrsq  : adjrsq,
     f       : f,
     pf      : dist.pf(f, np, nd - np),
