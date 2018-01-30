@@ -10,11 +10,11 @@
     click:function(){selected(!selected())}")
     // /ko
     // /ko
-  tf-counter.multiplicands(params="name:'Max Multiplicands',value:multiplicands,max:multiplicands_max")
   span
     header
       span N<sub>Candidates</sub> 
     span(data-bind="text:num_terms")
+  tf-counter.multiplicands(params="name:'Max Multiplicands',value:multiplicands,max:multiplicands_max")
   tf-multiselect.exponents(params="name:'Exponents',values:exponents,fixed:['1']")
   // ko if:timeseries
   tf-multiselect.lags(params="name:'Lags',values:lags")
