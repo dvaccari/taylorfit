@@ -25,6 +25,26 @@ module.exports = [
 
   Statistic('Vary', ['TSS', 'nd'], ({TSS, nd}) => TSS / (nd - 1)),
   Statistic('MSR', ['SSR', 'np'], ({SSR, np}) => SSR / (np - 1)),
+
+  Statistic('SKEW', ['y', 'yHat', 'nd'], ({y, yHat, nd}) => {
+    let residuals = y.sub(yHat);
+    let residMean = residuals.sum() / residuals.shape[0];
+    let residStDv = Math.sqrt(residuals.sub(residMean).dotPow(2).sum() / (nd - 1));
+ 
+    return nd * residuals.sub(residMean).dotPow(3).sum() / (nd - 1) / (nd - 2) / residStDv / residStDv / residStDv;
+  }),
+  Statistic('KURTOSIS', ['y', 'yHat', 'nd'], ({y, yHat, nd}) => {
+    let residuals = y.sub(yHat);
+    let residMean = residuals.sum() / residuals.shape[0];
+    let residStDv = Math.sqrt(residuals.sub(residMean).dotPow(2).sum() / (nd - 1));
+    
+    // let r1 =  nd * (nd + 1) *residuals.sub(residMean).dotPow(4).sum() / (nd - 1) / (nd - 2) / (nd - 3) / residStDev / residStDv / residStDv / residStdDv;
+    let r1 =  nd * (nd + 1) * residuals.sub(residMean).dotPow(4).sum() / (nd - 1) / (nd - 2) / (nd - 3) / residStDv / residStDv / residStDv/ residStDv;
+    
+    let r2 =  3 * (nd-1) * (nd-1) / (nd-2) / (nd-3);
+    return r1 - r2;
+
+  }),
   Statistic('MSE', ['SSE', 'nd', 'np'], ({SSE, nd, np}) => SSE / (nd - np)),
   Statistic('Rsq', ['SSE', 'TSS'], ({SSE, TSS}) => 1 - (SSE / TSS)),
   Statistic('adjRsq', ['Rsq', 'np', 'nd'],
