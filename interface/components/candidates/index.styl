@@ -30,6 +30,7 @@ tf-candidates
       box-shadow 0 1px 0 0 rgba(black, 0.5)
       position absolute
       top 0 left 0
+      margin-left 20px
 
     & > table.candidates
       box-sizing border-box
@@ -80,12 +81,15 @@ tf-candidates
         transition background 300ms
         cursor pointer
         overflow hidden
-        &:hover
+        &:not(.current):hover
           background rgba(green, 0.3)
           box-shadow inset 0 0 0 2px green
         &.selected
           background green
           color white
+        &.current
+          background #ddd
+          border-bottom 1px solid #ccc
 
         & > td.term
           box-shadow inset -1px -1px 0 #EEE, inset 1px 0 0 #EEE
