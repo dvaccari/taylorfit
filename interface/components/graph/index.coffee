@@ -1,6 +1,3 @@
-
-
-
 require "./index.styl"
 
 c3 = require "c3"

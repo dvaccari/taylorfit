@@ -22,6 +22,17 @@ tf-pager(params="source:source,result:result")
         // /ko
 
     tbody
+      tr.candidate.current
+        td.term
+          span.coeff Current Model
+        // ko foreach:allstats
+        // ko if:!global && sort && selected()
+        td.stat
+          // ko ifnot:isNaN($parent.getStat(id))
+          span.value(data-bind="num: $parent.getStat(id), fmt: format")
+          // /ko
+        // /ko
+        // /ko
       // ko foreach:result
       tr.candidate(data-bind="click:function(){selected(true)},css:{selected:selected}")
         td.term

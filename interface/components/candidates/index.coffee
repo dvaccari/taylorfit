@@ -40,6 +40,11 @@ ko.components.register "tf-candidates",
     @candidates.subscribe ( next ) =>
       @source next.sort @sort()
 
+    @getStat = ( id ) =>
+      cross = model.result_fit() && model.result_fit().stats[id]
+      fit = model.result_fit() && model.result_fit().stats.pt[id]
+      return parseFloat(cross) || parseFloat(fit)
+
     @result.maxWidth = ko.observable 0
     @result.maxWidth.subscribe ( next ) ->
       document.querySelector(".split-model > .split-data > .candidates-pane")
