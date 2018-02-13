@@ -41,8 +41,8 @@ ko.components.register "tf-candidates",
       @source next.sort @sort()
 
     @getStat = ( id ) =>
-      cross = model.result_fit() && model.result_fit().stats[id]
-      fit = model.result_fit() && model.result_fit().stats.pt[id]
+      cross = model.result_cross() && model.result_cross().stats[id]
+      fit = model.result_fit() && model.result_fit().stats[id]
       return parseFloat(cross) || parseFloat(fit)
 
     @result.maxWidth = ko.observable 0
