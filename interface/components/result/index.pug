@@ -53,11 +53,11 @@
       tr
         th Stat
         th Fit
-        // ko if: result_cross
+        // ko if: result_cross() && data_cross()
         th Cross
         // /ko
     tbody
-      // ko with:{fit:result_fit, cross:result_cross}
+      // ko with:{fit:result_fit, cross:result_cross, data_cross:data_cross}
       // ko foreach:allstats
       // ko ifnot:candidate
 
@@ -65,7 +65,7 @@
       tr.stat
         td.name(data-bind="text:name")
         td.value(data-bind="num:$parent.fit().stats[id], fmt: format")
-        // ko if: $parent.cross
+        // ko if: ($parent.cross() && $parent.data_cross())
         td.value(data-bind="num:$parent.cross().stats[id], fmt: format")
         // /ko
       // /ko
@@ -73,7 +73,7 @@
       tr.placeholder
         td.name
         td.value
-        // ko if: $parent.cross
+        // ko if: ($parent.cross() && $parent.data_cross())
         td.value
         // /ko
       // /ko

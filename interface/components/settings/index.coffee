@@ -110,10 +110,12 @@ ko.components.register "tf-settings",
         "application/json", model.out()
 
     @clear_project = ( ) ->
+      allstats().forEach((stat) => stat.selected(stat.candidate))
       params.model null
 
     @clear_model = ( ) ->
-      model.result_fit(null)
+      model.result_fit(undefined)
+      model.result_cross(undefined)
       model.show_settings(false)
       adapter.clear()
       adapter.addTerm([[0, 0, 0]])
