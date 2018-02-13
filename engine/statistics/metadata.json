@@ -17,7 +17,7 @@
 
   { "id": "MSR", "sort": ">" },
   { "id": "SKEW", "sort": "<"},
-  { "id": "KURTOSIS", "sort": "<"},
+  { "id": "KURT", "sort": "<"},
 
   { "id": "PLACEHOLDER"},
 
@@ -33,7 +33,7 @@
 
   { "id": "AIC", "sort": ">" },
   { "id": "BIC", "sort": ">" },
-  { "id": "Max|Err|", "sort": "<"},
+  { "id": "Max|Err|", "sort": ">"},
 
   { "id": "F", "sort": "<" },  
   { "id": "pF", "displayName": "p(F)", "sort": ">" },  
