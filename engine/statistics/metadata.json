@@ -16,12 +16,12 @@
   { "id": "SSR" },
 
   { "id": "MSR", "sort": ">" },
-  { "id": "SKEW", "sort": "<"},
-  { "id": "KURT", "sort": "<"},
 
   { "id": "PLACEHOLDER"},
 
   { "id": "MSE" },
+  { "id": "SKEW", "sort": "<"},
+  { "id": "KURT", "sort": "<"},
 
   { "id": "PLACEHOLDER"},
   
