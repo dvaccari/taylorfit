@@ -14,30 +14,32 @@
   { "id": "SSE", "sort": ">" },
   { "id": "TSS", "globalOnly": true },
   { "id": "SSR" },
-
-  { "id": "MSR", "sort": ">" },
-
-  { "id": "PLACEHOLDER"},
-
   { "id": "MSE" },
-  { "id": "SKEW", "sort": "<"},
-  { "id": "KURT", "sort": "<"},
 
   { "id": "PLACEHOLDER"},
-  
 
   { "id": "Rsq", "sort": "<" },
   { "id": "adjRsq", "sort": "<" },
 
-  { "id": "PLACEHOLDER"},  
+  { "id": "PLACEHOLDER"},
+
+  { "id": "Max|Err|", "sort": ">"},
+  { "id": "RMSE", "sort": ">"},
+  { "id": "SKEW", "sort": "<"},
+  { "id": "KURT", "sort": "<"},
+
+  { "id": "PLACEHOLDER"}, 
 
   { "id": "AIC", "sort": ">" },
   { "id": "BIC", "sort": ">" },
-  { "id": "Max|Err|", "sort": ">"},
-
   { "id": "F", "sort": "<" },  
   { "id": "pF", "displayName": "p(F)", "sort": ">" },  
-  
+
+  { "id": "PLACEHOLDER"}, 
+
+  { "id": "seSKEW", "displayName": "s.e. SKEW", "sort": "<" },
+  { "id": "seKURT", "displayName": "s.e. KURT", "sort": "<" },
+
 
   { "id": "t", "sort": "|<|", "candidateOnly": true, "default": true },
   { "id": "pt", "displayName": "p(t)", "sort": ">", "candidateOnly": true, "default": true },

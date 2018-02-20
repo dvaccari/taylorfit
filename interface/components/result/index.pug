@@ -61,7 +61,7 @@
       // ko foreach:allstats
       // ko ifnot:candidate
 
-      // ko ifnot:name=='PLACEHOLDER'
+      // ko ifnot:((name=='PLACEHOLDER') || (name=='s.e. SKEW') || (name=='s.e. KURT'))
       tr.stat
         td.name(data-bind="text:name")
         td.value(data-bind="num:$parent.fit().stats[id], fmt: format")
@@ -75,6 +75,22 @@
         td.value
         // ko if: ($parent.cross() && $parent.data_cross())
         td.value
+        // /ko
+      // /ko
+      // ko if: name=='s.e. SKEW'
+      tr.sestat
+        td.name(data-bind="text:name")
+        td.value(data-bind="num:$parent.fit().stats[id], fmt: format")
+        // ko if: ($parent.cross() && $parent.data_cross())
+        td.value(data-bind="num:$parent.cross().stats[id], fmt: format")
+        // /ko
+      // /ko
+      // ko if: name=='s.e. KURT'
+      tr.sestat
+        td.name(data-bind="text:name")
+        td.value(data-bind="num:$parent.fit().stats[id], fmt: format")
+        // ko if: ($parent.cross() && $parent.data_cross())
+        td.value(data-bind="num:$parent.cross().stats[id], fmt: format")
         // /ko
       // /ko
       // /ko

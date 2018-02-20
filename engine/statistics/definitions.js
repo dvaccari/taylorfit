@@ -45,7 +45,10 @@ module.exports = [
     return r1 - r2;
 
   }),
+  Statistic('seSKEW', ['nd'], ({nd}) => Math.sqrt(6 / nd)),
+  Statistic('seKURT', ['nd'], ({nd}) => Math.sqrt(24 / nd)),
   Statistic('MSE', ['SSE', 'nd', 'np'], ({SSE, nd, np}) => SSE / (nd - np)),
+  Statistic('RMSE', ['MSE'], ({MSE}) => Math.sqrt(MSE)),
   Statistic('Rsq', ['SSE', 'TSS'], ({SSE, TSS}) => 1 - (SSE / TSS)),
   Statistic('adjRsq', ['Rsq', 'np', 'nd'],
     ({Rsq, nd, np}) => 1 - ((1 - Rsq)*(nd - 1) / (nd - np))),
