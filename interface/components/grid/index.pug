@@ -33,6 +33,8 @@ table.grid
             | Mark as Dependant
           span.mark(data-bind="click:function(){histogram($index())}")
             | Histogram
+          span.mark(data-bind="click:function(){autocorrelation($index())}")
+            | Autocorrelation
           span.mark(data-bind="click:function(){logarithm_col($index())}")
             | Logarithm
       // /ko
@@ -43,16 +45,22 @@ table.grid
         tf-dropdown(params="align:'right'")
           span.mark(data-bind="click:function(){histogram('Dependent')}")
             | Histogram
+          span.mark(data-bind="click:function(){autocorrelation('Dependent')}")
+            | Autocorrelation
       th.prd
         span Predicted
         tf-dropdown(params="align:'right'")
           span.mark(data-bind="click:function(){histogram('Predicted')}")
             | Histogram
+          span.mark(data-bind="click:function(){autocorrelation('Predicted')}")
+            | Autocorrelation
       th.err
         span Residual
         tf-dropdown(params="align:'right'")
           span.mark(data-bind="click:function(){histogram('Residual')}")
             | Histogram
+          span.mark(data-bind="click:function(){autocorrelation('Residual')}")
+            | Autocorrelation
       // /ko
   tbody
     // ko iter:{from:start,to:end}

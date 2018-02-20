@@ -33,6 +33,9 @@ ko.components.register "tf-grid",
     @histogram = ( index ) ->
       model.show_histogram(index)
 
+    @autocorrelation = ( index ) ->
+      model.show_autocorrelation(index)
+
     # @exponent_col = ( index ) -> 
     #   old_cols = @cols()
     #   old_cols.push {name: "Potato", index: 35}
