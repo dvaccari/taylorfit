@@ -42,7 +42,9 @@ CTRL = () ->
   show_settings:
     [ false       , WRAP_O                            , IGNORE ]
   show_histogram:
-    [ undefined   , WRAP_O                            , IGNORE ]
+    [ undefined    , WRAP_O                            , IGNORE ]
+  show_autocorrelation:
+    [ undefined    , WRAP_O                            , IGNORE ]
 
   columns:
     [ [ ]         , WRAP_A                            , UNWRAP ]
