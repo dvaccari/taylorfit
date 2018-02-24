@@ -52,10 +52,12 @@ describe('Term', () => {
       m = new Model()
         .setData(data)
         .setData(data, 'cross')
+        .setData(data, 'validation')
         .setExponents([1, 2])
         .setMultiplicands(1)
         .subset('fit', 0, 10)
-        .subset('cross', 10);
+        .subset('cross', 10)
+        .subset('validation', 10);
     });
 
     it('returns the statistics when the candidate term is included', () => {

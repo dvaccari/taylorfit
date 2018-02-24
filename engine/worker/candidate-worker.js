@@ -10,7 +10,7 @@ const Matrix      = require('../matrix');
 const lstsq       = require('../regression').lstsq;
 const statistics  = require('../statistics');
 
-onmessage = ({ data: { fit, cross, candidates, jobId } }) => {
+onmessage = ({ data: { fit, cross, validation, candidates, jobId } }) => {
   fit.X = new Matrix(fit.X.m, fit.X.n, fit.X.data);
   fit.y = new Matrix(fit.y.m, fit.y.n, fit.y.data);
 
@@ -19,9 +19,9 @@ onmessage = ({ data: { fit, cross, candidates, jobId } }) => {
     cross.y = new Matrix(cross.y.m, cross.y.n, cross.y.data);
   }
 
-  let model = { fit, cross };
+  let model = { fit, cross, validation };
 
-  let results = candidates.map(({ fit, cross, lag }, i) => {
+  let results = candidates.map(({ fit, cross, validation, lag }, i) => {
     // Can't find a fit if exponent is -1 and divisor is 0
     if (!fit) {
       return NaN;

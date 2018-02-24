@@ -1,70 +1,73 @@
+.wrapper
+  // ko if:model().data_validation()
+  p You have imported a validation dataset. It is advised that you do not make changes to your model. If you wish to do so, please use a cross dataset instead. Otherwise, continue at your own risk.
+  // /ko
+  header
+    span.title Candidate Terms
+  tf-pager(params="source:source,result:result")
+  .candidate-wrapper
+    table.candidates(data-bind="if:candidates().length")
+      thead
+        tr
+          th
+            div.centering
+              div.fixing Term
+          // ko foreach:allstats
+          // ko if:!global && sort && selected()
+          th
+            div.centering
+              div.fixing(data-bind="click:function(){$parent.sortby($data)}")
+                span(data-bind="text:name")
+                // ko if: sorting
+                i.fa.fa-sort
+                // /ko
+          // /ko
+          // /ko
 
-header
-  span.title Candidate Terms
-tf-pager(params="source:source,result:result")
-.candidate-wrapper
-  table.candidates(data-bind="if:candidates().length")
-    thead
-      tr
-        th
-          div.centering
-            div.fixing Term
-        // ko foreach:allstats
-        // ko if:!global && sort && selected()
-        th
-          div.centering
-            div.fixing(data-bind="click:function(){$parent.sortby($data)}")
-              span(data-bind="text:name")
-              // ko if: sorting
-              i.fa.fa-sort
+      tbody
+        tr.candidate.current
+          td.term
+            span.coeff Current Model
+          // ko foreach:allstats
+          // ko if:!global && sort && selected()
+          td.stat
+            // ko ifnot:isNaN($parent.getStat(id))
+            span.value(data-bind="num: $parent.getStat(id), fmt: format")
+            // /ko
+          // /ko
+          // /ko
+        // ko foreach:result
+        tr.candidate(data-bind="click:function(){selected(true)},css:{selected:selected}")
+          td.term
+            span.coeff
+              span(data-bind="num:coeff")
+            // ko foreach:term
+            // ko if:exp !== 0
+            span.name
+              span(data-bind="text:name||'x'")
+
+              // ko ifnot:name
+              sub
+                span(data-bind="text:index")
+                span &nbsp;
               // /ko
-        // /ko
-        // /ko
-
-    tbody
-      tr.candidate.current
-        td.term
-          span.coeff Current Model
-        // ko foreach:allstats
-        // ko if:!global && sort && selected()
-        td.stat
-          // ko ifnot:isNaN($parent.getStat(id))
-          span.value(data-bind="num: $parent.getStat(id), fmt: format")
-          // /ko
-        // /ko
-        // /ko
-      // ko foreach:result
-      tr.candidate(data-bind="click:function(){selected(true)},css:{selected:selected}")
-        td.term
-          span.coeff
-            span(data-bind="num:coeff")
-          // ko foreach:term
-          // ko if:exp !== 0
-          span.name
-            span(data-bind="text:name||'x'")
-
-            // ko ifnot:name
-            sub
-              span(data-bind="text:index")
-              span &nbsp;
+              // ko if:$parents[1].timeseries()
+              sub
+                span lag
+                span(data-bind="text:lag || 0")
+              // /ko
+            // ko if:exp !== 1
+            sup(data-bind="text:exp")
             // /ko
-            // ko if:$parents[1].timeseries()
-            sub
-              span lag
-              span(data-bind="text:lag || 0")
             // /ko
-          // ko if:exp !== 1
-          sup(data-bind="text:exp")
+            // /ko
+          // ko foreach:allstats
+          // ko if:!global && sort && selected()
+          td.stat(data-bind="css: { \
+            green: (id == 'pt' && $parent.stats[id] <= $parents[1].psig()) \
+                  || ((id == 'pF' || id == 'F') && $parent.stats.F > model().result_fit().stats.F) \
+            }")
+            span.value(data-bind="num:$parent.stats[id], fmt: format")
           // /ko
           // /ko
-          // /ko
-        // ko foreach:allstats
-        // ko if:!global && sort && selected()
-        td.stat(data-bind="css: { \
-          green: (id == 'pt' && $parent.stats[id] <= $parents[1].psig()) \
-                 || ((id == 'pF' || id == 'F') && $parent.stats.F > model().result_fit().stats.F) \
-          }")
-          span.value(data-bind="num:$parent.stats[id], fmt: format")
         // /ko
-        // /ko
-      // /ko

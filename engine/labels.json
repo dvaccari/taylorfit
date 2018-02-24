@@ -1,5 +1,6 @@
 {
   "FIT_LABEL"   : "fit",
-  "CROSS_LABEL" : "cross"
+  "CROSS_LABEL" : "cross",
+  "VALIDATION_LABEL" : "validation"
 }
 

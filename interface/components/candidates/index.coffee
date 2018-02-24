@@ -49,6 +49,8 @@ ko.components.register "tf-candidates",
     @result.maxWidth.subscribe ( next ) ->
       document.querySelector(".split-model > .split-data > .candidates-pane")
         .style.maxWidth = next + "px"
+      document.querySelector(".split-model > .split-data > .candidates-pane .wrapper")
+        .style.width = (next - 40) + "px"
       document.querySelector(".split-model > .split-data > .model-pane")
         .style.minWidth = "calc(100% - #{next}px)"
 

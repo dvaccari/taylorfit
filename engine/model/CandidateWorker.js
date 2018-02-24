@@ -1,6 +1,6 @@
 /*global Worker*/
 
-const { FIT_LABEL, CROSS_LABEL }  = require('../labels.json');
+const { FIT_LABEL, CROSS_LABEL, VALIDATION_LABEL }  = require('../labels.json');
 //const CandidateWorkerScript       = require('../worker/candidate-worker.js');
 const perf                        = require('../perf');
 
@@ -72,13 +72,19 @@ class CandidateWorker {
       };
 
       let cross;
+      let validation;
       try {
         cross = {
           X: unwrapMatrix(this.model.X(CROSS_LABEL)),
           y: unwrapMatrix(this.model.y(CROSS_LABEL))
         };
+        validation = {
+          X: unwrapMatrix(this.model.X(VALIDATION_LABEL)),
+          y: unwrapMatrix(this.model.y(VALIDATION_LABEL))
+        };
       } catch (e) {
         cross = fit;
+        validation = fit;
       }
 
       let unwrappedCandidates = candidates.map((term) => {
@@ -89,23 +95,28 @@ class CandidateWorker {
         
         let lag = Math.max(this.model.highestLag(), term.lag);
         let cross;
+        let validation;
 
         try {
           cross = unwrapMatrix(term.col(CROSS_LABEL));
+          validation = unwrapMatrix(term.col(VALIDATION_LABEL));
         } catch (e) {
           cross = fit;
+          validation = fit;
         }
 
         if (fit) {
           transferables.push(fit.data, cross.data);
+          transferables.push(fit.data, validation.data);
         }
 
-        return { fit, lag, cross };
+        return { fit, lag, cross, validation };
       });
 
       this.worker.postMessage({
         fit,
         cross,
+        validation,
         candidates: unwrappedCandidates,
         jobId: thisJobId
       }, transferables);
