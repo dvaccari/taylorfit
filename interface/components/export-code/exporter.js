@@ -2,27 +2,28 @@ module.exports = {
     cppFunc(){
         var terms = [];
         var output = "double model(";
-        for (var i = 0; i < model().result_fit().terms.length; i++){
-            if(terms.indexOf(model().result_fit().terms[i].term[0].name) == -1){
-                terms.push(model().result_fit().terms[i].term[0].name);
-                output += "double " + terms[i];
-                if(i != model().result_fit().terms.length-1)
-                    output += ", ";
+        for (var i = 1; i < model().result_fit().terms.length; i++){
+            for(var j = 0; j < model().result_fit().terms[i].term.length; j++){
+                if(terms.indexOf(model().result_fit().terms[i].term[j].name) == -1){
+                    terms.push(model().result_fit().terms[i].term[j].name);
+                    output += "double " + terms[terms.length-1] + ", ";
+                }
             }
         }
-        if(output.substring(output.length-1, output.length) == " ")
-            output = output.substring(0, output.length-2);
-        output += "){return ";
+        output = output.substring(0, output.length-2);
+        output += "){\n\treturn ";
 
         for(var i = 0; i < model().result_fit().terms.length; i++){
             output += "(" + model().result_fit().terms[i].coeff;
-            for(var j = 0; j < model().result_fit().terms[i].term[0].exp; j++){
-                output += " * " + model().result_fit().terms[i].term[0].name;
+            for(var k = 0; k < model().result_fit().terms[i].term.length; k++){
+                for(var j = 0; j < model().result_fit().terms[i].term[k].exp; j++){
+                    output += " * " + model().result_fit().terms[i].term[k].name;
+                }
             }
             if(i != model().result_fit().terms.length-1)
                 output += ") + ";
         }
-        output += ");}";
+        output += ");\n}";
 
         return output;
     },
@@ -32,22 +33,24 @@ module.exports = {
     excelFunc(){
         var terms = [];
         var output = "Function MODEL(";
-        for (var i = 0; i < model().result_fit().terms.length; i++){
-            if(terms.indexOf(model().result_fit().terms[i].term[0].name) == -1){
-                terms.push(model().result_fit().terms[i].term[0].name);
-                output += terms[i];
-                if(i != model().result_fit().terms.length-1)
-                    output += ", ";
+        for (var i = 1; i < model().result_fit().terms.length; i++){
+            for(var j = 0; j < model().result_fit().terms[i].term.length; j++){
+                if(terms.indexOf(model().result_fit().terms[i].term[j].name) == -1){
+                    terms.push(model().result_fit().terms[i].term[j].name);
+                    output += terms[terms.length-1] + ", ";
+                }
             }
         }
-        if(output.substring(output.length-1, output.length) == " ")
-            output = output.substring(0, output.length-2);
+        
+        output = output.substring(0, output.length-2);
         output += ")MODEL = ";
 
         for(var i = 0; i < model().result_fit().terms.length; i++){
             output += "(" + model().result_fit().terms[i].coeff;
-            for(var j = 0; j < model().result_fit().terms[i].term[0].exp; j++){
-                output += " * " + model().result_fit().terms[i].term[0].name;
+            for(var k = 0; k < model().result_fit().terms[i].term.length; k++){
+                for(var j = 0; j < model().result_fit().terms[i].term[k].exp; j++){
+                    output += " * " + model().result_fit().terms[i].term[k].name;
+                }
             }
             if(i != model().result_fit().terms.length-1)
                 output += ") + ";
@@ -62,22 +65,24 @@ module.exports = {
     matlabFunc(){
         var terms = [];
         var output = "function m = model(";
-        for (var i = 0; i < model().result_fit().terms.length; i++){
-            if(terms.indexOf(model().result_fit().terms[i].term[0].name) == -1){
-                terms.push(model().result_fit().terms[i].term[0].name);
-                output += terms[i];
-                if(i != model().result_fit().terms.length-1)
-                    output += ", ";
+        for (var i = 1; i < model().result_fit().terms.length; i++){
+            for(var j = 0; j < model().result_fit().terms[i].term.length; j++){
+                if(terms.indexOf(model().result_fit().terms[i].term[j].name) == -1){
+                    terms.push(model().result_fit().terms[i].term[j].name);
+                    output += terms[terms.length-1] + ", ";
+                }
             }
         }
-        if(output.substring(output.length-1, output.length) == " ")
-            output = output.substring(0, output.length-2);
+        
+        output = output.substring(0, output.length-2);
         output += ")\n\tm = ";
 
         for(var i = 0; i < model().result_fit().terms.length; i++){
             output += "(" + model().result_fit().terms[i].coeff;
-            for(var j = 0; j < model().result_fit().terms[i].term[0].exp; j++){
-                output += " * " + model().result_fit().terms[i].term[0].name;
+            for(var k = 0; k < model().result_fit().terms[i].term.length; k++){
+                for(var j = 0; j < model().result_fit().terms[i].term[k].exp; j++){
+                    output += " * " + model().result_fit().terms[i].term[k].name;
+                }
             }
             if(i != model().result_fit().terms.length-1)
                 output += ") + ";
@@ -92,22 +97,25 @@ module.exports = {
     pythonFunc(){
         var terms = [];
         var output = "def model(";
-        for (var i = 0; i < model().result_fit().terms.length; i++){
-            if(terms.indexOf(model().result_fit().terms[i].term[0].name) == -1){
-                terms.push(model().result_fit().terms[i].term[0].name);
-                output += terms[i];
-                if(i != model().result_fit().terms.length-1)
-                    output += ", ";
+
+        for (var i = 1; i < model().result_fit().terms.length; i++){
+            for(var j = 0; j < model().result_fit().terms[i].term.length; j++){
+                if(terms.indexOf(model().result_fit().terms[i].term[j].name) == -1){
+                    terms.push(model().result_fit().terms[i].term[j].name);
+                    output += terms[terms.length-1] + ", ";
+                }
             }
         }
-        if(output.substring(output.length-1, output.length) == " ")
-            output = output.substring(0, output.length-2);
+
+        output = output.substring(0, output.length-2);
         output += "): \n\treturn ";
 
         for(var i = 0; i < model().result_fit().terms.length; i++){
             output += "(" + model().result_fit().terms[i].coeff;
-            for(var j = 0; j < model().result_fit().terms[i].term[0].exp; j++){
-                output += " * " + model().result_fit().terms[i].term[0].name;
+            for(var k = 0; k < model().result_fit().terms[i].term.length; k++){
+                for(var j = 0; j < model().result_fit().terms[i].term[k].exp; j++){
+                    output += " * " + model().result_fit().terms[i].term[k].name;
+                }
             }
             if(i != model().result_fit().terms.length-1)
                 output += ") + ";
@@ -122,27 +130,29 @@ module.exports = {
     jsFunc(){
         var terms = [];
         var output = "function model(";
-        for (var i = 0; i < model().result_fit().terms.length; i++){
-            if(terms.indexOf(model().result_fit().terms[i].term[0].name) == -1){
-                terms.push(model().result_fit().terms[i].term[0].name);
-                output += "double " + terms[i];
-                if(i != model().result_fit().terms.length-1)
-                    output += ", ";
+
+        for (var i = 1; i < model().result_fit().terms.length; i++){
+            for(var j = 0; j < model().result_fit().terms[i].term.length; j++){
+                if(terms.indexOf(model().result_fit().terms[i].term[j].name) == -1){
+                    terms.push(model().result_fit().terms[i].term[j].name);
+                    output += "double " + terms[terms.length-1] + ", ";
+                }
             }
         }
-        if(output.substring(output.length-1, output.length) == " ")
-            output = output.substring(0, output.length-2);
-        output += "){return ";
+        output = output.substring(0, output.length-2);
+        output += "){\n\treturn ";
 
         for(var i = 0; i < model().result_fit().terms.length; i++){
             output += "(" + model().result_fit().terms[i].coeff;
-            for(var j = 0; j < model().result_fit().terms[i].term[0].exp; j++){
-                output += " * " + model().result_fit().terms[i].term[0].name;
+            for(var k = 0; k < model().result_fit().terms[i].term.length; k++){
+                for(var j = 0; j < model().result_fit().terms[i].term[k].exp; j++){
+                    output += " * " + model().result_fit().terms[i].term[k].name;
+                }
             }
             if(i != model().result_fit().terms.length-1)
                 output += ") + ";
         }
-        output += ");}";
+        output += ");\n}";
 
         return output;
     }
