@@ -47,6 +47,8 @@ ko.components.register "tf-candidates",
 
     @result.maxWidth = ko.observable 0
     @result.maxWidth.subscribe ( next ) ->
+      if next <= 60
+        readjust()
       document.querySelector(".split-model > .split-data > .candidates-pane")
         .style.maxWidth = next + "px"
       document.querySelector(".split-model > .split-data > .candidates-pane .wrapper")
