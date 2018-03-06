@@ -116,6 +116,7 @@ ko.components.register "tf-settings",
     @clear_model = ( ) ->
       model.result_fit(undefined)
       model.result_cross(undefined)
+      model.result_validation(undefined)
       model.show_settings(false)
       adapter.clear()
       adapter.addTerm([[0, 0, 0]])

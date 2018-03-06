@@ -37,6 +37,7 @@ tf-content
       padding 20px
       box-sizing border-box
       display block
+      background #fff
 
     .candidates-pane
       float right
@@ -64,7 +65,9 @@ tf-content
       min-height 130px
       min-width 220px
       max-width calc(100% - 220px)
-    .split-data
-      max-height calc(100% - 130px)
+    .split-data[hover="false"]
+      // max-height calc(100% - 130px)
+      height 100% !important
+      max-height 100% !important
 
 

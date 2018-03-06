@@ -1,0 +1,16 @@
+.background(data-bind="css:{active:active}, click:close")
+.export(data-bind="css:{active:active}")
+  span Language:
+    span(data-bind="text:language()")
+  tf-dropdown(params="align:'right'")
+    span.mark(data-bind="click:function(){language('javascript')}")
+      | Javascript
+    span.mark(data-bind="click:function(){language('excel')}")
+      | Excel
+    span.mark(data-bind="click:function(){language('c++')}")
+      | C++
+    span.mark(data-bind="click:function(){language('matlab')}")
+      | Matlab
+    span.mark(data-bind="click:function(){language('python')}")
+      | Python
+  textarea(data-bind="text:code()")

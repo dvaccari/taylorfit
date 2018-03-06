@@ -42,9 +42,11 @@ CTRL = () ->
   show_settings:
     [ false       , WRAP_O                            , IGNORE ]
   show_histogram:
-    [ undefined    , WRAP_O                            , IGNORE ]
+    [ undefined    , WRAP_O                           , IGNORE ]
+  show_export_code:
+    [ undefined    , WRAP_O                           , IGNORE ]
   show_autocorrelation:
-    [ undefined    , WRAP_O                            , IGNORE ]
+    [ undefined    , WRAP_O                           , IGNORE ]
 
   columns:
     [ [ ]         , WRAP_A                            , UNWRAP ]
@@ -52,7 +54,7 @@ CTRL = () ->
     [ undefined   , DATA("fit")                       , UNWRAP ]
   data_cross:
     [ undefined   , DATA("cross")                     , UNWRAP ]
-  data_valid:
+  data_validation:
     [ undefined   , DATA("validation")                , UNWRAP ]
 
   candidates:
@@ -62,7 +64,7 @@ CTRL = () ->
     [ undefined   , WRAP_O                            , UNWRAP ]
   result_cross:
     [ undefined   , WRAP_O                            , IGNORE ]
-  result_valid:
+  result_validation:
     [ undefined   , WRAP_O                            , IGNORE ]
 
   psig:
@@ -101,7 +103,7 @@ module.exports = class Model
 
     adapter.subscribeToChanges()
 
-    for type in [ "fit", "cross", "valid" ]
+    for type in [ "fit", "cross", "validation" ]
       do ( type ) =>
         @["extra_#{type}"] = ko.computed ( ) =>
 
@@ -162,7 +164,7 @@ module.exports = class Model
       , 100
     adapter.on "model:validation", ( model ) =>
       setTimeout =>
-        @result_valid
+        @result_validation
           stats: model.stats
           predicted: model.predicted
       , 100
