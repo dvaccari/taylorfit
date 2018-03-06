@@ -66,6 +66,15 @@
           td.stat(data-bind="css: { \
             green: (id == 'pt' && $parent.stats[id] <= $parents[1].psig()) \
                   || ((id == 'pF' || id == 'F') && $parent.stats.F > model().result_fit().stats.F) \
+                  || ((id == 'SSE') && $parent.stats.SSE < model().result_fit().stats.SSE) \
+                  || ((id == 'MSE') && $parent.stats.MSE < model().result_fit().stats.MSE) \
+                  || ((id == 't') && $parent.stats.t > model().result_fit().stats.t) \
+                  || ((id == 'adjRsq') && $parent.stats.adjRsq > model().result_fit().stats.adjRsq) \
+                  || ((id == 'Rsq') && $parent.stats.Rsq > model().result_fit().stats.Rsq) \
+                  || ((id == 'BIC') && $parent.stats.BIC < model().result_fit().stats.BIC) \
+                  || ((id == 'AIC') && $parent.stats.AIC < model().result_fit().stats.AIC) \
+                  || ((id == 'RMSE') && $parent.stats.RMSE < model().result_fit().stats.RMSE) \
+                  || ((id == 'MaxAbsErr') && $parent.stats.MaxAbsErr < model().result_fit().stats.MaxAbsErr) \
             }")
             span.value(data-bind="num:$parent.stats[id], fmt: format")
           // /ko

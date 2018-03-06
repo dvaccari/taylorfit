@@ -60,7 +60,7 @@ module.exports = [
   Statistic('BIC', ['MSE', 'np', 'nd'],
     ({MSE, np, nd}) => Math.log10(MSE) + np*(Math.log10(nd) / nd)),
 
-  Statistic('Max|Err|', ['y', 'yHat'], ({y, yHat}) => y.sub(yHat).abs().max()),
+  Statistic('MaxAbsErr', ['y', 'yHat'], ({y, yHat}) => y.sub(yHat).abs().max()),
 
   Statistic('t', ['X', 'VdivwSq', 'MSE', 'BHat'],
     ({X, VdivwSq, MSE, BHat}) => {

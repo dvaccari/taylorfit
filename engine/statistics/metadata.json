@@ -23,7 +23,7 @@
 
   { "id": "PLACEHOLDER"},
 
-  { "id": "Max|Err|", "sort": ">"},
+  { "id": "MaxAbsErr", "displayName": "Max|Err|", "sort": ">"},
   { "id": "RMSE", "sort": ">"},
   { "id": "SKEW", "sort": "<"},
   { "id": "KURT", "sort": "<"},
