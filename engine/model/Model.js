@@ -86,7 +86,7 @@ class Model extends CacheMixin(Observable) {
     this[_data][label] = data;
     this[_subsets][label] = utils.range(0, data.shape[0]);
 
-    this[_terms] = [this.termpool.get(INTERCEPT)];
+    this[_terms] = this[_terms].map(term => term.isIntercept ? this.termpool.get(INTERCEPT) : term);
     this.uncache('X');
     this.uncache('y');
     this.uncache('data');
