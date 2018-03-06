@@ -35,6 +35,19 @@ calculateAutoCorrelation = (values, k) ->
   sum /= variance(values, mu)
   return sum
 
+calculateStandardError = (acf, numValues) ->
+  i = 0
+  errors = []
+  sum = 0
+  while i < acf.length
+    sum += acf[i] * acf[i]
+    console.log('Sum: ', sum)
+    errors[i] = Math.sqrt((1 + 2 * sum) / numValues)
+    console.log(errors[i])
+    i++
+  console.log(errors)
+  return errors
+
   
 
 ko.components.register "tf-autocorrelation",
@@ -93,6 +106,14 @@ ko.components.register "tf-autocorrelation",
         buckets[i] = calculateAutoCorrelation(filtered, i+1)
         console.log('Autocorrelation Value: ', buckets[i])
         i++
+      z_score = 3
+
+      errors = calculateStandardError(buckets, filtered.length)
+      errors = errors.map((value) => value * z_score)
+      negativeErrors = errors.map((value) => value * -1)
+
+      console.log(errors)
+
       labels = Array(@bucket_size()).fill(0).map((x, index) => index + 1)
 
       chart = c3.generate
@@ -101,9 +122,14 @@ ko.components.register "tf-autocorrelation",
           x: "x"
           columns: [
             ["x"].concat(labels),
-            [@column_name()].concat(buckets)
+            [@column_name()].concat(buckets),
+            ['confidencePositive'].concat(errors),
+            ['confidenceNegative'].concat(negativeErrors)
           ]
-          type: "bar"
+          type: 'bar',
+          types:
+            confidencePositive: 'line'
+            confidenceNegative: 'line'
         size:
           height: 370
           width: 600
@@ -111,8 +137,11 @@ ko.components.register "tf-autocorrelation",
           x:
             tick:
               format: d3.format('.3s')
+          y:
+            tick:
+              format: d3.format('.3f')
         legend:
-          show: false
+          show: true
       return chart.element.innerHTML
 
     @column_index.subscribe ( next ) =>
