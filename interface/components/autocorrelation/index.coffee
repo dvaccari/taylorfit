@@ -141,7 +141,7 @@ ko.components.register "tf-autocorrelation",
             tick:
               format: d3.format('.3f')
         legend:
-          show: true
+          show: false
       return chart.element.innerHTML
 
     @column_index.subscribe ( next ) =>
