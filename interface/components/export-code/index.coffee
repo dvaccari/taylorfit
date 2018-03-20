@@ -20,16 +20,18 @@ ko.components.register "tf-export-code",
     @language = ko.observable "matlab"
 
     @code = ko.computed () =>
-      if @language() == "javascript"
-        return exporter.jsFunc()
-      if @language() == "excel"
-        return exporter.excelFunc()
-      if @language() == "c++"
-        return exporter.cppFunc()
-      if @language() == "matlab"
-        return exporter.matlabFunc()
-      if @language() == "python"
-        return exporter.pythonFunc()
+      if @active()
+        if @language() == "javascript"
+          return exporter.jsFunc()
+        if @language() == "excel"
+          return exporter.excelFunc()
+        if @language() == "c++"
+          return exporter.cppFunc()
+        if @language() == "matlab"
+          return exporter.matlabFunc()
+        if @language() == "python"
+          return exporter.pythonFunc()
+      return ""
 
     @close = ( ) ->
       model.show_export_code undefined
