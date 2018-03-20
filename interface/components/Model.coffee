@@ -169,8 +169,10 @@ module.exports = class Model
           predicted: model.predicted
       , 100
 
+    adapter.on "progress.start", ( { curr, total } ) =>
+      @progress 0.01
     adapter.on "progress", ( { curr, total } ) =>
-      @progress 100 * curr / total
+      @progress Math.max(100 * curr / total, 0.01)
     adapter.on "progress.end", ( ) =>
       @progress 100
 
