@@ -24,6 +24,8 @@ ko.components.register "tf-candidates",
 
     model = params.model() # now static
 
+    @current_page = ko.observable null
+
     @timeseries = model.timeseries
     @psig = model.psig
 

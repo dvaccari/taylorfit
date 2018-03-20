@@ -4,7 +4,7 @@
   // /ko
   header
     span.title Candidate Terms
-  tf-pager(params="source:source,result:result")
+  tf-pager(params="source:source,result:result,current:current_page")
   .candidate-wrapper
     table.candidates(data-bind="if:candidates().length")
       thead
@@ -37,7 +37,7 @@
           // /ko
           // /ko
         // ko foreach:result
-        tr.candidate(data-bind="click:function(){selected(true)},css:{selected:selected}")
+        tr.candidate(data-bind="click:function(){selected(true);$parent.current_page(0);},css:{selected:selected}")
           td.term
             span.coeff
               span(data-bind="num:coeff")
