@@ -78,12 +78,16 @@ class CandidateWorker {
           X: unwrapMatrix(this.model.X(CROSS_LABEL)),
           y: unwrapMatrix(this.model.y(CROSS_LABEL))
         };
+      } catch (e) {
+        cross = fit;
+      }
+
+      try {
         validation = {
           X: unwrapMatrix(this.model.X(VALIDATION_LABEL)),
           y: unwrapMatrix(this.model.y(VALIDATION_LABEL))
         };
       } catch (e) {
-        cross = fit;
         validation = fit;
       }
 
