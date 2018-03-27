@@ -16,9 +16,10 @@ module.exports = {
         for(var i = 0; i < model().result_fit().terms.length; i++){
             output += "(" + model().result_fit().terms[i].coeff;
             for(var k = 0; k < model().result_fit().terms[i].term.length; k++){
-                for(var j = 0; j < model().result_fit().terms[i].term[k].exp; j++){
+                if(model().result_fit().terms[i].term[k].exp == 1)
                     output += " * " + model().result_fit().terms[i].term[k].name;
-                }
+                else if(model().result_fit().terms[i].term[k].exp != 0)
+                    output += " * " + "pow(" + model().result_fit().terms[i].term[k].name + "," + model().result_fit().terms[i].term[k].exp + ")";
             }
             if(i != model().result_fit().terms.length-1)
                 output += ") + ";
@@ -48,9 +49,10 @@ module.exports = {
         for(var i = 0; i < model().result_fit().terms.length; i++){
             output += "(" + model().result_fit().terms[i].coeff;
             for(var k = 0; k < model().result_fit().terms[i].term.length; k++){
-                for(var j = 0; j < model().result_fit().terms[i].term[k].exp; j++){
+                if(model().result_fit().terms[i].term[k].exp == 1)
                     output += " * " + model().result_fit().terms[i].term[k].name;
-                }
+                else if(model().result_fit().terms[i].term[k].exp != 0)
+                    output += " * " + "POWER(" + model().result_fit().terms[i].term[k].name + "," + model().result_fit().terms[i].term[k].exp + ")";
             }
             if(i != model().result_fit().terms.length-1)
                 output += ") + ";
@@ -80,9 +82,10 @@ module.exports = {
         for(var i = 0; i < model().result_fit().terms.length; i++){
             output += "(" + model().result_fit().terms[i].coeff;
             for(var k = 0; k < model().result_fit().terms[i].term.length; k++){
-                for(var j = 0; j < model().result_fit().terms[i].term[k].exp; j++){
+                if(model().result_fit().terms[i].term[k].exp == 1)
                     output += " * " + model().result_fit().terms[i].term[k].name;
-                }
+                else if(model().result_fit().terms[i].term[k].exp != 0)
+                    output += " * (" + model().result_fit().terms[i].term[k].name + "^" + model().result_fit().terms[i].term[k].exp + ")";
             }
             if(i != model().result_fit().terms.length-1)
                 output += ") + ";
@@ -113,9 +116,10 @@ module.exports = {
         for(var i = 0; i < model().result_fit().terms.length; i++){
             output += "(" + model().result_fit().terms[i].coeff;
             for(var k = 0; k < model().result_fit().terms[i].term.length; k++){
-                for(var j = 0; j < model().result_fit().terms[i].term[k].exp; j++){
+                if(model().result_fit().terms[i].term[k].exp == 1)
                     output += " * " + model().result_fit().terms[i].term[k].name;
-                }
+                else if(model().result_fit().terms[i].term[k].exp != 0)
+                    output += " * (" + model().result_fit().terms[i].term[k].name + "**" + model().result_fit().terms[i].term[k].exp + ")";
             }
             if(i != model().result_fit().terms.length-1)
                 output += ") + ";
@@ -145,9 +149,10 @@ module.exports = {
         for(var i = 0; i < model().result_fit().terms.length; i++){
             output += "(" + model().result_fit().terms[i].coeff;
             for(var k = 0; k < model().result_fit().terms[i].term.length; k++){
-                for(var j = 0; j < model().result_fit().terms[i].term[k].exp; j++){
+                if(model().result_fit().terms[i].term[k].exp == 1)
                     output += " * " + model().result_fit().terms[i].term[k].name;
-                }
+                else if(model().result_fit().terms[i].term[k].exp != 0)
+                    output += " * " + "Math.pow(" + model().result_fit().terms[i].term[k].name + "," + model().result_fit().terms[i].term[k].exp + ")";
             }
             if(i != model().result_fit().terms.length-1)
                 output += ") + ";
