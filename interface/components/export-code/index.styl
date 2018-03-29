@@ -1,0 +1,58 @@
+tf-export-code
+  z-index 1000
+
+  & > .background
+    display none
+    z-index 1000
+    width 100%
+    height 100%
+    background rgba(0,0,0,.5)
+    top 0
+    left 0
+    position absolute
+
+  & > .export
+    display none
+    position absolute
+    top 50%
+    left 50%
+    margin-top -110px
+    margin-left -310px
+    width 600px
+    height 200px
+    background #fff
+    border 1px solid #e9ebed
+    padding 10px
+    z-index 1000
+    box-shadow 0 0 3px 1px rgba(0,0,0,.5)
+
+  .active
+    display block
+
+  textarea
+    display block
+    margin 20px 0px
+    height 130px
+    width 100%
+    padding 5px
+    box-sizing border-box
+    border-radius 5px
+    border 1px solid #888
+
+  tf-dropdown
+    top -3px
+    .dropdown-arrow
+      color #333
+    .dropdown-content
+      overflow hidden
+      & > *
+        padding 4px 10px
+        display inline-block
+        transition background 300ms
+        width 100%
+        box-sizing border-box
+        cursor pointer
+        &.sep
+          border-top 1px solid #DDD
+        &:hover
+          background #EEE

@@ -63,6 +63,7 @@ ko.components.register "tf-loader",
           m = params.model()
           # TODO: check for column length
           m["data_#{@table}"] model.rows
+          m["name_#{@table}"] = model.name
 
     # --- for loading entire model
     if @init

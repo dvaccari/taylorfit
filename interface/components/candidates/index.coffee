@@ -24,6 +24,8 @@ ko.components.register "tf-candidates",
 
     model = params.model() # now static
 
+    @current_page = ko.observable null
+
     @timeseries = model.timeseries
     @psig = model.psig
 
@@ -40,10 +42,19 @@ ko.components.register "tf-candidates",
     @candidates.subscribe ( next ) =>
       @source next.sort @sort()
 
+    @getStat = ( id ) =>
+      cross = model.result_cross() && model.result_cross().stats[id]
+      fit = model.result_fit() && model.result_fit().stats[id]
+      return parseFloat(cross) || parseFloat(fit)
+
     @result.maxWidth = ko.observable 0
     @result.maxWidth.subscribe ( next ) ->
+      if next <= 60
+        readjust()
       document.querySelector(".split-model > .split-data > .candidates-pane")
         .style.maxWidth = next + "px"
+      document.querySelector(".split-model > .split-data > .candidates-pane .wrapper")
+        .style.width = (next - 40) + "px"
       document.querySelector(".split-model > .split-data > .model-pane")
         .style.minWidth = "calc(100% - #{next}px)"
 

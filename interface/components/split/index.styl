@@ -8,7 +8,7 @@ tf-split-border = rgba(black, 0.1)
 
   & > *:nth-child(1)
   & > *:nth-child(2)
-    transition width 600ms, height 600ms
+    transition width 300ms, height 300ms, max-height 300ms
     // bounce
     // transition-timing-function cubic-bezier(0.175, 0.885, 0.32, 1.275)
     // sine
@@ -45,9 +45,16 @@ tf-split-border = rgba(black, 0.1)
       box-shadow 0 -2px 0 tf-split-border
       bottom 0
     & > *:nth-child(1)
-    & > *:nth-child(2)
       width 100%
       &[hover="true"]
         height 80%
       &[hover="false"]
         height 20%
+    & > *:nth-child(2)
+      width 100%
+      &[hover="true"]
+        max-height 80%
+        height auto
+      &[hover="false"]
+        max-height 20%
+        height auto

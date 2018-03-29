@@ -5,11 +5,15 @@
     header
       span.title Goodness-of-Fit Statistics
     // ko foreach:allstats
-    // ko if:!global && !$data.default
+    // ko if:!global && !$data.default && name!='PLACEHOLDER'
     div.stat(data-bind="text:name,css:{selected:selected},\
     click:function(){selected(!selected())}")
     // /ko
     // /ko
+  span
+    header
+      span N<sub>Candidates</sub> 
+    span(data-bind="text:num_terms")
   tf-counter.multiplicands(params="name:'Max Multiplicands',value:multiplicands,max:multiplicands_max")
   tf-multiselect.exponents(params="name:'Exponents',values:exponents,fixed:['1']")
   // ko if:timeseries
@@ -18,7 +22,7 @@
   span.title Advanced
   tf-checkbox(params="name:'Time Series',value:timeseries")
   tf-counter(params="name:'Display Precision',value:ko.precision,min:1,max:9")
-  tf-input(params="name:'P Significance',value:psig,type:'decimal',decimals:4")
+  tf-input(params="name:'Alpha',value:psig,type:'decimal',decimals:4,min:0.000001,max:0.999999")
 
   span.button.warning(data-bind="click:clear_settings")
     | Clear Settings
@@ -30,4 +34,3 @@
     | Export Project
   a.button.manual(href="resources/TaylorFit Manual 2017.pdf" target="window")
     | Open Users' Manual
-

@@ -14,7 +14,10 @@ ko.components.register "tf-pager",
 
     @source = params.source
 
-    @current = ko.observable null
+    if params.current
+      @current = params.current
+    else
+      @current = ko.observable null
 
     ko.computed ( ) =>
       pagesize = @pagesize()

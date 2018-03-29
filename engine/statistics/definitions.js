@@ -25,9 +25,31 @@ module.exports = [
 
   Statistic('Vary', ['TSS', 'nd'], ({TSS, nd}) => TSS / (nd - 1)),
   Statistic('MSR', ['SSR', 'np'], ({SSR, np}) => SSR / (np - 1)),
+
+  Statistic('SKEW', ['y', 'yHat', 'nd'], ({y, yHat, nd}) => {
+    let residuals = y.sub(yHat);
+    let residMean = residuals.sum() / residuals.shape[0];
+    let residStDv = Math.sqrt(residuals.sub(residMean).dotPow(2).sum() / (nd - 1));
+ 
+    return nd * residuals.sub(residMean).dotPow(3).sum() / (nd - 1) / (nd - 2) / residStDv / residStDv / residStDv;
+  }),
+  Statistic('KURT', ['y', 'yHat', 'nd'], ({y, yHat, nd}) => {
+    let residuals = y.sub(yHat);
+    let residMean = residuals.sum() / residuals.shape[0];
+    let residStDv = Math.sqrt(residuals.sub(residMean).dotPow(2).sum() / (nd - 1));
+    
+    // let r1 =  nd * (nd + 1) *residuals.sub(residMean).dotPow(4).sum() / (nd - 1) / (nd - 2) / (nd - 3) / residStDev / residStDv / residStDv / residStdDv;
+    let r1 =  nd * (nd + 1) * residuals.sub(residMean).dotPow(4).sum() / (nd - 1) / (nd - 2) / (nd - 3) / residStDv / residStDv / residStDv/ residStDv;
+    
+    let r2 =  3 * (nd-1) * (nd-1) / (nd-2) / (nd-3);
+    return r1 - r2;
+
+  }),
+  Statistic('seSKEW', ['nd'], ({nd}) => Math.sqrt(6 / nd)),
+  Statistic('seKURT', ['nd'], ({nd}) => Math.sqrt(24 / nd)),
   Statistic('MSE', ['SSE', 'nd', 'np'], ({SSE, nd, np}) => SSE / (nd - np)),
+  Statistic('RMSE', ['MSE'], ({MSE}) => Math.sqrt(MSE)),
   Statistic('Rsq', ['SSE', 'TSS'], ({SSE, TSS}) => 1 - (SSE / TSS)),
-  Statistic('cRsq', ['Rsq'], ({Rsq}) => 1 - Rsq),
   Statistic('adjRsq', ['Rsq', 'np', 'nd'],
     ({Rsq, nd, np}) => 1 - ((1 - Rsq)*(nd - 1) / (nd - np))),
   Statistic('F', ['MSR', 'MSE'], ({MSR, MSE}) => MSR / MSE),
@@ -38,6 +60,7 @@ module.exports = [
   Statistic('BIC', ['MSE', 'np', 'nd'],
     ({MSE, np, nd}) => Math.log10(MSE) + np*(Math.log10(nd) / nd)),
 
+  Statistic('MaxAbsErr', ['y', 'yHat'], ({y, yHat}) => y.sub(yHat).abs().max()),
 
   Statistic('t', ['X', 'VdivwSq', 'MSE', 'BHat'],
     ({X, VdivwSq, MSE, BHat}) => {
@@ -60,5 +83,5 @@ module.exports = [
     }),
 
   Statistic('pF', ['F', 'np', 'nd'],
-    ({F, np, nd}) => dist.pf(Math.abs(F), np, nd - np))
+    ({F, np, nd}) => Math.max(dist.pf(Math.abs(F), np, nd - np) - 1e-15, 0))
 ];

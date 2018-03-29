@@ -1,6 +1,3 @@
-
-
-
 require "./index.styl"
 
 c3 = require "c3"
@@ -12,21 +9,28 @@ ko.components.register "tf-graph",
 
       # TODO: check for observability
       data = params.data
+      row_labels = params.row_labels
 
-      data.subscribe ( next ) ->
+      row_labels.subscribe ( next ) ->
         try
           chart.load
-            rows: [["x", "Fit Data", "x2", "Cross Data" ]].concat next
+            xs: getxs()
+            rows: [next].concat data()
         catch error
           console.error error
+
+      getxs = () =>
+        xs = []
+        labels = row_labels()
+        for i in [0...labels.length / 2]
+          xs[labels[i * 2 + 1]] = labels[i * 2]
+        return xs
 
       chart = c3.generate
         data:
           type: "scatter"
-          xs:
-            "Fit Data": "x"
-            "Cross Data": "x2"
-          rows: [["x", "Fit Data", "x2", "Cross Data"]].concat data() or [ 0, 0, 0 ]
+          xs: getxs()
+          rows: [row_labels()].concat data() or [ 0, 0, 0 ]
         axis:
           x:
             label:

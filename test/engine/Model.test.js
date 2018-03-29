@@ -347,7 +347,7 @@ describe('Model', () => {
 
           expect(cand).to.have.property('stats');
 
-          ['MSE', 'Rsq', 'cRsq', 'adjRsq', 'F', 'pF', 't', 'pt', 'AIC', 'BIC']
+          ['MSE', 'Rsq', 'adjRsq', 'F', 'pF', 't', 'pt', 'AIC', 'BIC']
             .forEach((stat) => expect(cand.stats[stat]).to.be.a('number'));
         });
     });
@@ -374,7 +374,7 @@ describe('Model', () => {
       });
 
       expect(model).to.have.property('stats');
-      ['MSE', 'Rsq', 'cRsq', 'adjRsq', 'F', 'pF', 'AIC', 'BIC']
+      ['MSE', 'Rsq', 'adjRsq', 'F', 'pF', 'AIC', 'BIC']
         .forEach((stat) => expect(model.stats).to.have.property(stat));
     });
 

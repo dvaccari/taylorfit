@@ -10,7 +10,7 @@ const Matrix      = require('../matrix');
 const lstsq       = require('../regression').lstsq;
 const statistics  = require('../statistics');
 
-onmessage = ({ data: { fit, cross, candidates, jobId } }) => {
+onmessage = ({ data: { fit, cross, validation, candidates, jobId } }) => {
   fit.X = new Matrix(fit.X.m, fit.X.n, fit.X.data);
   fit.y = new Matrix(fit.y.m, fit.y.n, fit.y.data);
 
@@ -19,9 +19,9 @@ onmessage = ({ data: { fit, cross, candidates, jobId } }) => {
     cross.y = new Matrix(cross.y.m, cross.y.n, cross.y.data);
   }
 
-  let model = { fit, cross };
+  let model = { fit, cross, validation };
 
-  let results = candidates.map(({ fit, cross, lag }, i) => {
+  let results = candidates.map(({ fit, cross, validation, lag }, i) => {
     // Can't find a fit if exponent is -1 and divisor is 0
     if (!fit) {
       return NaN;
@@ -45,17 +45,13 @@ onmessage = ({ data: { fit, cross, candidates, jobId } }) => {
     }
 
     try {
-      let regression = lstsq(fit.X, fit.y);
-
       // Compute stats for fit, then take t and P(t) (these come from fit data)
-      let stats = statistics(regression);
+      let stats = statistics(lstsq(fit.X, fit.y));
       let t = stats.t.get(0, stats.t.shape[0]-1);
       let pt = stats.pt.get(0, stats.pt.shape[0]-1);
 
       // Then, use the cross data to compute the rest of the statistics
-      Object.assign(regression, { X: cross.X, y: cross.y });
-
-      stats = statistics(regression);
+      stats = statistics(lstsq(cross.X, cross.y, stats.weights))
 
       stats.coeff = stats.weights.get(0, stats.weights.shape[0]-1);
       stats.t = t;

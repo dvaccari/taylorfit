@@ -20,6 +20,7 @@ ko.components.register "tf-grid",
     model       = params.model() # now static
     @dependent  = model.dependent
     @cols       = model.columns
+    @name       = model["name_#{@table}"]
     @rows       = model["data_#{@table}"]
     @extra      = model["extra_#{@table}"]
     @result     = model["result_#{@table}"]
@@ -31,6 +32,9 @@ ko.components.register "tf-grid",
 
     @histogram = ( index ) ->
       model.show_histogram(index)
+
+    @autocorrelation = ( index ) ->
+      model.show_autocorrelation(index)
 
     # @exponent_col = ( index ) -> 
     #   old_cols = @cols()
