@@ -6,7 +6,7 @@ module.exports = {
             for(var j = 0; j < model().result_fit().terms[i].term.length; j++){
                 var tempString;
                 if(model().result_fit().terms[i].term[j].lag != 0)
-                    tempString = model().result_fit().terms[i].term[j].name + "lag" + model().result_fit().terms[i].term[j].lag;
+                    tempString = model().result_fit().terms[i].term[j].name + "_lag_" + model().result_fit().terms[i].term[j].lag;
                 else
                     tempString = model().result_fit().terms[i].term[j].name;
                 if(terms.indexOf( tempString ) == -1){
@@ -23,13 +23,13 @@ module.exports = {
             for(var k = 0; k < model().result_fit().terms[i].term.length; k++){
                 if(model().result_fit().terms[i].term[k].exp == 1){
                     if(model().result_fit().terms[i].term[k].lag != 0)
-                        output += " * " + model().result_fit().terms[i].term[k].name + "lag" + model().result_fit().terms[i].term[k].lag;
+                        output += " * " + model().result_fit().terms[i].term[k].name + "_lag_" + model().result_fit().terms[i].term[k].lag;
                     else
                         output += " * " + model().result_fit().terms[i].term[k].name;
                 }
                 else if(model().result_fit().terms[i].term[k].exp != 0){
                     if(model().result_fit().terms[i].term[k].lag != 0)
-                        output += " * " + "pow(" + model().result_fit().terms[i].term[k].name + "lag" + model().result_fit().terms[i].term[k].lag + "," + model().result_fit().terms[i].term[k].exp + ")";
+                        output += " * " + "pow(" + model().result_fit().terms[i].term[k].name + "_lag_" + model().result_fit().terms[i].term[k].lag + "," + model().result_fit().terms[i].term[k].exp + ")";
                     else
                         output += " * " + "pow(" + model().result_fit().terms[i].term[k].name + "," + model().result_fit().terms[i].term[k].exp + ")";
                 }
@@ -51,7 +51,7 @@ module.exports = {
             for(var j = 0; j < model().result_fit().terms[i].term.length; j++){
                 var tempString;
                 if(model().result_fit().terms[i].term[j].lag != 0)
-                    tempString = model().result_fit().terms[i].term[j].name + "lag" + model().result_fit().terms[i].term[j].lag;
+                    tempString = model().result_fit().terms[i].term[j].name + "_lag_" + model().result_fit().terms[i].term[j].lag;
                 else
                     tempString = model().result_fit().terms[i].term[j].name;
                 if(terms.indexOf( tempString ) == -1){
@@ -69,13 +69,13 @@ module.exports = {
             for(var k = 0; k < model().result_fit().terms[i].term.length; k++){
                 if(model().result_fit().terms[i].term[k].exp == 1){
                     if(model().result_fit().terms[i].term[k].lag != 0)
-                        output += " * " + model().result_fit().terms[i].term[k].name + "lag" + model().result_fit().terms[i].term[k].lag;
+                        output += " * " + model().result_fit().terms[i].term[k].name + "_lag_" + model().result_fit().terms[i].term[k].lag;
                     else
                         output += " * " + model().result_fit().terms[i].term[k].name;
                 }
                 else if(model().result_fit().terms[i].term[k].exp != 0){
                     if(model().result_fit().terms[i].term[k].lag != 0)
-                        output += " * " + "POWER(" + model().result_fit().terms[i].term[k].name + "lag" + model().result_fit().terms[i].term[k].lag + "," + model().result_fit().terms[i].term[k].exp + ")";
+                        output += " * " + "POWER(" + model().result_fit().terms[i].term[k].name + "_lag_" + model().result_fit().terms[i].term[k].lag + "," + model().result_fit().terms[i].term[k].exp + ")";
                     else
                         output += " * " + "POWER(" + model().result_fit().terms[i].term[k].name + "," + model().result_fit().terms[i].term[k].exp + ")";
                 }
@@ -97,7 +97,7 @@ module.exports = {
             for(var j = 0; j < model().result_fit().terms[i].term.length; j++){
                 var tempString;
                 if(model().result_fit().terms[i].term[j].lag != 0)
-                    tempString = model().result_fit().terms[i].term[j].name + "lag" + model().result_fit().terms[i].term[j].lag;
+                    tempString = model().result_fit().terms[i].term[j].name + "_lag_" + model().result_fit().terms[i].term[j].lag;
                 else
                     tempString = model().result_fit().terms[i].term[j].name;
                 if(terms.indexOf( tempString ) == -1){
@@ -115,13 +115,13 @@ module.exports = {
             for(var k = 0; k < model().result_fit().terms[i].term.length; k++){
                 if(model().result_fit().terms[i].term[k].exp == 1){
                     if(model().result_fit().terms[i].term[k].lag != 0)
-                        output += " * " + model().result_fit().terms[i].term[k].name + "lag" + model().result_fit().terms[i].term[k].lag;
+                        output += " * " + model().result_fit().terms[i].term[k].name + "_lag_" + model().result_fit().terms[i].term[k].lag;
                     else
                         output += " * " + model().result_fit().terms[i].term[k].name;
                 }
                 else if(model().result_fit().terms[i].term[k].exp != 0){
                     if(model().result_fit().terms[i].term[k].lag != 0)
-                        output += " * (" + model().result_fit().terms[i].term[k].name + "lag" + model().result_fit().terms[i].term[k].lag + "^" + model().result_fit().terms[i].term[k].exp + ")";
+                        output += " * (" + model().result_fit().terms[i].term[k].name + "_lag_" + model().result_fit().terms[i].term[k].lag + "^" + model().result_fit().terms[i].term[k].exp + ")";
                     else
                         output += " * (" + model().result_fit().terms[i].term[k].name + "^" + model().result_fit().terms[i].term[k].exp + ")";
                 }
@@ -144,7 +144,7 @@ module.exports = {
             for(var j = 0; j < model().result_fit().terms[i].term.length; j++){
                 var tempString;
                 if(model().result_fit().terms[i].term[j].lag != 0)
-                    tempString = model().result_fit().terms[i].term[j].name + "lag" + model().result_fit().terms[i].term[j].lag;
+                    tempString = model().result_fit().terms[i].term[j].name + "_lag_" + model().result_fit().terms[i].term[j].lag;
                 else
                     tempString = model().result_fit().terms[i].term[j].name;
                 if(terms.indexOf( tempString ) == -1){
@@ -162,13 +162,13 @@ module.exports = {
             for(var k = 0; k < model().result_fit().terms[i].term.length; k++){
                 if(model().result_fit().terms[i].term[k].exp == 1){
                     if(model().result_fit().terms[i].term[k].lag != 0)
-                        output += " * " + model().result_fit().terms[i].term[k].name + "lag" + model().result_fit().terms[i].term[k].lag;
+                        output += " * " + model().result_fit().terms[i].term[k].name + "_lag_" + model().result_fit().terms[i].term[k].lag;
                     else
                         output += " * " + model().result_fit().terms[i].term[k].name;
                 }
                 else if(model().result_fit().terms[i].term[k].exp != 0){
                     if(model().result_fit().terms[i].term[k].lag != 0)
-                        output += " * (" + model().result_fit().terms[i].term[k].name + "lag" + model().result_fit().terms[i].term[k].lag + "**" + model().result_fit().terms[i].term[k].exp + ")";
+                        output += " * (" + model().result_fit().terms[i].term[k].name + "_lag_" + model().result_fit().terms[i].term[k].lag + "**" + model().result_fit().terms[i].term[k].exp + ")";
                     else
                         output += " * (" + model().result_fit().terms[i].term[k].name + "**" + model().result_fit().terms[i].term[k].exp + ")";
                 }
@@ -191,7 +191,7 @@ module.exports = {
             for(var j = 0; j < model().result_fit().terms[i].term.length; j++){
                 var tempString;
                 if(model().result_fit().terms[i].term[j].lag != 0)
-                    tempString = model().result_fit().terms[i].term[j].name + "lag" + model().result_fit().terms[i].term[j].lag;
+                    tempString = model().result_fit().terms[i].term[j].name + "_lag_" + model().result_fit().terms[i].term[j].lag;
                 else
                     tempString = model().result_fit().terms[i].term[j].name;
                 if(terms.indexOf( tempString ) == -1){
@@ -208,13 +208,13 @@ module.exports = {
             for(var k = 0; k < model().result_fit().terms[i].term.length; k++){
                 if(model().result_fit().terms[i].term[k].exp == 1){
                     if(model().result_fit().terms[i].term[k].lag != 0)
-                        output += " * " + model().result_fit().terms[i].term[k].name + "lag" + model().result_fit().terms[i].term[k].lag;
+                        output += " * " + model().result_fit().terms[i].term[k].name + "_lag_" + model().result_fit().terms[i].term[k].lag;
                     else
                         output += " * " + model().result_fit().terms[i].term[k].name;
                 }
                 else if(model().result_fit().terms[i].term[k].exp != 0){
                     if(model().result_fit().terms[i].term[k].lag != 0)
-                        output += " * " + "Math.pow(" + model().result_fit().terms[i].term[k].name + "lag" + model().result_fit().terms[i].term[k].lag + "," + model().result_fit().terms[i].term[k].exp + ")";
+                        output += " * " + "Math.pow(" + model().result_fit().terms[i].term[k].name + "_lag_" + model().result_fit().terms[i].term[k].lag + "," + model().result_fit().terms[i].term[k].exp + ")";
                     else   
                         output += " * " + "Math.pow(" + model().result_fit().terms[i].term[k].name + "," + model().result_fit().terms[i].term[k].exp + ")";
                 }
