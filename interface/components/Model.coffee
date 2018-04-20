@@ -47,6 +47,8 @@ CTRL = () ->
     [ undefined    , WRAP_O                           , IGNORE ]
   show_autocorrelation:
     [ undefined    , WRAP_O                           , IGNORE ]
+  show_xyplot:
+    [ undefined    , WRAP_O                           , IGNORE ]
 
   columns:
     [ [ ]         , WRAP_A                            , UNWRAP ]
@@ -56,6 +58,8 @@ CTRL = () ->
     [ undefined   , DATA("cross")                     , UNWRAP ]
   data_validation:
     [ undefined   , DATA("validation")                , UNWRAP ]
+  data_plotted:
+    [ "fit"       , WRAP_O                            , IGNORE ]
 
   candidates:
     [ [ ]         , WRAP_A                            , IGNORE ]

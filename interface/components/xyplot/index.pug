@@ -1,0 +1,22 @@
+.background(data-bind="css:{active:active}, click:close")
+.xyplot(data-bind="css:{active:active}")
+  span.container
+    span(data-bind="text: column_names()[0]")
+    tf-dropdown(params="shallow:1,align:'right'")
+      // ko foreach: $parents[1].columns
+      // ko if: $data != $parents[2].column_names()[0] && $data != $parents[2].column_names()[1]
+      div.mark(data-bind="text:$data,click: () => model().show_xyplot([$index(), $parents[2].column_indexes()[1]])")
+      // /ko
+      // /ko
+    <span style="float: right;">
+      span(data-bind="text: column_names()[1]")
+      tf-dropdown(params="shallow:1,align:'right'")
+        // ko foreach: $parents[1].columns
+        // ko if: $data != $parents[2].column_names()[1] && $data != $parents[2].column_names()[0]
+        div.mark(data-bind="text:$data,click: () => model().show_xyplot([$parents[2].column_indexes()[0], $index()])")
+        // /ko
+        // /ko
+    </span>
+  //- a.right(data-bind="click:inc") + Bucket
+  //- a.left(data-bind="click:dec") - Bucket
+  <div id="xyplot" data-bind="html: charthtml"></div>

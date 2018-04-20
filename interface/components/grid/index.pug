@@ -35,6 +35,8 @@ table.grid
             | Histogram
           span.mark(data-bind="click:function(){autocorrelation($index())}")
             | Autocorrelation
+          span.mark(data-bind="click:function(){xyplot($index() + 1)}")
+            | XY Plot
           //- span.mark(data-bind="click:function(){logarithm_col($index())}")
           //-   | Logarithm
       // /ko
@@ -47,6 +49,8 @@ table.grid
             | Histogram
           span.mark(data-bind="click:function(){autocorrelation('Dependent')}")
             | Autocorrelation
+          span.mark(data-bind="click:function(){xyplot('Dependent')}")
+            | XY Plot
       th.prd
         span Predicted
         tf-dropdown(params="align:'right'")
@@ -54,6 +58,8 @@ table.grid
             | Histogram
           span.mark(data-bind="click:function(){autocorrelation('Predicted')}")
             | Autocorrelation
+          span.mark(data-bind="click:function(){xyplot('Predicted')}")
+            | XY Plot
       th.err
         span Residual
         tf-dropdown(params="align:'right'")
@@ -61,6 +67,8 @@ table.grid
             | Histogram
           span.mark(data-bind="click:function(){autocorrelation('Residual')}")
             | Autocorrelation
+          span.mark(data-bind="click:function(){xyplot('Residual')}")
+            | XY Plot
       // /ko
   tbody
     // ko iter:{from:start,to:end}
