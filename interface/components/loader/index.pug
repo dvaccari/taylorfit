@@ -22,14 +22,16 @@ a.button.info(href="http://www.simetrica-llc.com" target="window")
   span Simetrica LLC.
   hr
   span.small For More Information
-a.button.example-1(href="resources/auto-mpg.csv" target="window")
+// a.button.example-1(href="resources/auto-mpg.csv" target="window")
+a.button.example-1(data-bind="click:() => load_dataset('auto-mpg')")
   span Auto MPG
   hr
-  span.small Download Example Data
-a.button.example-2(href="resources/lydpink-time-series.csv" target="window")
+  span.small Load Example Data
+// a.button.example-2(href="resources/lydpink-time-series.csv" target="window")
+a.button.example-2(data-bind="click:() => load_dataset('lydpink')")
   span Lydia Pinkham
   hr
-  span.small Download Example Data
+  span.small Load Example Data
 a.button.info(href="https://goo.gl/forms/sVJCq2efUgKYVM752" target="window")
   span Give Us Feedback
   hr
