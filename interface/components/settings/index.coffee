@@ -110,7 +110,7 @@ ko.components.register "tf-settings",
         "application/json", model.out()
 
     @clear_project = ( ) ->
-      allstats().forEach((stat) => stat.selected(stat.candidate))
+      @clear_settings()
       params.model null
 
     @clear_model = ( ) ->

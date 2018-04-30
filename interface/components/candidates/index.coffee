@@ -58,6 +58,7 @@ ko.components.register "tf-candidates",
       document.querySelector(".split-model > .split-data > .model-pane")
         .style.minWidth = "calc(100% - #{next}px)"
 
+
     @sortby = ( stat ) =>
       for s in allstats()
         s.sorting false
@@ -67,6 +68,8 @@ ko.components.register "tf-candidates",
     # Whenever a statistic is discovered, subscribe to when it is selected
     allstats.subscribe ( changes ) =>
       for { value } in changes
+        if @sort() == SORT["*"] && value.id == "t"
+            @sortby(value)
         value.selected.subscribe readjust
         value.selected.subscribe ( ) =>
           stats = allstats().filter ( stat ) -> stat.selected()

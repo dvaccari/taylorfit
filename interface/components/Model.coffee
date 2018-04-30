@@ -1,3 +1,4 @@
+utils = require('../../engine/utils');
 
 WRAP_O = ( v ) -> ko.observable v
 WRAP_A = ( v ) -> ko.observableArray v
@@ -26,7 +27,7 @@ object2array = ( exps ) ->
   Number key for key, value of ko.unwrap exps \
   when ko.unwrap value
 
-CTRL = () ->
+CTRL =
   id:
     [ "model"     , WRAP_O                            , UNWRAP ]
   name:
@@ -95,7 +96,7 @@ module.exports = class Model
 
     adapter.unsubscribeToChanges()
 
-    for k, v of CTRL()
+    for k, v of utils.clone(CTRL)
       @[k] = v[1] if o.hasOwnProperty k
       then o[k] else v[0]
 
@@ -182,7 +183,7 @@ module.exports = class Model
 
   out: ( ) ->
     result = { }
-    for k, v of CTRL()
+    for k, v of utils.clone(CTRL)
       if v = v[2] @[k]
         result[k] = v
     return JSON.stringify(result)

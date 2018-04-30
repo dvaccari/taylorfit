@@ -53,6 +53,7 @@ ko.components.register "tf-xyplot",
       chart = c3.generate
         bindto: "#xyplot"
         data:
+          type: "scatter"
           x: @column_names()[1]
           columns: [
             [@column_names()[0]].concat(@values()[0])
