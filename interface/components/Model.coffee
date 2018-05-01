@@ -181,6 +181,11 @@ module.exports = class Model
     adapter.on "progress.end", ( ) =>
       @progress 100
 
+  cross_or_fit: () ->
+    if this.result_cross()
+      return this.result_cross()
+    return this.result_fit()
+
   out: ( ) ->
     result = { }
     for k, v of utils.clone(CTRL)
