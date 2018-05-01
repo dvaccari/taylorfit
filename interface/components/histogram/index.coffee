@@ -34,8 +34,8 @@ ko.components.register "tf-histogram",
           index = 1
         if index == "Residual"
           index = 2
-        return model.extra_fit().map((row) => row[index])
-      return model.data_fit().map((row) => row[index])
+        return model["extra_#{model.data_plotted()}"]().map((row) => row[index])
+      return model["data_#{model.data_plotted()}"]().map((row) => row[index])
 
     @close = ( ) ->
       model.show_histogram undefined

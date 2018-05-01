@@ -47,6 +47,9 @@ ko.components.register "tf-loader",
     @init = params.init
     @table = params.table
 
+    @load_dataset = (dataset) =>
+      params.model new Model require("interface/demo-data/#{dataset}")
+
     @id = "input-#{@table}-dataset"
 
     # --- for loading just dataset

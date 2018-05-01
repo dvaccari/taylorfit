@@ -43,9 +43,7 @@ ko.components.register "tf-candidates",
       @source next.sort @sort()
 
     @getStat = ( id ) =>
-      cross = model.result_cross() && model.result_cross().stats[id]
-      fit = model.result_fit() && model.result_fit().stats[id]
-      return parseFloat(cross) || parseFloat(fit)
+      return parseFloat(model.cross_or_fit().stats[id])
 
     @result.maxWidth = ko.observable 0
     @result.maxWidth.subscribe ( next ) ->
@@ -58,6 +56,7 @@ ko.components.register "tf-candidates",
       document.querySelector(".split-model > .split-data > .model-pane")
         .style.minWidth = "calc(100% - #{next}px)"
 
+
     @sortby = ( stat ) =>
       for s in allstats()
         s.sorting false
@@ -67,6 +66,8 @@ ko.components.register "tf-candidates",
     # Whenever a statistic is discovered, subscribe to when it is selected
     allstats.subscribe ( changes ) =>
       for { value } in changes
+        if @sort() == SORT["*"] && value.id == "t"
+            @sortby(value)
         value.selected.subscribe readjust
         value.selected.subscribe ( ) =>
           stats = allstats().filter ( stat ) -> stat.selected()

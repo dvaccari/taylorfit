@@ -1,3 +1,4 @@
+utils = require('../../engine/utils');
 
 WRAP_O = ( v ) -> ko.observable v
 WRAP_A = ( v ) -> ko.observableArray v
@@ -26,7 +27,7 @@ object2array = ( exps ) ->
   Number key for key, value of ko.unwrap exps \
   when ko.unwrap value
 
-CTRL = () ->
+CTRL =
   id:
     [ "model"     , WRAP_O                            , UNWRAP ]
   name:
@@ -47,6 +48,8 @@ CTRL = () ->
     [ undefined    , WRAP_O                           , IGNORE ]
   show_autocorrelation:
     [ undefined    , WRAP_O                           , IGNORE ]
+  show_xyplot:
+    [ undefined    , WRAP_O                           , IGNORE ]
 
   columns:
     [ [ ]         , WRAP_A                            , UNWRAP ]
@@ -56,6 +59,8 @@ CTRL = () ->
     [ undefined   , DATA("cross")                     , UNWRAP ]
   data_validation:
     [ undefined   , DATA("validation")                , UNWRAP ]
+  data_plotted:
+    [ "fit"       , WRAP_O                            , IGNORE ]
 
   candidates:
     [ [ ]         , WRAP_A                            , IGNORE ]
@@ -91,7 +96,7 @@ module.exports = class Model
 
     adapter.unsubscribeToChanges()
 
-    for k, v of CTRL()
+    for k, v of utils.clone(CTRL)
       @[k] = v[1] if o.hasOwnProperty k
       then o[k] else v[0]
 
@@ -176,9 +181,14 @@ module.exports = class Model
     adapter.on "progress.end", ( ) =>
       @progress 100
 
+  cross_or_fit: () ->
+    if this.result_cross()
+      return this.result_cross()
+    return this.result_fit()
+
   out: ( ) ->
     result = { }
-    for k, v of CTRL()
+    for k, v of utils.clone(CTRL)
       if v = v[2] @[k]
         result[k] = v
     return JSON.stringify(result)

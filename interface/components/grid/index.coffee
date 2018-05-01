@@ -32,9 +32,15 @@ ko.components.register "tf-grid",
 
     @histogram = ( index ) ->
       model.show_histogram(index)
+      model.data_plotted(@table)
 
     @autocorrelation = ( index ) ->
       model.show_autocorrelation(index)
+      model.data_plotted(@table)
+
+    @xyplot = ( index ) ->
+      model.show_xyplot([index, "Index"])
+      model.data_plotted(@table)
 
     # @exponent_col = ( index ) -> 
     #   old_cols = @cols()
