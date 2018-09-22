@@ -37,6 +37,14 @@ table.grid
             | Autocorrelation
           span.mark(data-bind="click:function(){xyplot($index() + 1)}")
             | XY Plot
+          // ko ifnot:hidden
+          span.mark(data-bind="click:function(){toggleFeature(true, $index() + 1)}")
+            | Hide Feature
+          // /ko
+          // ko if:hidden
+          span.mark(data-bind="click:function(){toggleFeature(false, $index() + 1)}")
+            | Show Feature
+          // /ko
           //- span.mark(data-bind="click:function(){logarithm_col($index())}")
           //-   | Logarithm
       // /ko

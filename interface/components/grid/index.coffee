@@ -14,6 +14,7 @@ ko.components.register "tf-grid",
 
     @name = params.name
     @table = params.table
+    @hidden = params.hidden
     @start = ko.observable 0
     @end = ko.observable 0
 
@@ -41,6 +42,12 @@ ko.components.register "tf-grid",
     @xyplot = ( index ) ->
       model.show_xyplot([index, "Index"])
       model.data_plotted(@table)
+    
+    @toggleFeature = ( shouldHide, index ) ->
+      if shouldHide
+        model.hide_feature(index)
+      else
+        model.showFeature(index)
 
     # @exponent_col = ( index ) -> 
     #   old_cols = @cols()
