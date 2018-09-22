@@ -77,6 +77,8 @@ CTRL =
 
   dependent:
     [ 0           , SEND("setDependent", Number)      , UNWRAP ]
+  hiddenFeatures:
+    [ [], SEND("setHiddenFeature", object2array), UNWRAP ]
   multiplicands:
     [ 1           , SEND("setMultiplicands", Number)  , UNWRAP ]
 

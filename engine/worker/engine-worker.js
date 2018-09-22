@@ -55,7 +55,7 @@ let subscribeToChanges = (m, updateNow = true) => {
   m.removeListener(subscriptionIds);
 
   subscriptionIds = m.on([
-    'setData', 'setExponents', 'setMultiplicands', 'setDependent',
+    'setData', 'setExponents', 'setMultiplicands', 'setDependent', 'setHiddenFeature',
     'setLags', 'addTerm', 'removeTerm', 'clear', 'subset', 'setColumns'
   ], () => {
     m.getCandidates()
@@ -75,7 +75,9 @@ let unsubscribeToChanges = (m) => m.removeListener(subscriptionIds);
 // By default, subscribe
 subscribeToChanges(m, false);
 
-
+/**
+ * Function calls off subscription handler from engine/model.js
+ */
 onmessage = function (e) {
   // If it's for a sub-worker, just ignore it
   if (e.data._from != null) {
@@ -94,11 +96,13 @@ onmessage = function (e) {
   case 'setExponents':
   case 'setMultiplicands':
   case 'setDependent':
+  case 'setHiddenFeature':
   case 'setColumns':
   case 'setLags':
   case 'addTerm':
   case 'removeTerm':
   case 'clear':
+    console.log("Enginer-worker", data);
     m[type](data);
     break;
 

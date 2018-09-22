@@ -22,6 +22,7 @@ const _use_cols       = Symbol('useCols');
 const _subsets        = Symbol('subsets');
 const _terms          = Symbol('terms');
 const _cand_workers   = Symbol('candWorkers');
+const _hidden_features = Symbol('hiddenFeatures');
 
 const INTERCEPT       = [[0, 0, 0]];
 
@@ -233,6 +234,16 @@ class Model extends CacheMixin(Observable) {
     this[_terms] = [this.termpool.get(INTERCEPT)];
     this.uncache();
     this.fire('setDependent', dependent);
+    return this;
+  }
+  
+  // TODO (justint): Figure out what this is
+  setHiddenFeature(shouldHide, hiddenFeatures) {
+    console.log("model.js", shouldHide, hiddenFeatures);
+    this[_hidden_features] = hiddenFeatures;
+    this[_terms] = [this.termpool.get(INTERCEPT)];
+    this.uncache();
+    this.fire('setHiddenFeature', hiddenFeatures);
     return this;
   }
 
