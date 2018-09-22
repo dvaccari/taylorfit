@@ -20,6 +20,7 @@ ko.components.register "tf-grid",
 
     model       = params.model() # now static
     @dependent  = model.dependent
+    @hiddenFeatures = model.hiddenFeatures
     @cols       = model.columns
     @name       = model["name_#{@table}"]
     @rows       = model["data_#{@table}"]
@@ -42,12 +43,15 @@ ko.components.register "tf-grid",
     @xyplot = ( index ) ->
       model.show_xyplot([index, "Index"])
       model.data_plotted(@table)
-    
-    @toggleFeature = ( shouldHide, index ) ->
+      
+    @showHideColumn = ( shouldHide, index ) ->
+      oldCols = @hiddenFeatures()
       if shouldHide
-        model.hide_feature(index)
+        oldCols[index] = true
       else
-        model.showFeature(index)
+        oldCols[index] = false
+      console.log oldCols
+      model.hiddenFeatures(oldCols)
 
     # @exponent_col = ( index ) -> 
     #   old_cols = @cols()
