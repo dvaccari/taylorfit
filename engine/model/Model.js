@@ -237,7 +237,6 @@ class Model extends CacheMixin(Observable) {
     return this;
   }
   
-  // TODO (justint): Figure out what this is
   setHiddenFeature(hiddenFeatures) {
     this[_hidden_features] = hiddenFeatures;
     this.fire('setHiddenFeature', hiddenFeatures);

@@ -45,7 +45,6 @@ ko.components.register "tf-grid",
       model.data_plotted(@table)
     
     @isHidden = ( index ) ->
-      console.log index
       idx = index + 1
       return @hiddenFeatures().hasOwnProperty(idx) && @hiddenFeatures()[idx]
       
