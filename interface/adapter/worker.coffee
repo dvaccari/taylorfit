@@ -61,8 +61,8 @@ module.exports = new class WorkerAdapter extends ME
     @post "setMultiplicands", x
   setDependent: ( x ) ->
     @post "setDependent", x
-  setHiddenFeature: ( shouldHide, x) ->
-    @post "setHiddenFeature", shouldHide, x
+  setHiddenFeature: ( x ) ->
+    @post "setHiddenFeature", x
   setLags: ( x ) ->
     @post "setLags", x
 

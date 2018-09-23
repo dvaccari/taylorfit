@@ -102,7 +102,6 @@ onmessage = function (e) {
   case 'addTerm':
   case 'removeTerm':
   case 'clear':
-    console.log("Enginer-worker", data);
     m[type](data);
     break;
 

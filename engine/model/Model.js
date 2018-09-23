@@ -238,11 +238,8 @@ class Model extends CacheMixin(Observable) {
   }
   
   // TODO (justint): Figure out what this is
-  setHiddenFeature(shouldHide, hiddenFeatures) {
-    console.log("model.js", shouldHide, hiddenFeatures);
+  setHiddenFeature(hiddenFeatures) {
     this[_hidden_features] = hiddenFeatures;
-    this[_terms] = [this.termpool.get(INTERCEPT)];
-    this.uncache();
     this.fire('setHiddenFeature', hiddenFeatures);
     return this;
   }
