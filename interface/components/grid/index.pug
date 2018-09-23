@@ -37,11 +37,11 @@ table.grid
             | Autocorrelation
           span.mark(data-bind="click:function(){xyplot($index() + 1)}")
             | XY Plot
-          // ko ifnot:hiddenFeatures[$index()]
+          // ko ifnot: isHidden($index())
           span.mark(data-bind="click:function(){showHideColumn(true, $index() + 1)}")
             | Hide Feature
           // /ko
-          // ko if:hiddenFeatures[$index()]
+          // ko if: isHidden($index())
           span.mark(data-bind="click:function(){showHideColumn(false, $index() + 1)}")
             | Show Feature
           // /ko

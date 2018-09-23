@@ -43,14 +43,16 @@ ko.components.register "tf-grid",
     @xyplot = ( index ) ->
       model.show_xyplot([index, "Index"])
       model.data_plotted(@table)
+    
+    @isHidden = ( index ) ->
+      console.log index
+      idx = index + 1
+      return @hiddenFeatures().hasOwnProperty(idx) && @hiddenFeatures()[idx]
       
     @showHideColumn = ( shouldHide, index ) ->
       oldCols = @hiddenFeatures()
-      if shouldHide
-        oldCols[index] = true
-      else
-        oldCols[index] = false
-      console.log oldCols
+      console.log(@hiddenFeatures(), index, shouldHide)
+      oldCols[index] = shouldHide
       model.hiddenFeatures(oldCols)
 
     # @exponent_col = ( index ) -> 
