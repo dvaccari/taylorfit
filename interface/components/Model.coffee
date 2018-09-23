@@ -77,6 +77,7 @@ CTRL =
 
   dependent:
     [ 0           , SEND("setDependent", Number)      , UNWRAP ]
+  # TODO (justint): rename to hiddenColumns
   hiddenFeatures:
     [ [], SEND("setHiddenFeature", object2array), UNWRAP ]
   multiplicands:
@@ -88,7 +89,6 @@ CTRL =
     [ false       , WRAP_O                            , UNWRAP ]
   lags:
     [ 0: true     , SEND("setLags"     , object2array), UNWRAP_O ]
-
 
 module.exports = class Model
 
