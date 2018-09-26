@@ -22,7 +22,6 @@ const _use_cols       = Symbol('useCols');
 const _subsets        = Symbol('subsets');
 const _terms          = Symbol('terms');
 const _cand_workers   = Symbol('candWorkers');
-const _hidden_features = Symbol('hiddenFeatures');
 
 const INTERCEPT       = [[0, 0, 0]];
 
@@ -237,12 +236,6 @@ class Model extends CacheMixin(Observable) {
     return this;
   }
   
-  setHiddenFeature(hiddenFeatures) {
-    this[_hidden_features] = hiddenFeatures;
-    this.fire('setHiddenFeature', hiddenFeatures);
-    return this;
-  }
-
   setColumns(cols) {
     this[_use_cols] = cols.slice();
 

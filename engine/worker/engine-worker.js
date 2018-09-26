@@ -55,7 +55,7 @@ let subscribeToChanges = (m, updateNow = true) => {
   m.removeListener(subscriptionIds);
 
   subscriptionIds = m.on([
-    'setData', 'setExponents', 'setMultiplicands', 'setDependent', 'setHiddenFeature',
+    'setData', 'setExponents', 'setMultiplicands', 'setDependent',
     'setLags', 'addTerm', 'removeTerm', 'clear', 'subset', 'setColumns'
   ], () => {
     m.getCandidates()
@@ -96,7 +96,6 @@ onmessage = function (e) {
   case 'setExponents':
   case 'setMultiplicands':
   case 'setDependent':
-  case 'setHiddenFeature':
   case 'setColumns':
   case 'setLags':
   case 'addTerm':

@@ -79,7 +79,7 @@ CTRL =
     [ 0           , SEND("setDependent", Number)      , UNWRAP ]
   # TODO (justint): rename to hiddenColumns
   hiddenFeatures:
-    [ [], SEND("setHiddenFeature", object2array), UNWRAP ]
+  [ {}            , WRAP_O                             , UNWRAP ]
   multiplicands:
     [ 1           , SEND("setMultiplicands", Number)  , UNWRAP ]
 

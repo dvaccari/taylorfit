@@ -50,7 +50,6 @@ ko.components.register "tf-grid",
       
     @showHideColumn = ( shouldHide, index ) ->
       oldCols = @hiddenFeatures()
-      console.log(@hiddenFeatures(), index, shouldHide)
       oldCols[index] = shouldHide
       model.hiddenFeatures(oldCols)
 

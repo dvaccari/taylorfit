@@ -43,6 +43,10 @@ ko.components.register "tf-candidates",
     @candidates.subscribe ( next ) =>
       @source(next.sort(@sort()).filter((c) => !isHiddenColumn(c.term)))
 
+    # When hidden columns change in CTRL, subscribe and change visible candidates
+    hiddenColumns.subscribe ( next ) =>
+      @source(@candidates().sort(@sort()).filter((c) => !isHiddenColumn(c.term)))
+
     @getStat = ( id ) =>
       return parseFloat(model.cross_or_fit().stats[id])
 
