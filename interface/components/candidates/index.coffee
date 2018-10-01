@@ -23,7 +23,7 @@ ko.components.register "tf-candidates",
           ".candidate-wrapper > .candidates").clientWidth
 
     model = params.model() # now static
-    hiddenColumns = model.hiddenFeatures
+    hiddenColumns = model.hiddenColumns
 
     @current_page = ko.observable(null)
 

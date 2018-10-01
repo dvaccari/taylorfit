@@ -20,7 +20,7 @@ ko.components.register "tf-grid",
 
     model       = params.model() # now static
     @dependent  = model.dependent
-    @hiddenFeatures = model.hiddenFeatures
+    @hiddenColumns = model.hiddenColumns
     @cols       = model.columns
     @name       = model["name_#{@table}"]
     @rows       = model["data_#{@table}"]
@@ -46,15 +46,15 @@ ko.components.register "tf-grid",
     
     @isHidden = ( index ) ->
       idx = index + 1
-      return @hiddenFeatures().hasOwnProperty(idx) && @hiddenFeatures()[idx]
+      return @hiddenColumns().hasOwnProperty(idx) && @hiddenColumns()[idx]
       
     @showHideColumn = ( shouldHide, index ) ->
-      oldCols = @hiddenFeatures()
+      oldCols = @hiddenColumns()
       oldCols[index] = shouldHide
-      model.hiddenFeatures(oldCols)
+      model.hiddenColumns(oldCols)
 
     @isHiddenColumn = ( index ) -> 
-      cols = @hiddenFeatures()
+      cols = @hiddenColumns()
       return cols[index]
 
     # @exponent_col = ( index ) -> 

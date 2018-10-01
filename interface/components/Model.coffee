@@ -78,7 +78,7 @@ CTRL =
   dependent:
     [ 0           , SEND("setDependent", Number)      , UNWRAP ]
   # TODO (justint): rename to hiddenColumns
-  hiddenFeatures:
+  hiddenColumns:
     [ {}            , WRAP_O                             , UNWRAP ]
   multiplicands:
     [ 1           , SEND("setMultiplicands", Number)  , UNWRAP ]

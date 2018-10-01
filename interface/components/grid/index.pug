@@ -39,11 +39,11 @@ table.grid
             | XY Plot
           // ko if: $index() !== dependent() && !isHidden($index())
           span.mark(data-bind="click:function(){showHideColumn(true, $index() + 1)}")
-            | Hide Feature
+            | Ignore Column
           // /ko
           // ko if: $index() !== dependent() && isHidden($index())
           span.mark(data-bind="click:function(){showHideColumn(false, $index() + 1)}")
-            | Show Feature
+            | Show Column
           // /ko
           //- span.mark(data-bind="click:function(){logarithm_col($index())}")
           //-   | Logarithm
