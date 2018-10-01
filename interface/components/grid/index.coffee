@@ -53,6 +53,10 @@ ko.components.register "tf-grid",
       oldCols[index] = shouldHide
       model.hiddenFeatures(oldCols)
 
+    @isHiddenColumn = ( index ) -> 
+      cols = @hiddenFeatures()
+      return cols[index]
+
     # @exponent_col = ( index ) -> 
     #   old_cols = @cols()
     #   old_cols.push {name: "Potato", index: 35}
