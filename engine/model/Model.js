@@ -235,7 +235,7 @@ class Model extends CacheMixin(Observable) {
     this.fire('setDependent', dependent);
     return this;
   }
-  
+
   setColumns(cols) {
     this[_use_cols] = cols.slice();
 
