@@ -19,7 +19,7 @@ ko.components.register "tf-candidates",
 
     readjust = ( ) =>
       setTimeout =>
-        @result.maxWidth 60 + document.querySelector(
+        @result.maxWidth 65 + document.querySelector(
           ".candidate-wrapper > .candidates").clientWidth
 
     model = params.model() # now static
@@ -47,7 +47,7 @@ ko.components.register "tf-candidates",
 
     @result.maxWidth = ko.observable 0
     @result.maxWidth.subscribe ( next ) ->
-      if next <= 60
+      if next <= 65
         readjust()
       document.querySelector(".split-model > .split-data > .candidates-pane")
         .style.maxWidth = next + "px"
