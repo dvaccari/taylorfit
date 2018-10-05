@@ -50,6 +50,8 @@ CTRL =
     [ undefined    , WRAP_O                           , IGNORE ]
   show_xyplot:
     [ undefined    , WRAP_O                           , IGNORE ]
+  show_transform:
+    [ undefined    , WRAP_O                           , IGNORE ]
 
   columns:
     [ [ ]         , WRAP_A                            , UNWRAP ]

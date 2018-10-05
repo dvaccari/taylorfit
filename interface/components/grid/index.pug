@@ -45,8 +45,10 @@ table.grid
           span.mark(data-bind="click:function(){showHideColumn(false, $index() + 1)}")
             | Show Column
           // /ko
-          //- span.mark(data-bind="click:function(){logarithm_col($index())}")
-          //-   | Logarithm
+          // ko if: table == "fit" && $index() !== dependent()
+          span.mark(data-bind="click:function(){showTransformColumn($index())}")
+            | Transform Column
+          // /ko
       // /ko
     
       // ko if: extra

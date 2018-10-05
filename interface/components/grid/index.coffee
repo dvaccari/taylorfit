@@ -62,6 +62,9 @@ ko.components.register "tf-grid",
     #   old_cols.push {name: "Potato", index: 35}
     #   console.log(@cols())
 
+    @showTransformColumn = ( index ) ->
+      model.show_transform(index)
+
     @save = ( ) =>
       cols = @cols(); rows = @rows(); extra = @extra()
       csv = @cols().map(( v ) -> v.name).join ","
