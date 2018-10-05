@@ -77,6 +77,8 @@ CTRL =
 
   dependent:
     [ 0           , SEND("setDependent", Number)      , UNWRAP ]
+  hiddenColumns:
+    [ {}            , WRAP_O                             , UNWRAP ]
   multiplicands:
     [ 1           , SEND("setMultiplicands", Number)  , UNWRAP ]
 
@@ -86,7 +88,6 @@ CTRL =
     [ false       , WRAP_O                            , UNWRAP ]
   lags:
     [ 0: true     , SEND("setLags"     , object2array), UNWRAP_O ]
-
 
 module.exports = class Model
 

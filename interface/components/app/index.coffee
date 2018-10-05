@@ -28,6 +28,7 @@ ko.components.register "tf-app",
 
     window.model = @model
 
+    # If model updates, call update and register function with next values
     @model.subscribe ( next ) ->
       update next
       register next

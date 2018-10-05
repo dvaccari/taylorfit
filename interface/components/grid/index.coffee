@@ -14,11 +14,13 @@ ko.components.register "tf-grid",
 
     @name = params.name
     @table = params.table
+    @hidden = params.hidden
     @start = ko.observable 0
     @end = ko.observable 0
 
     model       = params.model() # now static
     @dependent  = model.dependent
+    @hiddenColumns = model.hiddenColumns
     @cols       = model.columns
     @name       = model["name_#{@table}"]
     @rows       = model["data_#{@table}"]
@@ -41,6 +43,19 @@ ko.components.register "tf-grid",
     @xyplot = ( index ) ->
       model.show_xyplot([index, "Index"])
       model.data_plotted(@table)
+    
+    @isHidden = ( index ) ->
+      idx = index + 1
+      return @hiddenColumns().hasOwnProperty(idx) && @hiddenColumns()[idx]
+      
+    @showHideColumn = ( shouldHide, index ) ->
+      oldCols = @hiddenColumns()
+      oldCols[index] = shouldHide
+      model.hiddenColumns(oldCols)
+
+    @isHiddenColumn = ( index ) -> 
+      cols = @hiddenColumns()
+      return cols[index]
 
     # @exponent_col = ( index ) -> 
     #   old_cols = @cols()

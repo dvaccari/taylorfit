@@ -19,7 +19,7 @@ table.grid
       th
         //- empty for row numbers
       // ko foreach: cols
-      th(data-bind="css:{dependent:$index() === $parent.dependent()}")
+      th(data-bind="style:{background: $component.isHiddenColumn($index() + 1) ? '#DCDCDC' : '#FFFFFF'},css:{dependent:$index() === $parent.dependent()}")
         // ko if:name
         span(data-bind="text:name")
         // /ko
@@ -37,6 +37,14 @@ table.grid
             | Autocorrelation
           span.mark(data-bind="click:function(){xyplot($index() + 1)}")
             | XY Plot
+          // ko if: table == "fit" && $index() !== dependent() && !isHidden($index())
+          span.mark(data-bind="click:function(){showHideColumn(true, $index() + 1)}")
+            | Ignore Column
+          // /ko
+          // ko if: table == "fit" && $index() !== dependent() && isHidden($index())
+          span.mark(data-bind="click:function(){showHideColumn(false, $index() + 1)}")
+            | Show Column
+          // /ko
           //- span.mark(data-bind="click:function(){logarithm_col($index())}")
           //-   | Logarithm
       // /ko
@@ -75,9 +83,20 @@ table.grid
     tr
       td.static
         span(data-bind="text:1+index")
+        //- TODO (justint): uncomment when doing row function
+        //- tf-dropdown(params="shallow:1,align:'left'")
+        //-   // ko ifnot:hidden
+        //-   span.mark(data-bind="click:function(){showHideColumn(true, $index() + 1)}")
+        //-     | Hide Feature
+        //-   // /ko
+        //-   // ko if:hidden
+        //-   span.mark(data-bind="click:function(){showHideColumn(false, $index() + 1)}")
+        //-     | Show Feature
+        //-   // /ko
+        //- // /ko
       
       // ko foreach: $parent.rows()[index]
-      td
+      td(data-bind="style:{background: $component.isHiddenColumn($index() + 1) ? '#DCDCDC' : '#FFFFFF'}")
         // ko if: $data !== null && $data !== ""
         span(data-bind="text:$data")
         // /ko

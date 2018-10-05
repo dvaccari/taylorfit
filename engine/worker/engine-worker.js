@@ -75,7 +75,9 @@ let unsubscribeToChanges = (m) => m.removeListener(subscriptionIds);
 // By default, subscribe
 subscribeToChanges(m, false);
 
-
+/**
+ * Function calls off subscription handler from engine/model.js
+ */
 onmessage = function (e) {
   // If it's for a sub-worker, just ignore it
   if (e.data._from != null) {

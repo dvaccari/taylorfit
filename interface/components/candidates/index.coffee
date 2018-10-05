@@ -13,7 +13,7 @@ sortBy = ( stat ) -> SORT[stat?.sort ? "*"].bind null, stat?.id
 ko.components.register "tf-candidates",
   template: do require "./index.pug"
   viewModel: ( params ) ->
-    unless ko.isObservable params.model
+    unless ko.isObservable(params.model)
       throw new TypeError "components/candidates:
       expects [model] to be observable"
 
@@ -23,8 +23,9 @@ ko.components.register "tf-candidates",
           ".candidate-wrapper > .candidates").clientWidth
 
     model = params.model() # now static
+    hiddenColumns = model.hiddenColumns
 
-    @current_page = ko.observable null
+    @current_page = ko.observable(null)
 
     @timeseries = model.timeseries
     @psig = model.psig
@@ -37,10 +38,14 @@ ko.components.register "tf-candidates",
 
     @sort = ko.observable SORT["*"]
     @sort.subscribe ( method ) =>
-      @source @candidates().sort method
+      @source(@candidates().filter((c) => !isHiddenColumn(c.term)).sort(method))
 
     @candidates.subscribe ( next ) =>
-      @source next.sort @sort()
+      @source(next.sort(@sort()).filter((c) => !isHiddenColumn(c.term)))
+
+    # When hidden columns change in CTRL, subscribe and change visible candidates
+    hiddenColumns.subscribe ( next ) =>
+      @source(@candidates().sort(@sort()).filter((c) => !isHiddenColumn(c.term)))
 
     @getStat = ( id ) =>
       return parseFloat(model.cross_or_fit().stats[id])
@@ -56,6 +61,10 @@ ko.components.register "tf-candidates",
       document.querySelector(".split-model > .split-data > .model-pane")
         .style.minWidth = "calc(100% - #{next}px)"
 
+    # See if that term index is in hiddenColumns
+    isHiddenColumn = ( terms ) =>
+      cols = hiddenColumns()
+      return terms.find((t) => cols[t.index + 1])
 
     @sortby = ( stat ) =>
       for s in allstats()
