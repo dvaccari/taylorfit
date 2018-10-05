@@ -57,11 +57,6 @@ ko.components.register "tf-grid",
       cols = @hiddenColumns()
       return cols[index]
 
-    # @exponent_col = ( index ) -> 
-    #   old_cols = @cols()
-    #   old_cols.push {name: "Potato", index: 35}
-    #   console.log(@cols())
-
     @showTransformColumn = ( index ) ->
       model.show_transform(index)
 
