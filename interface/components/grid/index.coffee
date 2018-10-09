@@ -94,7 +94,7 @@ ko.components.register "tf-grid",
       cols = @cols(); rows = @rows(); extra = @extra()
       csv = @cols().map(( v ) -> v.name).join ","
       if extra
-        csv += ",Dependent,Predicted,Residual"
+        csv += ",Dependent,Predicted,Residual,Sensitivity" # ??
       for row, index in rows
         csv += "\n" + row.join ","
         if extra then csv += "," + extra[index].join ","

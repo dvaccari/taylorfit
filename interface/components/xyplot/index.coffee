@@ -16,7 +16,7 @@ ko.components.register "tf-xyplot",
 
     @active = ko.computed ( ) => @column_indexes() != undefined
 
-    @columns = ko.observable ["Index"].concat(model.columns().map((x) => x.name)).concat(["Dependent", "Predicted", "Residual"])
+    @columns = ko.observable ["Index"].concat(model.columns().map((x) => x.name)).concat(["Dependent", "Predicted", "Residual", "Sensitivity"])
     
     @column_names = ko.computed ( ) => 
       if !@active()
@@ -40,6 +40,8 @@ ko.components.register "tf-xyplot",
           return model["extra_#{model.data_plotted()}"]().map((row) => row[1])
         if column_names[index] == "Residual"
           return model["extra_#{model.data_plotted()}"]().map((row) => row[2])
+        # if column_names[index] == "Sensitivity" # this broke it
+          # return model["extra_#{model.data_plotted()}"]().map((row) => row[3])]
         return model["data_#{model.data_plotted()}"]().map((row) => row[idx - 1])
       )
 

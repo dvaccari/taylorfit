@@ -132,5 +132,12 @@ module.exports = [
     let k_order = X.clone();
     k_order.data.set(k_order_func(k_order.data, k));
     return k_order;
-  })
+  }),
+
+  Statistic('sensitivity', ['X'],
+    ({ X }) => {
+      let a = X
+      return a;
+      // TODO math here
+    })
 ];

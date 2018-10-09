@@ -83,6 +83,16 @@ table.grid
             | Autocorrelation
           span.mark(data-bind="click:function(){xyplot('Residual')}")
             | XY Plot
+      th.err
+        span Sensitivity
+        tf-dropdown(params="align:'right'")
+          span.mark(data-bind="click:function(){histogram('Sensitivity')}")
+            | Histogram
+          span.mark(data-bind="click:function(){autocorrelation('Sensitivity')}")
+            | Autocorrelation
+          span.mark(data-bind="click:function(){xyplot('Sensitivity')}")
+            | XY Plot
+      // ??
       // /ko
   tbody
     // ko iter:{from:start,to:end}
@@ -116,7 +126,7 @@ table.grid
         span(data-bind="float:$data")
       // /ko
       // /ko
-      
+      // ??? tbody needs data 
     //-
       // ko if:$parent.results
       // ko with:{dep:$data[$parent.dependent()], pred:(r = $parent.results()) ? r.predicted[$index()] : null}
