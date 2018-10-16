@@ -56,7 +56,8 @@ let subscribeToChanges = (m, updateNow = true) => {
 
   subscriptionIds = m.on([
     'setData', 'setExponents', 'setMultiplicands', 'setDependent',
-    'setLags', 'addTerm', 'removeTerm', 'clear', 'subset', 'setColumns'
+    'setLags', 'addTerm', 'removeTerm', 'clear', 'subset', 'setColumns',
+    'transformLog'
   ], () => {
     m.getCandidates()
      .then((cands) => postMessage({ type: 'candidates', data: cands }));
@@ -91,49 +92,54 @@ onmessage = function (e) {
   log(e.data);
 
   switch(type) {
+    // only works because the event type is the same as the method name
+    case 'setExponents':
+    case 'setMultiplicands':
+    case 'setDependent':
+    case 'setColumns':
+    case 'setLags':
+    case 'addTerm':
+    case 'removeTerm':
+    case 'clear':
+      m[type](data);
+      break;
 
-  // only works because the event type is the same as the method name
-  case 'setExponents':
-  case 'setMultiplicands':
-  case 'setDependent':
-  case 'setColumns':
-  case 'setLags':
-  case 'addTerm':
-  case 'removeTerm':
-  case 'clear':
-    m[type](data);
-    break;
+    // this one's special
+    case 'setData':
+      m[type](data.data, data.label);
+      break;
 
-  // this one's special
-  case 'setData':
-    m[type](data.data, data.label);
-    break;
+    case 'getTerms':
+      postMessage({ type: 'candidates', data: m.getCandidates() });
+      break;
 
-  case 'getTerms':
-    postMessage({ type: 'candidates', data: m.getCandidates() });
-    break;
+    case 'getStatisticsMetadata':
+      postMessage({ type: 'statisticsMetadata', data: statsMeta });
+      break;
 
-  case 'getStatisticsMetadata':
-    postMessage({ type: 'statisticsMetadata', data: statsMeta });
-    break;
+    case 'subscribeToChanges':
+      subscribeToChanges(m);
+      break;
 
-  case 'subscribeToChanges':
-    subscribeToChanges(m);
-    break;
+    case 'unsubscribeToChanges':
+      unsubscribeToChanges(m);
+      break;
 
-  case 'unsubscribeToChanges':
-    unsubscribeToChanges(m);
-    break;
+    case 'subset':
+      m.subset(data.label, data.start, data.end);
+      break;
 
-  case 'subset':
-    m.subset(data.label, data.start, data.end);
-    break;
+    case 'transformLog':
+      m.transformColumn(data.label, data.index);
+      break;
 
-  case 'reset':
-    m = new Model();
+    case 'reset':
+      m = new Model();
+      break;
 
-  default:
-    postMessage({ type: 'error', data: 'Invalid type: ' + type });
+    default:
+      postMessage({ type: 'error', data: 'Invalid type: ' + type });
+      break;
 
   }
 };

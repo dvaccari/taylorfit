@@ -49,9 +49,10 @@ module.exports = new class WorkerAdapter extends ME
 
   post: ( target, message ) ->
     console.debug "Worker/req [#{target}]", message
-    @worker.postMessage
-      type: target
+    @worker.postMessage({
+      type: target,
       data: message
+    })
 
   setData: ( x, label ) ->
     @post "setData", { data: x, label }
@@ -68,6 +69,9 @@ module.exports = new class WorkerAdapter extends ME
     @post "addTerm", x
   removeTerm: ( x ) ->
     @post "removeTerm", x
+  
+  transformLog: ( x ) ->
+    @post("transformLog", { label: 'log', index: x })
 
   requestStatisticsMetadata: ( ) ->
     @post "getStatisticsMetadata"
