@@ -427,6 +427,35 @@ class Matrix {
     return product;
   }
 
+  log() {
+    var product = this.clone()
+      , i;
+
+    for (i = 0; i < product[_data].length; i += 1) {
+      product[_data][i] = Math.log10(product[_data][i]);
+    }
+    return product;
+  }
+
+  appendM(m) {
+    var matrix_dim = m.shape
+      , rows = this[_m]
+      , cols = this[_n] + matrix_dim[1]
+      , append_matrix = new Matrix(rows, cols)
+      , i, j;
+
+    for (i = 0; i < rows; i += 1) {
+      for (j = 0; j < cols; j += 1) {
+        var use_m = j - this[_n];
+        var data_pt = use_m >= 0
+          ? m[_data][i * matrix_dim[1] + use_m]
+          : this[_data][i * this[_n] + j];
+        append_matrix[_data][i * cols + j] = data_pt;
+      }
+    }
+    return append_matrix;
+  }
+
   /**
    * @see inspect
    */
