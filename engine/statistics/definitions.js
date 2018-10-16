@@ -83,5 +83,7 @@ module.exports = [
     }),
 
   Statistic('pF', ['F', 'np', 'nd'],
-    ({F, np, nd}) => Math.max(dist.pf(Math.abs(F), np, nd - np) - 1e-15, 0))
+    ({F, np, nd}) => Math.max(dist.pf(Math.abs(F), np, nd - np) - 1e-15, 0)),
+  
+  Statistic('log', ["X"], ({X}) => X.log())
 ];
