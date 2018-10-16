@@ -6,7 +6,13 @@ const statistics      = require('../statistics');
 const utils           = require('../utils');
 const perf            = require('../perf');
 const Observable      = require('../observable');
-const { FIT_LABEL }   = require('../labels.json');
+const {
+  FIT_LABEL,
+  LOG,
+  K_ORDER_DIFFERENCE,
+  STUDENTIZED,
+  NORMALIZED,
+}   = require('../labels.json');
 
 const CandidateWorker = require('./CandidateWorker');
 const TermPool        = require('./TermPool');
@@ -67,6 +73,23 @@ class Model extends CacheMixin(Observable) {
     return this;
   }
 
+  transformColumn(label, index) {
+    var col = this[_data][FIT_LABEL].col(index)
+    switch (label) {
+      case (LOG):
+        var transform_col = statistics.compute(label, {X: col})
+        this[_data][FIT_LABEL] = this[_data][FIT_LABEL].appendM(transform_col);
+        this.uncache('data');
+        this.fire('transformLog', {label, index});
+        console.log(`Fit data ${this[_data][FIT_LABEL]}`);
+        break;
+      default:
+        break;
+    }
+    console.log("Model:", this);
+    return this;
+  }
+
   setData(data, label=FIT_LABEL) {
     label = (label == null) ? FIT_LABEL : label;
 
@@ -82,11 +105,11 @@ class Model extends CacheMixin(Observable) {
     } else {
       this[_use_cols] = utils.range(0, data.shape[1]);
     }
-
     this[_data][label] = data;
     this[_subsets][label] = utils.range(0, data.shape[0]);
 
-    this[_terms] = this[_terms].map(term => term.isIntercept ? this.termpool.get(INTERCEPT) : term);
+    this[_terms] = this[_terms]
+      .map(term => term.isIntercept ? this.termpool.get(INTERCEPT) : term);
     this.uncache('X');
     this.uncache('y');
     this.uncache('data');
@@ -184,7 +207,6 @@ class Model extends CacheMixin(Observable) {
 
     let residuals = stats.y.sub(stats.yHat);
     residuals = residuals.data;
-
     return { highestLag: this.highestLag(), terms, stats, predicted, residuals };
   }
 
