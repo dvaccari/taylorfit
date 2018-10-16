@@ -1,0 +1,7 @@
+.background(data-bind="css:{active:active}, click:close")
+.transform(data-bind="css:{active:active}")
+  p(text="Transform Column")
+  div.option-wrapper
+    button.option(
+      data-bind="click:function(){transform_log(transform_index())}"
+    ) Log

@@ -19,4 +19,4 @@ require "./result"
 require "./settings"
 require "./split"
 require "./input"
-
+require "./transform"

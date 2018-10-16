@@ -81,4 +81,12 @@ ko.components.register "tf-grid",
 
       return undefined
 
+    @cols.subscribe ( next ) =>
+      if next then adapter.unsubscribeToChanges()
+      else adapter.subscribeToChanges()
+    
+    @rows.subscribe ( next ) =>
+      if next then adapter.unsubscribeToChanges()
+      else adapter.subscribeToChanges()
+
     return this

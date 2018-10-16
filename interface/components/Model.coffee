@@ -53,6 +53,7 @@ CTRL =
   show_transform:
     [ undefined    , WRAP_O                           , IGNORE ]
 
+  # Loaded from tf-loader
   columns:
     [ [ ]         , WRAP_A                            , UNWRAP ]
   data_fit:
@@ -80,7 +81,7 @@ CTRL =
   dependent:
     [ 0           , SEND("setDependent", Number)      , UNWRAP ]
   hiddenColumns:
-    [ {}            , WRAP_O                             , UNWRAP ]
+    [ {}            , WRAP_O                          , UNWRAP ]
   multiplicands:
     [ 1           , SEND("setMultiplicands", Number)  , UNWRAP ]
 
@@ -90,6 +91,12 @@ CTRL =
     [ false       , WRAP_O                            , UNWRAP ]
   lags:
     [ 0: true     , SEND("setLags"     , object2array), UNWRAP_O ]
+
+  # key: original col index, value: transform col index
+  transform_columns:
+    [ {}          , WRAP_O                            , UNWRAP_O ]
+  transform_log:
+    [ undefined   , SEND("transformLog", Number)      , UNWRAP_O ]
 
 module.exports = class Model
 
