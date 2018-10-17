@@ -6,6 +6,9 @@ require('./subworkers');
 const perf      = require('../perf');
 const statsMeta = require('../statistics/metadata.json');
 const Model     = require('../model');
+const {
+  FIT_LABEL,
+}   = require('../labels.json');
 
 const getCandidateProgressInterval  = 50;
 let   onGetCandidateId              = 0;
@@ -44,6 +47,13 @@ function initializeModel() {
     data: {}
   }));
 
+  m.on("transformLog", () => {
+    postMessage({
+      type: `data:transform`,
+      data: m.getLabelData(FIT_LABEL).toJSON()
+    });
+  });
+
   m.on('error', (error) => postMessage({ type: 'error', data: error }));
 
   return m;
@@ -56,8 +66,7 @@ let subscribeToChanges = (m, updateNow = true) => {
 
   subscriptionIds = m.on([
     'setData', 'setExponents', 'setMultiplicands', 'setDependent',
-    'setLags', 'addTerm', 'removeTerm', 'clear', 'subset', 'setColumns',
-    'transformLog'
+    'setLags', 'addTerm', 'removeTerm', 'clear', 'subset', 'setColumns'
   ], () => {
     m.getCandidates()
      .then((cands) => postMessage({ type: 'candidates', data: cands }));

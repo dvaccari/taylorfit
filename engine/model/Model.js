@@ -178,6 +178,10 @@ class Model extends CacheMixin(Observable) {
       });
   }
 
+  getLabelData(label) {
+    return this[_data][label];
+  }
+
   getModel(testLabel) {
     let highestLag = this.highestLag()
       , X = this.X().lo(highestLag)
@@ -207,7 +211,13 @@ class Model extends CacheMixin(Observable) {
 
     let residuals = stats.y.sub(stats.yHat);
     residuals = residuals.data;
-    return { highestLag: this.highestLag(), terms, stats, predicted, residuals };
+    return {
+      highestLag: this.highestLag(),
+      terms,
+      stats,
+      predicted,
+      residuals
+    };
   }
 
   getCandidatesSync() {
