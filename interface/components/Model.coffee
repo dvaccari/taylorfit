@@ -183,6 +183,13 @@ module.exports = class Model
           stats: model.stats
           predicted: model.predicted
       , 100
+    
+    adapter.on("data:transform", ( data ) =>
+      console.log data
+      setTimeout =>
+        @data_fit(data)
+      , 100
+    )
 
     adapter.on "progress.start", ( { curr, total } ) =>
       @progress 0.01
