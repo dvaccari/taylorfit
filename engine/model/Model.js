@@ -8,6 +8,8 @@ const perf            = require('../perf');
 const Observable      = require('../observable');
 const {
   FIT_LABEL,
+  CROSS_LABEL,
+  VALIDATION_LABEL,
   LOG,
   K_ORDER_DIFFERENCE,
   STUDENTIZED,
@@ -74,19 +76,23 @@ class Model extends CacheMixin(Observable) {
   }
 
   transformColumn(label, index) {
-    var col = this[_data][FIT_LABEL].col(index)
-    switch (label) {
-      case (LOG):
-        var transform_col = statistics.compute(label, {X: col})
-        this[_data][FIT_LABEL] = this[_data][FIT_LABEL].appendM(transform_col);
-        this.uncache('data');
-        this.fire('transformLog', {label, index});
-        console.log(`Fit data ${this[_data][FIT_LABEL]}`);
-        break;
-      default:
-        break;
-    }
-    console.log("Model:", this);
+    // Need to do this for all dataset and not just "fit" data
+    // If clear cross and validation data in UI, doesn't clear respective data in Model, so will throw error
+    [FIT_LABEL, CROSS_LABEL, VALIDATION_LABEL].map((data_label) => {
+      if (this[_data][data_label]) {
+        var col = this[_data][data_label].col(index)
+        switch (label) {
+          case (LOG):
+            var transform_col = statistics.compute(label, {X: col})
+            this[_data][data_label] = this[_data][data_label].appendM(transform_col);
+            break;
+          default:
+            break;
+        }
+      }
+    });
+    this.uncache('data');
+    this.fire('dataTransform', {label, index});
     return this;
   }
 

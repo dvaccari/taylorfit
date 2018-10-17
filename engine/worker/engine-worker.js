@@ -47,11 +47,12 @@ function initializeModel() {
     data: {}
   }));
 
-  m.on("transformLog", () => {
+  m.on("dataTransform", () => {
     postMessage({
       type: `data:transform`,
       data: m.getLabelData(FIT_LABEL).toJSON()
     });
+    m.fire('setData');
   });
 
   m.on('error', (error) => postMessage({ type: 'error', data: error }));
