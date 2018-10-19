@@ -76,6 +76,9 @@ class Model extends CacheMixin(Observable) {
   }
 
   transformColumn(label, index) {
+    if (index === undefined || isNaN(index)) {
+      return this;
+    }
     // Need to do this for all dataset and not just "fit" data
     // If clear cross and validation data in UI, doesn't clear respective data in Model, so will throw error
     [FIT_LABEL, CROSS_LABEL, VALIDATION_LABEL].map((data_label) => {
@@ -84,14 +87,15 @@ class Model extends CacheMixin(Observable) {
         switch (label) {
           case (LOG):
             var transform_col = statistics.compute(label, {X: col})
-            this[_data][data_label] = this[_data][data_label].appendM(transform_col);
+            // this[_data][data_label] = this[_data][data_label].appendM(transform_col);
+            this.setData(this[_data][data_label].appendM(transform_col), data_label)
             break;
           default:
             break;
         }
       }
     });
-    this.uncache('data');
+    // this.uncache('data');
     this.fire('dataTransform', {label, index});
     return this;
   }

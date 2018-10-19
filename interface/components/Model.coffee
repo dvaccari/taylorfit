@@ -185,9 +185,9 @@ module.exports = class Model
       , 100
     
     adapter.on("data:transform", ( data ) =>
-      console.log data
       setTimeout =>
         @data_fit(data)
+        @transform_log(undefined)
       , 100
     )
 

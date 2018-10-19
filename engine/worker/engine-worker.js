@@ -140,6 +140,7 @@ onmessage = function (e) {
       break;
 
     case 'transformLog':
+      console.log("WTF");
       m.transformColumn(data.label, data.index);
       break;
 
