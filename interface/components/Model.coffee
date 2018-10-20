@@ -94,7 +94,7 @@ CTRL =
 
   # key: original col index, value: transform col index
   transform_columns:
-    [ []          , WRAP_O                            , UNWRAP_O ]
+    [ {}          , WRAP_O                            , UNWRAP_O ]
   transform_log:
     [ undefined   , SEND("transformLog", Number)      , UNWRAP_O ]
 

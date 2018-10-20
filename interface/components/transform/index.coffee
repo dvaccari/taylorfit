@@ -1,6 +1,8 @@
 require "./index.styl"
 Model = require "../Model"
 
+Transformation = require "./label.json"
+
 ko.components.register "tf-transform",
   template: do require "./index.pug"
   viewModel: ( params ) ->
@@ -12,6 +14,7 @@ ko.components.register "tf-transform",
     columns = model.columns
     data_fit = model.data_fit
     @transform_index = model.show_transform
+    transform_columns = model.transform_columns
 
     # Check if transform popup should render
     @active = ko.computed ( ) => @transform_index() != undefined
@@ -24,48 +27,72 @@ ko.components.register "tf-transform",
       transform_index = ncols
       return {
         name: transform_name,
-        index: transform_index
+        index: transform_index,
+        label: label
       }
+
+    # Function updates model transform_columns and associate the transform column to original column
+    link_transform_column = ( original_index, transform_index ) ->
+      curr_cols = transform_columns()
+      curr_cols[original_index] = transform_index
+      model.transform_columns(curr_cols)
 
     @close = ( ) ->
       model.show_transform(undefined)
 
     @transform_log = ( index ) ->
-      transform_col = gen_column("log", index)
+      transform_col = gen_column(
+        Transformation.LOG,
+        index
+      )
+      cols = columns()
       cols.push(transform_col)
       model.transform_log(index)
       # Need to append new column name and connect new column with existing column
       model.columns(cols)
+      link_transform_column(index, transform_col.index)
       @close()
     
     @k_order_diff = ( index ) ->
-      transform_col = gen_column("K-Order", index)
+      transform_col = gen_column(
+        Transformation.K_ORDER_DIFFERENCE,
+        index
+      )
       cols = columns()
       cols.push(transform_col)
       model.transform_log(index)
       # Need to append new column name and connect new column with existing column
       model.columns(cols)
+      link_transform_column(index, transform_col.index)
       @close()
 
     @studentize = ( index ) ->
-      transform_col = gen_column("Studentize", index)
+      transform_col = gen_column(
+        Transformation.STUDENTIZED,
+        index
+      )
       cols = columns()
       cols.push(transform_col)
       model.transform_log(index)
       # Need to append new column name and connect new column with existing column
       model.columns(cols)
+      link_transform_column(index, transform_col.index)
       @close()
 
-    @normalize = ( index) ->
-      transform_col = gen_column("Normalize", index)
+    @normalize = ( index ) ->
+      transform_col = gen_column(
+        Transformation.NORMALIZED,
+        index
+      )
       cols = columns()
       cols.push(transform_col)
       model.transform_log(index)
       # Need to append new column name and connect new column with existing column
       model.columns(cols)
+      link_transform_column(index, transform_col.index)
       @close()
     
-    @transform_index.subscribe ( next ) =>
+    @transform_index.subscribe ( next ) ->
       if next then adapter.unsubscribeToChanges()
       else adapter.subscribeToChanges()
 

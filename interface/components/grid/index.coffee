@@ -21,6 +21,7 @@ ko.components.register "tf-grid",
     model       = params.model() # now static
     @dependent  = model.dependent
     @hiddenColumns = model.hiddenColumns
+    @transform_columns = model.transform_columns
     @cols       = model.columns
     @name       = model["name_#{@table}"]
     @rows       = model["data_#{@table}"]
@@ -44,18 +45,16 @@ ko.components.register "tf-grid",
       model.show_xyplot([index, "Index"])
       model.data_plotted(@table)
     
+    # Is hidden if ignored or has transformed column
     @isHidden = ( index ) ->
-      idx = index + 1
-      return @hiddenColumns().hasOwnProperty(idx) && @hiddenColumns()[idx]
+      return (@hiddenColumns().hasOwnProperty(index) &&
+        @hiddenColumns()[index]) ||
+        @transform_columns()[index]
       
     @showHideColumn = ( shouldHide, index ) ->
       oldCols = @hiddenColumns()
       oldCols[index] = shouldHide
       model.hiddenColumns(oldCols)
-
-    @isHiddenColumn = ( index ) -> 
-      cols = @hiddenColumns()
-      return cols[index]
 
     @showTransformColumn = ( index ) ->
       model.show_transform(index)

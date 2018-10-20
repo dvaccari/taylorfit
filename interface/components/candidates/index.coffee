@@ -24,6 +24,7 @@ ko.components.register "tf-candidates",
 
     model = params.model() # now static
     hiddenColumns = model.hiddenColumns
+    transform_columns = model.transform_columns
 
     @current_page = ko.observable(null)
 
@@ -46,6 +47,9 @@ ko.components.register "tf-candidates",
     # When hidden columns change in CTRL, subscribe and change visible candidates
     hiddenColumns.subscribe ( next ) =>
       @source(@candidates().sort(@sort()).filter((c) => !isHiddenColumn(c.term)))
+    
+    transform_columns.subscribe ( next ) =>
+      @source(@candidates().sort(@sort()).filter((c) -> !isHiddenColumn(c.term)))
 
     @getStat = ( id ) =>
       return parseFloat(model.cross_or_fit().stats[id])
@@ -61,10 +65,14 @@ ko.components.register "tf-candidates",
       document.querySelector(".split-model > .split-data > .model-pane")
         .style.minWidth = "calc(100% - #{next}px)"
 
-    # See if that term index is in hiddenColumns
-    isHiddenColumn = ( terms ) =>
+    # See if that term index is in hiddenColumns or transform_columns
+    isHiddenColumn = ( terms ) ->
       cols = hiddenColumns()
-      return terms.find((t) => cols[t.index + 1])
+      transform_cols = transform_columns()
+      return terms.find((t) ->
+        cols[t.index + 1] ||
+        transform_cols[t.index]
+      )
 
     @sortby = ( stat ) =>
       for s in allstats()
