@@ -195,6 +195,7 @@ module.exports = class Model
         # if (@data_validation())
         @data_validation(data.validation)
         @transform_log(undefined)
+        # TODO (justint): Handle case if add cross and validation data after transform, need to track all transformation and propgate to new data
       , 100
     )
 
