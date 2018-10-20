@@ -16,23 +16,53 @@ ko.components.register "tf-transform",
     # Check if transform popup should render
     @active = ko.computed ( ) => @transform_index() != undefined
 
-    @close = ( ) ->
-      model.show_transform(undefined)
-    
-    @transform_log = ( index ) ->
+    gen_column = ( label, index ) ->
       cols = columns()
       ncols = cols.length
       transform_col = cols[index]
-      transform_name = "log(#{transform_col.name})"
+      transform_name = "#{label}(#{transform_col.name})"
       transform_index = ncols
-      cols.push({
+      return {
         name: transform_name,
         index: transform_index
-      })
+      }
+
+    @close = ( ) ->
+      model.show_transform(undefined)
+
+    @transform_log = ( index ) ->
+      transform_col = gen_column("log", index)
+      cols.push(transform_col)
       model.transform_log(index)
       # Need to append new column name and connect new column with existing column
       model.columns(cols)
-      # Need to keep track of which 
+      @close()
+    
+    @k_order_diff = ( index ) ->
+      transform_col = gen_column("K-Order", index)
+      cols = columns()
+      cols.push(transform_col)
+      model.transform_log(index)
+      # Need to append new column name and connect new column with existing column
+      model.columns(cols)
+      @close()
+
+    @studentize = ( index ) ->
+      transform_col = gen_column("Studentize", index)
+      cols = columns()
+      cols.push(transform_col)
+      model.transform_log(index)
+      # Need to append new column name and connect new column with existing column
+      model.columns(cols)
+      @close()
+
+    @normalize = ( index) ->
+      transform_col = gen_column("Normalize", index)
+      cols = columns()
+      cols.push(transform_col)
+      model.transform_log(index)
+      # Need to append new column name and connect new column with existing column
+      model.columns(cols)
       @close()
     
     @transform_index.subscribe ( next ) =>
