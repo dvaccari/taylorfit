@@ -156,6 +156,7 @@ module.exports = class Model
         # This subscribes to when user picks candidate term
         result.selected.subscribe ( ) ->
           adapter["#{fn}Term"] t.term
+          # For some reason doesn't listen to change, so need add subscription for model change
           adapter.subscribeToChanges()
         return result
 
