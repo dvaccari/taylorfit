@@ -95,7 +95,6 @@ class Model extends CacheMixin(Observable) {
         }
       }
     });
-    // this.uncache('data');
     this.fire('dataTransform', {label, index});
     return this;
   }
@@ -132,6 +131,7 @@ class Model extends CacheMixin(Observable) {
 
   getCandidateTerms() {
     // Candidates from exp / mults / lag
+    console.log(this[_use_cols]);
     let independent = this[_use_cols].filter(
       (col) => col !== this[_dependent]);
 

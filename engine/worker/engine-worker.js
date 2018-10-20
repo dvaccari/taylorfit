@@ -7,7 +7,7 @@ const perf      = require('../perf');
 const statsMeta = require('../statistics/metadata.json');
 const Model     = require('../model');
 const {
-  FIT_LABEL,
+  FIT_LABEL, CROSS_LABEL, VALIDATION_LABEL
 }   = require('../labels.json');
 
 const getCandidateProgressInterval  = 50;
@@ -50,12 +50,18 @@ function initializeModel() {
   m.on("dataTransform", () => {
     postMessage({
       type: `data:transform`,
-      data: m.getLabelData(FIT_LABEL).toJSON()
+      data: {
+        // This sets the data in the Model, but Model.coffee will not update, need to fire back to adapter new data if 
+        fit: m.getLabelData(FIT_LABEL).toJSON(),
+        cross: m.getLabelData(CROSS_LABEL).toJSON(),
+        validation: m.getLabelData(VALIDATION_LABEL).toJSON()
+      }
     });
-    m.fire('setData');
   });
 
-  m.on('error', (error) => postMessage({ type: 'error', data: error }));
+  m.on('error', (error) =>
+    postMessage({ type: 'error', data: error })
+  );
 
   return m;
 }
@@ -140,7 +146,6 @@ onmessage = function (e) {
       break;
 
     case 'transformLog':
-      console.log("WTF");
       m.transformColumn(data.label, data.index);
       break;
 

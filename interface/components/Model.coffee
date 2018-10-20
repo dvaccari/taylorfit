@@ -94,7 +94,7 @@ CTRL =
 
   # key: original col index, value: transform col index
   transform_columns:
-    [ {}          , WRAP_O                            , UNWRAP_O ]
+    [ []          , WRAP_O                            , UNWRAP_O ]
   transform_log:
     [ undefined   , SEND("transformLog", Number)      , UNWRAP_O ]
 
@@ -186,7 +186,9 @@ module.exports = class Model
     
     adapter.on("data:transform", ( data ) =>
       setTimeout =>
-        @data_fit(data)
+        @data_fit(data.fit)
+        @data_cross(data.cross)
+        @data_validation(data.validation)
         @transform_log(undefined)
       , 100
     )
