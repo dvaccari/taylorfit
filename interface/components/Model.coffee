@@ -153,8 +153,10 @@ module.exports = class Model
             index: term[0]
             exp: term[1]
             lag: term[2]
+        # This subscribes to when user picks candidate term
         result.selected.subscribe ( ) ->
           adapter["#{fn}Term"] t.term
+          adapter.subscribeToChanges()
         return result
 
     adapter.on "candidates", ( candidates ) =>

@@ -8,7 +8,7 @@ const statsMeta = require('../statistics/metadata.json');
 const Model     = require('../model');
 const {
   FIT_LABEL, CROSS_LABEL, VALIDATION_LABEL
-}   = require('../labels.json');
+} = require('../labels.json');
 
 const getCandidateProgressInterval  = 50;
 let   onGetCandidateId              = 0;
@@ -51,7 +51,7 @@ function initializeModel() {
     postMessage({
       type: `data:transform`,
       data: {
-        // This sets the data in the Model, but Model.coffee will not update, need to fire back to adapter new data if 
+        // This sets the data in the Model, but Model.coffee will not update, need to fire back to adapter new data
         fit: m.getLabelData(FIT_LABEL).toJSON(),
         cross: m.getLabelData(CROSS_LABEL).toJSON(),
         validation: m.getLabelData(VALIDATION_LABEL).toJSON()
@@ -77,7 +77,6 @@ let subscribeToChanges = (m, updateNow = true) => {
   ], () => {
     m.getCandidates()
      .then((cands) => postMessage({ type: 'candidates', data: cands }));
-
     m.labels.forEach((label) =>
       postMessage({ type: `model:${label}`, data: m.getModel(label) })
     );
