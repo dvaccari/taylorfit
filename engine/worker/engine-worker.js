@@ -52,9 +52,15 @@ function initializeModel() {
       type: `data:transform`,
       data: {
         // This sets the data in the Model, but Model.coffee will not update, need to fire back to adapter new data
-        fit: m.getLabelData(FIT_LABEL).toJSON(),
-        cross: m.getLabelData(CROSS_LABEL).toJSON(),
-        validation: m.getLabelData(VALIDATION_LABEL).toJSON()
+        fit: m.getLabelData(FIT_LABEL)
+          ? m.getLabelData(FIT_LABEL).toJSON()
+          : undefined,
+        cross: m.getLabelData(CROSS_LABEL)
+          ? m.getLabelData(CROSS_LABEL).toJSON()
+          : undefined,
+        validation: m.getLabelData(VALIDATION_LABEL)
+          ? m.getLabelData(VALIDATION_LABEL).toJSON()
+          : undefined
       }
     });
   });
