@@ -74,7 +74,6 @@ module.exports = new class WorkerAdapter extends ME
     # Doing len_x - 1 and not x[1] because sometimes the label index and index value can be the same
     # Ex: Transform index 1 with log (log is 1 in transform/label.json)
     # So x is [1] since the object is {1: true}
-    console.log x
     len_x = x.length
     @post("tranformData", { label: x[0], index: x[len_x - 1] })
 
