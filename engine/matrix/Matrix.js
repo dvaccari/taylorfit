@@ -579,7 +579,7 @@ class Matrix {
     return subMatrix;
   }
 
-  // TODO: document
+  // Create subset of data with row-end
   lo(row=0) {
     return new Matrix(
       this[_m] - row,
@@ -588,12 +588,24 @@ class Matrix {
     );
   }
 
-  // TODO: document
+  // Create a subset of data withs rows 0-row
   hi(row=0) {
     return new Matrix(
       row,
       this[_n],
       this[_data].slice(0, row * this[_n])
+    );
+  }
+
+  // Function removes column from matrix
+  delColumn(col=0) {
+    var columns = this[_n];
+    return new Matrix(
+      this[_m],
+      this[_n] - 1,
+      this[_data].filter(function(_, i) {
+        return i % columns !== col
+      })
     );
   }
 
