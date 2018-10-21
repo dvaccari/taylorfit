@@ -12,6 +12,7 @@ const {
   K_ORDER_DIFFERENCE,
   STUDENTIZED,
   NORMALIZED,
+  DELETE,
 } = require('../labels.json');
 
 const Transformation = require("../../interface/components/transform/label.json")
@@ -158,6 +159,8 @@ onmessage = function (e) {
 
     case 'tranformData':
       switch (data.label) {
+        case (Transformation.Transform.delete):
+          m.transformColumn(DELETE, data.index);
         case (Transformation.Transform.log):
           m.transformColumn(LOG, data.index);
         default:

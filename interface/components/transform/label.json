@@ -5,6 +5,7 @@
   "NORMALIZED" : "normalized",
 
   "Transform": {
+    "delete": 0,
     "log": 1,
     "k_order_diff": 2,
     "studentize": 3,

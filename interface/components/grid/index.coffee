@@ -1,5 +1,6 @@
 
 require "./index.styl"
+Transformation = require "../transform/label.json"
 
 ko.components.register "tf-grid",
   template: do require "./index.pug"
@@ -60,12 +61,22 @@ ko.components.register "tf-grid",
 
     @deleteTransformColumn = ( index ) ->
       curr_transform_cols = @transform_columns()
+      values = Object.keys(curr_transform_cols)
+      values.forEach((v) ->
+        if curr_transform_cols[v] == index
+          curr_transform_cols[v] = undefined
+      )
       curr_transform_cols[index] = undefined
+      console.log curr_transform_cols
       model.transform_columns(curr_transform_cols)
       # Delete index from columns and data
       cols = @cols()
       cols.splice(index, 1)
       model.columns(cols)
+      model.tranformData({
+        "#{Transformation.Transform.delete}": true,
+        "#{index}": true
+      })
 
     @showHideColumn = ( shouldHide, index ) ->
       oldCols = @hiddenColumns()
