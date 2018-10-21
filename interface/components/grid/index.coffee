@@ -50,7 +50,19 @@ ko.components.register "tf-grid",
       return (@hiddenColumns().hasOwnProperty(index) &&
         @hiddenColumns()[index]) ||
         @transform_columns()[index]
-      
+    
+    @canDeleteTransformColumn = ( index ) ->
+      transformColumns = Object.values(@transform_columns())
+      # The index must be a value in transform_columns. It is a transformation of the key
+      # And the index must not be a key in transform_columns where value is not undefined.
+      # If the value for index key is not undefined, means it has another transform column is dependent on it
+      return transformColumns.includes(index) && !@transform_columns()[index]
+
+    @deleteTransformColumn = ( index ) ->
+      curr_transform_cols = @transform_columns()
+      curr_transform_cols[index] = undefined
+      model.transform_columns(curr_transform_cols)
+
     @showHideColumn = ( shouldHide, index ) ->
       oldCols = @hiddenColumns()
       oldCols[index] = shouldHide

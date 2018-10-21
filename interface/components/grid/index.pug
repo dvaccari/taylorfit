@@ -49,6 +49,10 @@ table.grid
           span.mark(data-bind="click:function(){showTransformColumn($index())}")
             | Transform Column
           // /ko
+          // ko if: table == "fit" && $index() !== dependent() && canDeleteTransformColumn($index())
+          span.mark(data-bind="click:function(){deleteTransformColumn($index())}")
+            | Delete Transform Column
+          // /ko
       // /ko
     
       // ko if: extra
