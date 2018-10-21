@@ -7,8 +7,14 @@ const perf      = require('../perf');
 const statsMeta = require('../statistics/metadata.json');
 const Model     = require('../model');
 const {
-  FIT_LABEL, CROSS_LABEL, VALIDATION_LABEL
+  FIT_LABEL, CROSS_LABEL, VALIDATION_LABEL,
+  LOG,
+  K_ORDER_DIFFERENCE,
+  STUDENTIZED,
+  NORMALIZED,
 } = require('../labels.json');
+
+const Transformation = require("../../interface/components/transform/label.json")
 
 const getCandidateProgressInterval  = 50;
 let   onGetCandidateId              = 0;
@@ -150,8 +156,13 @@ onmessage = function (e) {
       m.subset(data.label, data.start, data.end);
       break;
 
-    case 'transformLog':
-      m.transformColumn(data.label, data.index);
+    case 'tranformData':
+      switch (data.label) {
+        case (Transformation.Transform.log):
+          m.transformColumn(LOG, data.index);
+        default:
+          break;
+      }
       break;
 
     case 'reset':

@@ -95,8 +95,10 @@ CTRL =
   # key: original col index, value: transform col index
   transform_columns:
     [ {}          , WRAP_O                            , UNWRAP_O ]
-  transform_log:
-    [ undefined   , SEND("transformLog", Number)      , UNWRAP_O ]
+  # Key is the type of transformation
+  # Value has no value, just has to be true
+  tranformData:
+    [ undefined   , SEND("tranformData", object2array)      , UNWRAP_O ]
 
 module.exports = class Model
 
@@ -194,7 +196,7 @@ module.exports = class Model
         @data_cross(data.cross)
         # if (@data_validation())
         @data_validation(data.validation)
-        @transform_log(undefined)
+        @tranformData(undefined)
         # TODO (justint): Handle case if add cross and validation data after transform, need to track all transformation and propgate to new data
       , 100
     )

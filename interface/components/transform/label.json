@@ -2,5 +2,12 @@
   "LOG" : "log",
   "K_ORDER_DIFFERENCE" : "K order difference",
   "STUDENTIZED" : "studentized",
-  "NORMALIZED" : "normalized"
+  "NORMALIZED" : "normalized",
+
+  "Transform": {
+    "log": 1,
+    "k_order_diff": 2,
+    "studentize": 3,
+    "normalize": 4
+  }
 }
