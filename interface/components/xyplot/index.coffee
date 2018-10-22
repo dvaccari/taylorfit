@@ -16,7 +16,7 @@ ko.components.register "tf-xyplot",
 
     @active = ko.computed ( ) => @column_indexes() != undefined
 
-    @columns = ko.observable ["Index"].concat(model.columns().map((x) => x.name)).concat(["Dependent", "Predicted", "Residual", "Sensitivity"])
+    @columns = ko.observable ["Index"].concat(model.columns().map((x) => x.name)).concat(["Dependent", "Predicted", "Residual"])
     
     @column_names = ko.computed ( ) => 
       if !@active()

@@ -46,6 +46,10 @@ ko.components.register "tf-grid",
     @xyplot = ( index ) ->
       model.show_xyplot([index, "Index"])
       model.data_plotted(@table)
+
+    @sensitivity = ( index ) ->
+      # WZ TODO
+      model.show_sensitivity(index)
     
     # Is hidden if ignored or has transformed column
     @isHidden = ( index ) ->
@@ -94,7 +98,7 @@ ko.components.register "tf-grid",
       cols = @cols(); rows = @rows(); extra = @extra()
       csv = @cols().map(( v ) -> v.name).join ","
       if extra
-        csv += ",Dependent,Predicted,Residual,Sensitivity" # ??
+        csv += ",Dependent,Predicted,Residual"
       for row, index in rows
         csv += "\n" + row.join ","
         if extra then csv += "," + extra[index].join ","

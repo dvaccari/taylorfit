@@ -58,6 +58,8 @@ CTRL =
     [ undefined    , WRAP_O                           , IGNORE ]
   show_transform:
     [ undefined    , WRAP_O                           , IGNORE ]
+  show_sensitivity:
+    [ undefined   , SEND("getSensitivity", Number)       , IGNORE ]
 
   # Loaded from tf-loader
   columns:

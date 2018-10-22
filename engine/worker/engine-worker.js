@@ -84,6 +84,11 @@ function initializeModel() {
   m.on('error', (error) =>
     postMessage({ type: 'error', data: error })
   );
+  m.on('getSensitivity', () => {
+    // TODO WZ
+  });
+
+  m.on('error', (error) => postMessage({ type: 'error', data: error }));
 
   return m;
 }
@@ -95,7 +100,7 @@ let subscribeToChanges = (m, updateNow = true) => {
 
   subscriptionIds = m.on([
     'setData', 'setExponents', 'setMultiplicands', 'setDependent',
-    'setLags', 'addTerm', 'removeTerm', 'clear', 'subset', 'setColumns'
+    'setLags', 'addTerm', 'removeTerm', 'clear', 'subset', 'setColumns', 'getSensitivity'
   ], () => {
     m.getCandidates()
      .then((cands) => postMessage({ type: 'candidates', data: cands }));
@@ -202,6 +207,11 @@ onmessage = function (e) {
         default:
           break;
       }
+      break;
+
+    case 'getSensitivity':
+      // TODO WZ
+      getSensitivity(m);
       break;
     
     case 'reset':

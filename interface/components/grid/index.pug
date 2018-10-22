@@ -37,6 +37,8 @@ table.grid
             | Autocorrelation
           span.mark(data-bind="click:function(){xyplot($index() + 1)}")
             | XY Plot
+          span.mark(data-bind="click:function(){sensitivity($index())}")
+            | Sensitivity
           // ko if: table == "fit" && $index() !== dependent() && !isHidden($index())
           span.mark(data-bind="click:function(){showHideColumn(true, $index())}")
             | Ignore Column
@@ -82,15 +84,6 @@ table.grid
           span.mark(data-bind="click:function(){autocorrelation('Residual')}")
             | Autocorrelation
           span.mark(data-bind="click:function(){xyplot('Residual')}")
-            | XY Plot
-      th.err
-        span Sensitivity
-        tf-dropdown(params="align:'right'")
-          span.mark(data-bind="click:function(){histogram('Sensitivity')}")
-            | Histogram
-          span.mark(data-bind="click:function(){autocorrelation('Sensitivity')}")
-            | Autocorrelation
-          span.mark(data-bind="click:function(){xyplot('Sensitivity')}")
             | XY Plot
       // ??
       // /ko

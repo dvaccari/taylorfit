@@ -404,6 +404,12 @@ class Model extends CacheMixin(Observable) {
     }
     return this[_data][label].subset(this[_subsets][label]);
   }
+  
+  getSensitivity(column) {
+    // TODO WZ
+    this.fire('getSensitivity', column);
+    return this;
+  }
 
   get labels() {
     return Object.keys(this[_subsets])

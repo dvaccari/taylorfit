@@ -120,5 +120,9 @@ module.exports = new class WorkerAdapter extends ME
   unsubscribeToChanges: ( ) ->
     @post "unsubscribeToChanges"
 
+  getSensitivity: ( x ) ->
+    @post "getSensitivity", x
+    # TODO WZ
+
   clear: ( ) ->
     @post "clear"

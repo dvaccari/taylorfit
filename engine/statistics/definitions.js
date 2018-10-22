@@ -134,8 +134,8 @@ module.exports = [
     return k_order;
   }),
 
-  Statistic('sensitivity', ['X'],
-    ({ X }) => {
+  Statistic('sensitivity' , ['X', 'Y'],
+    ({X, Y}) => {
       let a = X
       return a;
       // TODO math here
