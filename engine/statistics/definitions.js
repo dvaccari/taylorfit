@@ -85,5 +85,17 @@ module.exports = [
   Statistic('pF', ['F', 'np', 'nd'],
     ({F, np, nd}) => Math.max(dist.pf(Math.abs(F), np, nd - np) - 1e-15, 0)),
   
-  Statistic('log', ["X"], ({X}) => X.log())
+  Statistic('log', ["X"], ({X}) => X.log()),
+
+  Statistic('standardize', ["X"], ({X}) => {
+    let standardize = X.clone();
+    standardize.data.set(standardize.data.map((d) => d - X.mean() / X.std()));
+    return standardize;
+  }),
+
+  Statistic('rescale', ["X"], ({X}) => {
+    let rescale = X.clone();
+    rescale.data.set(rescale.data.map((d) => d / X.std()));
+    return rescale;
+  }),
 ];

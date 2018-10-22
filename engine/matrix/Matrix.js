@@ -707,6 +707,32 @@ class Matrix {
   }
 
   /**
+   * Get the mean in matrix
+   */
+  mean() {
+    let accum = 0, i;
+
+    for (i = 0; i < this[_data].length; i += 1) {
+      accum += this[_data][i];
+    }
+    return accum / this[_data].length;
+  }
+
+  /**
+   * Get the standard deviation in matrix
+   */
+  std() {
+    let mean = this.mean();
+    let len = this[_data].length;
+    let diff = this[_data].map((d) => Math.pow(d - mean, 2))
+    let i, accum = 0;
+    for (i = 0; i < diff.length; i += 1) {
+      accum += diff[i];
+    }
+    return Math.sqrt(accum/len)
+  }
+
+  /**
    * @property {Matrix<n,m>} T The transposition of the matrix
    */
   get T() {
