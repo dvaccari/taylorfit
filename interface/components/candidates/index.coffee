@@ -70,7 +70,7 @@ ko.components.register "tf-candidates",
       cols = hiddenColumns()
       transform_cols = transform_columns()
       return terms.find((t) ->
-        cols[t.index + 1] ||
+        cols[t.index] ||
         transform_cols[t.index]
       )
 
