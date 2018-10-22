@@ -34,8 +34,6 @@ ko.components.register "tf-histogram",
           index = 1
         if index == "Residual"
           index = 2
-        # if index == "Sensitivity"
-          # index = 3
         return model["extra_#{model.data_plotted()}"]().map((row) => row[index])
       return model["data_#{model.data_plotted()}"]().map((row) => row[index])
 

@@ -59,7 +59,7 @@ CTRL =
   show_transform:
     [ undefined    , WRAP_O                           , IGNORE ]
   show_sensitivity:
-    [ undefined   , SEND("getSensitivity", Number)       , IGNORE ]
+    [ undefined   , SEND("getSensitivity", Number)    , IGNORE ]
 
   # Loaded from tf-loader
   columns:
@@ -264,6 +264,8 @@ module.exports = class Model
           )
       , 100
     )
+
+    # TODO Add sensitivity here 
 
     adapter.on "progress.start", ( { curr, total } ) =>
       @progress 0.01

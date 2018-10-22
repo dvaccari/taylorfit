@@ -49,7 +49,7 @@ ko.components.register "tf-grid",
 
     @sensitivity = ( index ) ->
       # WZ TODO
-      model.show_sensitivity(index)
+      model.show_sensitivity( index )
     
     # Is hidden if ignored or has transformed column
     @isHidden = ( index ) ->

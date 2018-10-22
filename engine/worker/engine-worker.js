@@ -86,6 +86,12 @@ function initializeModel() {
   );
   m.on('getSensitivity', () => {
     // TODO WZ
+    postMessage({
+      type: 'progress',
+      data: {
+
+      }
+    });
   });
 
   m.on('error', (error) => postMessage({ type: 'error', data: error }));
@@ -211,7 +217,10 @@ onmessage = function (e) {
 
     case 'getSensitivity':
       // TODO WZ
-      getSensitivity(m);
+      console.log("WZ - worker/engine-worker.js")
+      console.log(data)
+      m.getSensitivity(data);
+      // m.getSensitivity(data.label, data.index);
       break;
     
     case 'reset':

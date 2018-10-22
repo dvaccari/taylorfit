@@ -404,10 +404,34 @@ class Model extends CacheMixin(Observable) {
     }
     return this[_data][label].subset(this[_subsets][label]);
   }
-  
-  getSensitivity(column) {
+
+  getSensitivity(index) {
     // TODO WZ
-    this.fire('getSensitivity', column);
+    if (index == undefined) {
+      return this;
+    }
+
+    // Copied from get model
+    let highestLag = this.highestLag()
+      , X = this.X().lo(highestLag)
+      , y = this.y().lo(highestLag);
+    // let stats = statistics(lstsq(X, y));
+
+    // TODO figure out why this is undefined
+    console.log('wz --- ')
+    console.log(statistics.compute('sensitivity', { X: 9000, y: 555 }))
+    console.log(statistics.compute('sensitivity', { X: X, y: y }))
+    console.log('wz --- ')
+
+    // TODO Add a proper column
+    // this[_data]['Sensitivity' + index] = statistics.compute('sensitivity', {X: this[_data][index], y:y})
+    
+    console.log(index)
+    console.log(this[_data][FIT_LABEL].col(index))
+
+    // console.log("Sensitivity")
+    // console.log(this[_data]['Sensitivity' + index])
+    this.fire('getSensitivity', index);
     return this;
   }
 

@@ -38,7 +38,7 @@ table.grid
           span.mark(data-bind="click:function(){xyplot($index() + 1)}")
             | XY Plot
           span.mark(data-bind="click:function(){sensitivity($index())}")
-            | Sensitivity
+            | Show Sensitivity
           // ko if: table == "fit" && $index() !== dependent() && !isHidden($index())
           span.mark(data-bind="click:function(){showHideColumn(true, $index())}")
             | Ignore Column
