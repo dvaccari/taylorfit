@@ -161,8 +161,10 @@ onmessage = function (e) {
       switch (data.label) {
         case (Transformation.Transform.delete):
           m.transformColumn(DELETE, data.index);
+          break;
         case (Transformation.Transform.log):
           m.transformColumn(LOG, data.index);
+          break;
         default:
           break;
       }

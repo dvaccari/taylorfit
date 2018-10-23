@@ -74,7 +74,6 @@ ko.components.register "tf-grid",
           curr_transform_cols[v] = curr_transform_cols[v] - 1
       )
       curr_transform_cols[index] = undefined
-      console.log curr_transform_cols
       model.transform_columns(curr_transform_cols)
       # Delete index from columns and data
       cols = @cols()

@@ -87,7 +87,10 @@ class Model extends CacheMixin(Observable) {
         var col = this[_data][data_label].col(index)
         switch (label) {
           case (DELETE):
-            this.setData(this[_data][data_label].delColumn(index), data_label)
+            this.setData(
+              this[_data][data_label].delColumn(index),
+              data_label
+            );
             break;
           case (LOG):
             var transform_col = statistics.compute(label, {X: col})

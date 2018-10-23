@@ -75,7 +75,8 @@ module.exports = new class WorkerAdapter extends ME
     # Ex: Transform index 1 with log (log is 1 in transform/label.json)
     # So x is [1] since the object is {1: true}
     len_x = x.length
-    @post("tranformData", { label: x[0], index: x[len_x - 1] })
+    if len_x > 0
+      @post("tranformData", { label: x[0], index: x[len_x - 1] })
 
   requestStatisticsMetadata: ( ) ->
     @post "getStatisticsMetadata"
