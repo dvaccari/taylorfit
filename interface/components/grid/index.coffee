@@ -70,9 +70,10 @@ ko.components.register "tf-grid",
       values.forEach((v) ->
         if curr_transform_cols[v] == index
           curr_transform_cols[v] = undefined
+        else if curr_transform_cols[v] > index
+          curr_transform_cols[v] = curr_transform_cols[v] - 1
       )
       curr_transform_cols[index] = undefined
-      console.log curr_transform_cols
       model.transform_columns(curr_transform_cols)
       # Delete index from columns and data
       cols = @cols()

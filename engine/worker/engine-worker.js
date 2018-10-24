@@ -161,11 +161,12 @@ onmessage = function (e) {
       switch (data.label) {
         case (Transformation.Transform.delete):
           m.transformColumn(DELETE, data.index);
+          break;
         case (Transformation.Transform.log):
           m.transformColumn(LOG, data.index);
           break;
         case (Transformation.Transform.k_order_diff):
-          m.transformColumn(K_ORDER_DIFFERENCE, data.index);
+          m.transformColumn(K_ORDER_DIFFERENCE, data.index, data.k);
           break;
         case (Transformation.Transform.studentize):
           m.transformColumn(STUDENTIZED, data.index);
@@ -177,7 +178,7 @@ onmessage = function (e) {
           break;
       }
       break;
-
+    
     case 'reset':
       m = new Model();
       break;
