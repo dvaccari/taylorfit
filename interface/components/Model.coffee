@@ -99,6 +99,8 @@ CTRL =
   # Value has no value, just has to be true
   tranformData:
     [ undefined   , SEND("tranformData", object2array)      , UNWRAP_O ]
+  kOrderTransform:
+    [ undefined   , SEND("kOrderTransform", object2array)   , UNWRAP_O ]
 
 module.exports = class Model
 
@@ -197,6 +199,7 @@ module.exports = class Model
         # if (@data_validation())
         @data_validation(data.validation)
         @tranformData(undefined)
+        @kOrderTransform(undefined)
         adapter.subscribeToChanges()
         # TODO (justint): Handle case if add cross and validation data after transform, need to track all transformation and propgate to new data
       , 100

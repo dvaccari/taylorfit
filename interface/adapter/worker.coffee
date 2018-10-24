@@ -1,3 +1,4 @@
+Transformation = require("../components/transform/label.json")
 
 SILENT_MESSAGE_TYPES = [ "progress" ]
 
@@ -81,7 +82,11 @@ module.exports = new class WorkerAdapter extends ME
   kOrderTransform: ( x ) ->
     len_x = x.length
     if len_x > 0
-      @post("tranformData", { index: x[0], k: x[len_x - 1] })
+      @post("tranformData", {
+        label: Transformation.Transform.k_order_diff,
+        index: x[0],
+        k: x[len_x - 1]
+      })
 
   requestStatisticsMetadata: ( ) ->
     @post "getStatisticsMetadata"

@@ -56,14 +56,17 @@ ko.components.register "tf-transform",
       link_transform_column(index, transform_col.index)
       @close()
     
-    @k_order_diff = ( index ) ->
+    @k_order_diff = ( index, k = 1 ) ->
       transform_col = gen_column(
         Transformation.K_ORDER_DIFFERENCE,
         index
       )
       cols = columns()
       cols.push(transform_col)
-      model.tranformData({ 1: Transformation.K_ORDER_DIFFERENCE, 2: index })
+      model.kOrderTransform({
+        "#{index}": true,
+        "#{k}": true
+      })
       # Need to append new column name and connect new column with existing column
       model.columns(cols)
       link_transform_column(index, transform_col.index)
