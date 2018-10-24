@@ -98,4 +98,6 @@ module.exports = [
     rescale.data.set(rescale.data.map((d) => d / X.std()));
     return rescale;
   }),
+
+  Statistic('k_order_difference')
 ];

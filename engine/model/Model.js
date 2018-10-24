@@ -94,6 +94,11 @@ class Model extends CacheMixin(Observable) {
             // this[_data][data_label] = this[_data][data_label].appendM(transform_col);
             this.setData(this[_data][data_label].appendM(transform_col), data_label)
             break;
+          case (K_ORDER_DIFFERENCE):
+            var transform_col = statistics.compute(label, {X: col})
+            // this[_data][data_label] = this[_data][data_label].appendM(transform_col);
+            this.setData(this[_data][data_label].appendM(transform_col), data_label)
+            break;
           default:
             break;
         }

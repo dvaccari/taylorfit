@@ -163,6 +163,16 @@ onmessage = function (e) {
           m.transformColumn(DELETE, data.index);
         case (Transformation.Transform.log):
           m.transformColumn(LOG, data.index);
+          break;
+        case (Transformation.Transform.k_order_diff):
+          m.transformColumn(K_ORDER_DIFFERENCE, data.index);
+          break;
+        case (Transformation.Transform.studentize):
+          m.transformColumn(STUDENTIZED, data.index);
+          break;
+        case (Transformation.Transform.normalize):
+          m.transformColumn(NORMALIZED, data.index);
+          break;
         default:
           break;
       }
