@@ -92,7 +92,7 @@ class Matrix {
    * @param {number}                    m     Number of rows
    * @param {Float64Array | number[][]} stuff Items to populate the matrix
    */
-  constructor(m, n, stuff) {
+  constructor(m, n, stuff, skip_NaN = false) {
     if (m instanceof Matrix) {
       return m;
     }
@@ -118,7 +118,7 @@ class Matrix {
     for(let i = 0; i < n; i++){
       // j: iterate over rows
       for(let j = 0; j < m; j++){
-        if(isNaN(stuff[j*n + i])){
+        if(!skip_NaN && isNaN(stuff[j*n + i])) {
           valid_columns[i] = false;
           valid_column_count -= 1;
           break;

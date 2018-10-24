@@ -99,5 +99,20 @@ module.exports = [
     return rescale;
   }),
 
-  Statistic('k_order_difference')
+  Statistic('k_order_difference', ["X", "k"], ({X, k}) => {
+    let k_order_func = (data, k) => {
+      if (k == 1) {
+        return data.map((d, idx) => idx < k ? null : d - data[idx - 1]);
+      } else {
+        k_1_order = k_order_func(data, k - 1);
+        return data.map((_, idx) => idx < k ? null : k_1_order[idx] - k_1_order[idx - 1]);
+      }
+    };
+    if (!k || isNaN(k)) {
+      return X;
+    }
+    let k_order = X.clone();
+    k_order.data.set(k_order_func(k_order.data, k));
+    return k_order;
+  })
 ];
