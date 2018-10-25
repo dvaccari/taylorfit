@@ -76,12 +76,11 @@ module.exports = new class WorkerAdapter extends ME
   transformLog: ( x ) ->
     @post("transformData", { label: Transformation.Transform.log, index: x })
   kOrderTransform: ( x ) ->
-    len_x = x.length
-    if len_x > 0
+    if x
       @post("transformData", {
         label: Transformation.Transform.k_order_diff,
-        index: x[0],
-        k: x[len_x - 1]
+        index: x.index,
+        k: x.k
       })
   transformStandardize: ( x ) ->
     @post("transformData", { label: Transformation.Transform.standardize, index: x })

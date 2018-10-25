@@ -27,6 +27,8 @@ object2array = ( exps ) ->
   Number key for key, value of ko.unwrap exps \
   when ko.unwrap value
 
+object2object = ( exps ) -> exps
+
 CTRL =
   id:
     [ "model"     , WRAP_O                            , UNWRAP ]
@@ -102,7 +104,7 @@ CTRL =
   transformLog:
     [ undefined   , SEND("transformLog", Number)      , UNWRAP_O ]
   kOrderTransform:
-    [ undefined   , SEND("kOrderTransform", object2array)   , UNWRAP_O ]
+    [ undefined   , SEND("kOrderTransform", object2object), UNWRAP_O ]
   transformStandardize:
     [ undefined   , SEND("transformStandardize", Number), UNWRAP_O ]
   transformRescale:

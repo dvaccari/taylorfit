@@ -16,6 +16,9 @@ ko.components.register "tf-transform",
     @transform_index = model.show_transform
     transform_columns = model.transform_columns
 
+    @k = ko.observable 1
+    @invalid = false
+
     # Check if transform popup should render
     @active = ko.computed ( ) => @transform_index() != undefined
 
@@ -40,6 +43,9 @@ ko.components.register "tf-transform",
     @close = ( ) ->
       model.show_transform(undefined)
 
+    @change_k = ( ) ->
+      @invalid = !@k() || isNaN(@k())
+
     @transform_log = ( index ) ->
       transform_col = gen_column(
         Transformation.LOG,
@@ -53,21 +59,24 @@ ko.components.register "tf-transform",
       link_transform_column(index, transform_col.index)
       @close()
     
-    @k_order_diff = ( index, k = 1 ) ->
-      transform_col = gen_column(
-        Transformation.K_ORDER_DIFFERENCE,
-        index
-      )
-      cols = columns()
-      cols.push(transform_col)
-      model.kOrderTransform({
-        "#{index}": true,
-        "#{k}": true
-      })
-      # Need to append new column name and connect new column with existing column
-      model.columns(cols)
-      link_transform_column(index, transform_col.index)
-      @close()
+    @k_order_diff = ( index ) ->
+      if !@invalid
+        transform_col = gen_column(
+          Transformation.K_ORDER_DIFFERENCE,
+          index
+        )
+        cols = columns()
+        cols.push(transform_col)
+        model.kOrderTransform({
+          index: index,
+          k: @k()
+        })
+        # Need to append new column name and connect new column with existing column
+        model.columns(cols)
+        link_transform_column(index, transform_col.index)
+        @k(1)
+        @invalid = false
+        @close()
 
     @standardize = ( index ) ->
       transform_col = gen_column(

@@ -5,6 +5,7 @@
     button.option(
       data-bind="click:function(){transform_log(transform_index())}"
     ) Log
+    input.custom(data-bind="textInput:k,event:{keyup:change_k},css:{invalid:invalid}")
     button.option(
       data-bind="click:function(){k_order_diff(transform_index())}"
     ) K-Order Difference
