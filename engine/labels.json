@@ -5,7 +5,7 @@
 
   "LOG" : "log",
   "K_ORDER_DIFFERENCE" : "k_order_difference",
-  "STUDENTIZED" : "studentized",
-  "NORMALIZED" : "normalized",
+  "STANDARDIZE" : "standardize",
+  "RESCALE" : "rescale",
   "DELETE": "delete"
 }

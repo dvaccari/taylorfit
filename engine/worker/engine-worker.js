@@ -10,8 +10,8 @@ const {
   FIT_LABEL, CROSS_LABEL, VALIDATION_LABEL,
   LOG,
   K_ORDER_DIFFERENCE,
-  STUDENTIZED,
-  NORMALIZED,
+  STANDARDIZE,
+  RESCALE,
   DELETE,
 } = require('../labels.json');
 
@@ -157,7 +157,7 @@ onmessage = function (e) {
       m.subset(data.label, data.start, data.end);
       break;
 
-    case 'tranformData':
+    case 'transformData':
       switch (data.label) {
         case (Transformation.Transform.delete):
           m.transformColumn(DELETE, data.index);
@@ -168,11 +168,11 @@ onmessage = function (e) {
         case (Transformation.Transform.k_order_diff):
           m.transformColumn(K_ORDER_DIFFERENCE, data.index, data.k);
           break;
-        case (Transformation.Transform.studentize):
-          m.transformColumn(STUDENTIZED, data.index);
+        case (Transformation.Transform.standardize):
+          m.transformColumn(STANDARDIZE, data.index);
           break;
-        case (Transformation.Transform.normalize):
-          m.transformColumn(NORMALIZED, data.index);
+        case (Transformation.Transform.rescale):
+          m.transformColumn(RESCALE, data.index);
           break;
         default:
           break;

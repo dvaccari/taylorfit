@@ -87,15 +87,33 @@ module.exports = [
   
   Statistic('log', ["X"], ({X}) => X.log()),
 
-  Statistic('standardize', ["X"], ({X}) => {
+  Statistic('mean', ["X"], ({X}) => {
+    return X.data.reduce((total, c) => total += c, 0) / X.data.length
+  }),
+
+  Statistic('std', ["X", "mean"], ({X, mean}) => {
+    let diff = X.data.map((d) => Math.pow(d - mean, 2))
+    let diff_total = diff.reduce((total, c) => total += c, 0)
+    return Math.sqrt(diff_total / X.data.length)
+  }),
+
+  Statistic('standardize', ["X", "mean", "std"], ({X, mean, std}) => {
     let standardize = X.clone();
-    standardize.data.set(standardize.data.map((d) => d - X.mean() / X.std()));
+    standardize.data.set(standardize.data.map((d) => (d - mean) / std));
     return standardize;
   }),
 
-  Statistic('rescale', ["X"], ({X}) => {
+  Statistic('RMS', ["X"], ({X}) => {
+    let rms = X.clone();
+    let SS = rms.data
+      .map(r => Math.pow(r, 2))
+      .reduce((total, xi) => total += xi, 0);
+    return Math.sqrt(SS/ rms.data.length);
+  }),
+
+  Statistic('rescale', ["X", "RMS"], ({X, RMS}) => {
     let rescale = X.clone();
-    rescale.data.set(rescale.data.map((d) => d / X.std()));
+    rescale.data.set(rescale.data.map((d) => d / RMS));
     return rescale;
   }),
 
