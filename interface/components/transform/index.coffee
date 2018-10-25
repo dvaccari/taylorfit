@@ -47,10 +47,7 @@ ko.components.register "tf-transform",
       )
       cols = columns()
       cols.push(transform_col)
-      model.tranformData({
-        "#{Transformation.Transform.log}": true,
-        "#{index}": true
-      })
+      model.transformLog(index)
       # Need to append new column name and connect new column with existing column
       model.columns(cols)
       link_transform_column(index, transform_col.index)
@@ -72,27 +69,27 @@ ko.components.register "tf-transform",
       link_transform_column(index, transform_col.index)
       @close()
 
-    @studentize = ( index ) ->
+    @standardize = ( index ) ->
       transform_col = gen_column(
-        Transformation.STUDENTIZED,
+        Transformation.STANDARDIZE,
         index
       )
       cols = columns()
       cols.push(transform_col)
-      model.tranformData({ 1: Transformation.STUDENTIZED, 2: index })
+      model.transformStandardize(index)
       # Need to append new column name and connect new column with existing column
       model.columns(cols)
       link_transform_column(index, transform_col.index)
       @close()
 
-    @normalize = ( index ) ->
+    @rescale = ( index ) ->
       transform_col = gen_column(
-        Transformation.NORMALIZED,
+        Transformation.RESCALE,
         index
       )
       cols = columns()
       cols.push(transform_col)
-      model.tranformData({ 1: Transformation.NORMALIZED, 2: index })
+      model.transformRescale(index)
       # Need to append new column name and connect new column with existing column
       model.columns(cols)
       link_transform_column(index, transform_col.index)

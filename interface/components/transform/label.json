@@ -1,14 +1,14 @@
 {
   "LOG" : "log",
   "K_ORDER_DIFFERENCE" : "K order difference",
-  "STUDENTIZED" : "studentized",
-  "NORMALIZED" : "normalized",
+  "STANDARDIZE" : "Standardize",
+  "RESCALE" : "Rescale",
 
   "Transform": {
     "delete": 0,
     "log": 1,
     "k_order_diff": 2,
-    "studentize": 3,
-    "normalize": 4
+    "standardize": 3,
+    "rescale": 4
   }
 }
