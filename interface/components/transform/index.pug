@@ -1,17 +1,21 @@
 .background(data-bind="css:{active:active}, click:close")
 .transform(data-bind="css:{active:active}")
   p(text="Transform Column")
-  div.option-wrapper
-    button.option(
-      data-bind="click:function(){transform_log(transform_index())}"
-    ) Log
-    input.custom(data-bind="textInput:k,event:{keyup:change_k},css:{invalid:invalid}")
-    button.option(
-      data-bind="click:function(){k_order_diff(transform_index())}"
-    ) K-Order Difference
-    button.option(
-      data-bind="click:function(){standardize(transform_index())}"
-    ) Standardize
-    button.option(
-      data-bind="click:function(){rescale(transform_index())}"
-    ) Rescale
+  div.container
+    div.option-wrapper
+      button.option(
+        data-bind="click:function(){transform_log(transform_index())}"
+      ) Log
+    div.option-wrapper.k-order
+      input.custom(data-bind="textInput:k,event:{keyup:change_k},css:{invalid:invalid}")
+      button.option(
+        data-bind="click:function(){k_order_diff(transform_index())}"
+      ) K-Order Difference
+    div.option-wrapper
+      button.option(
+        data-bind="click:function(){standardize(transform_index())}"
+      ) Standardize
+    div.option-wrapper
+      button.option(
+        data-bind="click:function(){rescale(transform_index())}"
+      ) Rescale
