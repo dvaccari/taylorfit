@@ -54,13 +54,13 @@ ko.components.register "tf-grid",
     
     @canDeleteTransformColumn = ( index ) ->
       transformColumns = Object.values(@transform_columns())
-      model_terms = @result().terms
       # The index must be a value in transform_columns. It is a transformation of the key
       # And the index must not be a key in transform_columns where value is not undefined.
       # If the value for index key is not undefined, means it has another transform column is dependent on it
       return transformColumns.includes(index) &&
         !@transform_columns()[index] &&
-        !model_terms.find((term) ->
+        @result() &&
+        !@result().terms.find((term) ->
           term.term.find((t) -> t.index == index)
         )
 
