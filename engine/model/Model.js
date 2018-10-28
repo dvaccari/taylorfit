@@ -76,13 +76,15 @@ class Model extends CacheMixin(Observable) {
     return this;
   }
 
-  transformColumn(label, index, k=undefined) {
+  transformColumn(label, data) {
+    var index = data.index;
     if (index === undefined || isNaN(index)) {
       return this;
     }
+    var data_labels = data.data_labels || [FIT_LABEL, CROSS_LABEL, VALIDATION_LABEL];
     // Need to do this for all dataset and not just "fit" data
     // If clear cross and validation data in UI, doesn't clear respective data in Model, so will throw error
-    [FIT_LABEL, CROSS_LABEL, VALIDATION_LABEL].map((data_label) => {
+    data_labels.map((data_label) => {
       if (this[_data][data_label]) {
         var col = this[_data][data_label].col(index)
         switch (label) {
@@ -98,6 +100,7 @@ class Model extends CacheMixin(Observable) {
             this.setData(this[_data][data_label].appendM(transform_col), data_label)
             break;
           case (K_ORDER_DIFFERENCE):
+            var k = data.k;
             var transform_col = statistics.compute(label, {X: col, k: k})
             // this[_data][data_label] = this[_data][data_label].appendM(transform_col);
             this.setData(this[_data][data_label].appendM(transform_col), data_label)
@@ -135,12 +138,13 @@ class Model extends CacheMixin(Observable) {
 
     if (label !== FIT_LABEL &&
         data.shape[1] !== this[_data][FIT_LABEL].shape[1]) {
-      throw new Error(
-        `Data for '${label}' is not the same shape as '${FIT_LABEL}'`
-      );
+      // throw new Error(
+      //   `Data for '${label}' is not the same shape as '${FIT_LABEL}'`
+      // );
     } else {
       this[_use_cols] = utils.range(0, data.shape[1]);
     }
+    var curr_data = this[_data][label];
     this[_data][label] = data;
     this[_subsets][label] = utils.range(0, data.shape[0]);
 
@@ -153,6 +157,10 @@ class Model extends CacheMixin(Observable) {
 
     this.termpool.uncache();
     this.fire('setData', { data, label });
+    // First time importing data
+    if (curr_data === undefined) {
+      this.fire('propogateTransform', {data_label: label});
+    }
     return this;
   }
 
