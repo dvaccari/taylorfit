@@ -22,7 +22,7 @@ ko.components.register "tf-transform",
     # Check if transform popup should render
     @active = ko.computed ( ) => @transform_index() != undefined
 
-    gen_column = ( label, index ) ->
+    gen_column = ( label, index, k = undefined ) ->
       cols = columns()
       ncols = cols.length
       transform_col = cols[index]
@@ -31,7 +31,8 @@ ko.components.register "tf-transform",
       return {
         name: transform_name,
         index: transform_index,
-        label: label
+        label: label,
+        k: k,
       }
 
     # Function updates model transform_columns and associate the transform column to original column
@@ -63,7 +64,8 @@ ko.components.register "tf-transform",
       if !@invalid
         transform_col = gen_column(
           Transformation.K_ORDER_DIFFERENCE,
-          index
+          index,
+          Number(@k())
         )
         cols = columns()
         cols.push(transform_col)
