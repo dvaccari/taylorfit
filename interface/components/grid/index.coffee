@@ -79,7 +79,7 @@ ko.components.register "tf-grid",
       cols = @cols()
       cols.splice(index, 1)
       model.columns(cols)
-      model.transformDelete(index)
+      model.transformDelete({ index: index })
 
     @showHideColumn = ( shouldHide, index ) ->
       oldCols = @hiddenColumns()

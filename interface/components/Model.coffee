@@ -1,5 +1,9 @@
 utils = require('../../engine/utils');
 
+Transformation = require "./transform/label.json"
+CROSS_LABEL = require("../../engine/labels.json").CROSS_LABEL
+VALIDATION_LABEL = require("../../engine/labels.json").VALIDATION_LABEL
+
 WRAP_O = ( v ) -> ko.observable v
 WRAP_A = ( v ) -> ko.observableArray v
 UNWRAP = ( v ) -> ko.unwrap v
@@ -97,18 +101,16 @@ CTRL =
   # key: original col index, value: transform col index
   transform_columns:
     [ {}          , WRAP_O                            , UNWRAP_O ]
-  # Key is the type of transformation
-  # Value has no value, just has to be true
   transformDelete:
-    [ undefined   , SEND("transformDelete", Number)   , UNWRAP_O ]
+    [ undefined   , SEND("transformDelete", object2object)   , UNWRAP_O ]
   transformLog:
-    [ undefined   , SEND("transformLog", Number)      , UNWRAP_O ]
+    [ undefined   , SEND("transformLog", object2object), UNWRAP_O ]
   kOrderTransform:
     [ undefined   , SEND("kOrderTransform", object2object), UNWRAP_O ]
   transformStandardize:
-    [ undefined   , SEND("transformStandardize", Number), UNWRAP_O ]
+    [ undefined   , SEND("transformStandardize", object2object), UNWRAP_O ]
   transformRescale:
-    [ undefined   , SEND("transformRescale", Number)  , UNWRAP_O ]
+    [ undefined   , SEND("transformRescale", object2object)  , UNWRAP_O ]
 
 module.exports = class Model
 
@@ -212,7 +214,51 @@ module.exports = class Model
         @transformStandardize(undefined)
         @transformRescale(undefined)
         adapter.subscribeToChanges()
-        # TODO (justint): Handle case if add cross and validation data after transform, need to track all transformation and propgate to new data
+      , 100
+    )
+
+    # Need to do transformation here because need to wait for model to have updated data and fire back to UI
+    # that setting data completed
+    # Once completed, can get all the transformation done already on fit data and do on the cross/validation data
+    adapter.on('propogateTransform', ( data ) =>
+      setTimeout =>
+        label = data.data_label
+        data_labels = undefined
+        if label == "cross"
+          data_labels = [CROSS_LABEL]
+        else if label == "validation"
+          data_labels = [VALIDATION_LABEL]
+        transformColumns = @transform_columns()
+        columns = @columns()
+        # Iterate through each transform column from left to right
+        Object.entries(transformColumns)
+          .sort((curr, next) => curr[1] > next[1])
+          .forEach((transform_col) =>
+            index = Number(transform_col[0])
+            col = columns[transform_col[1]]
+            transform_label = col.label
+            if transform_label == Transformation.LOG
+              @transformLog({
+                index: index,
+                labels: data_labels
+              })
+            else if transform_label == Transformation.K_ORDER_DIFFERENCE
+              @kOrderTransform({
+                index: index,
+                labels: data_labels,
+                k: col.k
+              })
+            else if transform_label == Transformation.STANDARDIZE
+              @transformStandardize({
+                index: index,
+                labels: data_labels,
+              })
+            else if transform_label == Transformation.RESCALE
+              @transformRescale({
+                index: index,
+                labels: data_labels,
+              })
+          )
       , 100
     )
 
