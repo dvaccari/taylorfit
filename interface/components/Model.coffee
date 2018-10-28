@@ -27,6 +27,8 @@ object2array = ( exps ) ->
   Number key for key, value of ko.unwrap exps \
   when ko.unwrap value
 
+object2object = ( exps ) -> exps
+
 CTRL =
   id:
     [ "model"     , WRAP_O                            , UNWRAP ]
@@ -97,8 +99,16 @@ CTRL =
     [ {}          , WRAP_O                            , UNWRAP_O ]
   # Key is the type of transformation
   # Value has no value, just has to be true
-  tranformData:
-    [ undefined   , SEND("tranformData", object2array)      , UNWRAP_O ]
+  transformDelete:
+    [ undefined   , SEND("transformDelete", Number)   , UNWRAP_O ]
+  transformLog:
+    [ undefined   , SEND("transformLog", Number)      , UNWRAP_O ]
+  kOrderTransform:
+    [ undefined   , SEND("kOrderTransform", object2object), UNWRAP_O ]
+  transformStandardize:
+    [ undefined   , SEND("transformStandardize", Number), UNWRAP_O ]
+  transformRescale:
+    [ undefined   , SEND("transformRescale", Number)  , UNWRAP_O ]
 
 module.exports = class Model
 
@@ -196,7 +206,11 @@ module.exports = class Model
         @data_cross(data.cross)
         # if (@data_validation())
         @data_validation(data.validation)
-        @tranformData(undefined)
+        @transformLog(undefined)
+        @transformDelete(undefined)
+        @kOrderTransform(undefined)
+        @transformStandardize(undefined)
+        @transformRescale(undefined)
         adapter.subscribeToChanges()
         # TODO (justint): Handle case if add cross and validation data after transform, need to track all transformation and propgate to new data
       , 100

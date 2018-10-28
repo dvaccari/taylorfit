@@ -16,10 +16,13 @@ ko.components.register "tf-transform",
     @transform_index = model.show_transform
     transform_columns = model.transform_columns
 
+    @k = ko.observable 1
+    @invalid = false
+
     # Check if transform popup should render
     @active = ko.computed ( ) => @transform_index() != undefined
 
-    gen_column = ( label, index ) ->
+    gen_column = ( label, index, k = undefined ) ->
       cols = columns()
       ncols = cols.length
       transform_col = cols[index]
@@ -28,7 +31,8 @@ ko.components.register "tf-transform",
       return {
         name: transform_name,
         index: transform_index,
-        label: label
+        label: label,
+        k: k,
       }
 
     # Function updates model transform_columns and associate the transform column to original column
@@ -40,6 +44,9 @@ ko.components.register "tf-transform",
     @close = ( ) ->
       model.show_transform(undefined)
 
+    @change_k = ( ) ->
+      @invalid = !@k() || isNaN(@k())
+
     @transform_log = ( index ) ->
       transform_col = gen_column(
         Transformation.LOG,
@@ -47,49 +54,53 @@ ko.components.register "tf-transform",
       )
       cols = columns()
       cols.push(transform_col)
-      model.tranformData({
-        "#{Transformation.Transform.log}": true,
-        "#{index}": true
-      })
+      model.transformLog(index)
       # Need to append new column name and connect new column with existing column
       model.columns(cols)
       link_transform_column(index, transform_col.index)
       @close()
     
     @k_order_diff = ( index ) ->
+      if !@invalid
+        transform_col = gen_column(
+          Transformation.K_ORDER_DIFFERENCE,
+          index,
+          Number(@k())
+        )
+        cols = columns()
+        cols.push(transform_col)
+        model.kOrderTransform({
+          index: index,
+          k: @k()
+        })
+        # Need to append new column name and connect new column with existing column
+        model.columns(cols)
+        link_transform_column(index, transform_col.index)
+        @k(1)
+        @invalid = false
+        @close()
+
+    @standardize = ( index ) ->
       transform_col = gen_column(
-        Transformation.K_ORDER_DIFFERENCE,
+        Transformation.STANDARDIZE,
         index
       )
       cols = columns()
       cols.push(transform_col)
-      model.tranformData({ 1: Transformation.K_ORDER_DIFFERENCE, 2: index })
+      model.transformStandardize(index)
       # Need to append new column name and connect new column with existing column
       model.columns(cols)
       link_transform_column(index, transform_col.index)
       @close()
 
-    @studentize = ( index ) ->
+    @rescale = ( index ) ->
       transform_col = gen_column(
-        Transformation.STUDENTIZED,
+        Transformation.RESCALE,
         index
       )
       cols = columns()
       cols.push(transform_col)
-      model.tranformData({ 1: Transformation.STUDENTIZED, 2: index })
-      # Need to append new column name and connect new column with existing column
-      model.columns(cols)
-      link_transform_column(index, transform_col.index)
-      @close()
-
-    @normalize = ( index ) ->
-      transform_col = gen_column(
-        Transformation.NORMALIZED,
-        index
-      )
-      cols = columns()
-      cols.push(transform_col)
-      model.tranformData({ 1: Transformation.NORMALIZED, 2: index })
+      model.transformRescale(index)
       # Need to append new column name and connect new column with existing column
       model.columns(cols)
       link_transform_column(index, transform_col.index)

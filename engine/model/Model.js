@@ -12,8 +12,8 @@ const {
   VALIDATION_LABEL,
   LOG,
   K_ORDER_DIFFERENCE,
-  STUDENTIZED,
-  NORMALIZED,
+  STANDARDIZE,
+  RESCALE,
   DELETE,
 }   = require('../labels.json');
 
@@ -76,7 +76,7 @@ class Model extends CacheMixin(Observable) {
     return this;
   }
 
-  transformColumn(label, index) {
+  transformColumn(label, index, k=undefined) {
     if (index === undefined || isNaN(index)) {
       return this;
     }
@@ -94,6 +94,26 @@ class Model extends CacheMixin(Observable) {
             break;
           case (LOG):
             var transform_col = statistics.compute(label, {X: col})
+            // this[_data][data_label] = this[_data][data_label].appendM(transform_col);
+            this.setData(this[_data][data_label].appendM(transform_col), data_label)
+            break;
+          case (K_ORDER_DIFFERENCE):
+            var transform_col = statistics.compute(label, {X: col, k: k})
+            // this[_data][data_label] = this[_data][data_label].appendM(transform_col);
+            this.setData(this[_data][data_label].appendM(transform_col), data_label)
+            break;
+          case (STANDARDIZE):
+            var mean = statistics.compute("mean", {X: col})
+            var std = statistics.compute("std", {X: col, mean: mean})
+            console.log("Mean", mean);
+            console.log("Std", std)
+            var transform_col = statistics.compute(label, {X: col, mean: mean, std: std})
+            // this[_data][data_label] = this[_data][data_label].appendM(transform_col);
+            this.setData(this[_data][data_label].appendM(transform_col), data_label)
+            break;
+          case (RESCALE):
+            var rms = statistics.compute("RMS", {X: col});
+            var transform_col = statistics.compute(label, {X: col, RMS: rms});
             // this[_data][data_label] = this[_data][data_label].appendM(transform_col);
             this.setData(this[_data][data_label].appendM(transform_col), data_label)
             break;

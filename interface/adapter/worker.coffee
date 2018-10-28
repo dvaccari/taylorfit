@@ -1,3 +1,4 @@
+Transformation = require("../components/transform/label.json")
 
 SILENT_MESSAGE_TYPES = [ "progress" ]
 
@@ -70,13 +71,21 @@ module.exports = new class WorkerAdapter extends ME
   removeTerm: ( x ) ->
     @post "removeTerm", x
   
-  tranformData: ( x ) ->
-    # Doing len_x - 1 and not x[1] because sometimes the label index and index value can be the same
-    # Ex: Transform index 1 with log (log is 1 in transform/label.json)
-    # So x is [1] since the object is {1: true}
-    len_x = x.length
-    if len_x > 0
-      @post("tranformData", { label: x[0], index: x[len_x - 1] })
+  transformDelete: ( x ) ->
+    @post("transformData", { label: Transformation.Transform.delete, index: x })
+  transformLog: ( x ) ->
+    @post("transformData", { label: Transformation.Transform.log, index: x })
+  kOrderTransform: ( x ) ->
+    if x
+      @post("transformData", {
+        label: Transformation.Transform.k_order_diff,
+        index: x.index,
+        k: x.k
+      })
+  transformStandardize: ( x ) ->
+    @post("transformData", { label: Transformation.Transform.standardize, index: x })
+  transformRescale: ( x ) ->
+    @post("transformData", { label: Transformation.Transform.rescale, index: x })
 
   requestStatisticsMetadata: ( ) ->
     @post "getStatisticsMetadata"
