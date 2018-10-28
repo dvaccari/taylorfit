@@ -177,26 +177,26 @@ onmessage = function (e) {
         case (Transformation.Transform.log):
           m.transformColumn(LOG, {
             index: data.index,
-            data_labels: data.data_labels
+            data_labels: data.data_labels,
           });
           break;
         case (Transformation.Transform.k_order_diff):
           m.transformColumn(K_ORDER_DIFFERENCE, {
             index: data.index,
             k: data.k,
-            data_labels: data.data_labels
+            data_labels: data.data_labels,
           });
           break;
         case (Transformation.Transform.standardize):
           m.transformColumn(STANDARDIZE, {
             index: data.index,
-            data_labels: data.data_labels
+            data_labels: data.data_labels,
           });
           break;
         case (Transformation.Transform.rescale):
           m.transformColumn(RESCALE, {
             index: data.index,
-            data_labels: data.data_labels
+            data_labels: data.data_labels,
           });
           break;
         default:
