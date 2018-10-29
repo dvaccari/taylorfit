@@ -134,10 +134,17 @@ module.exports = [
     return k_order;
   }),
 
-  Statistic('sensitivity' , ['X', 'y'],
-    ({X, y}) => {
-      // let a = X
-      return X + y;
-      // TODO math here
+  Statistic('sensitivity_part' , ['data', 'exp', 'derivative'],
+    ({data, exp, derivative}) => {
+      if (data == undefined) {
+        return -1;
+      }
+
+      if (derivative) {
+        return data.map((x) => exp * (Math.pow(x, (exp - 1))));
+      }
+      else {
+        return data.map((x) => Math.pow(x, exp));
+      }
     })
 ];

@@ -411,26 +411,72 @@ class Model extends CacheMixin(Observable) {
       return this;
     }
 
-    // Copied from get model
-    let highestLag = this.highestLag()
-      , X = this.X().lo(highestLag)
-      , y = this.y().lo(highestLag);
-    // let stats = statistics(lstsq(X, y));
+    let model = this; // to use within loops below
+    console.log(model);
 
-    // TODO figure out why this is undefined
-    console.log('wz --- ')
-    console.log(statistics.compute('sensitivity', { X: 9000, y: 555 }))
-    console.log(statistics.compute('sensitivity', { X: X, y: y }))
-    console.log('wz --- ')
-
-    // TODO Add a proper column
-    // this[_data]['Sensitivity' + index] = statistics.compute('sensitivity', {X: this[_data][index], y:y})
+    let derivative = 0;
     
-    console.log(index)
-    console.log(this[_data][FIT_LABEL].col(index))
+    console.log("Terms:",this.terms);
+    this.terms.forEach(function (t) {
+      let contains_variable = false; // Check if the variable we are deriving on is in this term
+      let derivative_part = 0;
 
-    // console.log("Sensitivity")
-    // console.log(this[_data]['Sensitivity' + index])
+      // One coefficient per term
+      let term_coef = 2 * t.getStats()['coeff']
+      console.log("value:", term_coef); // it appears that this is exactly half of the term value
+      
+      // t.valueOf() is an Array which contains information for each variable of the term
+      let tValues = t.valueOf();
+      tValues.forEach(function(tValue) {
+          let current_index = tValue[0];
+          let current_exp = tValue[1];
+          console.log('current:', current_index, current_exp);
+          
+          // Get the current column of data
+          let current_col = model[_data][FIT_LABEL].col(current_index)['data'];
+          // console.log('current_col:', current_col);
+
+          if (current_index == index) {
+            // Current variable exists in term, should be used in derivative
+            contains_variable = true;
+
+            // derivative_part += current_exp * [COLUMN DATA]^(current_exp - 1)
+            derivative_part += statistics.compute('sensitivity_part', { data:current_col, exp:current_exp, derivative:true });
+          }
+          else {
+            // derivative_part += [COLUMN DATA]^(current_exp)
+            derivative_part += statistics.compute('sensitivity_part', { data: current_col, exp: current_exp, derivative:false });
+          }
+          console.log('derivative part', derivative_part);
+
+        });
+
+        if (contains_variable) {
+          // Add to overall derivative
+          derivative += term_coef * derivative_part;
+        }
+    
+    });
+    console.log('----');
+    console.log('derivative:', derivative)
+    // Should be an array added to the view
+
+    // let X = this[_data][FIT_LABEL].col(this[_dependent]);
+    // let col_val = this[_data][FIT_LABEL].col(index); // IS SOMETIMES ONE OFF
+    // let col_sensitivity = statistics.compute('sensitivity', {X: X, y: col_val});
+    // will need to pass in term value, exponent, and current column index (if in model)
+    // TODO Add a proper column
+
+    // console.log("wz - index:", index);
+    // console.log("wz - x:", X);
+    // console.log("wz - col_val:", col_val); 
+    // console.log("wz - col_sensitivity:", col_sensitivity);
+
+    // this.setData(this[_data][FIT_LABEL].appendM(col_sensitivity), FIT_LABEL);
+    // this.setData(this[_data][FIT_LABEL].appendM(col_sensitivity), FIT_LABEL);
+    // DO NOT PUT IN DATA
+
+    // TODO the chain back up to update columns
     this.fire('getSensitivity', index);
     return this;
   }
