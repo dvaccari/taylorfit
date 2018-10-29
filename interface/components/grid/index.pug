@@ -104,7 +104,7 @@ table.grid
       // ko foreach: $parent.rows()[index]
       td(data-bind="style:{background: $component.isHidden($index()) ? '#DCDCDC' : '#FFFFFF'}")
         // ko if: $data !== null && $data !== ""
-        span(data-bind="text:$data")
+        span(data-bind="text:$component.round_cell($data)")
         // /ko
         // ko if: $data === null || $data === ""
         span.placeholder No Data
