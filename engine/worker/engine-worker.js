@@ -216,11 +216,7 @@ onmessage = function (e) {
       break;
 
     case 'getSensitivity':
-      // TODO WZ
-      console.log("WZ - worker/engine-worker.js")
-      console.log(data)
       m.getSensitivity(data);
-      // m.getSensitivity(data.label, data.index);
       break;
     
     case 'reset':
