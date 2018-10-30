@@ -158,8 +158,10 @@ class Model extends CacheMixin(Observable) {
     this.termpool.uncache();
     this.fire('setData', { data, label });
     // First time importing data
-    if (curr_data === undefined) {
-      this.fire('propogateTransform', {data_label: label});
+    if (curr_data === undefined &&
+      (label == CROSS_LABEL || label == VALIDATION_LABEL) &&
+      data.shape[1] < this[_data][FIT_LABEL].shape[1]) {
+        this.fire('propogateTransform', {data_label: label});
     }
     return this;
   }
