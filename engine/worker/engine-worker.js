@@ -72,6 +72,15 @@ function initializeModel() {
     });
   });
 
+  m.on('propogateTransform', (data) => {
+    postMessage({
+      type: `propogateTransform`,
+      data: {
+        data_label: data.data_label,
+      },
+    });
+  });
+
   m.on('error', (error) =>
     postMessage({ type: 'error', data: error })
   );
@@ -160,19 +169,35 @@ onmessage = function (e) {
     case 'transformData':
       switch (data.label) {
         case (Transformation.Transform.delete):
-          m.transformColumn(DELETE, data.index);
+          m.transformColumn(DELETE, {
+            index: data.index,
+            data_labels: data.data_labels,
+          });
           break;
         case (Transformation.Transform.log):
-          m.transformColumn(LOG, data.index);
+          m.transformColumn(LOG, {
+            index: data.index,
+            data_labels: data.data_labels,
+          });
           break;
         case (Transformation.Transform.k_order_diff):
-          m.transformColumn(K_ORDER_DIFFERENCE, data.index, data.k);
+          m.transformColumn(K_ORDER_DIFFERENCE, {
+            index: data.index,
+            k: data.k,
+            data_labels: data.data_labels,
+          });
           break;
         case (Transformation.Transform.standardize):
-          m.transformColumn(STANDARDIZE, data.index);
+          m.transformColumn(STANDARDIZE, {
+            index: data.index,
+            data_labels: data.data_labels,
+          });
           break;
         case (Transformation.Transform.rescale):
-          m.transformColumn(RESCALE, data.index);
+          m.transformColumn(RESCALE, {
+            index: data.index,
+            data_labels: data.data_labels,
+          });
           break;
         default:
           break;

@@ -54,7 +54,7 @@ ko.components.register "tf-transform",
       )
       cols = columns()
       cols.push(transform_col)
-      model.transformLog(index)
+      model.transformLog({ index: index })
       # Need to append new column name and connect new column with existing column
       model.columns(cols)
       link_transform_column(index, transform_col.index)
@@ -71,7 +71,7 @@ ko.components.register "tf-transform",
         cols.push(transform_col)
         model.kOrderTransform({
           index: index,
-          k: @k()
+          k: Number(@k())
         })
         # Need to append new column name and connect new column with existing column
         model.columns(cols)
@@ -87,7 +87,7 @@ ko.components.register "tf-transform",
       )
       cols = columns()
       cols.push(transform_col)
-      model.transformStandardize(index)
+      model.transformStandardize({ index: index })
       # Need to append new column name and connect new column with existing column
       model.columns(cols)
       link_transform_column(index, transform_col.index)
@@ -100,7 +100,7 @@ ko.components.register "tf-transform",
       )
       cols = columns()
       cols.push(transform_col)
-      model.transformRescale(index)
+      model.transformRescale({ index: index })
       # Need to append new column name and connect new column with existing column
       model.columns(cols)
       link_transform_column(index, transform_col.index)

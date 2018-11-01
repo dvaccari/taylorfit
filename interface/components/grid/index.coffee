@@ -18,6 +18,7 @@ ko.components.register "tf-grid",
     @hidden = params.hidden
     @start = ko.observable 0
     @end = ko.observable 0
+    @precision = ko.precision
 
     model       = params.model() # now static
     @dependent  = model.dependent
@@ -79,7 +80,7 @@ ko.components.register "tf-grid",
       cols = @cols()
       cols.splice(index, 1)
       model.columns(cols)
-      model.transformDelete(index)
+      model.transformDelete({ index: index })
 
     @showHideColumn = ( shouldHide, index ) ->
       oldCols = @hiddenColumns()
@@ -110,11 +111,22 @@ ko.components.register "tf-grid",
 
       return undefined
 
+    @round_cell = ( data ) ->
+      if !isNaN(data)
+        decimals = @precision()
+        +data.toFixed(decimals)
+      else
+        data
+
     @cols.subscribe ( next ) =>
       if next then adapter.unsubscribeToChanges()
       else adapter.subscribeToChanges()
     
     @rows.subscribe ( next ) =>
+      if next then adapter.unsubscribeToChanges()
+      else adapter.subscribeToChanges()
+
+    @precision.subscribe ( next ) =>
       if next then adapter.unsubscribeToChanges()
       else adapter.subscribeToChanges()
 
