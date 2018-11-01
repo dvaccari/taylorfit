@@ -16,7 +16,7 @@ IGNORE = ( v ) -> undefined
 DATA = ( type ) -> ( v ) ->
   o = ko.observable()
   o.subscribe ( next ) ->
-    return unless next?.length
+    # return unless next?.length
     adapter.setData next, type
   o v
   return o
@@ -204,10 +204,10 @@ module.exports = class Model
     adapter.on("data:transform", ( data ) =>
       setTimeout =>
         @data_fit(data.fit)
-        # if (@data_cross())
-        @data_cross(data.cross)
-        # if (@data_validation())
-        @data_validation(data.validation)
+        if (@data_cross())
+          @data_cross(data.cross)
+        if (@data_validation())
+          @data_validation(data.validation)
         @transformLog(undefined)
         @transformDelete(undefined)
         @kOrderTransform(undefined)
