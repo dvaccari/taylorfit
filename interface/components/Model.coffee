@@ -236,28 +236,29 @@ module.exports = class Model
           .forEach((transform_col) =>
             index = Number(transform_col[0])
             col = columns[transform_col[1]]
-            transform_label = col.label
-            if transform_label == Transformation.LOG
-              @transformLog({
-                index: index,
-                labels: data_labels
-              })
-            else if transform_label == Transformation.K_ORDER_DIFFERENCE
-              @kOrderTransform({
-                index: index,
-                labels: data_labels,
-                k: col.k
-              })
-            else if transform_label == Transformation.STANDARDIZE
-              @transformStandardize({
-                index: index,
-                labels: data_labels,
-              })
-            else if transform_label == Transformation.RESCALE
-              @transformRescale({
-                index: index,
-                labels: data_labels,
-              })
+            if transform_col[0] != undefined && transform_col[1] != undefined
+              transform_label = col.label
+              if transform_label == Transformation.LOG
+                @transformLog({
+                  index: index,
+                  labels: data_labels
+                })
+              else if transform_label == Transformation.K_ORDER_DIFFERENCE
+                @kOrderTransform({
+                  index: index,
+                  labels: data_labels,
+                  k: col.k
+                })
+              else if transform_label == Transformation.STANDARDIZE
+                @transformStandardize({
+                  index: index,
+                  labels: data_labels,
+                })
+              else if transform_label == Transformation.RESCALE
+                @transformRescale({
+                  index: index,
+                  labels: data_labels,
+                })
           )
       , 100
     )
