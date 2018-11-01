@@ -130,23 +130,25 @@ class Model extends CacheMixin(Observable) {
   }
 
   setData(data, label=FIT_LABEL) {
+    data = (data == null) ? undefined : data;
     label = (label == null) ? FIT_LABEL : label;
 
-    if (!(data instanceof Matrix)) {
+    if (data && !(data instanceof Matrix)) {
       data = new Matrix(data);
     }
-
-    if (label !== FIT_LABEL &&
-        data.shape[1] !== this[_data][FIT_LABEL].shape[1]) {
-      // throw new Error(
-      //   `Data for '${label}' is not the same shape as '${FIT_LABEL}'`
-      // );
-    } else {
-      this[_use_cols] = utils.range(0, data.shape[1]);
+    if (data) {
+      if (label !== FIT_LABEL &&
+          data.shape[1] !== this[_data][FIT_LABEL].shape[1]) {
+        // throw new Error(
+        //   `Data for '${label}' is not the same shape as '${FIT_LABEL}'`
+        // );
+      } else {
+        this[_use_cols] = utils.range(0, data.shape[1]);
+      }
     }
     var curr_data = this[_data][label];
     this[_data][label] = data;
-    this[_subsets][label] = utils.range(0, data.shape[0]);
+    this[_subsets][label] = data ? utils.range(0, data.shape[0]) : undefined;
 
     this[_terms] = this[_terms]
       .map(term => term.isIntercept ? this.termpool.get(INTERCEPT) : term);
@@ -160,6 +162,7 @@ class Model extends CacheMixin(Observable) {
     // First time importing data
     if (curr_data === undefined &&
       (label == CROSS_LABEL || label == VALIDATION_LABEL) &&
+      data &&
       data.shape[1] < this[_data][FIT_LABEL].shape[1]) {
         this.fire('propogateTransform', {data_label: label});
     }
@@ -403,7 +406,8 @@ class Model extends CacheMixin(Observable) {
   }
 
   get labels() {
-    return Object.keys(this[_subsets]);
+    return Object.keys(this[_subsets])
+      .filter((data_label) => this[_subsets][data_label]);
   }
 
   get terms() {
