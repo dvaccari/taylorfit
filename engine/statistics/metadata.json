@@ -46,5 +46,13 @@
 
   { "id": "stdev", "show": false },
   { "id": "mean", "show": false },
-  { "id": "weights", "show": false }
+  { "id": "weights", "show": false },
+
+  { "id": "log", "show": false },
+  { "id": "mean", "show": false },
+  { "id": "std", "show": false },
+  { "id": "standardize", "show": false },
+  { "id": "RMS", "show": false },
+  { "id": "rescale", "show": false },
+  { "id": "k_order_difference", "show": false }
 ]

@@ -1,3 +1,8 @@
+Transformation = require("../components/transform/label.json")
+
+FIT_LABEL = require('../../engine/labels.json').FIT_LABEL
+CROSS_LABEL = require('../../engine/labels.json').CROSS_LABEL
+VALIDATION_LABEL = require('../../engine/labels.json').VALIDATION_LABEL
 
 SILENT_MESSAGE_TYPES = [ "progress" ]
 
@@ -49,9 +54,10 @@ module.exports = new class WorkerAdapter extends ME
 
   post: ( target, message ) ->
     console.debug "Worker/req [#{target}]", message
-    @worker.postMessage
-      type: target
+    @worker.postMessage({
+      type: target,
       data: message
+    })
 
   setData: ( x, label ) ->
     @post "setData", { data: x, label }
@@ -68,6 +74,43 @@ module.exports = new class WorkerAdapter extends ME
     @post "addTerm", x
   removeTerm: ( x ) ->
     @post "removeTerm", x
+  
+  transformDelete: ( x ) ->
+    if x
+      @post("transformData", {
+        label: Transformation.Transform.delete,
+        index: x.index,
+        data_labels: x.labels || [FIT_LABEL, CROSS_LABEL, VALIDATION_LABEL]
+      })
+  transformLog: ( x ) ->
+    if x
+      @post("transformData", {
+        label: Transformation.Transform.log,
+        index: x.index,
+        data_labels: x.labels || [FIT_LABEL, CROSS_LABEL, VALIDATION_LABEL]
+      })
+  kOrderTransform: ( x ) ->
+    if x
+      @post("transformData", {
+        label: Transformation.Transform.k_order_diff,
+        index: x.index,
+        k: x.k,
+        data_labels: x.labels || [FIT_LABEL, CROSS_LABEL, VALIDATION_LABEL]
+      })
+  transformStandardize: ( x ) ->
+    if x
+      @post("transformData", {
+        label: Transformation.Transform.standardize,
+        index: x.index,
+        data_labels: x.labels || [FIT_LABEL, CROSS_LABEL, VALIDATION_LABEL]
+      })
+  transformRescale: ( x ) ->
+    if x
+      @post("transformData", {
+        label: Transformation.Transform.rescale,
+        index: x.index,
+        data_labels: x.labels || [FIT_LABEL, CROSS_LABEL, VALIDATION_LABEL]
+      })
 
   requestStatisticsMetadata: ( ) ->
     @post "getStatisticsMetadata"

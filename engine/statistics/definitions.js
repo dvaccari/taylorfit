@@ -83,5 +83,54 @@ module.exports = [
     }),
 
   Statistic('pF', ['F', 'np', 'nd'],
-    ({F, np, nd}) => Math.max(dist.pf(Math.abs(F), np, nd - np) - 1e-15, 0))
+    ({F, np, nd}) => Math.max(dist.pf(Math.abs(F), np, nd - np) - 1e-15, 0)),
+  
+  Statistic('log', ["X"], ({X}) => X.log()),
+
+  Statistic('mean', ["X"], ({X}) => {
+    return X.data.reduce((total, c) => total += c, 0) / X.data.length
+  }),
+
+  Statistic('std', ["X", "mean"], ({X, mean}) => {
+    let diff = X.data.map((d) => Math.pow(d - mean, 2))
+    let diff_total = diff.reduce((total, c) => total += c, 0)
+    return Math.sqrt(diff_total / X.data.length)
+  }),
+
+  Statistic('standardize', ["X", "mean", "std"], ({X, mean, std}) => {
+    let standardize = X.clone();
+    standardize.data.set(standardize.data.map((d) => (d - mean) / std));
+    return standardize;
+  }),
+
+  Statistic('RMS', ["X"], ({X}) => {
+    let rms = X.clone();
+    let SS = rms.data
+      .map(r => Math.pow(r, 2))
+      .reduce((total, xi) => total += xi, 0);
+    return Math.sqrt(SS/ rms.data.length);
+  }),
+
+  Statistic('rescale', ["X", "RMS"], ({X, RMS}) => {
+    let rescale = X.clone();
+    rescale.data.set(rescale.data.map((d) => d / RMS));
+    return rescale;
+  }),
+
+  Statistic('k_order_difference', ["X", "k"], ({X, k}) => {
+    let k_order_func = (data, k) => {
+      if (k == 1) {
+        return data.map((d, idx) => idx < k ? null : d - data[idx - 1]);
+      } else {
+        k_1_order = k_order_func(data, k - 1);
+        return data.map((_, idx) => idx < k ? null : k_1_order[idx] - k_1_order[idx - 1]);
+      }
+    };
+    if (!k || isNaN(k)) {
+      return X;
+    }
+    let k_order = X.clone();
+    k_order.data.set(k_order_func(k_order.data, k));
+    return k_order;
+  })
 ];

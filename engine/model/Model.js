@@ -6,7 +6,16 @@ const statistics      = require('../statistics');
 const utils           = require('../utils');
 const perf            = require('../perf');
 const Observable      = require('../observable');
-const { FIT_LABEL }   = require('../labels.json');
+const {
+  FIT_LABEL,
+  CROSS_LABEL,
+  VALIDATION_LABEL,
+  LOG,
+  K_ORDER_DIFFERENCE,
+  STANDARDIZE,
+  RESCALE,
+  DELETE,
+}   = require('../labels.json');
 
 const CandidateWorker = require('./CandidateWorker');
 const TermPool        = require('./TermPool');
@@ -67,26 +76,82 @@ class Model extends CacheMixin(Observable) {
     return this;
   }
 
+  transformColumn(label, data) {
+    var index = data.index;
+    if (index === undefined || isNaN(index)) {
+      return this;
+    }
+    var data_labels = data.data_labels || [FIT_LABEL, CROSS_LABEL, VALIDATION_LABEL];
+    // Need to do this for all dataset and not just "fit" data
+    // If clear cross and validation data in UI, doesn't clear respective data in Model, so will throw error
+    data_labels.map((data_label) => {
+      if (this[_data][data_label]) {
+        var col = this[_data][data_label].col(index)
+        switch (label) {
+          case (DELETE):
+            this.setData(
+              this[_data][data_label].delColumn(index),
+              data_label
+            );
+            break;
+          case (LOG):
+            var transform_col = statistics.compute(label, {X: col})
+            // this[_data][data_label] = this[_data][data_label].appendM(transform_col);
+            this.setData(this[_data][data_label].appendM(transform_col), data_label)
+            break;
+          case (K_ORDER_DIFFERENCE):
+            var k = data.k;
+            var transform_col = statistics.compute(label, {X: col, k: k})
+            // this[_data][data_label] = this[_data][data_label].appendM(transform_col);
+            this.setData(this[_data][data_label].appendM(transform_col), data_label)
+            break;
+          case (STANDARDIZE):
+            var mean = statistics.compute("mean", {X: col})
+            var std = statistics.compute("std", {X: col, mean: mean})
+            console.log("Mean", mean);
+            console.log("Std", std)
+            var transform_col = statistics.compute(label, {X: col, mean: mean, std: std})
+            // this[_data][data_label] = this[_data][data_label].appendM(transform_col);
+            this.setData(this[_data][data_label].appendM(transform_col), data_label)
+            break;
+          case (RESCALE):
+            var rms = statistics.compute("RMS", {X: col});
+            var transform_col = statistics.compute(label, {X: col, RMS: rms});
+            // this[_data][data_label] = this[_data][data_label].appendM(transform_col);
+            this.setData(this[_data][data_label].appendM(transform_col), data_label)
+            break;
+          default:
+            break;
+        }
+      }
+    });
+    this.fire('dataTransform', {label, index});
+    return this;
+  }
+
   setData(data, label=FIT_LABEL) {
+    data = (data == null) ? undefined : data;
     label = (label == null) ? FIT_LABEL : label;
 
-    if (!(data instanceof Matrix)) {
+    if (data && !(data instanceof Matrix)) {
       data = new Matrix(data);
     }
-
-    if (label !== FIT_LABEL &&
-        data.shape[1] !== this[_data][FIT_LABEL].shape[1]) {
-      throw new Error(
-        `Data for '${label}' is not the same shape as '${FIT_LABEL}'`
-      );
-    } else {
-      this[_use_cols] = utils.range(0, data.shape[1]);
+    if (data) {
+      if (label !== FIT_LABEL &&
+          data.shape[1] !== this[_data][FIT_LABEL].shape[1]) {
+        // throw new Error(
+        //   `Data for '${label}' is not the same shape as '${FIT_LABEL}'`
+        // );
+      } else {
+        this[_use_cols] = utils.range(0, data.shape[1]);
+      }
     }
-
+    var curr_data = this[_data][label];
     this[_data][label] = data;
-    this[_subsets][label] = utils.range(0, data.shape[0]);
+    this[_subsets][label] = data ? utils.range(0, data.shape[0]) : undefined;
 
-    this[_terms] = this[_terms].map(term => term.isIntercept ? this.termpool.get(INTERCEPT) : term);
+    this[_terms] = this[_terms]
+      .map(term => term.isIntercept ? this.termpool.get(INTERCEPT) : term);
     this.uncache('X');
     this.uncache('y');
     this.uncache('data');
@@ -94,6 +159,13 @@ class Model extends CacheMixin(Observable) {
 
     this.termpool.uncache();
     this.fire('setData', { data, label });
+    // First time importing data
+    if (curr_data === undefined &&
+      (label == CROSS_LABEL || label == VALIDATION_LABEL) &&
+      data &&
+      data.shape[1] < this[_data][FIT_LABEL].shape[1]) {
+        this.fire('propogateTransform', {data_label: label});
+    }
     return this;
   }
 
@@ -155,6 +227,10 @@ class Model extends CacheMixin(Observable) {
       });
   }
 
+  getLabelData(label) {
+    return this[_data][label];
+  }
+
   getModel(testLabel) {
     let highestLag = this.highestLag()
       , X = this.X().lo(highestLag)
@@ -184,8 +260,13 @@ class Model extends CacheMixin(Observable) {
 
     let residuals = stats.y.sub(stats.yHat);
     residuals = residuals.data;
-
-    return { highestLag: this.highestLag(), terms, stats, predicted, residuals };
+    return {
+      highestLag: this.highestLag(),
+      terms,
+      stats,
+      predicted,
+      residuals
+    };
   }
 
   getCandidatesSync() {
@@ -325,7 +406,8 @@ class Model extends CacheMixin(Observable) {
   }
 
   get labels() {
-    return Object.keys(this[_subsets]);
+    return Object.keys(this[_subsets])
+      .filter((data_label) => this[_subsets][data_label]);
   }
 
   get terms() {

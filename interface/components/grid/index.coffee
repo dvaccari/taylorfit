@@ -1,5 +1,6 @@
 
 require "./index.styl"
+Transformation = require "../transform/label.json"
 
 ko.components.register "tf-grid",
   template: do require "./index.pug"
@@ -17,10 +18,12 @@ ko.components.register "tf-grid",
     @hidden = params.hidden
     @start = ko.observable 0
     @end = ko.observable 0
+    @precision = ko.precision
 
     model       = params.model() # now static
     @dependent  = model.dependent
     @hiddenColumns = model.hiddenColumns
+    @transform_columns = model.transform_columns
     @cols       = model.columns
     @name       = model["name_#{@table}"]
     @rows       = model["data_#{@table}"]
@@ -44,23 +47,48 @@ ko.components.register "tf-grid",
       model.show_xyplot([index, "Index"])
       model.data_plotted(@table)
     
+    # Is hidden if ignored or has transformed column
     @isHidden = ( index ) ->
-      idx = index + 1
-      return @hiddenColumns().hasOwnProperty(idx) && @hiddenColumns()[idx]
-      
+      return (@hiddenColumns().hasOwnProperty(index) &&
+        @hiddenColumns()[index]) ||
+        @transform_columns()[index]
+    
+    @canDeleteTransformColumn = ( index ) ->
+      transformColumns = Object.values(@transform_columns())
+      # The index must be a value in transform_columns. It is a transformation of the key
+      # And the index must not be a key in transform_columns where value is not undefined.
+      # If the value for index key is not undefined, means it has another transform column is dependent on it
+      return transformColumns.includes(index) &&
+        !@transform_columns()[index] &&
+        @result() &&
+        !@result().terms.find((term) ->
+          term.term.find((t) -> t.index == index)
+        )
+
+    @deleteTransformColumn = ( index ) ->
+      curr_transform_cols = @transform_columns()
+      values = Object.keys(curr_transform_cols)
+      values.forEach((v) ->
+        if curr_transform_cols[v] == index
+          curr_transform_cols[v] = undefined
+        else if curr_transform_cols[v] > index
+          curr_transform_cols[v] = curr_transform_cols[v] - 1
+      )
+      curr_transform_cols[index] = undefined
+      model.transform_columns(curr_transform_cols)
+      # Delete index from columns and data
+      cols = @cols()
+      cols.splice(index, 1)
+      model.columns(cols)
+      model.transformDelete({ index: index })
+
     @showHideColumn = ( shouldHide, index ) ->
       oldCols = @hiddenColumns()
       oldCols[index] = shouldHide
       model.hiddenColumns(oldCols)
 
-    @isHiddenColumn = ( index ) -> 
-      cols = @hiddenColumns()
-      return cols[index]
-
-    # @exponent_col = ( index ) -> 
-    #   old_cols = @cols()
-    #   old_cols.push {name: "Potato", index: 35}
-    #   console.log(@cols())
+    @showTransformColumn = ( index ) ->
+      model.show_transform(index)
 
     @save = ( ) =>
       cols = @cols(); rows = @rows(); extra = @extra()
@@ -82,5 +110,24 @@ ko.components.register "tf-grid",
       document.body.removeChild link
 
       return undefined
+
+    @round_cell = ( data ) ->
+      if !isNaN(data)
+        decimals = @precision()
+        +data.toFixed(decimals)
+      else
+        data
+
+    @cols.subscribe ( next ) =>
+      if next then adapter.unsubscribeToChanges()
+      else adapter.subscribeToChanges()
+    
+    @rows.subscribe ( next ) =>
+      if next then adapter.unsubscribeToChanges()
+      else adapter.subscribeToChanges()
+
+    @precision.subscribe ( next ) =>
+      if next then adapter.unsubscribeToChanges()
+      else adapter.subscribeToChanges()
 
     return this

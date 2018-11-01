@@ -19,7 +19,7 @@ table.grid
       th
         //- empty for row numbers
       // ko foreach: cols
-      th(data-bind="style:{background: $component.isHiddenColumn($index() + 1) ? '#DCDCDC' : '#FFFFFF'},css:{dependent:$index() === $parent.dependent()}")
+      th(data-bind="style:{background: $component.isHidden($index()) ? '#DCDCDC' : '#FFFFFF'},css:{dependent:$index() === $parent.dependent()}")
         // ko if:name
         span(data-bind="text:name")
         // /ko
@@ -38,15 +38,21 @@ table.grid
           span.mark(data-bind="click:function(){xyplot($index() + 1)}")
             | XY Plot
           // ko if: table == "fit" && $index() !== dependent() && !isHidden($index())
-          span.mark(data-bind="click:function(){showHideColumn(true, $index() + 1)}")
+          span.mark(data-bind="click:function(){showHideColumn(true, $index())}")
             | Ignore Column
           // /ko
           // ko if: table == "fit" && $index() !== dependent() && isHidden($index())
-          span.mark(data-bind="click:function(){showHideColumn(false, $index() + 1)}")
+          span.mark(data-bind="click:function(){showHideColumn(false, $index())}")
             | Show Column
           // /ko
-          //- span.mark(data-bind="click:function(){logarithm_col($index())}")
-          //-   | Logarithm
+          // ko if: table == "fit" && $index() !== dependent() && !isHidden($index())
+          span.mark(data-bind="click:function(){showTransformColumn($index())}")
+            | Transform Column
+          // /ko
+          // ko if: table == "fit" && $index() !== dependent() && canDeleteTransformColumn($index())
+          span.mark(data-bind="click:function(){deleteTransformColumn($index())}")
+            | Delete Transform Column
+          // /ko
       // /ko
     
       // ko if: extra
@@ -96,9 +102,9 @@ table.grid
         //- // /ko
       
       // ko foreach: $parent.rows()[index]
-      td(data-bind="style:{background: $component.isHiddenColumn($index() + 1) ? '#DCDCDC' : '#FFFFFF'}")
+      td(data-bind="style:{background: $component.isHidden($index()) ? '#DCDCDC' : '#FFFFFF'}")
         // ko if: $data !== null && $data !== ""
-        span(data-bind="text:$data")
+        span(data-bind="text:$component.round_cell($data)")
         // /ko
         // ko if: $data === null || $data === ""
         span.placeholder No Data

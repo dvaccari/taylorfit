@@ -1,5 +1,9 @@
 utils = require('../../engine/utils');
 
+Transformation = require "./transform/label.json"
+CROSS_LABEL = require("../../engine/labels.json").CROSS_LABEL
+VALIDATION_LABEL = require("../../engine/labels.json").VALIDATION_LABEL
+
 WRAP_O = ( v ) -> ko.observable v
 WRAP_A = ( v ) -> ko.observableArray v
 UNWRAP = ( v ) -> ko.unwrap v
@@ -12,7 +16,7 @@ IGNORE = ( v ) -> undefined
 DATA = ( type ) -> ( v ) ->
   o = ko.observable()
   o.subscribe ( next ) ->
-    return unless next?.length
+    # return unless next?.length
     adapter.setData next, type
   o v
   return o
@@ -26,6 +30,8 @@ SEND = ( name, converter ) -> ( v ) ->
 object2array = ( exps ) ->
   Number key for key, value of ko.unwrap exps \
   when ko.unwrap value
+
+object2object = ( exps ) -> exps
 
 CTRL =
   id:
@@ -50,7 +56,10 @@ CTRL =
     [ undefined    , WRAP_O                           , IGNORE ]
   show_xyplot:
     [ undefined    , WRAP_O                           , IGNORE ]
+  show_transform:
+    [ undefined    , WRAP_O                           , IGNORE ]
 
+  # Loaded from tf-loader
   columns:
     [ [ ]         , WRAP_A                            , UNWRAP ]
   data_fit:
@@ -78,7 +87,7 @@ CTRL =
   dependent:
     [ 0           , SEND("setDependent", Number)      , UNWRAP ]
   hiddenColumns:
-    [ {}            , WRAP_O                             , UNWRAP ]
+    [ {}            , WRAP_O                          , UNWRAP ]
   multiplicands:
     [ 1           , SEND("setMultiplicands", Number)  , UNWRAP ]
 
@@ -88,6 +97,20 @@ CTRL =
     [ false       , WRAP_O                            , UNWRAP ]
   lags:
     [ 0: true     , SEND("setLags"     , object2array), UNWRAP_O ]
+
+  # key: original col index, value: transform col index
+  transform_columns:
+    [ {}          , WRAP_O                            , UNWRAP_O ]
+  transformDelete:
+    [ undefined   , SEND("transformDelete", object2object)   , UNWRAP_O ]
+  transformLog:
+    [ undefined   , SEND("transformLog", object2object), UNWRAP_O ]
+  kOrderTransform:
+    [ undefined   , SEND("kOrderTransform", object2object), UNWRAP_O ]
+  transformStandardize:
+    [ undefined   , SEND("transformStandardize", object2object), UNWRAP_O ]
+  transformRescale:
+    [ undefined   , SEND("transformRescale", object2object)  , UNWRAP_O ]
 
 module.exports = class Model
 
@@ -144,8 +167,11 @@ module.exports = class Model
             index: term[0]
             exp: term[1]
             lag: term[2]
+        # This subscribes to when user picks candidate term
         result.selected.subscribe ( ) ->
           adapter["#{fn}Term"] t.term
+          # For some reason doesn't listen to change, so need add subscription for model change
+          adapter.subscribeToChanges()
         return result
 
     adapter.on "candidates", ( candidates ) =>
@@ -174,6 +200,67 @@ module.exports = class Model
           stats: model.stats
           predicted: model.predicted
       , 100
+    
+    adapter.on("data:transform", ( data ) =>
+      setTimeout =>
+        @data_fit(data.fit)
+        if (@data_cross())
+          @data_cross(data.cross)
+        if (@data_validation())
+          @data_validation(data.validation)
+        @transformLog(undefined)
+        @transformDelete(undefined)
+        @kOrderTransform(undefined)
+        @transformStandardize(undefined)
+        @transformRescale(undefined)
+        adapter.subscribeToChanges()
+      , 100
+    )
+
+    # Need to do transformation here because need to wait for model to have updated data and fire back to UI
+    # that setting data completed
+    # Once completed, can get all the transformation done already on fit data and do on the cross/validation data
+    adapter.on('propogateTransform', ( data ) =>
+      setTimeout =>
+        label = data.data_label
+        data_labels = undefined
+        if label == "cross"
+          data_labels = [CROSS_LABEL]
+        else if label == "validation"
+          data_labels = [VALIDATION_LABEL]
+        transformColumns = @transform_columns()
+        columns = @columns()
+        # Iterate through each transform column from left to right
+        Object.entries(transformColumns)
+          .sort((curr, next) => curr[1] > next[1])
+          .forEach((transform_col) =>
+            index = Number(transform_col[0])
+            col = columns[transform_col[1]]
+            transform_label = col.label
+            if transform_label == Transformation.LOG
+              @transformLog({
+                index: index,
+                labels: data_labels
+              })
+            else if transform_label == Transformation.K_ORDER_DIFFERENCE
+              @kOrderTransform({
+                index: index,
+                labels: data_labels,
+                k: col.k
+              })
+            else if transform_label == Transformation.STANDARDIZE
+              @transformStandardize({
+                index: index,
+                labels: data_labels,
+              })
+            else if transform_label == Transformation.RESCALE
+              @transformRescale({
+                index: index,
+                labels: data_labels,
+              })
+          )
+      , 100
+    )
 
     adapter.on "progress.start", ( { curr, total } ) =>
       @progress 0.01
