@@ -204,9 +204,9 @@ module.exports = class Model
     adapter.on("data:transform", ( data ) =>
       setTimeout =>
         @data_fit(data.fit)
-        if (@data_cross())
+        if (@data_cross() && data.cross)
           @data_cross(data.cross)
-        if (@data_validation())
+        if (@data_validation() && data.validation)
           @data_validation(data.validation)
         @transformLog(undefined)
         @transformDelete(undefined)
