@@ -234,9 +234,9 @@ module.exports = class Model
         Object.entries(transformColumns)
           .sort((curr, next) => curr[1] > next[1])
           .forEach((transform_col) =>
-            index = Number(transform_col[0])
-            col = columns[transform_col[1]]
             if transform_col[0] != undefined && transform_col[1] != undefined
+              index = Number(transform_col[0])
+              col = columns[transform_col[1]]
               transform_label = col.label
               if transform_label == Transformation.LOG
                 @transformLog({
