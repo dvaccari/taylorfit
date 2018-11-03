@@ -204,9 +204,9 @@ module.exports = class Model
     adapter.on("data:transform", ( data ) =>
       setTimeout =>
         @data_fit(data.fit)
-        if (@data_cross())
+        if (@data_cross() && data.cross)
           @data_cross(data.cross)
-        if (@data_validation())
+        if (@data_validation() && data.validation)
           @data_validation(data.validation)
         @transformLog(undefined)
         @transformDelete(undefined)
@@ -234,30 +234,31 @@ module.exports = class Model
         Object.entries(transformColumns)
           .sort((curr, next) => curr[1] > next[1])
           .forEach((transform_col) =>
-            index = Number(transform_col[0])
-            col = columns[transform_col[1]]
-            transform_label = col.label
-            if transform_label == Transformation.LOG
-              @transformLog({
-                index: index,
-                labels: data_labels
-              })
-            else if transform_label == Transformation.K_ORDER_DIFFERENCE
-              @kOrderTransform({
-                index: index,
-                labels: data_labels,
-                k: col.k
-              })
-            else if transform_label == Transformation.STANDARDIZE
-              @transformStandardize({
-                index: index,
-                labels: data_labels,
-              })
-            else if transform_label == Transformation.RESCALE
-              @transformRescale({
-                index: index,
-                labels: data_labels,
-              })
+            if transform_col[0] != undefined && transform_col[1] != undefined
+              index = Number(transform_col[0])
+              col = columns[transform_col[1]]
+              transform_label = col.label
+              if transform_label == Transformation.LOG
+                @transformLog({
+                  index: index,
+                  labels: data_labels
+                })
+              else if transform_label == Transformation.K_ORDER_DIFFERENCE
+                @kOrderTransform({
+                  index: index,
+                  labels: data_labels,
+                  k: col.k
+                })
+              else if transform_label == Transformation.STANDARDIZE
+                @transformStandardize({
+                  index: index,
+                  labels: data_labels,
+                })
+              else if transform_label == Transformation.RESCALE
+                @transformRescale({
+                  index: index,
+                  labels: data_labels,
+                })
           )
       , 100
     )
