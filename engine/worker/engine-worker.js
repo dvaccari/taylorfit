@@ -84,17 +84,16 @@ function initializeModel() {
   m.on('error', (error) =>
     postMessage({ type: 'error', data: error })
   );
-  m.on('getSensitivity', () => {
+  
+  m.on('getSensitivity', (data) => {
     // TODO WZ
     postMessage({
-      type: 'progress',
+      type: 'model:getSensitivity',
       data: {
-
+        index: data
       }
     });
   });
-
-  m.on('error', (error) => postMessage({ type: 'error', data: error }));
 
   return m;
 }

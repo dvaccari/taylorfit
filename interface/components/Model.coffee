@@ -266,6 +266,10 @@ module.exports = class Model
     )
 
     # TODO Add sensitivity here 
+    adapter.on "model:getSensitivity", (model) =>
+      setTimeout =>
+        console.log("model.coffee - wz");
+      , 100
 
     adapter.on "progress.start", ( { curr, total } ) =>
       @progress 0.01

@@ -260,6 +260,7 @@ class Model extends CacheMixin(Observable) {
 
     let residuals = stats.y.sub(stats.yHat);
     residuals = residuals.data;
+    // TODO - wz can we add sensitivity here?
     return {
       highestLag: this.highestLag(),
       terms,
@@ -412,11 +413,13 @@ class Model extends CacheMixin(Observable) {
     }
 
     let model = this; // to use within loops below
-    let derivative = new Array(model[_data][FIT_LABEL].shape[0]).fill(0);
+    let num_rows = model[_data][FIT_LABEL].shape[0];
+    // TODO IS THERE A BETTER WAY TO MAKE A MATRIX OF 0's?
+    let derivative = new Matrix(num_rows, 1, new Array(num_rows).fill(0))
     
     this.terms.forEach(function (t) {
       let contains_variable = false; // Check if the variable we are deriving on is in this term
-      let derivative_part = new Array(model[_data][FIT_LABEL].shape[0]).fill(0);
+      let derivative_part = new Matrix(num_rows, 1, new Array(num_rows).fill(0))
 
       // One coefficient per term
       let term_coef = 2 * t.getStats()['coeff']
@@ -438,24 +441,20 @@ class Model extends CacheMixin(Observable) {
             // Current variable exists in term, should be used in derivative
             contains_variable = true;
 
-            // derivative_part += current_exp * [COLUMN DATA]^(current_exp - 1)
+            // current_exp * [COLUMN DATA]^(current_exp - 1)
             part = statistics.compute('sensitivity_part', { data:current_col, exp:current_exp, derivative:true });
           }
           else {
-            // derivative_part += [COLUMN DATA]^(current_exp)
+            // [COLUMN DATA]^(current_exp)
             part = statistics.compute('sensitivity_part', { data: current_col, exp: current_exp, derivative:false });
           }
-          for (let i = 0; i < derivative_part.length; i++) {
-            derivative_part[i] += part[i];
-          }
+          derivative_part = derivative_part.add(new Matrix(num_rows, 1, part));
+
         });
 
         if (contains_variable) {
           // Add to overall derivative
-          // derivative += derivative_part.map((x) => term_coef * x);
-          for (let i = 0; i < derivative.length; i++) {
-            derivative[i] += (term_coef * derivative_part[i]);
-          }
+          derivative = derivative.add(derivative_part.dotMultiply(term_coef));
         }
     
     });
@@ -464,7 +463,7 @@ class Model extends CacheMixin(Observable) {
     console.log('derivative:', derivative)
 
     // Should be an array added to the view DO NOT PUT IN DATA
-    // this.setData(this[_data][FIT_LABEL].appendM(col_sensitivity), FIT_LABEL);
+    this.setData(this[_data][FIT_LABEL].appendM(derivative), FIT_LABEL);
 
     // TODO the chain back up to update columns
     this.fire('getSensitivity', index);
