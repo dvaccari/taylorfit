@@ -118,6 +118,9 @@ ko.components.register "tf-grid",
       else
         data
 
+    @partitionData = ( index ) ->
+      
+
     @cols.subscribe ( next ) =>
       if next then adapter.unsubscribeToChanges()
       else adapter.subscribeToChanges()
