@@ -89,21 +89,25 @@ table.grid
       // /ko
 
       // ko foreach: statistics_columns
-      //- TODO WZ - if stas columns exist then show here
-      //- TODO $index will have issues, since it by default looks at the data
       th
         span Sensitivity
-        //- TODO WZ associate this with a column name
-        span(data-bind="text:$data")
+        // ko if:name
+        span(data-bind="text:name")
+        // /ko
+        // ko ifnot:name
+        span.placeholder
+          span X
+          sub(data-bind="text:index")
+        // /ko
 
         tf-dropdown(params="shallow:1,align:'right'")
+          //- WZ TODO $index will have issues, since it by default looks at the data
           span.mark(data-bind="click:function(){histogram($index())}")
             | Histogram
-          span.mark(data-bind="click:function(){autocorrelation($index())}")
-            | Autocorrelation
           span.mark(data-bind="click:function(){xyplot($index() + 1)}")
             | XY Plot
-
+          span.mark(data-bind="click:function(){deletesensitivity($index())}")
+            | Delete Statistic
       // /ko
 
   tbody

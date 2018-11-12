@@ -86,9 +86,15 @@ function initializeModel() {
   );
   
   m.on('getSensitivity', (data) => {
-    // TODO WZ
     postMessage({
       type: 'model:getSensitivity',
+      data: data
+    });
+  });
+  
+  m.on('deleteSensitivity', (data) => {
+    postMessage({
+      type: 'model:deleteSensitivity',
       data: data
     });
   });
@@ -103,7 +109,7 @@ let subscribeToChanges = (m, updateNow = true) => {
 
   subscriptionIds = m.on([
     'setData', 'setExponents', 'setMultiplicands', 'setDependent',
-    'setLags', 'addTerm', 'removeTerm', 'clear', 'subset', 'setColumns', 'getSensitivity'
+    'setLags', 'addTerm', 'removeTerm', 'clear', 'subset', 'setColumns', 'getSensitivity', 'deleteSensitivity'
   ], () => {
     m.getCandidates()
      .then((cands) => postMessage({ type: 'candidates', data: cands }));
@@ -214,6 +220,10 @@ onmessage = function (e) {
 
     case 'getSensitivity':
       m.getSensitivity(data);
+      break;
+    
+    case 'deleteSensitivity':
+      m.deleteSensitivity(data);
       break;
     
     case 'reset':

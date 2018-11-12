@@ -60,6 +60,8 @@ CTRL =
     [ undefined    , WRAP_O                           , IGNORE ]
   show_sensitivity:
     [ undefined   , SEND("getSensitivity", Number)    , IGNORE ]
+  delete_sensitivity:
+    [ undefined   , SEND("deleteSensitivity", Number) , IGNORE ]
 
   # Loaded from tf-loader
   columns:
@@ -270,29 +272,39 @@ module.exports = class Model
       , 100
     )
 
-    # TODO Add sensitivity here 
     adapter.on "model:getSensitivity", (data) =>
       setTimeout =>
-        # WZ TODO DELETING
-
+        columns = ko.unwrap @columns
         sensitivityColumns = ko.unwrap @sensitivityColumns
         sensitivityData = ko.unwrap @sensitivityData
 
         # Check if column already exists
         colExists = false
         sensitivityColumns.forEach((col) =>
-          console.log("wz", col, data.column)
-          if col == data.column
+          if col.index == data.index
             colExists = true
         )
 
         if colExists == false
-          sensitivityColumns.push(data.column)
+          column = columns[data.index]
+          sensitivityColumns.push(column)
           sensitivityData.push(data.sensitivity)
 
           @sensitivityColumns(sensitivityColumns)
           @sensitivityData(sensitivityData)
-              
+      , 100
+      adapter.subscribeToChanges()
+    
+    adapter.on "model:deleteSensitivity", (data) =>
+      setTimeout =>        
+        sensitivityColumns = ko.unwrap @sensitivityColumns
+        sensitivityData = ko.unwrap @sensitivityData
+
+        sensitivityColumns.splice(data.index, 1);
+        sensitivityData.splice(data.index, 1);
+
+        @sensitivityColumns(sensitivityColumns)
+        @sensitivityData(sensitivityData)
       , 100
       adapter.subscribeToChanges()
 

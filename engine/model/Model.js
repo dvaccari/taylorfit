@@ -261,16 +261,13 @@ class Model extends CacheMixin(Observable) {
 
     let residuals = stats.y.sub(stats.yHat);
     residuals = residuals.data;
-    // TODO - wz can we add sensitivity here?
-    let sensitivity = this[_stat_cols];
     
     return {
       highestLag: this.highestLag(),
       terms,
       stats,
       predicted,
-      residuals,
-      sensitivity
+      residuals
     };
   }
 
@@ -411,11 +408,9 @@ class Model extends CacheMixin(Observable) {
   }
 
   getSensitivity(index) {
-    // TODO WZ
     if (index == undefined) {
       return this;
     }
-
     let model = this; // to use within loops below
     let num_rows = model[_data][FIT_LABEL].shape[0];
     let derivative = new Matrix(num_rows, 1, new Array(num_rows).fill(0))
@@ -426,18 +421,15 @@ class Model extends CacheMixin(Observable) {
 
       // One coefficient per term
       let term_coef = 2 * t.getStats()['coeff']
-      // console.log("value:", term_coef); // it appears that this is exactly half of the term value
       
       // t.valueOf() is an Array which contains information for each variable of the term
       let tValues = t.valueOf();
       tValues.forEach(function(tValue) {
           let current_index = tValue[0];
           let current_exp = tValue[1];
-          // console.log('current:', current_index, current_exp);
           
           // Get the current column of data
           let current_col = model[_data][FIT_LABEL].col(current_index)['data'];
-          // console.log('current_col:', current_col);
 
           let part;
           if (current_index == index) {
@@ -461,11 +453,13 @@ class Model extends CacheMixin(Observable) {
         }
     
     });
-    console.log('----');
-    console.log("wz - index:", index);
-    console.log('derivative:', derivative)
 
-    this.fire('getSensitivity', {column: index, sensitivity: derivative.data});
+    this.fire('getSensitivity', {index: index, sensitivity: derivative.data});
+    return this;
+  }
+
+  deleteSensitivity(index) {
+    this.fire('deleteSensitivity', {index: index});
     return this;
   }
 
