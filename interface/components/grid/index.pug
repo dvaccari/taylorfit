@@ -45,7 +45,7 @@ table.grid
           span.mark(data-bind="click:function(){showHideColumn(false, $index())}")
             | Show Column
           // /ko
-          // ko if: table == "fit" && $index() !== dependent() && !isHidden($index())
+          // ko if: table == "fit" && !isHidden($index())
           span.mark(data-bind="click:function(){showTransformColumn($index())}")
             | Transform Column
           // /ko
