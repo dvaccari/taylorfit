@@ -87,6 +87,25 @@ table.grid
             | XY Plot
       // ??
       // /ko
+
+      // ko foreach: statistics_columns
+      //- TODO WZ - if stas columns exist then show here
+      //- TODO $index will have issues, since it by default looks at the data
+      th
+        span Sensitivity
+        //- TODO WZ associate this with a column name
+        span(data-bind="text:$data")
+
+        tf-dropdown(params="shallow:1,align:'right'")
+          span.mark(data-bind="click:function(){histogram($index())}")
+            | Histogram
+          span.mark(data-bind="click:function(){autocorrelation($index())}")
+            | Autocorrelation
+          span.mark(data-bind="click:function(){xyplot($index() + 1)}")
+            | XY Plot
+
+      // /ko
+
   tbody
     // ko iter:{from:start,to:end}
     tr
@@ -119,7 +138,13 @@ table.grid
         span(data-bind="float:$data")
       // /ko
       // /ko
-      // ??? tbody needs data 
+
+      //- Display Sensitivity Statistic
+      // ko foreach:$parent.statistics_data
+      td
+        span(data-bind="float:$data[$parent.index]")
+      // /ko
+
     //-
       // ko if:$parent.results
       // ko with:{dep:$data[$parent.dependent()], pred:(r = $parent.results()) ? r.predicted[$index()] : null}

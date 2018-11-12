@@ -113,6 +113,10 @@ CTRL =
     [ undefined   , SEND("transformStandardize", object2object), UNWRAP_O ]
   transformRescale:
     [ undefined   , SEND("transformRescale", object2object)  , UNWRAP_O ]
+  sensitivityColumns:
+    [ []         , WRAP_A                            , UNWRAP ]
+  sensitivityData:
+    [ []         , WRAP_A                            , UNWRAP ]
 
 module.exports = class Model
 
@@ -136,6 +140,7 @@ module.exports = class Model
 
     for type in [ "fit", "cross", "validation" ]
       do ( type ) =>
+        # EXTRA?? Can we do something like this....????????
         @["extra_#{type}"] = ko.computed ( ) =>
 
           data = @["data_#{type}"]()
@@ -266,10 +271,30 @@ module.exports = class Model
     )
 
     # TODO Add sensitivity here 
-    adapter.on "model:getSensitivity", (model) =>
+    adapter.on "model:getSensitivity", (data) =>
       setTimeout =>
-        console.log("model.coffee - wz");
+        # WZ TODO DELETING
+
+        sensitivityColumns = ko.unwrap @sensitivityColumns
+        sensitivityData = ko.unwrap @sensitivityData
+
+        # Check if column already exists
+        colExists = false
+        sensitivityColumns.forEach((col) =>
+          console.log("wz", col, data.column)
+          if col == data.column
+            colExists = true
+        )
+
+        if colExists == false
+          sensitivityColumns.push(data.column)
+          sensitivityData.push(data.sensitivity)
+
+          @sensitivityColumns(sensitivityColumns)
+          @sensitivityData(sensitivityData)
+              
       , 100
+      adapter.subscribeToChanges()
 
     adapter.on "progress.start", ( { curr, total } ) =>
       @progress 0.01

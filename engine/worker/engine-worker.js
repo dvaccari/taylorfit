@@ -89,9 +89,7 @@ function initializeModel() {
     // TODO WZ
     postMessage({
       type: 'model:getSensitivity',
-      data: {
-        index: data
-      }
+      data: data
     });
   });
 

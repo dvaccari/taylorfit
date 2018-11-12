@@ -31,6 +31,7 @@ const _use_cols       = Symbol('useCols');
 const _subsets        = Symbol('subsets');
 const _terms          = Symbol('terms');
 const _cand_workers   = Symbol('candWorkers');
+const _stat_cols      = Symbol('statCols');
 
 const INTERCEPT       = [[0, 0, 0]];
 
@@ -261,12 +262,15 @@ class Model extends CacheMixin(Observable) {
     let residuals = stats.y.sub(stats.yHat);
     residuals = residuals.data;
     // TODO - wz can we add sensitivity here?
+    let sensitivity = this[_stat_cols];
+    
     return {
       highestLag: this.highestLag(),
       terms,
       stats,
       predicted,
-      residuals
+      residuals,
+      sensitivity
     };
   }
 
@@ -414,7 +418,6 @@ class Model extends CacheMixin(Observable) {
 
     let model = this; // to use within loops below
     let num_rows = model[_data][FIT_LABEL].shape[0];
-    // TODO IS THERE A BETTER WAY TO MAKE A MATRIX OF 0's?
     let derivative = new Matrix(num_rows, 1, new Array(num_rows).fill(0))
     
     this.terms.forEach(function (t) {
@@ -462,11 +465,7 @@ class Model extends CacheMixin(Observable) {
     console.log("wz - index:", index);
     console.log('derivative:', derivative)
 
-    // Should be an array added to the view DO NOT PUT IN DATA
-    this.setData(this[_data][FIT_LABEL].appendM(derivative), FIT_LABEL);
-
-    // TODO the chain back up to update columns
-    this.fire('getSensitivity', index);
+    this.fire('getSensitivity', {column: index, sensitivity: derivative.data});
     return this;
   }
 

@@ -30,6 +30,9 @@ ko.components.register "tf-grid",
     @extra      = model["extra_#{@table}"]
     @result     = model["result_#{@table}"]
 
+    @statistics_columns  = model.sensitivityColumns
+    @statistics_data   = model.sensitivityData
+
     @clear = ( ) =>
       try @rows null
       try @result null
@@ -48,7 +51,7 @@ ko.components.register "tf-grid",
       model.data_plotted(@table)
 
     @sensitivity = ( index ) ->
-      # WZ TODO
+      # WZ TODO, calculates sensitivity for selected column dropdown
       model.show_sensitivity( index )
     
     # Is hidden if ignored or has transformed column
