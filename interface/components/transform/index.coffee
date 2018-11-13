@@ -53,9 +53,8 @@ ko.components.register "tf-transform",
       data = data_fit()
       col_data = data.map((d) -> d[index])
       min_val = Math.min.apply(null, col_data)
-      max_val = Math.max.apply(null, col_data)
-      has_negative = min_val * max_val < 0
-      return has_negative
+      has_negative = min_val < 0
+      return !has_negative
 
     @transform_log = ( index ) ->
       transform_col = gen_column(
