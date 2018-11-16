@@ -68,14 +68,18 @@ ko.components.register "tf-graph",
 
       download_chart = () ->
         svg_element = chart.element.querySelector "svg"
-        original_height = svg_element.getAttribute "height"
-        original_width = svg_element.getAttribute "width"
+        original_height = svg_element.getAttribute "height" 
+        original_width = svg_element.getAttribute "width" 
+
+        # get real height/width of a overflow
         svg_element.removeAttribute "height"
         svg_element.removeAttribute "width"
         svg_element.style.overflow = "visible"
+
         svg_element.style.padding = "10px"
         box_size = svg_element.getBBox()
-        svg_element.style.height = box_size.height + 20
+
+        svg_element.style.height = box_size.height + 20 
         svg_element.style.width = box_size.width + 20
 
         legend_background = svg_element.querySelector ".c3-legend-background"
@@ -85,31 +89,29 @@ ko.components.register "tf-graph",
         node_list2 = svg_element.querySelectorAll ".c3-axis path"
         node_list3 = svg_element.querySelectorAll ".c3 line"
 
-        svg_element.style.overflow = "visible"
-
-        line_graph = Array.from node_list1
-        line_graph.forEach (e) ->
-          e.style.fill = "none"
-
         x_and_y = Array.from node_list2
         x_and_y.concat Array.from node_list3
         x_and_y.forEach (e) ->
           e.style.fill = "none"
           e.style.stroke = "black"
-
+        console.log(svg_element.style.backgroundColor)
+        svg_element.style.backgroundColor = "white"
+        
         xml = new XMLSerializer().serializeToString svg_element
         data_url = "data:image/svg+xml;base64," + btoa xml
-
+        
+        # Reset to original values
         svg_element.style.padding = null
         svg_element.setAttribute "height", original_height
         svg_element.setAttribute "width", original_width
+        svg_element.style.backgroundColor = null
 
         img = new Image()
         img.src = data_url
 
         img.onload = () ->
           canvas_element = document.createElement "canvas"
-          canvas_element.width = svg_element.scrollWidth
+          canvas_element.width = svg_element.scrollWidth 
           canvas_element.height = svg_element.scrollHeight
           ctx = canvas_element.getContext "2d"
           ctx.drawImage img, 0, 0
