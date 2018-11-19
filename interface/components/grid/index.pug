@@ -37,8 +37,14 @@ table.grid
             | Autocorrelation
           span.mark(data-bind="click:function(){xyplot($index() + 1)}")
             | XY Plot
+          // ko ifnot: hasSensitivity($index())
           span.mark(data-bind="click:function(){sensitivity($index())}")
             | Show Sensitivity
+          // /ko
+          // ko if: hasSensitivity($index())
+          span.mark(data-bind="click:function(){deleteSensitivity($index(),'column')}")
+            | Hide Sensitivity
+          // /ko
           // ko if: table == "fit" && $index() !== dependent() && !isHidden($index())
           span.mark(data-bind="click:function(){showHideColumn(true, $index())}")
             | Ignore Column
@@ -105,7 +111,7 @@ table.grid
             | Histogram
           span.mark(data-bind="click:function(){xyplot_sensitivity($index())}")
             | XY Plot
-          span.mark(data-bind="click:function(){deletesensitivity($index())}")
+          span.mark(data-bind="click:function(){deleteSensitivity($index(),'sensitivity')}")
             | Hide Sensitivity
       // /ko
 

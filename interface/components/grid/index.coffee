@@ -61,8 +61,23 @@ ko.components.register "tf-grid",
     @sensitivity = ( index ) ->
       model.show_sensitivity( index )
     
-    @deletesensitivity = ( index ) ->
-      model.delete_sensitivity( index ) 
+    @deleteSensitivity = ( index, type ) ->
+      # Delete with either column index or sensitivity index
+      if type == "column"
+        model.sensitivityColumns().forEach( (column, sensitivityIndex) ->
+          if column.index == index
+            return model.delete_sensitivity( sensitivityIndex )
+        )
+      else if type == "sensitivity"
+        model.delete_sensitivity( index ) 
+
+    @hasSensitivity = ( index ) ->
+      found = false
+      model.sensitivityColumns().forEach( (column) ->
+        if column.index == index
+          found = true
+      )
+      return found
     
     # Is hidden if ignored or has transformed column
     @isHidden = ( index ) ->
