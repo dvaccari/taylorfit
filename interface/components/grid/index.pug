@@ -91,12 +91,11 @@ table.grid
             | Autocorrelation
           span.mark(data-bind="click:function(){xyplot('Residual')}")
             | XY Plot
-      // ??
       // /ko
 
-      // ko foreach: statistics_columns
+      // ko foreach: sensitivityColumns
       th
-        span Sensitivity
+        span Sensitivity&nbsp;
         // ko if:name
         span(data-bind="text:name")
         // /ko
@@ -149,7 +148,7 @@ table.grid
       // /ko
 
       //- Display Sensitivity Statistic
-      // ko foreach:$parent.statistics_data
+      // ko foreach:$parent.sensitivityData
       td
         span(data-bind="float:$data[$parent.index]")
       // /ko

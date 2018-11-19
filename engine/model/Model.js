@@ -31,7 +31,6 @@ const _use_cols       = Symbol('useCols');
 const _subsets        = Symbol('subsets');
 const _terms          = Symbol('terms');
 const _cand_workers   = Symbol('candWorkers');
-const _stat_cols      = Symbol('statCols');
 
 const INTERCEPT       = [[0, 0, 0]];
 

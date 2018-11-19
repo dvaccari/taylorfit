@@ -27,7 +27,7 @@ ko.components.register "tf-histogram",
         return index
       return model.columns()[index].name
     
-    @values = ko.computed ( ) =>       
+    @values = ko.computed ( ) => 
       if !@active()
         return undefined
       index = @column_index()

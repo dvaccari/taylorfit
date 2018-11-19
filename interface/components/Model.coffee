@@ -142,7 +142,6 @@ module.exports = class Model
 
     for type in [ "fit", "cross", "validation" ]
       do ( type ) =>
-        # EXTRA?? Can we do something like this....????????
         @["extra_#{type}"] = ko.computed ( ) =>
 
           data = @["data_#{type}"]()

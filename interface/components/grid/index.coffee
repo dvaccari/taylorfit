@@ -30,8 +30,8 @@ ko.components.register "tf-grid",
     @extra      = model["extra_#{@table}"]
     @result     = model["result_#{@table}"]
 
-    @statistics_columns  = model.sensitivityColumns
-    @statistics_data   = model.sensitivityData
+    @sensitivityColumns  = model.sensitivityColumns
+    @sensitivityData   = model.sensitivityData
 
     @clear = ( ) =>
       try @rows null
@@ -127,9 +127,13 @@ ko.components.register "tf-grid",
       csv = @cols().map(( v ) -> v.name).join ","
       if extra
         csv += ",Dependent,Predicted,Residual"
+      if @sensitivityColumns().length > 0
+        csv += "," + @sensitivityColumns().map((col) -> "Sensitivity "+col.name).join ","
       for row, index in rows
         csv += "\n" + row.join ","
         if extra then csv += "," + extra[index].join ","
+        if @sensitivityData().length > 0
+          csv += "," + @sensitivityData().map((col) -> col[index]).join ","
 
       blob = new Blob [ csv ]
       uri = URL.createObjectURL blob
