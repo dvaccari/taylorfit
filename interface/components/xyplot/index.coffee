@@ -23,6 +23,11 @@ ko.components.register "tf-xyplot",
         return [undefined, undefined]
       return @column_indexes().map((idx) =>
         if typeof idx == "string"
+          # Special Case for Sensitivity 
+          if idx.indexOf("Sensitivity") != -1
+            idx = idx.split("_")[1]
+            console.log("Column name:", model.sensitivityColumns()[idx].name)
+            return "Sensitivity " + model.sensitivityColumns()[idx].name
           return idx
         return @columns()[idx]
       )
@@ -40,6 +45,9 @@ ko.components.register "tf-xyplot",
           return model["extra_#{model.data_plotted()}"]().map((row) => row[1])
         if column_names[index] == "Residual"
           return model["extra_#{model.data_plotted()}"]().map((row) => row[2])
+        if column_names[index].indexOf("Sensitivity") != -1
+          idx = idx.split("_")[1]
+          return Object.values(model.sensitivityData()[idx])
         return model["data_#{model.data_plotted()}"]().map((row) => row[idx - 1])
       )
 

@@ -42,12 +42,20 @@ ko.components.register "tf-grid",
       model.show_histogram(index)
       model.data_plotted(@table)
 
+    @histogram_sensitivity = ( index ) ->
+      model.show_histogram("Sensitivity_"+index.toString())
+      model.data_plotted(@table)
+
     @autocorrelation = ( index ) ->
       model.show_autocorrelation(index)
       model.data_plotted(@table)
 
     @xyplot = ( index ) ->
       model.show_xyplot([index, "Index"])
+      model.data_plotted(@table)
+
+    @xyplot_sensitivity = ( index ) ->
+      model.show_xyplot(["Sensitivity_"+index.toString(), "Index"])
       model.data_plotted(@table)
 
     @sensitivity = ( index ) ->
