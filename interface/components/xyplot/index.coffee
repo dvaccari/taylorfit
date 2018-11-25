@@ -26,7 +26,6 @@ ko.components.register "tf-xyplot",
           # Special Case for Sensitivity 
           if idx.indexOf("Sensitivity") != -1
             idx = idx.split("_")[1]
-            console.log("Column name:", model.sensitivityColumns()[idx].name)
             return "Sensitivity " + model.sensitivityColumns()[idx].name
           return idx
         return @columns()[idx]
