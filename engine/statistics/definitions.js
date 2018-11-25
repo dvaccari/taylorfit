@@ -132,5 +132,19 @@ module.exports = [
     let k_order = X.clone();
     k_order.data.set(k_order_func(k_order.data, k));
     return k_order;
-  })
+  }),
+
+  Statistic('sensitivity_part' , ['data', 'exp', 'derivative'],
+    ({data, exp, derivative}) => {
+      if (data == undefined) {
+        return -1;
+      }
+
+      if (derivative) {
+        return data.map((x) => exp * (Math.pow(x, (exp - 1))));
+      }
+      else {
+        return data.map((x) => Math.pow(x, exp));
+      }
+    })
 ];

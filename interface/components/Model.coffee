@@ -58,6 +58,10 @@ CTRL =
     [ undefined    , WRAP_O                           , IGNORE ]
   show_transform:
     [ undefined    , WRAP_O                           , IGNORE ]
+  show_sensitivity:
+    [ undefined   , SEND("getSensitivity", Number)    , IGNORE ]
+  delete_sensitivity:
+    [ undefined   , SEND("deleteSensitivity", Number) , IGNORE ]
 
   # Loaded from tf-loader
   columns:
@@ -111,6 +115,10 @@ CTRL =
     [ undefined   , SEND("transformStandardize", object2object), UNWRAP_O ]
   transformRescale:
     [ undefined   , SEND("transformRescale", object2object)  , UNWRAP_O ]
+  sensitivityColumns:
+    [ []         , WRAP_A                            , UNWRAP ]
+  sensitivityData:
+    [ []         , WRAP_A                            , UNWRAP ]
 
 module.exports = class Model
 
@@ -262,6 +270,42 @@ module.exports = class Model
           )
       , 100
     )
+
+    adapter.on "model:getSensitivity", (data) =>
+      setTimeout =>
+        columns = ko.unwrap @columns
+        sensitivityColumns = ko.unwrap @sensitivityColumns
+        sensitivityData = ko.unwrap @sensitivityData
+
+        # Check if column already exists
+        colExists = false
+        sensitivityColumns.forEach((col) =>
+          if col.index == data.index
+            colExists = true
+        )
+
+        if colExists == false
+          column = columns[data.index]
+          sensitivityColumns.push(column)
+          sensitivityData.push(data.sensitivity)
+
+          @sensitivityColumns(sensitivityColumns)
+          @sensitivityData(sensitivityData)
+      , 100
+      adapter.subscribeToChanges()
+    
+    adapter.on "model:deleteSensitivity", (data) =>
+      setTimeout =>        
+        sensitivityColumns = ko.unwrap @sensitivityColumns
+        sensitivityData = ko.unwrap @sensitivityData
+
+        sensitivityColumns.splice(data.index, 1);
+        sensitivityData.splice(data.index, 1);
+
+        @sensitivityColumns(sensitivityColumns)
+        @sensitivityData(sensitivityData)
+      , 100
+      adapter.subscribeToChanges()
 
     adapter.on "progress.start", ( { curr, total } ) =>
       @progress 0.01

@@ -19,9 +19,13 @@ ko.components.register "tf-histogram",
     @column_name = ko.computed ( ) => 
       if !@active()
         return undefined
-      if typeof @column_index() == "string"
-        return @column_index()
-      return model.columns()[@column_index()].name
+      index = @column_index()
+      if typeof index == "string"
+        if index.indexOf("Sensitivity") != -1
+          index = index.split("_")[1]
+          return "Sensitivity " + model.sensitivityColumns()[index].name
+        return index
+      return model.columns()[index].name
     
     @values = ko.computed ( ) => 
       if !@active()
@@ -34,6 +38,10 @@ ko.components.register "tf-histogram",
           index = 1
         if index == "Residual"
           index = 2
+        if index.indexOf("Sensitivity") != -1
+          # format is: Sensitivity_index
+          index = index.split("_")[1]
+          return Object.values(model.sensitivityData()[index])
         return model["extra_#{model.data_plotted()}"]().map((row) => row[index])
       return model["data_#{model.data_plotted()}"]().map((row) => row[index])
 

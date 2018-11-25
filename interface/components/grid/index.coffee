@@ -30,6 +30,9 @@ ko.components.register "tf-grid",
     @extra      = model["extra_#{@table}"]
     @result     = model["result_#{@table}"]
 
+    @sensitivityColumns  = model.sensitivityColumns
+    @sensitivityData   = model.sensitivityData
+
     @clear = ( ) =>
       try @rows null
       try @result null
@@ -39,6 +42,10 @@ ko.components.register "tf-grid",
       model.show_histogram(index)
       model.data_plotted(@table)
 
+    @histogram_sensitivity = ( index ) ->
+      model.show_histogram("Sensitivity_"+index.toString())
+      model.data_plotted(@table)
+
     @autocorrelation = ( index ) ->
       model.show_autocorrelation(index)
       model.data_plotted(@table)
@@ -46,6 +53,31 @@ ko.components.register "tf-grid",
     @xyplot = ( index ) ->
       model.show_xyplot([index, "Index"])
       model.data_plotted(@table)
+
+    @xyplot_sensitivity = ( index ) ->
+      model.show_xyplot(["Sensitivity_"+index.toString(), "Index"])
+      model.data_plotted(@table)
+
+    @sensitivity = ( index ) ->
+      model.show_sensitivity( index )
+    
+    @deleteSensitivity = ( index, type ) ->
+      # Delete with either column index or sensitivity index
+      if type == "column"
+        model.sensitivityColumns().forEach( (column, sensitivityIndex) ->
+          if column.index == index
+            return model.delete_sensitivity( sensitivityIndex )
+        )
+      else if type == "sensitivity"
+        model.delete_sensitivity( index ) 
+
+    @hasSensitivity = ( index ) ->
+      found = false
+      model.sensitivityColumns().forEach( (column) ->
+        if column.index == index
+          found = true
+      )
+      return found
     
     # Is hidden if ignored or has transformed column
     @isHidden = ( index ) ->
@@ -95,9 +127,13 @@ ko.components.register "tf-grid",
       csv = @cols().map(( v ) -> v.name).join ","
       if extra
         csv += ",Dependent,Predicted,Residual"
+      if @sensitivityColumns().length > 0
+        csv += "," + @sensitivityColumns().map((col) -> "Sensitivity "+col.name).join ","
       for row, index in rows
         csv += "\n" + row.join ","
         if extra then csv += "," + extra[index].join ","
+        if @sensitivityData().length > 0
+          csv += "," + @sensitivityData().map((col) -> col[index]).join ","
 
       blob = new Blob [ csv ]
       uri = URL.createObjectURL blob
