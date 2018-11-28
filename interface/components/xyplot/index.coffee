@@ -89,9 +89,6 @@ ko.components.register "tf-xyplot",
       original_height = svg_element.getAttribute "height"
       original_width = svg_element.getAttribute "width"
 
-      console.log(original_height)
-      console.log(original_width)
-
       svg_element.removeAttribute "height"
       svg_element.removeAttribute "width"
       svg_element.style.overflow = "visible"
@@ -103,24 +100,35 @@ ko.components.register "tf-xyplot",
       chart_line = svg_element.querySelector ".c3-chart-line"
       chart_line.style.opacity = 1
 
-      node_list1 = svg_element.querySelectorAll ".c3-chart path"
-      node_list2 = svg_element.querySelectorAll ".c3-axis path"
-      node_list3 = svg_element.querySelectorAll ".c3 line"
+      node_list1 = svg_element.querySelectorAll ".c3-axis path"
+      node_list2 = svg_element.querySelectorAll ".c3 line"
+      node_list3 = svg_element.querySelectorAll "line"
 
-      line_graph = Array.from node_list1
-      x_and_y = Array.from node_list2
-      x_and_y.concat Array.from node_list3
+      x_and_y = Array.from node_list1
+      x_and_y.concat Array.from node_list2
       x_and_y.forEach (e) ->
         e.style.fill = "none"
         e.style.stroke = "black" 
 
+      scale = Array.from node_list3
+      scale.forEach (e) ->
+        e.style.fill = "none"
+        e.style.stroke = "black" 
+
       svg_element.style.backgroundColor = "white"
+
+      tick = svg_element.querySelectorAll ".tick"
+      text = tick[19].getElementsByTagName("text")
+      original_y = text[0].getAttribute "y"
+      text[0].setAttribute "y", original_y+3
+
       
       xml = new XMLSerializer().serializeToString svg_element
       data_url = "data:image/svg+xml;base64," + btoa xml
 
       # Reset to original values
       svg_element.style.padding = null
+      text[0].setAttribute "y", original_y
       svg_element.setAttribute "height", original_height
       svg_element.setAttribute "width", original_width
       svg_element.style.backgroundColor = null

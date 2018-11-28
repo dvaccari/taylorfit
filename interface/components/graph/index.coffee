@@ -75,33 +75,47 @@ ko.components.register "tf-graph",
         svg_element.removeAttribute "height"
         svg_element.removeAttribute "width"
         svg_element.style.overflow = "visible"
-
         svg_element.style.padding = "10px"
         box_size = svg_element.getBBox()
 
-        svg_element.style.height = box_size.height + 20 
-        svg_element.style.width = box_size.width + 20
+        svg_element.style.height = box_size.height + 15
+        svg_element.style.width = box_size.width + 15
 
         legend_background = svg_element.querySelector ".c3-legend-background"
         legend_background.style.display = "none"
+        
+        ygrid_line = svg_element.querySelector ".c3-ygrid-line"
+        ygrid_line.style.stroke = "black"
 
-        node_list1 = svg_element.querySelectorAll ".c3-chart path"
-        node_list2 = svg_element.querySelectorAll ".c3-axis path"
-        node_list3 = svg_element.querySelectorAll ".c3 line"
+        node_list1 = svg_element.querySelectorAll ".c3-axis path"
+        node_list2 = svg_element.querySelectorAll ".c3 line"
 
-        x_and_y = Array.from node_list2
-        x_and_y.concat Array.from node_list3
+        x_and_y = Array.from node_list1
+        x_and_y.concat Array.from node_list2
         x_and_y.forEach (e) ->
           e.style.fill = "none"
           e.style.stroke = "black"
-        console.log(svg_element.style.backgroundColor)
         svg_element.style.backgroundColor = "white"
         
+        tick = svg_element.querySelectorAll ".tick"
+        text = tick[3].getElementsByTagName("text")
+        original_y = text[0].getAttribute "y"
+        text[0].setAttribute "y", original_y+3
+
+        temp_height = svg_element.style.height
+
+        if temp_height.substring(0,temp_height.length-2) > 400 
+          fix_svg_height = 0
+          box_size.height = box_size.height - 30
+          new_height = (temp_height.substring(0,temp_height.length-2) - 60)
+          svg_element.style.height = new_height
+
         xml = new XMLSerializer().serializeToString svg_element
         data_url = "data:image/svg+xml;base64," + btoa xml
         
         # Reset to original values
         svg_element.style.padding = null
+        text[0].setAttribute "y", original_y
         svg_element.setAttribute "height", original_height
         svg_element.setAttribute "width", original_width
         svg_element.style.backgroundColor = null

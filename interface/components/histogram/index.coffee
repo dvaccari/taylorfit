@@ -81,7 +81,6 @@ ko.components.register "tf-histogram",
       if !@active()
         return undefined
       svg_element = chart.element.querySelector "svg"
-      console.log(svg_element)
       original_height = svg_element.getAttribute "height"
       original_width = svg_element.getAttribute "width"
 
@@ -96,14 +95,18 @@ ko.components.register "tf-histogram",
       chart_bar = svg_element.querySelector ".c3-chart-bar"
       chart_bar.style.opacity = 1
 
-      node_list1 = svg_element.querySelectorAll ".c3-chart path"
-      node_list2 = svg_element.querySelectorAll ".c3-axis path"
-      node_list3 = svg_element.querySelectorAll ".c3 line"
+      node_list1 = svg_element.querySelectorAll ".c3-axis path"
+      node_list2 = svg_element.querySelectorAll ".c3 line"
+      node_list3 = svg_element.querySelectorAll "line"
 
-      line_graph = Array.from node_list1
-      x_and_y = Array.from node_list2
-      x_and_y.concat Array.from node_list3
+      x_and_y = Array.from node_list1
+      x_and_y.concat Array.from node_list2
       x_and_y.forEach (e) ->
+        e.style.fill = "none"
+        e.style.stroke = "black" 
+
+      scale = Array.from node_list3
+      scale.forEach (e) ->
         e.style.fill = "none"
         e.style.stroke = "black" 
       

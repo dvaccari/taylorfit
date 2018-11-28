@@ -153,7 +153,6 @@ ko.components.register "tf-autocorrelation",
 
       svg_element.removeAttribute "height"
       svg_element.removeAttribute "width"
-      console.log(svg_element)
       svg_element.style.overflow = "visible"
 
       svg_element.style.padding = "10px"
@@ -168,14 +167,18 @@ ko.components.register "tf-autocorrelation",
       chart_bar = svg_element.querySelector ".c3-chart-bar"
       chart_bar.style.opacity = 1
       
-      node_list1 = svg_element.querySelectorAll ".c3-chart path"
-      node_list2 = svg_element.querySelectorAll ".c3-axis path"
-      node_list3 = svg_element.querySelectorAll ".c3 line"
+      node_list1 = svg_element.querySelectorAll ".c3-axis path"
+      node_list2 = svg_element.querySelectorAll ".c3 line"
+      node_list3 = svg_element.querySelectorAll "line"
 
-      line_graph = Array.from node_list1
-      x_and_y = Array.from node_list2
-      x_and_y.concat Array.from node_list3
+      x_and_y = Array.from node_list1
+      x_and_y.concat Array.from node_list2
       x_and_y.forEach (e) ->
+        e.style.fill = "none"
+        e.style.stroke = "black" 
+
+      scale = Array.from node_list3
+      scale.forEach (e) ->
         e.style.fill = "none"
         e.style.stroke = "black" 
 
