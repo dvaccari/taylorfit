@@ -110,6 +110,13 @@ ko.components.register "tf-graph",
           new_height = (temp_height.substring(0,temp_height.length-2) - 60)
           svg_element.style.height = new_height
 
+        if fit_visible == false
+          fit_legend.style.display = "none"
+        if cross_visible == false
+          cross_legend.style.display = "none"
+        if validation_visible == false
+          validation_legend.style.display = "none"
+
         xml = new XMLSerializer().serializeToString svg_element
         data_url = "data:image/svg+xml;base64," + btoa xml
         
@@ -119,6 +126,12 @@ ko.components.register "tf-graph",
         svg_element.setAttribute "height", original_height
         svg_element.setAttribute "width", original_width
         svg_element.style.backgroundColor = null
+        if fit_visible == false
+          fit_legend.style.display = "block";
+        if cross_visible == false
+          cross_legend.style.display = "block"
+        if validation_visible == false
+          validation_legend.style.display = "block"
 
         img = new Image()
         img.src = data_url
@@ -146,4 +159,40 @@ ko.components.register "tf-graph",
 
       element.appendChild download_button
 
+      fit_visible = true
+      cross_visible = true
+      validation_visible = true
+      
+      window.onload = () ->
+        setTimeout ( ->
+          svg_element = chart.element.querySelector "svg"
+          @fit_legend = svg_element.querySelector ".c3-legend-item-Fit-Data"
+          @cross_legend = svg_element.querySelector ".c3-legend-item-Cross-Data" 
+          @validation_legend = svg_element.querySelector ".c3-legend-item-Validation-Data" 
+          
+          fit_legend_VS = () -> 
+            if fit_visible == true
+              fit_visible = false
+            else
+              fit_visible = true
+            return
+          fit_legend.onclick = fit_legend_VS
+
+          cross_legend_VS = () -> 
+            if cross_visible == true
+              cross_visible = false
+            else
+              cross_visible = true
+            return
+          cross_legend.onclick = cross_legend_VS
+
+          validation_legend_VS = () -> 
+            if validation_visible == true
+              validation_visible = false
+            else
+              validation_visible = true
+            return
+          validation_legend.onclick = validation_legend_VS
+          ), 1000
+          
       return { }
