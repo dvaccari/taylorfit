@@ -78,8 +78,8 @@ ko.components.register "tf-graph",
         svg_element.style.padding = "10px"
         box_size = svg_element.getBBox()
 
-        svg_element.style.height = box_size.height + 15
-        svg_element.style.width = box_size.width + 15
+        svg_element.style.height = box_size.height + 20
+        svg_element.style.width = box_size.width + 20
 
         legend_background = svg_element.querySelector ".c3-legend-background"
         legend_background.style.display = "none"
@@ -98,17 +98,17 @@ ko.components.register "tf-graph",
         svg_element.style.backgroundColor = "white"
         
         tick = svg_element.querySelectorAll ".tick"
-        text = tick[3].getElementsByTagName("text")
+        if !fit_visible && !cross_visible && !validation_visible
+          text = tick[1].getElementsByTagName("text")   
+        else
+          text = tick[3].getElementsByTagName("text")
         original_y = text[0].getAttribute "y"
-        text[0].setAttribute "y", original_y+3
+        text[0].setAttribute "y", original_y + 3
 
         temp_height = svg_element.style.height
 
         if temp_height.substring(0,temp_height.length-2) > 400 
-          fix_svg_height = 0
-          box_size.height = box_size.height - 30
-          new_height = (temp_height.substring(0,temp_height.length-2) - 60)
-          svg_element.style.height = new_height
+          svg_element.style.height = 368
 
         if fit_visible == false
           fit_legend.style.display = "none"
@@ -176,7 +176,8 @@ ko.components.register "tf-graph",
             else
               fit_visible = true
             return
-          fit_legend.onclick = fit_legend_VS
+          if fit_legend
+            fit_legend.onclick = fit_legend_VS
 
           cross_legend_VS = () -> 
             if cross_visible == true
@@ -184,7 +185,8 @@ ko.components.register "tf-graph",
             else
               cross_visible = true
             return
-          cross_legend.onclick = cross_legend_VS
+          if cross_legend
+            cross_legend.onclick = cross_legend_VS
 
           validation_legend_VS = () -> 
             if validation_visible == true
@@ -192,7 +194,8 @@ ko.components.register "tf-graph",
             else
               validation_visible = true
             return
-          validation_legend.onclick = validation_legend_VS
+          if validation_legend
+            validation_legend.onclick = validation_legend_VS
           ), 1000
           
       return { }
