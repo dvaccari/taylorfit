@@ -77,7 +77,6 @@ ko.components.register "tf-graph",
         svg_element.style.overflow = "visible"
         svg_element.style.padding = "10px"
         box_size = svg_element.getBBox()
-
         svg_element.style.height = box_size.height + 20
         svg_element.style.width = box_size.width + 20
 
@@ -106,8 +105,7 @@ ko.components.register "tf-graph",
         text[0].setAttribute "y", original_y + 3
 
         temp_height = svg_element.style.height
-
-        if temp_height.substring(0,temp_height.length-2) > 400 
+        if temp_height.substring(0,temp_height.length-2) > 370 
           svg_element.style.height = 368
 
         if fit_visible == false
