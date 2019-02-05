@@ -1,12 +1,46 @@
 .background(data-bind="css:{active:active}")
 .data-partition(data-bind="css:{active:active}")
-  p(text="Data Partition")
   div.container
-    div.option-wrapper
-      input.custom(data-bind="textInput:p,event:{keyup:change_partition},css:{invalid:invalid}")
-      button.option(
-        data-bind="click:function(){import_dataset()}"
-      ) Import
-  // ko ifnot: error_msg == undefined
-  p(text="error_msg")
-  // /ko
+    p Data Partition
+    div.sub_partition
+      p Fit
+      span.percent_container
+        input(type="text"
+          data-bind="textInput:fit_p,event:{keyup:change_partition},css:{invalid:invalid_fit}"
+          placeholder="0")
+        p %
+      span.rows_container
+        p Rows
+        input(type="text")
+        p -
+        input(type="text")
+    div.sub_partition
+      p Cross
+      span.percent_container
+        input(type="text"
+          data-bind="textInput:cross_p,event:{keyup:change_partition},css:{invalid:cross_invalid}"
+          placeholder="0")
+        p %
+      span.rows_container
+        p Rows
+        input(type="text")
+        p -
+        input(type="text")
+    div.sub_partition
+      p Validate
+      span.percent_container
+        input(type="text"
+          data-bind="textInput:validate_p,event:{keyup:change_partition},css:{invalid:validate_invalid}"
+          placeholder="0")
+        p %
+      span.rows_container
+        p Rows
+        input(type="text")
+        p - 
+        input(type="text")
+    button.option(
+      data-bind="click:function(){import_dataset()}"
+    ) Import
+    // ko ifnot: error_msg == undefined
+    p #{error_msg}
+    // /ko

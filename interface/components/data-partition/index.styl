@@ -36,7 +36,31 @@ tf-data-partition
     width 100%
     height: 100%
     display flex
-    flex-direction row
-    justify-content space-between
+    flex-direction column
     align-items flex-start
     flex-wrap wrap
+
+  .sub_partition
+    display flex
+    flex-direction row
+    width: 100%
+
+    & > p
+      display flex
+      justify-content flex-start
+      width 100px
+    
+    & > *
+      margin-right 20px
+    
+    .percent_container
+      display flex
+      
+      & > input
+        width 50px
+
+    .rows_container
+      display flex
+
+      & > input
+        width 100px
