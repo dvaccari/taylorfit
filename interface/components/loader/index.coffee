@@ -65,7 +65,6 @@ ko.components.register "tf-loader",
           # TODO (justint): Prompt user if would like to partition
           @temp_model = model
           @show_partition(true)
-          console.log @show_partition()
           # params.model new Model
           #   "data_#{@table}": model.rows
           #   name: model.name
