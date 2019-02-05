@@ -54,14 +54,22 @@ ko.components.register "tf-loader",
 
     # --- for loading just dataset
     @dataset = ko.observable null
+    @show_partition = ko.observable undefined
+    @temp_model = null
     @dataset.subscribe ( next ) =>
+      # Importing CSV file
       read_csv document.getElementById(@id).files[0]
+      # Completed parsing CSV to build model
       .then ( model ) =>
-        if @init
-          params.model new Model
-            "data_#{@table}": model.rows
-            name: model.name
-            columns: model.cols
+        if @init # Importing data
+          # TODO (justint): Prompt user if would like to partition
+          @temp_model = model
+          @show_partition(true)
+          console.log @show_partition()
+          # params.model new Model
+          #   "data_#{@table}": model.rows
+          #   name: model.name
+          #   columns: model.cols
         else
           m = params.model()
           # TODO: check for column length
