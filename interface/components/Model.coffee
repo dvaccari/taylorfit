@@ -116,8 +116,6 @@ CTRL =
   transformRescale:
     [ undefined   , SEND("transformRescale", object2object)  , UNWRAP_O ]
   # Value should be index of row to display as start of partition
-  show_partition:
-    [ undefined   , WRAP_O                            , UNWRAP_O ]
   partitionData:
     [ undefined   , SEND("partitionData", object2object), UNWRAP_O ]
   sensitivityColumns:
