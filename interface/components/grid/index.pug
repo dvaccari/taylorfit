@@ -37,6 +37,14 @@ table.grid
             | Autocorrelation
           span.mark(data-bind="click:function(){xyplot($index() + 1)}")
             | XY Plot
+          // ko ifnot: hasSensitivity($index())
+          span.mark(data-bind="click:function(){sensitivity($index())}")
+            | Show Sensitivity
+          // /ko
+          // ko if: hasSensitivity($index())
+          span.mark(data-bind="click:function(){deleteSensitivity($index(),'column')}")
+            | Hide Sensitivity
+          // /ko
           // ko if: table == "fit" && $index() !== dependent() && !isHidden($index())
           span.mark(data-bind="click:function(){showHideColumn(true, $index())}")
             | Ignore Column
@@ -45,7 +53,7 @@ table.grid
           span.mark(data-bind="click:function(){showHideColumn(false, $index())}")
             | Show Column
           // /ko
-          // ko if: table == "fit" && $index() !== dependent() && !isHidden($index())
+          // ko if: table == "fit" && !isHidden($index())
           span.mark(data-bind="click:function(){showTransformColumn($index())}")
             | Transform Column
           // /ko
@@ -84,6 +92,28 @@ table.grid
           span.mark(data-bind="click:function(){xyplot('Residual')}")
             | XY Plot
       // /ko
+
+      // ko foreach: sensitivityColumns
+      th
+        span Sensitivity&nbsp;
+        // ko if:name
+        span(data-bind="text:name")
+        // /ko
+        // ko ifnot:name
+        span.placeholder
+          span X
+          sub(data-bind="text:index")
+        // /ko
+
+        tf-dropdown(params="shallow:1,align:'right'")
+          span.mark(data-bind="click:function(){histogram_sensitivity($index())}")
+            | Histogram
+          span.mark(data-bind="click:function(){xyplot_sensitivity($index())}")
+            | XY Plot
+          span.mark(data-bind="click:function(){deleteSensitivity($index(),'sensitivity')}")
+            | Hide Sensitivity
+      // /ko
+
   tbody
     // ko iter:{from:start,to:end}
     tr
@@ -107,7 +137,13 @@ table.grid
         span(data-bind="float:$data")
       // /ko
       // /ko
-      
+
+      //- Display Sensitivity Statistic
+      // ko foreach:$parent.sensitivityData
+      td
+        span(data-bind="float:$data[$parent.index]")
+      // /ko
+
     //-
       // ko if:$parent.results
       // ko with:{dep:$data[$parent.dependent()], pred:(r = $parent.results()) ? r.predicted[$index()] : null}

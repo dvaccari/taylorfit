@@ -19,3 +19,6 @@
       button.option(
         data-bind="click:function(){rescale(transform_index())}"
       ) Rescale
+  // ko ifnot: error_msg == undefined
+  p(text="error_msg")
+  // /ko
