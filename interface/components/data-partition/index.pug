@@ -1,0 +1,12 @@
+.background(data-bind="css:{active:active}")
+.data-partition(data-bind="css:{active:active}")
+  p(text="Data Partition")
+  div.container
+    div.option-wrapper
+      input.custom(data-bind="textInput:p,event:{keyup:change_partition},css:{invalid:invalid}")
+      button.option(
+        data-bind="click:function(){import_dataset()}"
+      ) Import
+  // ko ifnot: error_msg == undefined
+  p(text="error_msg")
+  // /ko
