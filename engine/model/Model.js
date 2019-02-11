@@ -406,7 +406,7 @@ class Model extends CacheMixin(Observable) {
     return this[_data][label].subset(this[_subsets][label]);
   }
 
-  getSensitivity(index) {
+  getSensitivity(index, label=FIT_LABEL) {
     if (index == undefined) {
       return this;
     }
@@ -416,7 +416,7 @@ class Model extends CacheMixin(Observable) {
     
     this.terms.forEach(function (t) {
       let contains_variable = false; // Check if the variable we are deriving on is in this term
-      let derivative_part = new Matrix(num_rows, 1, new Array(num_rows).fill(0))
+      let derivative_part = new Matrix(num_rows, 1, new Array(num_rows).fill(1))
 
       // One coefficient per term
       let term_coef = 2 * t.getStats()['coeff']
@@ -428,7 +428,7 @@ class Model extends CacheMixin(Observable) {
           let current_exp = tValue[1];
           
           // Get the current column of data
-          let current_col = model[_data][FIT_LABEL].col(current_index)['data'];
+          let current_col = model[_data][label].col(current_index)['data'];
 
           let part;
           if (current_index == index) {
@@ -442,8 +442,7 @@ class Model extends CacheMixin(Observable) {
             // [COLUMN DATA]^(current_exp)
             part = statistics.compute('sensitivity_part', { data: current_col, exp: current_exp, derivative:false });
           }
-          derivative_part = derivative_part.add(new Matrix(num_rows, 1, part));
-
+          derivative_part = derivative_part.dotMultiply(new Matrix(num_rows, 1, part));
         });
 
         if (contains_variable) {
