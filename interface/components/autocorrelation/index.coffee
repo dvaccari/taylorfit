@@ -115,7 +115,7 @@ ko.components.register "tf-autocorrelation",
       console.log(errors)
 
       labels = Array(@bucket_size()).fill(0).map((x, index) => index + 1)
-
+      # global varible 'chart' can be accessed in download function
       global.chart = c3.generate
         bindto: "#autocorrelation"
         data:

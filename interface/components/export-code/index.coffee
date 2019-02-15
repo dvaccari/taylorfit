@@ -31,8 +31,6 @@ ko.components.register "tf-export-code",
           return exporter.matlabFunc()
         if @language() == "python"
           return exporter.pythonFunc()
-        if @language() == "r"
-          return exporter.rFunc()
       return ""
 
     @close = ( ) ->

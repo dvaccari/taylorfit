@@ -50,6 +50,7 @@ ko.components.register "tf-xyplot",
       unless @active()
         return ""
 
+      # global varible 'chart' can be accessed in download function
       global.chart = c3.generate
         bindto: "#xyplot"
         data:
@@ -119,6 +120,10 @@ ko.components.register "tf-xyplot",
 
       tick = svg_element.querySelectorAll ".tick"
       text = tick[19].getElementsByTagName("text")
+      transform_y_val = (getComputedStyle(tick[19]).getPropertyValue('transform').replace(/^matrix(3d)?\((.*)\)$/,'$2').split(/, /)[5])*1
+      # use transform property to check if the SVG element is on the top position of y axis
+      if transform_y_val != 1
+        text = tick[13].getElementsByTagName("text")
       original_y = text[0].getAttribute "y"
       text[0].setAttribute "y", original_y+3
 
