@@ -13,5 +13,10 @@
       | Matlab
     span.mark(data-bind="click:function(){language('python')}")
       | Python
+    span.mark(data-bind="click:function(){language('r')}")
+      | R
+
+  // ko if:language() == 'c++'
   span <br/>For c++, include math.h
-  textarea(data-bind="text:code()")
+  // /ko
+  textarea(data-bind="text:code()") 
