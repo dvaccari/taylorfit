@@ -26,7 +26,7 @@
   { "id": "MaxAbsErr", "displayName": "Max|Err|", "sort": ">"},
   { "id": "RMSE", "sort": ">"},
   { "id": "SKEW", "sort": "<"},
-  { "id": "KURT", "sort": "<"},
+  { "id": "XKURT", "sort": "<"},
 
   { "id": "PLACEHOLDER"}, 
 

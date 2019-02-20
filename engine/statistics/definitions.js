@@ -33,7 +33,7 @@ module.exports = [
  
     return nd * residuals.sub(residMean).dotPow(3).sum() / (nd - 1) / (nd - 2) / residStDv / residStDv / residStDv;
   }),
-  Statistic('KURT', ['y', 'yHat', 'nd'], ({y, yHat, nd}) => {
+  Statistic('XKURT', ['y', 'yHat', 'nd'], ({y, yHat, nd}) => {
     let residuals = y.sub(yHat);
     let residMean = residuals.sum() / residuals.shape[0];
     let residStDv = Math.sqrt(residuals.sub(residMean).dotPow(2).sum() / (nd - 1));
