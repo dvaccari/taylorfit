@@ -68,12 +68,12 @@
       // ko ifnot:((name=='PLACEHOLDER') || (name=='s.e. SKEW') || (name=='s.e. KURT'))
       tr.stat
         td.name(data-bind="text:name")
-        td.value(data-bind="num:$parent.fit().stats[id], fmt: format")
+        td.value(data-bind="num:$component.round_stat($parent.fit().stats[id]), fmt: format")
         // ko if: ($parent.cross() && $parent.data_cross())
-        td.value(data-bind="num:$parent.cross().stats[id], fmt: format")
+        td.value(data-bind="num:$component.round_stat($parent.cross().stats[id]), fmt: format")
         // /ko
         // ko if: ($parent.validation() && $parent.data_validation())
-        td.value(data-bind="num:$parent.validation().stats[id], fmt: format")
+        td.value(data-bind="num:$component.round_stat($parent.validation().stats[id]), fmt: format")
         // /ko
       // /ko
       // ko if:name=='PLACEHOLDER'
