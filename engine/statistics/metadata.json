@@ -38,7 +38,7 @@
   { "id": "PLACEHOLDER"}, 
 
   { "id": "seSKEW", "displayName": "s.e. SKEW", "sort": "<" },
-  { "id": "seXKURT", "displayName": "s.e. KURT", "sort": "<" },
+  { "id": "seXKURT", "displayName": "s.e. XKURT", "sort": "<" },
 
 
   { "id": "t", "sort": "|<|", "candidateOnly": true, "default": true },
