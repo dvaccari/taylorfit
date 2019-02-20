@@ -47,7 +47,7 @@ ko.components.register "tf-loader",
     @init = params.init
     @table = params.table
 
-    @load_dataset = (dataset) =>
+    @load_dataset = (dataset) ->
       params.model new Model require("interface/demo-data/#{dataset}")
 
     @id = "input-#{@table}-dataset"
@@ -55,7 +55,7 @@ ko.components.register "tf-loader",
     # --- for loading just dataset
     @dataset = ko.observable null
     @show_partition = ko.observable undefined
-    @temp_model = null
+    @temp_model = ko.observable undefined
     @dataset.subscribe ( next ) =>
       # Importing CSV file
       read_csv document.getElementById(@id).files[0]
@@ -63,7 +63,7 @@ ko.components.register "tf-loader",
       .then ( model ) =>
         if @init # Importing data
           # TODO (justint): Prompt user if would like to partition
-          @temp_model = model
+          @temp_model(model)
           @show_partition(true)
           # params.model new Model
           #   "data_#{@table}": model.rows
