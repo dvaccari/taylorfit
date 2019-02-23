@@ -81,7 +81,11 @@ ko.components.register "tf-data-partition",
         partition_percentage = cross_partition / 100
         num_rows = Math.round(data_rows * partition_percentage)
         init_cross_start_row = @cross_row_start()
-        start_row = init_cross_start_row || @fit_row_end() + 1
+        start_row = if init_cross_start_row
+        then init_cross_start_row
+        else if @fit_row_end() && @fit_row_end() < data_rows
+        then @fit_row_end() + 1
+        else data_rows
         if init_cross_start_row == undefined
           @cross_row_start(start_row)
         end_row = if data_rows <= start_row + num_rows then data_rows else start_row + num_rows
