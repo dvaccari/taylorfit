@@ -13,43 +13,112 @@ ko.components.register "tf-data-partition",
     model = params.model
     @show_partition = params.show_partition
     # Partition amount
-    # TODO (justint) edge case if percentage is not whole number row
     @fit_p = ko.observable 100
     @cross_p = ko.observable 0
     @validate_p = ko.observable 0
-    @fit_row_start = ko.computed () ->
-      if model() != undefined then 1 else 0
-    @fit_row_end = ko.computed () ->
-      if model() != undefined && model().rows != undefined
-      then model().rows.length
-      else 0
+    # Partition rows
+    @fit_row_start = ko.observable 0
+    @fit_row_end = ko.observable 0
+    @cross_row_start = ko.observable undefined
+    @cross_row_end = ko.observable undefined
+    @validate_row_start = ko.observable undefined
+    @validate_row_end = ko.observable undefined
     # Errors
     @error_msg = ko.observable undefined
-    @fit_invalid = ko.observable undefined
-    @cross_invalid = ko.observable undefined
-    @validate_invalid = ko.observable undefined
+    @fit_invalid = ko.observable false
+    @cross_invalid = ko.observable false
+    @validate_invalid = ko.observable false
 
-    check_partition_valid = () ->
-      !@fit_invalid() ||
-      !@cross_invalid() ||
-      !@validate_invalid() ||
-      (@fit_p() + @cross_p() + @validate_p() < 0) ||
-      (@fit_p() + @cross_p() + @validate_p()  > 100)
+    check_split_valid = ( num ) ->
+      num != undefined &&
+      num != null &&
+      num >= 0 &&
+      num <= 100 &&
+      !isNaN(num)
 
     @change_fit_partition = ( ) ->
-      @fit_invalid(!@fit_p() || isNaN(@fit_p()))
-      if check_partition_valid()
+      fit_partition = Number(@fit_p())
+      cross_partition = Number(@cross_p())
+      validate_partition = Number(@validate_p())
+      is_fit_invalid = !check_split_valid(fit_partition)
+      @fit_invalid(is_fit_invalid)
+      sum_partition = fit_partition + cross_partition + validate_partition
+      is_invalid_partition = is_fit_invalid ||
+        @cross_invalid() ||
+        @validate_invalid() ||
+        sum_partition < 0 ||
+        sum_partition > 100
+      if is_invalid_partition
         @error_msg("Invalid fit partition percentage")
-    
+      else
+        data_rows = model().rows.length
+        partition_percentage = fit_partition / 100
+        num_rows = Math.round(data_rows * partition_percentage)
+        start_row = @fit_row_start()
+        end_row = if data_rows <= start_row + num_rows then data_rows else start_row + num_rows
+        @fit_row_end(end_row)
+        @error_msg(undefined)
+
     @change_cross_partition = ( ) ->
-      @cross_invalid(!@cross_p() || isNaN(@cross_p()))
-      if check_partition_valid()
-        @error_msg("Invalid fit partition percentage")
+      # Get partition values
+      fit_partition = Number(@fit_p())
+      cross_partition = Number(@cross_p())
+      validate_partition = Number(@validate_p())
+      #check if cross partition is valid number value
+      cross_split_invalid = !check_split_valid(cross_partition)
+      @cross_invalid(cross_split_invalid)
+      # Get sum of partition values
+      sum_partition = fit_partition + cross_partition + validate_partition
+      is_invalid_partition = @fit_invalid() ||
+        cross_split_invalid||
+        @validate_invalid() ||
+        sum_partition < 0 ||
+        sum_partition > 100
+      if is_invalid_partition
+        @error_msg("Invalid cross partition percentage")
+      else
+        data_rows = model().rows.length
+        partition_percentage = cross_partition / 100
+        num_rows = Math.round(data_rows * partition_percentage)
+        init_cross_start_row = @cross_row_start()
+        start_row = init_cross_start_row || @fit_row_end() + 1
+        if init_cross_start_row == undefined
+          @cross_row_start(start_row)
+        end_row = if data_rows <= start_row + num_rows then data_rows else start_row + num_rows
+        @cross_row_end(end_row)
+        @error_msg(undefined)
     
     @change_validate_partition = ( ) ->
-      @validate_invalid(!@validate_p() || isNaN(@cross_p()))
-      if check_partition_valid()
-        @error_msg("Invalid fit partition percentage")
+      fit_partition = Number(@fit_p())
+      cross_partition = Number(@cross_p())
+      validate_partition = Number(@validate_p())
+      validate_split_invalid = !check_split_valid(validate_partition)
+      @validate_invalid(validate_split_invalid)
+      sum_partition = fit_partition + cross_partition + validate_partition
+      is_invalid_partition = @fit_invalid() ||
+        @cross_invalid() ||
+        validate_split_invalid ||
+        sum_partition < 0 ||
+        sum_partition > 100
+      if is_invalid_partition
+        @error_msg("Invalid validate partition percentage")
+      else
+        data_rows = model().rows.length
+        partition_percentage = validate_partition / 100
+        num_rows = Math.round(data_rows * partition_percentage)
+        init_start_row = @validate_row_start()
+        start_row = if init_start_row
+        then init_start_row
+        else if @cross_row_end()
+        then @cross_row_end() + 1
+        else if @fit_row_end()
+        then @fit_row_end() + 1
+        else 1
+        if init_start_row == undefined
+          @validate_row_start(start_row)
+        end_row = if data_rows <= start_row + num_rows then data_rows else start_row + num_rows
+        @validate_row_end(end_row)
+        @error_msg(undefined)
     
     @import_dataset = ( ) ->
 
@@ -57,5 +126,11 @@ ko.components.register "tf-data-partition",
     # Check if data partition popup should render
     @active = ko.computed ( ) =>
       @show_partition() != undefined && @show_partition() != false
+
+    model.subscribe ( nextModel ) =>
+      if nextModel != undefined
+        @fit_row_start(1)
+        if nextModel.rows != undefined
+          @fit_row_end(nextModel.rows.length)
 
     return this

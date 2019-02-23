@@ -5,44 +5,48 @@
     div.sub_partition
       p Fit
       span.percent_container
-        input(type="text"
+        input(type="number"
           data-bind="textInput:fit_p,event:{keyup:change_fit_partition},css:{invalid:fit_invalid}"
           placeholder="0")
         p %
       span.rows_container
         p Rows
-        input(type="text"
-          data-bind="textInput:fit_row_start,event:{keyup:change_fit_partition},css:{invalid:fit_invalid}")
+        input(type="number"
+          data-bind="numeric, textInput:fit_row_start,event:{keyup:change_fit_partition},css:{invalid:fit_invalid}")
         p -
-        input(type="text"
+        input(type="number"
           data-bind="textInput:fit_row_end,css:{invalid:fit_invalid}")
     div.sub_partition
       p Cross
       span.percent_container
-        input(type="text"
-          data-bind="textInput:cross_p,event:{keyup:change_cross_partition},css:{invalid:cross_invalid}"
+        input(type="number"
+          data-bind="numeric,textInput:cross_p,event:{keyup:change_cross_partition},css:{invalid:cross_invalid}"
           placeholder="0")
         p %
       span.rows_container
         p Rows
-        input(type="text")
+        input(type="number"
+          data-bind="numeric, textInput:cross_row_start,event:{keyup:change_cross_partition},css:{invalid:cross_invalid}")
         p -
-        input(type="text")
+        input(type="number"
+          data-bind="numeric, textInput:cross_row_end,event:{keyup:change_cross_partition},css:{invalid:cross_invalid}")
     div.sub_partition
       p Validate
       span.percent_container
-        input(type="text"
-          data-bind="textInput:validate_p,event:{keyup:change_validate_partition},css:{invalid:validate_invalid}"
+        input(type="number"
+          data-bind="numeric,textInput:validate_p,event:{keyup:change_validate_partition},css:{invalid:validate_invalid}"
           placeholder="0")
         p %
       span.rows_container
         p Rows
-        input(type="text")
+        input(type="number"
+          data-bind="numeric, textInput:validate_row_start,event:{keyup:change_validate_partition},css:{invalid:validate_invalid}")
         p - 
-        input(type="text")
+        input(type="number"
+          data-bind="numeric, textInput:validate_row_end,event:{keyup:change_validate_partition},css:{invalid:validate_invalid}")
     button.option(
       data-bind="click:function(){import_dataset()}"
     ) Import
     // ko ifnot: error_msg == undefined
-    p #{error_msg}
+    span(data-bind="text: error_msg")
     // /ko
