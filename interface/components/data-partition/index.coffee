@@ -136,11 +136,28 @@ ko.components.register "tf-data-partition",
       else if fit_row_start < 1
         @error_msg("Fit start row has to be at least 1")
       else if fit_row_start > data_rows
-        @error_msg("Fit start row has to be less than", data_rows)
+        @error_msg("Fit start row has to be less than or equal to", data_rows)
       else if fit_row_start > fit_row_end
         @error_msg("Fit start row has to be less than the fit end row")
       else
-        partition_percentage = Math.round((fit_row_end - fit_row_start) / data_rows * 100)
+        partition_percentage = Math.round((fit_row_end - fit_row_start + 1) / data_rows * 100)
+        @fit_p(partition_percentage)
+        @error_msg(undefined)
+    
+    @change_fit_end_row = ( ) ->
+      fit_row_start = Number(@fit_row_start())
+      fit_row_end = Number(@fit_row_end())
+      data_rows = model().rows.length
+      if fit_row_end == undefined
+        @error_msg("Fit end row is not defined")
+      else if fit_row_end < 1
+        @error_msg("Fit end row has to be at least 1")
+      else if fit_row_end > data_rows
+        @error_msg("Fit end row has to be less than or equal to", data_rows)
+      else if fit_row_start > fit_row_end
+        @error_msg("Fit start row has to be less than the fit end row")
+      else
+        partition_percentage = Math.round((fit_row_end - fit_row_start + 1) / data_rows * 100)
         @fit_p(partition_percentage)
         @error_msg(undefined)
     

@@ -15,7 +15,7 @@
           data-bind="numeric, textInput:fit_row_start,event:{keyup:change_fit_start_row},css:{invalid:fit_invalid}")
         p -
         input(type="number"
-          data-bind="textInput:fit_row_end,css:{invalid:fit_invalid}")
+          data-bind="numeric, textInput:fit_row_end,event:{keyup:change_fit_end_row},css:{invalid:fit_invalid}")
     div.sub_partition
       p Cross
       span.percent_container
@@ -26,10 +26,10 @@
       span.rows_container
         p Rows
         input(type="number"
-          data-bind="numeric, textInput:cross_row_start,event:{keyup:change_cross_partition},css:{invalid:cross_invalid}")
+          data-bind="numeric, textInput:cross_row_start,event:{keyup:change_cross_start_row},css:{invalid:cross_invalid}")
         p -
         input(type="number"
-          data-bind="numeric, textInput:cross_row_end,event:{keyup:change_cross_partition},css:{invalid:cross_invalid}")
+          data-bind="numeric, textInput:cross_row_end,event:{keyup:change_cross_end_row},css:{invalid:cross_invalid}")
     div.sub_partition
       p Validate
       span.percent_container
