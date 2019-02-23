@@ -40,10 +40,10 @@
       span.rows_container
         p Rows
         input(type="number"
-          data-bind="numeric, textInput:validate_row_start,event:{keyup:change_validate_partition},css:{invalid:validate_invalid}")
+          data-bind="numeric, textInput:validate_row_start,event:{keyup:change_validate_start_row},css:{invalid:validate_invalid}")
         p - 
         input(type="number"
-          data-bind="numeric, textInput:validate_row_end,event:{keyup:change_validate_partition},css:{invalid:validate_invalid}")
+          data-bind="numeric, textInput:validate_row_end,event:{keyup:change_validate_end_row},css:{invalid:validate_invalid}")
     button.option(
       data-bind="click:function(){import_dataset()}"
     ) Import

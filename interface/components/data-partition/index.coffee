@@ -136,7 +136,7 @@ ko.components.register "tf-data-partition",
       else if fit_row_start < 1
         @error_msg("Fit start row has to be at least 1")
       else if fit_row_start > data_rows
-        @error_msg("Fit start row has to be less than or equal to", data_rows)
+        @error_msg("Fit start row has to be less than or equal to " + data_rows)
       else if fit_row_start > fit_row_end
         @error_msg("Fit start row has to be less than the fit end row")
       else
@@ -153,7 +153,7 @@ ko.components.register "tf-data-partition",
       else if fit_row_end < 1
         @error_msg("Fit end row has to be at least 1")
       else if fit_row_end > data_rows
-        @error_msg("Fit end row has to be less than or equal to", data_rows)
+        @error_msg("Fit end row has to be less than or equal to " + data_rows)
       else if fit_row_start > fit_row_end
         @error_msg("Fit end row has to be less than the fit end row")
       else
@@ -170,7 +170,7 @@ ko.components.register "tf-data-partition",
       else if cross_row_start < 1
         @error_msg("Cross start row has to be at least 1")
       else if cross_row_start > data_rows
-        @error_msg("Cross start row has to be less than or equal to", data_rows)
+        @error_msg("Cross start row has to be less than or equal to " + data_rows)
       else if cross_row_start > cross_row_end
         @error_msg("Cross start row has to be less than the cross end row")
       else
@@ -187,12 +187,46 @@ ko.components.register "tf-data-partition",
       else if cross_row_end < 1
         @error_msg("Cross end row has to be at least 1")
       else if cross_row_end > data_rows
-        @error_msg("Cross end row has to be less than or equal to", data_rows)
+        @error_msg("Cross end row has to be less than or equal to " + data_rows)
       else if cross_row_start > cross_row_end
         @error_msg("Cross end row has to be less than the cross end row")
       else
         partition_percentage = Math.round((cross_row_end - cross_row_start + 1) / data_rows * 100)
         @cross_p(partition_percentage)
+        @error_msg(undefined)
+    
+    @change_validate_start_row = ( ) ->
+      validate_row_start = Number(@validate_row_start())
+      validate_row_end = Number(@validate_row_end())
+      data_rows = model().rows.length
+      if validate_row_start == undefined
+        @error_msg("Validate start row is not defined")
+      else if validate_row_start < 1
+        @error_msg("Validate start row has to be at least 1")
+      else if validate_row_start > data_rows
+        @error_msg("Validate start row has to be less than or equal to " + data_rows)
+      else if validate_row_start > validate_row_end
+        @error_msg("Validate start row has to be less than the validate end row")
+      else
+        partition_percentage = Math.round((validate_row_end - validate_row_start + 1) / data_rows * 100)
+        @validate_p(partition_percentage)
+        @error_msg(undefined)
+
+    @change_validate_end_row = ( ) ->
+      validate_row_start = Number(@validate_row_start())
+      validate_row_end = Number(@validate_row_end())
+      data_rows = model().rows.length
+      if validate_row_end == undefined
+        @error_msg("Validate end row is not defined")
+      else if validate_row_end < 1
+        @error_msg("Validate end row has to be at least 1")
+      else if validate_row_end > data_rows
+        @error_msg("Validate end row has to be less than or equal to " + data_rows)
+      else if validate_row_start > validate_row_end
+        @error_msg("Validate end row has to be less than the validate end row")
+      else
+        partition_percentage = Math.round((validate_row_end - validate_row_start + 1) / data_rows * 100)
+        @validate_p(partition_percentage)
         @error_msg(undefined)
     
     @import_dataset = ( ) ->
