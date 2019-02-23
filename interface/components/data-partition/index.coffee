@@ -127,7 +127,7 @@ ko.components.register "tf-data-partition",
     '''
     Function handles data input change for row start of the fit partition
     '''
-    @change_fit_start_row = () ->
+    @change_fit_start_row = ( ) ->
       fit_row_start = Number(@fit_row_start())
       fit_row_end = Number(@fit_row_end())
       data_rows = model().rows.length
@@ -155,10 +155,44 @@ ko.components.register "tf-data-partition",
       else if fit_row_end > data_rows
         @error_msg("Fit end row has to be less than or equal to", data_rows)
       else if fit_row_start > fit_row_end
-        @error_msg("Fit start row has to be less than the fit end row")
+        @error_msg("Fit end row has to be less than the fit end row")
       else
         partition_percentage = Math.round((fit_row_end - fit_row_start + 1) / data_rows * 100)
         @fit_p(partition_percentage)
+        @error_msg(undefined)
+    
+    @change_cross_start_row = ( ) ->
+      cross_row_start = Number(@cross_row_start())
+      cross_row_end = Number(@cross_row_end())
+      data_rows = model().rows.length
+      if cross_row_start == undefined
+        @error_msg("Cross start row is not defined")
+      else if cross_row_start < 1
+        @error_msg("Cross start row has to be at least 1")
+      else if cross_row_start > data_rows
+        @error_msg("Cross start row has to be less than or equal to", data_rows)
+      else if cross_row_start > cross_row_end
+        @error_msg("Cross start row has to be less than the cross end row")
+      else
+        partition_percentage = Math.round((cross_row_end - cross_row_start + 1) / data_rows * 100)
+        @cross_p(partition_percentage)
+        @error_msg(undefined)
+
+    @change_cross_end_row = ( ) ->
+      cross_row_start = Number(@cross_row_start())
+      cross_row_end = Number(@cross_row_end())
+      data_rows = model().rows.length
+      if cross_row_end == undefined
+        @error_msg("Cross end row is not defined")
+      else if cross_row_end < 1
+        @error_msg("Cross end row has to be at least 1")
+      else if cross_row_end > data_rows
+        @error_msg("Cross end row has to be less than or equal to", data_rows)
+      else if cross_row_start > cross_row_end
+        @error_msg("Cross end row has to be less than the cross end row")
+      else
+        partition_percentage = Math.round((cross_row_end - cross_row_start + 1) / data_rows * 100)
+        @cross_p(partition_percentage)
         @error_msg(undefined)
     
     @import_dataset = ( ) ->

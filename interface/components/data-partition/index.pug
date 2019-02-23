@@ -12,10 +12,10 @@
       span.rows_container
         p Rows
         input(type="number"
-          data-bind="numeric, textInput:fit_row_start,event:{keyup:change_fit_start_row},css:{invalid:fit_invalid}")
+          data-bind="textInput:fit_row_start,event:{keyup:change_fit_start_row},css:{invalid:fit_invalid}")
         p -
         input(type="number"
-          data-bind="numeric, textInput:fit_row_end,event:{keyup:change_fit_end_row},css:{invalid:fit_invalid}")
+          data-bind="textInput:fit_row_end,event:{keyup:change_fit_end_row},css:{invalid:fit_invalid}")
     div.sub_partition
       p Cross
       span.percent_container
