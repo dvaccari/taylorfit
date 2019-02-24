@@ -62,7 +62,6 @@ ko.components.register "tf-loader",
       # Completed parsing CSV to build model
       .then ( model ) =>
         if @init # Importing data
-          # TODO (justint): Prompt user if would like to partition
           @temp_model(model)
           @show_partition(true)
           # params.model new Model
@@ -74,6 +73,37 @@ ko.components.register "tf-loader",
           # TODO: check for column length
           m["data_#{@table}"] model.rows
           m["name_#{@table}"] = model.name
+    
+     # --- Use from data partition modal
+    @import_partition = (
+      fit_row_start,
+      fit_row_end,
+      cross_row_start,
+      cross_row_end,
+      validate_row_start,
+      validate_row_end,
+    ) ->
+      console.log @temp_model()
+      model = @temp_model()
+      data_fit = if fit_row_start != 0
+      then model.rows[fit_row_start - 1..fit_row_end - 1]
+      else undefined
+
+      data_cross = if cross_row_start != 0
+      then model.rows[cross_row_start - 1..cross_row_end - 1]
+      else undefined
+
+      data_validate = if validate_row_start != 0
+      then model.rows[validate_row_start - 1..validate_row_end - 1]
+      else undefined
+
+      params.model new Model
+        data_fit: data_fit
+        data_cross: data_cross
+        data_validate: data_validate
+        name: model.name
+        columns: model.cols
+      @show_partition(false)
 
     # --- for loading entire model
     if @init
