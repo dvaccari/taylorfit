@@ -51,13 +51,19 @@ ko.components.register "tf-data-partition",
       if is_invalid_partition
         @error_msg("Invalid fit partition percentage")
       else
-        data_rows = model().rows.length
-        partition_percentage = fit_partition / 100
-        num_rows = Math.round(data_rows * partition_percentage)
-        start_row = @fit_row_start()
-        end_row = if data_rows <= start_row + num_rows then data_rows else start_row + num_rows
-        @fit_row_end(end_row)
         @error_msg(undefined)
+        if fit_partition == 0
+          @fit_row_start(undefined)
+          @fit_row_end(undefined)
+        else
+          data_rows = model().rows.length
+          partition_percentage = fit_partition / 100
+          num_rows = Math.round(data_rows * partition_percentage)
+          start_row = @fit_row_start() || 1
+          if (@fit_row_start() == undefined)
+            @fit_row_start(1)
+          end_row = if data_rows <= start_row + num_rows then data_rows else start_row + num_rows
+          @fit_row_end(end_row)
 
     @change_cross_partition = ( ) ->
       # Get partition values
@@ -77,20 +83,24 @@ ko.components.register "tf-data-partition",
       if is_invalid_partition
         @error_msg("Invalid cross partition percentage")
       else
-        data_rows = model().rows.length
-        partition_percentage = cross_partition / 100
-        num_rows = Math.round(data_rows * partition_percentage)
-        init_cross_start_row = @cross_row_start()
-        start_row = if init_cross_start_row
-        then init_cross_start_row
-        else if @fit_row_end() && @fit_row_end() < data_rows
-        then @fit_row_end() + 1
-        else data_rows
-        if init_cross_start_row == undefined
-          @cross_row_start(start_row)
-        end_row = if data_rows <= start_row + num_rows then data_rows else start_row + num_rows
-        @cross_row_end(end_row)
         @error_msg(undefined)
+        if cross_partition == 0
+          @cross_row_start(undefined)
+          @cross_row_end(undefined)
+        else
+          data_rows = model().rows.length
+          partition_percentage = cross_partition / 100
+          num_rows = Math.round(data_rows * partition_percentage)
+          init_cross_start_row = @cross_row_start()
+          start_row = if init_cross_start_row
+          then init_cross_start_row
+          else if @fit_row_end() && @fit_row_end() < data_rows
+          then @fit_row_end() + 1
+          else data_rows
+          if init_cross_start_row == undefined
+            @cross_row_start(start_row)
+          end_row = if data_rows <= start_row + num_rows then data_rows else start_row + num_rows
+          @cross_row_end(end_row)
     
     @change_validate_partition = ( ) ->
       fit_partition = Number(@fit_p())
@@ -107,22 +117,26 @@ ko.components.register "tf-data-partition",
       if is_invalid_partition
         @error_msg("Invalid validate partition percentage")
       else
-        data_rows = model().rows.length
-        partition_percentage = validate_partition / 100
-        num_rows = Math.round(data_rows * partition_percentage)
-        init_start_row = @validate_row_start()
-        start_row = if init_start_row
-        then init_start_row
-        else if @cross_row_end()
-        then @cross_row_end() + 1
-        else if @fit_row_end()
-        then @fit_row_end() + 1
-        else 1
-        if init_start_row == undefined
-          @validate_row_start(start_row)
-        end_row = if data_rows <= start_row + num_rows then data_rows else start_row + num_rows
-        @validate_row_end(end_row)
         @error_msg(undefined)
+        if validate_partition == 0
+          @validate_row_start(undefined)
+          @validate_row_end(undefined)
+        else
+          data_rows = model().rows.length
+          partition_percentage = validate_partition / 100
+          num_rows = Math.round(data_rows * partition_percentage)
+          init_start_row = @validate_row_start()
+          start_row = if init_start_row
+          then init_start_row
+          else if @cross_row_end()
+          then @cross_row_end() + 1
+          else if @fit_row_end()
+          then @fit_row_end() + 1
+          else 1
+          if init_start_row == undefined
+            @validate_row_start(start_row)
+          end_row = if data_rows <= start_row + num_rows then data_rows else start_row + num_rows
+          @validate_row_end(end_row)
     
     '''
     Function handles data input change for row start of the fit partition
