@@ -48,5 +48,5 @@
       data-bind="click:function(){import_dataset()}"
     ) Import
     // ko ifnot: error_msg == undefined
-    span(data-bind="text: error_msg")
+    span.error_text(data-bind="text: error_msg")
     // /ko

@@ -229,8 +229,73 @@ ko.components.register "tf-data-partition",
         @validate_p(partition_percentage)
         @error_msg(undefined)
     
+    check_in_range = (num, start, end) ->
+      # The other partition is not partitioned
+      if (start == 0 && end == 0)
+        false
+      else
+        num >= start && num <= end
+    
     @import_dataset = ( ) ->
-
+      fit_p = Number(@fit_p()) || 0
+      cross_p = Number(@cross_p()) || 0
+      validate_p = Number(@validate_p()) || 0
+      fit_row_start = Number(@fit_row_start()) || 0
+      fit_row_end = Number(@fit_row_end()) || 0
+      cross_row_start = Number(@cross_row_start()) || 0
+      cross_row_end = Number(@cross_row_end()) || 0
+      validate_row_start = Number(@validate_row_start()) || 0
+      validate_row_end = Number(@validate_row_end()) || 0
+      data_rows = model().rows.length
+      # Check if percentage 0-100
+      sum_p = fit_p + cross_p + validate_p
+      if (sum_p <= 0 || sum_p > 100)
+        @error_msg("Total partition percentage must be between 1%-100%. The current partition is " + sum_p + "%")
+        false
+      # Check that fit start and end row valid if has partition
+      if (fit_row_start != 0 || fit_row_end != 0)
+        if (fit_row_start == 0 || fit_row_start > data_rows)
+          @error_msg("Fit start row is not between 1-" + data_rows)
+          false
+        else if (fit_row_end == 0 || fit_row_start > data_rows)
+          @error_msg("Fit end row is not between 1-" + data_rows)
+          false
+      # Check that cross start and end row valid if has partition
+      if (cross_row_start != 0 || cross_row_end != 0)
+        if (cross_row_start == 0 || cross_row_start > data_rows)
+          @error_msg("Cross start row is not between 1-" + data_rows)
+          false
+        else if (cross_row_end == 0 || cross_row_end > data_rows)
+          @error_msg("Cross end row is not between 1-" + data_rows)
+          false
+      # Check that validate start and end row valid if has partition
+      if (validate_row_start != 0 || validate_row_end != 0)
+        if (validate_row_start == 0 || validate_row_start > data_rows)
+          @error_msg("Validate start row is not between 1-" + data_rows)
+          false
+        else if (validate_row_end == 0 || validate_row_end > data_rows)
+          @error_msg("Validate end row is not between 1-" + data_rows)
+          false
+      # Check that start and end row don't overlap with other partitions
+      if check_in_range(fit_row_start, cross_row_start, cross_row_end) || check_in_range(fit_row_end, cross_row_start, cross_row_end)
+        @error_msg("Fit partition range overlaps with cross partition range")
+        false
+      else if check_in_range(fit_row_start, validate_row_start, validate_row_end) || check_in_range(fit_row_end, validate_row_start, validate_row_end)
+        @error_msg("Fit partition range overlaps with validate partition range")
+        false
+      else if check_in_range(cross_row_start, fit_row_start, fit_row_end) || check_in_range(cross_row_end, fit_row_start, fit_row_end)
+        @error_msg("Cross partition range overlaps with fit partition range")
+        false
+      else if check_in_range(cross_row_start, validate_row_start, validate_row_end) || check_in_range(cross_row_end, validate_row_start, validate_row_end)
+        @error_msg("Cross partition range overlaps with validate partition range")
+        false
+      else if check_in_range(validate_row_start, fit_row_start, fit_row_end) || check_in_range(validate_row_end, fit_row_start, fit_row_end)
+        @error_msg("Validate partition range overlaps with fit partition range")
+        false
+      else if check_in_range(validate_row_start, cross_row_start, cross_row_end) || check_in_range(validate_row_end, cross_row_start, cross_row_end)
+        @error_msg("Validate partition range overlaps with cross partition range")
+        false
+      true
 
     # Check if data partition popup should render
     @active = ko.computed ( ) =>
