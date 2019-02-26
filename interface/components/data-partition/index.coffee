@@ -12,7 +12,6 @@ ko.components.register "tf-data-partition",
 
     model = params.model
     @show_partition = params.show_partition
-    import_partition = params.import_partition
     # Partition amount
     @fit_p = ko.observable 100
     @cross_p = ko.observable 0
@@ -311,7 +310,7 @@ ko.components.register "tf-data-partition",
         @error_msg("Validate partition range overlaps with cross partition range")
         false
       # Partition ranges are valid
-      import_partition(
+      params.parent.import_partition(
         fit_row_start,
         fit_row_end,
         cross_row_start,

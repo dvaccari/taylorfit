@@ -83,7 +83,6 @@ ko.components.register "tf-loader",
       validate_row_start,
       validate_row_end,
     ) ->
-      console.log @temp_model()
       model = @temp_model()
       data_fit = if fit_row_start != 0
       then model.rows[fit_row_start - 1..fit_row_end - 1]
@@ -100,7 +99,7 @@ ko.components.register "tf-loader",
       params.model new Model
         data_fit: data_fit
         data_cross: data_cross
-        data_validate: data_validate
+        data_validation: data_validate
         name: model.name
         columns: model.cols
       @show_partition(false)
