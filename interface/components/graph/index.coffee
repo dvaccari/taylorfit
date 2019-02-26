@@ -97,10 +97,13 @@ ko.components.register "tf-graph",
         svg_element.style.backgroundColor = "white"
         
         tick = svg_element.querySelectorAll ".tick"
-        if !fit_visible && !cross_visible && !validation_visible
-          text = tick[1].getElementsByTagName("text")   
-        else
-          text = tick[3].getElementsByTagName("text")
+        if tick.length == 15
+          text = tick[2].getElementsByTagName("text")   
+        else 
+          if !fit_visible && !cross_visible && !validation_visible
+            text = tick[1].getElementsByTagName("text")   
+          else
+            text = tick[3].getElementsByTagName("text")
         original_y = text[0].getAttribute "y"
         text[0].setAttribute "y", original_y + 3
 
