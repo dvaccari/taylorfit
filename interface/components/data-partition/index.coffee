@@ -309,16 +309,17 @@ ko.components.register "tf-data-partition",
       else if check_in_range(validate_row_start, cross_row_start, cross_row_end) || check_in_range(validate_row_end, cross_row_start, cross_row_end)
         @error_msg("Validate partition range overlaps with cross partition range")
         false
-      # Partition ranges are valid
-      params.parent.import_partition(
-        fit_row_start,
-        fit_row_end,
-        cross_row_start,
-        cross_row_end,
-        validate_row_start,
-        validate_row_end,
-      )
-      true
+      else
+        # Partition ranges are valid
+        params.parent.import_partition(
+          fit_row_start,
+          fit_row_end,
+          cross_row_start,
+          cross_row_end,
+          validate_row_start,
+          validate_row_end,
+        )
+        true
 
     # Check if data partition popup should render
     @active = ko.computed ( ) =>
