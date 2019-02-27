@@ -263,52 +263,61 @@ ko.components.register "tf-data-partition",
       data_rows = model().rows.length
       # Check if percentage 0-100
       sum_p = fit_p + cross_p + validate_p
+      if @fit_invalid()
+        @error_msg("Fit partition is invalid")
+        return false
+      else if @cross_invalid()
+        @error_msg("Cross partition is invalid")
+        return false
+      else if @validate_invalid()
+        @error_msg("Validation partition is invalid")
+        return false
       if (sum_p <= 0 || sum_p > 100)
         @error_msg("Total partition percentage must be between 1%-100%. The current partition is " + sum_p + "%")
-        false
+        return false
       # Check that fit start and end row valid if has partition
       if (fit_row_start != 0 || fit_row_end != 0)
         if (fit_row_start == 0 || fit_row_start > data_rows)
           @error_msg("Fit start row is not between 1-" + data_rows)
-          false
+          return false
         else if (fit_row_end == 0 || fit_row_start > data_rows)
           @error_msg("Fit end row is not between 1-" + data_rows)
-          false
+          return false
       # Check that cross start and end row valid if has partition
       if (cross_row_start != 0 || cross_row_end != 0)
         if (cross_row_start == 0 || cross_row_start > data_rows)
           @error_msg("Cross start row is not between 1-" + data_rows)
-          false
+          return false
         else if (cross_row_end == 0 || cross_row_end > data_rows)
           @error_msg("Cross end row is not between 1-" + data_rows)
-          false
+          return false
       # Check that validate start and end row valid if has partition
       if (validate_row_start != 0 || validate_row_end != 0)
         if (validate_row_start == 0 || validate_row_start > data_rows)
           @error_msg("Validate start row is not between 1-" + data_rows)
-          false
+          return false
         else if (validate_row_end == 0 || validate_row_end > data_rows)
           @error_msg("Validate end row is not between 1-" + data_rows)
-          false
+          return false
       # Check that start and end row don't overlap with other partitions
       if check_in_range(fit_row_start, cross_row_start, cross_row_end) || check_in_range(fit_row_end, cross_row_start, cross_row_end)
         @error_msg("Fit partition range overlaps with cross partition range")
-        false
+        return false
       else if check_in_range(fit_row_start, validate_row_start, validate_row_end) || check_in_range(fit_row_end, validate_row_start, validate_row_end)
         @error_msg("Fit partition range overlaps with validate partition range")
-        false
+        return false
       else if check_in_range(cross_row_start, fit_row_start, fit_row_end) || check_in_range(cross_row_end, fit_row_start, fit_row_end)
         @error_msg("Cross partition range overlaps with fit partition range")
-        false
+        return false
       else if check_in_range(cross_row_start, validate_row_start, validate_row_end) || check_in_range(cross_row_end, validate_row_start, validate_row_end)
         @error_msg("Cross partition range overlaps with validate partition range")
-        false
+        return false
       else if check_in_range(validate_row_start, fit_row_start, fit_row_end) || check_in_range(validate_row_end, fit_row_start, fit_row_end)
         @error_msg("Validate partition range overlaps with fit partition range")
-        false
+        return false
       else if check_in_range(validate_row_start, cross_row_start, cross_row_end) || check_in_range(validate_row_end, cross_row_start, cross_row_end)
         @error_msg("Validate partition range overlaps with cross partition range")
-        false
+        return false
       else
         # Partition ranges are valid
         params.parent.import_partition(
@@ -319,7 +328,7 @@ ko.components.register "tf-data-partition",
           validate_row_start,
           validate_row_end,
         )
-        true
+        return true
 
     # Check if data partition popup should render
     @active = ko.computed ( ) =>
