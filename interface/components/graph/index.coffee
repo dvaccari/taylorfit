@@ -97,13 +97,16 @@ ko.components.register "tf-graph",
         svg_element.style.backgroundColor = "white"
         
         tick = svg_element.querySelectorAll ".tick"
-        if tick.length == 15
-          text = tick[2].getElementsByTagName("text")   
-        else 
-          if !fit_visible && !cross_visible && !validation_visible
-            text = tick[1].getElementsByTagName("text")   
-          else
-            text = tick[3].getElementsByTagName("text")
+        num_arr = Array(tick.length).fill(0).map((x, y) => y)
+
+        for num in num_arr
+          # use transform property to check if the SVG element is on the top position of y axis
+          transform_y_val = (getComputedStyle(tick[num]).getPropertyValue('transform').replace(/^matrix(3d)?\((.*)\)$/,'$2').split(/, /)[5])*1
+          if transform_y_val == 1
+            text = tick[num].getElementsByTagName("text")
+            # stop the loop once the SVG element on the top position of y axis is found
+            break
+
         original_y = text[0].getAttribute "y"
         text[0].setAttribute "y", original_y + 3
 
