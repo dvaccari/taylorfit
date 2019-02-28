@@ -67,7 +67,7 @@ ko.components.register "tf-result",
 
       index = () =>
         return if (++counter == 1) then "" else counter
-      
+
       labels = [ ]
       if fit
         labels.push "x" + index()
@@ -78,9 +78,9 @@ ko.components.register "tf-result",
       if validation
         labels.push "x" + index()
         labels.push "Validation Data"
-      
+
       return labels
-    
+
     noExponents = ( num ) ->
       data = String(num).split(/[eE]/)
       if data.length == 1
@@ -100,8 +100,6 @@ ko.components.register "tf-result",
       str + z
 
     @round_stat = ( num ) ->
-      console.log("Original", num)
-      console.log("New", Number(noExponents(num)).toFixed(7))
-      Number(noExponents(num)).toFixed(7)
+      Number(noExponents(num)).toFixed(8)
 
     return this
