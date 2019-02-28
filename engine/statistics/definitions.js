@@ -33,7 +33,7 @@ module.exports = [
  
     return nd * residuals.sub(residMean).dotPow(3).sum() / (nd - 1) / (nd - 2) / residStDv / residStDv / residStDv;
   }),
-  Statistic('KURT', ['y', 'yHat', 'nd'], ({y, yHat, nd}) => {
+  Statistic('XKURT', ['y', 'yHat', 'nd'], ({y, yHat, nd}) => {
     let residuals = y.sub(yHat);
     let residMean = residuals.sum() / residuals.shape[0];
     let residStDv = Math.sqrt(residuals.sub(residMean).dotPow(2).sum() / (nd - 1));
@@ -46,7 +46,7 @@ module.exports = [
 
   }),
   Statistic('seSKEW', ['nd'], ({nd}) => Math.sqrt(6 / nd)),
-  Statistic('seKURT', ['nd'], ({nd}) => Math.sqrt(24 / nd)),
+  Statistic('seXKURT', ['nd'], ({nd}) => Math.sqrt(24 / nd)),
   Statistic('MSE', ['SSE', 'nd', 'np'], ({SSE, nd, np}) => SSE / (nd - np)),
   Statistic('RMSE', ['MSE'], ({MSE}) => Math.sqrt(MSE)),
   Statistic('Rsq', ['SSE', 'TSS'], ({SSE, TSS}) => 1 - (SSE / TSS)),

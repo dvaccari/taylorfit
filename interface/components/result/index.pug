@@ -65,7 +65,7 @@
       // ko foreach:allstats
       // ko ifnot:candidate
 
-      // ko ifnot:((name=='PLACEHOLDER') || (name=='s.e. SKEW') || (name=='s.e. KURT'))
+      // ko ifnot:((name=='PLACEHOLDER') || (name=='s.e. SKEW') || (name=='s.e. XKURT'))
       tr.stat
         td.name(data-bind="text:name")
         td.value(data-bind="num:$parent.fit().stats[id], fmt: format")
@@ -98,7 +98,7 @@
         td.value(data-bind="num:$parent.validation().stats[id], fmt: format")
         // /ko
       // /ko
-      // ko if: name=='s.e. KURT'
+      // ko if: name=='s.e. XKURT'
       tr.sestat
         td.name(data-bind="text:name")
         td.value(data-bind="num:$parent.fit().stats[id], fmt: format")
