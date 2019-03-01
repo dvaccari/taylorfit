@@ -117,10 +117,11 @@ ko.components.register "tf-xyplot",
         e.style.stroke = "black" 
 
       svg_element.style.backgroundColor = "white"
-      tick = svg_element.querySelectorAll ".tick"      
-      # tick[19], tick[13], tick[12], tick[3], tick[10] are more likely be the SVG element on the top position of y axis
+      tick = svg_element.querySelectorAll ".tick"
+      # the number of tick texts in a plot depends on the content of the plot     
       num_arr = Array(tick.length).fill(0).map((x, y) => y)
-      # put 19, 13, 12, 3, 10 to the beginning of the array
+      # tick[19], tick[13], tick[12], tick[3], tick[10] are more likely be the SVG element on the top position of y axis
+      # put 19, 13, 12, 3, 10 to the beginning of the array (get these values by doing lots of testing)
       num_arr[0]=19
       num_arr[19]=0
       num_arr[1]=13
