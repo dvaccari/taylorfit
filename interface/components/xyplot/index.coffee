@@ -124,13 +124,28 @@ ko.components.register "tf-xyplot",
         e.style.stroke = "black" 
 
       svg_element.style.backgroundColor = "white"
-
       tick = svg_element.querySelectorAll ".tick"
-      text = tick[19].getElementsByTagName("text")
-      transform_y_val = (getComputedStyle(tick[19]).getPropertyValue('transform').replace(/^matrix(3d)?\((.*)\)$/,'$2').split(/, /)[5])*1
-      # use transform property to check if the SVG element is on the top position of y axis
-      if transform_y_val != 1
-        text = tick[13].getElementsByTagName("text")
+      # the number of tick texts in a plot depends on the content of the plot     
+      num_arr = Array(tick.length).fill(0).map((x, y) => y)
+      # tick[19], tick[13], tick[12], tick[3], tick[10] are more likely be the SVG element on the top position of y axis
+      # put 19, 13, 12, 3, 10 to the beginning of the array (get these values by doing lots of testing)
+      num_arr[0]=19
+      num_arr[19]=0
+      num_arr[1]=13
+      num_arr[13]=1
+      num_arr[2]=12
+      num_arr[12]=2
+      num_arr[4]=10
+      num_arr[10]=4
+
+      for num in num_arr
+        # use transform property to check if the SVG element is on the top position of y axis
+        transform_y_val = (getComputedStyle(tick[num]).getPropertyValue('transform').replace(/^matrix(3d)?\((.*)\)$/,'$2').split(/, /)[5])*1
+        if transform_y_val == 1
+          text = tick[num].getElementsByTagName("text")
+          # stop the loop once the SVG element on the top position of y axis is found
+          break
+
       original_y = text[0].getAttribute "y"
       text[0].setAttribute "y", original_y+3
 
