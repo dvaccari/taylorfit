@@ -406,7 +406,7 @@ class Model extends CacheMixin(Observable) {
     return this[_data][label].subset(this[_subsets][label]);
   }
 
-  getSensitivity(index, label=FIT_LABEL) {
+  computeSensitivity(index, label=FIT_LABEL) {
     if (index == undefined) {
       return this;
     }
@@ -452,12 +452,25 @@ class Model extends CacheMixin(Observable) {
     
     });
 
-    this.fire('getSensitivity', {index: index, sensitivity: derivative.data});
+    return {index: index, sensitivity: derivative.data}
+  }
+
+  getSensitivity(index, label=FIT_LABEL) {
+    let res = this.computeSensitivity(index, label);
+    this.fire('getSensitivity', res);
     return this;
   }
 
   deleteSensitivity(index) {
     this.fire('deleteSensitivity', {index: index});
+    return this;
+  }
+
+  updateSensitivity(index, label=FIT_LABEL) {
+    // TODO FIX - THIS ONLY FIRES THE FIRST TIME (NEED TO REFRESH)
+    console.log("WZ - UPDATING SENSITIVITY ON INDEX: ", index);
+    let res = this.computeSensitivity(index, label);
+    this.fire('updateSensitivity', res)
     return this;
   }
 

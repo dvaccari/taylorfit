@@ -62,6 +62,8 @@ CTRL =
     [ undefined   , SEND("getSensitivity", Number)    , IGNORE ]
   delete_sensitivity:
     [ undefined   , SEND("deleteSensitivity", Number) , IGNORE ]
+  update_sensitivity:
+    [ undefined   , SEND("updateSensitivity", Number)  , IGNORE ]
 
   # Loaded from tf-loader
   columns:
@@ -304,6 +306,24 @@ module.exports = class Model
 
         sensitivityColumns.splice(data.index, 1);
         sensitivityData.splice(data.index, 1);
+
+        @sensitivityColumns(sensitivityColumns)
+        @sensitivityData(sensitivityData)
+      , 100
+      adapter.subscribeToChanges()
+
+    adapter.on "model:updateSensitivity", (data) =>
+      setTimeout =>
+        columns = ko.unwrap @columns
+        sensitivityColumns = ko.unwrap @sensitivityColumns
+        sensitivityData = ko.unwrap @sensitivityData
+
+        # Find the column and replace it
+        sensitivityColumns.forEach((col, i) =>
+          if col.index == data.index
+            sensitivityColumns[i] = columns[data.index]
+            sensitivityData[i] = data.sensitivity
+        )
 
         @sensitivityColumns(sensitivityColumns)
         @sensitivityData(sensitivityData)
