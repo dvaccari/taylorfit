@@ -467,8 +467,6 @@ class Model extends CacheMixin(Observable) {
   }
 
   updateSensitivity(index, label=FIT_LABEL) {
-    // TODO FIX - THIS ONLY FIRES THE FIRST TIME (NEED TO REFRESH)
-    console.log("WZ - UPDATING SENSITIVITY ON INDEX: ", index);
     let res = this.computeSensitivity(index, label);
     this.fire('updateSensitivity', res)
     return this;
