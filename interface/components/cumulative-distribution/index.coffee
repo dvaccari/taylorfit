@@ -3,7 +3,7 @@ require "./index.styl"
 c3 = require "c3"
 Model = require "../Model"
 
-ko.components.register "tf-histogram",
+ko.components.register "tf-cumulative-distribution",
   template: do require "./index.pug"
   viewModel: ( params ) ->
 
@@ -12,7 +12,7 @@ ko.components.register "tf-histogram",
       expects [model] to be observable"
     
     model = params.model()
-    @column_index = model.show_histogram
+    @column_index = model.show_cumulative_distribution
 
     @active = ko.computed ( ) => @column_index() != undefined
     
@@ -21,9 +21,6 @@ ko.components.register "tf-histogram",
         return undefined
       index = @column_index()
       if typeof index == "string"
-        if index.indexOf("Sensitivity") != -1
-          index = index.split("_")[1]
-          return "Sensitivity " + model.sensitivityColumns()[index].name
         return index
       return model.columns()[index].name
     
@@ -38,15 +35,10 @@ ko.components.register "tf-histogram",
           index = 1
         if index == "Residual"
           index = 2
-        if index.indexOf("Sensitivity") != -1
-          # format is: Sensitivity_index
-          index = index.split("_")[1]
-          return Object.values(model.sensitivityData()[index])
-        return model["extra_#{model.data_plotted()}"]().map((row) => row[index])
       return model["data_#{model.data_plotted()}"]().map((row) => row[index])
 
     @close = ( ) ->
-      model.show_histogram undefined
+      model.show_cumulative_distribution undefined
 
     @bucket_size = ko.observable(10);
 
@@ -61,10 +53,12 @@ ko.components.register "tf-histogram",
       bucket_width = (max - min) / @bucket_size()
       sorted.forEach((x) => buckets[Math.floor((x - min) / bucket_width)]++)
       labels = Array(@bucket_size()).fill(0).map((x, index) => Math.ceil(index * bucket_width) + min)
-      # Calculative cdf
+      console.log(labels)
+      console.log(buckets)
+      
       # global varible 'chart' can be accessed in download function
       global.chart = c3.generate
-        bindto: "#histogram"
+        bindto: "#cumulative-distribution"
         data:
           x: "x"
           columns: [

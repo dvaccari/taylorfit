@@ -50,6 +50,8 @@ CTRL =
     [ false       , WRAP_O                            , IGNORE ]
   show_histogram:
     [ undefined    , WRAP_O                           , IGNORE ]
+  show_cumulative_distribution:
+    [ undefined    , WRAP_O                           , IGNORE ]
   show_export_code:
     [ undefined    , WRAP_O                           , IGNORE ]
   show_autocorrelation:
