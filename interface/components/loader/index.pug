@@ -4,7 +4,13 @@ input(type="file" accept=".csv" hidden
 label.button.input-dataset(data-bind="attr:{for:id}")
   span
     | Import&nbsp;
-    span(data-bind="text:table")
+    // ko if:table == 'validation'
+    span(data-bind="text:table" title="Open new Data File for use in final validation")
+    // /ko
+
+    // ko if:table == 'cross'
+    span(data-bind="text:table" title="Open new Data File for use in cross-validation")
+    // /ko
     | &nbsp;Data
   hr
   span.small Upload CSV data to begin!

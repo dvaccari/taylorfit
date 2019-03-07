@@ -8,41 +8,41 @@
   { "id": "yHat", "show": false },
   { "id": "Vary", "show": false },
 
-  { "id": "nd", "globalOnly": true, "format": "int" },
-  { "id": "np", "globalOnly": true, "format": "int" },
+  { "id": "nd", "globalOnly": true, "format": "int", "description": "Number of data (rows) in the corresponding Data Table (Fit, Cross or Validate)" },
+  { "id": "np", "globalOnly": true, "format": "int", "description": "Number of parameters (or terms) in the Current Model" },
 
-  { "id": "SSE", "sort": ">" },
-  { "id": "TSS", "globalOnly": true },
-  { "id": "SSR" },
-  { "id": "MSE" },
-
-  { "id": "PLACEHOLDER"},
-
-  { "id": "Rsq", "sort": "<" },
-  { "id": "adjRsq", "sort": "<" },
+  { "id": "SSE", "sort": ">", "description": "Sum of squares of the residual errors" },
+  { "id": "TSS", "globalOnly": true, "description": "Total sum of squares" },
+  { "id": "SSR", "description": "Sum of squares due to regression" },
+  { "id": "MSE", "description": "Mean square error (variance of the residual errors)" },
 
   { "id": "PLACEHOLDER"},
 
-  { "id": "MaxAbsErr", "displayName": "Max|Err|", "sort": ">"},
-  { "id": "RMSE", "sort": ">"},
-  { "id": "SKEW", "sort": "<"},
-  { "id": "XKURT", "sort": "<"},
+  { "id": "Rsq", "sort": "<", "description": "Square of the multiple correlation coefficient" },
+  { "id": "adjRsq", "sort": "<", "description": "Adjusted R-squared - similar to Rsq, but penalizes for model complexity" },
+
+  { "id": "PLACEHOLDER"},
+
+  { "id": "MaxAbsErr", "displayName": "Max|Err|", "sort": ">", "description": "Maximum of the absolute value of the residual errors" },
+  { "id": "RMSE", "sort": ">", "description": "Square root of the mean square error" },
+  { "id": "SKEW", "sort": "<", "description": "Skewness" },
+  { "id": "XKURT", "sort": "<", "description": "Excess kurtosis" },
 
   { "id": "PLACEHOLDER"}, 
 
-  { "id": "AIC", "sort": ">" },
-  { "id": "BIC", "sort": ">" },
-  { "id": "F", "sort": "<" },  
-  { "id": "pF", "displayName": "p(F)", "sort": ">" },  
+  { "id": "AIC", "sort": ">", "description": "Akaike Information Criterion" },
+  { "id": "BIC", "sort": ">", "description": "Bayesian Information Criterion" },
+  { "id": "F", "sort": "<", "description": "F-statistic" },  
+  { "id": "pF", "displayName": "p(F)", "sort": ">", "description": "Probability that a larger value of the F-statistic occurs by chance. This is a test of overall model fitness." },  
 
   { "id": "PLACEHOLDER"}, 
 
-  { "id": "seSKEW", "displayName": "s.e. SKEW", "sort": "<" },
-  { "id": "seXKURT", "displayName": "s.e. XKURT", "sort": "<" },
+  { "id": "seSKEW", "displayName": "s.e. SKEW", "sort": "<", "description": "Estimated standard error of the skewness. If SKEW > 2*s.e.SKEW, there is evidence that residual errors are not normally distributed." },
+  { "id": "seXKURT", "displayName": "s.e. XKURT", "sort": "<", "description": "Estimated standard error of the kurtosis. If |ExKurt|> 2*s.e.ExKurt, there is evidence that residual errors are not normally distributed." },
 
 
-  { "id": "t", "sort": "|<|", "candidateOnly": true, "default": true },
-  { "id": "pt", "displayName": "p(t)", "sort": ">", "candidateOnly": true, "default": true },
+  { "id": "t", "sort": "|<|", "candidateOnly": true, "default": true, "description": "The t-statistic used to determine how significant this term is. A value above about 2.0 is usually considered significant." },
+  { "id": "pt", "displayName": "p(t)", "sort": ">", "candidateOnly": true, "default": true, "description": "The probability that this term occurs by chance. Cell is colored green if p(t) > alpha (default alpha = 0.05)." },
 
   { "id": "stdev", "show": false },
   { "id": "mean", "show": false },

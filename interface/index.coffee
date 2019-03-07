@@ -30,6 +30,7 @@ adapter.on "statisticsMetadata", ( data ) ->
         selected: ko.observable stat.default is true
         sorting: ko.observable false
         format: stat.format or "float"
+        description: stat.description
 adapter.requestStatisticsMetadata()
 
 # --- include components

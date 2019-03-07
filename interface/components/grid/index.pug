@@ -1,17 +1,17 @@
 
 span.title(data-bind="text:name")
-tf-pager(params="source:rows,start:start,end:end")
-a.save(data-bind="click:save") Export Data
+tf-pager(params="source:rows,start:start,end:end" title="Choose page from this Table")
+a.save(data-bind="click:save" title="Create CSV file with all columns from this Table") Export Data
 // ko if:table == "fit"
 span.name(data-bind="text:model().name")
 // /ko
 // ko if:table == "cross"
 span.name(data-bind="text:model().name_cross")
-a.clear(data-bind="click:clear") Clear Data
+a.clear(data-bind="click:clear" title="Delete this Data Table (Cross or Validation Tables only)") Clear Data
 // /ko
 // ko if:table == "validation"
 span.name(data-bind="text:model().name_validation")
-a.clear(data-bind="click:clear") Clear Data
+a.clear(data-bind="click:clear" title="Delete this Data Table (Cross or Validation Tables only)") Clear Data
 // /ko
 table.grid
   thead
