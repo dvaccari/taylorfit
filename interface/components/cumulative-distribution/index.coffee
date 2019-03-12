@@ -52,10 +52,16 @@ ko.components.register "tf-cumulative-distribution",
       buckets = Array(@bucket_size()).fill(0)
       bucket_width = (max - min) / @bucket_size()
       sorted.forEach((x) => buckets[Math.floor((x - min) / bucket_width)]++)
-      labels = Array(@bucket_size()).fill(0).map((x, index) => Math.ceil(index * bucket_width) + min)
-      console.log(labels)
-      console.log(buckets)
       
+      n = buckets.reduce (t, s) -> t + s
+      last = 0
+      for i in [0...buckets.length]
+        buckets[i] += last
+        last = buckets[i]
+        buckets[i] /= n
+
+      labels = Array(@bucket_size()).fill(0).map((x, index) => Math.ceil(index * bucket_width) + min)
+
       # global varible 'chart' can be accessed in download function
       global.chart = c3.generate
         bindto: "#cumulative-distribution"
@@ -65,7 +71,6 @@ ko.components.register "tf-cumulative-distribution",
             ["x"].concat(labels),
             [@column_name()].concat(buckets)
           ]
-          type: "bar"
         size:
           height: 370
           width: 600
@@ -73,6 +78,9 @@ ko.components.register "tf-cumulative-distribution",
           x:
             tick:
               format: d3.format('.3s')
+          y:
+            tick:
+              format: d3.format('%')
         legend:
           show: false
 
@@ -95,8 +103,8 @@ ko.components.register "tf-cumulative-distribution",
       svg_element.style.height = box_size.height 
       svg_element.style.width = box_size.width 
 
-      chart_bar = svg_element.querySelector ".c3-chart-bar"
-      chart_bar.style.opacity = 1
+      chart_line = svg_element.querySelector ".c3-chart-line"
+      chart_line.style.opacity = 1
 
       node_list1 = svg_element.querySelectorAll ".c3-axis path"
       node_list2 = svg_element.querySelectorAll ".c3 line"
