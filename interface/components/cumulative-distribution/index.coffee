@@ -109,6 +109,7 @@ ko.components.register "tf-cumulative-distribution",
       node_list1 = svg_element.querySelectorAll ".c3-axis path"
       node_list2 = svg_element.querySelectorAll ".c3 line"
       node_list3 = svg_element.querySelectorAll "line"
+      node_list4 = svg_element.querySelectorAll ".c3 path"
 
       x_and_y = Array.from node_list1
       x_and_y.concat Array.from node_list2
@@ -121,6 +122,10 @@ ko.components.register "tf-cumulative-distribution",
         e.style.fill = "none"
         e.style.stroke = "black" 
       
+      path = Array.from node_list4
+      path.forEach (e) ->
+        e.style.fill = "none"
+
       svg_element.style.backgroundColor = "white"
       
       xml = new XMLSerializer().serializeToString svg_element
