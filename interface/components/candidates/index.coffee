@@ -91,4 +91,8 @@ ko.components.register "tf-candidates",
           # @sort (sortBy stats[stats.length - 1])
     , null, "arrayChange"
 
+    @updateSensitivity = () ->
+      for column in model.sensitivityColumns()
+        model.update_sensitivity(column.index)
+
     return this

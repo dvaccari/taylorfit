@@ -99,6 +99,13 @@ function initializeModel() {
     });
   });
 
+  m.on('updateSensitivity', (data) => {
+    postMessage({
+      type: 'model:updateSensitivity',
+      data: data
+    });
+  });
+
   return m;
 }
 
@@ -109,7 +116,8 @@ let subscribeToChanges = (m, updateNow = true) => {
 
   subscriptionIds = m.on([
     'setData', 'setExponents', 'setMultiplicands', 'setDependent',
-    'setLags', 'addTerm', 'removeTerm', 'clear', 'subset', 'setColumns', 'getSensitivity', 'deleteSensitivity'
+    'setLags', 'addTerm', 'removeTerm', 'clear', 'subset', 'setColumns',
+    'getSensitivity', 'deleteSensitivity', 'updateSensitivity'
   ], () => {
     m.getCandidates()
      .then((cands) => postMessage({ type: 'candidates', data: cands }));
@@ -224,6 +232,10 @@ onmessage = function (e) {
     
     case 'deleteSensitivity':
       m.deleteSensitivity(data);
+      break;
+    
+    case 'updateSensitivity':
+      m.updateSensitivity(data);
       break;
     
     case 'reset':
