@@ -154,6 +154,12 @@ ko.components.register "tf-grid",
       else
         data
 
+    @is_k_order_diff = ( col, index ) ->
+      col &&
+      col.hasOwnProperty("k") &&
+      col.k != undefined &&
+      index < col.k
+
     @cols.subscribe ( next ) =>
       if next then adapter.unsubscribeToChanges()
       else adapter.subscribeToChanges()
