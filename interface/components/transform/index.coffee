@@ -27,7 +27,10 @@ ko.components.register "tf-transform",
       cols = columns()
       ncols = cols.length
       transform_col = cols[index]
-      transform_name = "#{label}(#{transform_col.name})"
+      if label == Transformation.K_ORDER_DIFFERENCE
+        transform_name = "#{label}(#{transform_col.name})(k=#{k})"
+      else
+        transform_name = "#{label}(#{transform_col.name})"
       transform_index = ncols
       return {
         name: transform_name,
@@ -107,7 +110,7 @@ ko.components.register "tf-transform",
 
     @rescale = ( index ) ->
       transform_col = gen_column(
-        Transformation.RESCALE,
+        Transformation.SCALE_BY_RMS,
         index
       )
       cols = columns()
