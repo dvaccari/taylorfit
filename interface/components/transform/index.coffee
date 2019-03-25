@@ -110,7 +110,7 @@ ko.components.register "tf-transform",
 
     @rescale = ( index ) ->
       transform_col = gen_column(
-        Transformation.SCALE_BY_RMS,
+        Transformation.RESCALE,
         index
       )
       cols = columns()

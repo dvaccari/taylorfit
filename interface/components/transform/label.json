@@ -2,7 +2,7 @@
   "LOG" : "log",
   "K_ORDER_DIFFERENCE" : "K-Order_difference",
   "STANDARDIZE" : "Standardize",
-  "SCALE_BY_RMS" : "Scale_by_RMS",
+  "RESCALE" : "Scale_by_RMS",
 
   "Transform": {
     "delete": 0,
