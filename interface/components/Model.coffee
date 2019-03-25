@@ -245,7 +245,14 @@ module.exports = class Model
         columns = @columns()
         # Iterate through each transform column from left to right
         Object.entries(transformColumns)
-          .sort((curr, next) -> curr[1] > next[1])
+          .sort(
+            (curr, next) ->
+              if curr[1] < next[1]
+                -1
+              else if curr[1] > next[1]
+                1
+              else 0
+          )
           .forEach((transform_col) =>
             if transform_col[0] != undefined && transform_col[1] != undefined
               index = Number(transform_col[0])
