@@ -52,7 +52,6 @@ ko.components.register "tf-cumulative-distribution",
       buckets = Array(@bucket_size()).fill(0)
       bucket_width = (max - min) / @bucket_size()
       sorted.forEach((x) => buckets[Math.floor((x - min) / bucket_width)]++)
-      
       n = buckets.reduce (t, s) -> t + s
       last = 0
       for i in [0...buckets.length]
@@ -79,6 +78,12 @@ ko.components.register "tf-cumulative-distribution",
             tick:
               format: d3.format('.3s')
           y:
+            min: 0
+            max: 1
+            # y axis has a default padding value
+            padding:
+              top: 0
+              bottom: 0
             tick:
               format: d3.format('%')
         legend:
@@ -127,12 +132,26 @@ ko.components.register "tf-cumulative-distribution",
         e.style.fill = "none"
 
       svg_element.style.backgroundColor = "white"
+      tick = svg_element.querySelectorAll ".tick"
+      num_arr = Array(tick.length).fill(0).map((x, y) => y)
+
+      for num in num_arr
+        # use transform property to check if the SVG element is on the top position of y axis
+        transform_y_val = (getComputedStyle(tick[num]).getPropertyValue('transform').replace(/^matrix(3d)?\((.*)\)$/,'$2').split(/, /)[5])*1
+        if transform_y_val == 1
+          text = tick[num].getElementsByTagName("text")
+          # stop the loop once the SVG element on the top position of y axis is found
+          break
+
+      original_y = text[0].getAttribute "y"
+      text[0].setAttribute "y", original_y + 3
       
       xml = new XMLSerializer().serializeToString svg_element
       data_url = "data:image/svg+xml;base64," + btoa xml
 
       # Reset to original values
       svg_element.style.padding = null
+      text[0].setAttribute "y", original_y
       svg_element.setAttribute "height", original_height
       svg_element.setAttribute "width", original_width
       svg_element.style.backgroundColor = null
