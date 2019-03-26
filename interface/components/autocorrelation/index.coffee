@@ -166,7 +166,12 @@ ko.components.register "tf-autocorrelation",
 
       chart_bar = svg_element.querySelector ".c3-chart-bar"
       chart_bar.style.opacity = 1
-      
+
+      confidencePositive = svg_element.querySelector ".c3-line-confidencePositive"
+      confidencePositive.style.fill = "none"
+      confidenceNegative = svg_element.querySelector ".c3-line-confidenceNegative"
+      confidenceNegative.style.fill = "none"
+
       node_list1 = svg_element.querySelectorAll ".c3-axis path"
       node_list2 = svg_element.querySelectorAll ".c3 line"
       node_list3 = svg_element.querySelectorAll "line"

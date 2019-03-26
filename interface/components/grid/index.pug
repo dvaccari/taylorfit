@@ -121,18 +121,9 @@ table.grid
     tr
       td.static
         span(data-bind="text:1+index")
-        //- TODO (justint): uncomment when doing row function
-        //- tf-dropdown(params="shallow:1,align:'left'")
-        //-   // ko ifnot:hidden
-        //-   span.mark(data-bind="click:function(){showHideColumn(true, $index() + 1)}")
-        //-     | Hide Feature
-        //-   // /ko
-        //-   // ko if:hidden
-        //-   span.mark(data-bind="click:function(){showHideColumn(false, $index() + 1)}")
-        //-     | Show Feature
-        //-   // /ko
-        //- // /ko
-      
+        tf-dropdown.row_header(params="align:'left'")
+          span.mark(data-bind="click:function(){partitionData($index())}")
+            | Row Partition
       // ko foreach: $parent.rows()[index]
       td(data-bind="style:{background: $component.isHidden($index()) ? '#DCDCDC' : '#FFFFFF'}")
         // ko if: $data !== null && $data !== ""

@@ -64,6 +64,8 @@ CTRL =
     [ undefined   , SEND("getSensitivity", Number)    , IGNORE ]
   delete_sensitivity:
     [ undefined   , SEND("deleteSensitivity", Number) , IGNORE ]
+  update_sensitivity:
+    [ undefined   , SEND("updateSensitivity", Number)  , IGNORE ]
 
   # Loaded from tf-loader
   columns:
@@ -117,6 +119,9 @@ CTRL =
     [ undefined   , SEND("transformStandardize", object2object), UNWRAP_O ]
   transformRescale:
     [ undefined   , SEND("transformRescale", object2object)  , UNWRAP_O ]
+  # Value should be index of row to display as start of partition
+  partitionData:
+    [ undefined   , SEND("partitionData", object2object), UNWRAP_O ]
   sensitivityColumns:
     [ []         , WRAP_A                            , UNWRAP ]
   sensitivityData:
@@ -242,7 +247,7 @@ module.exports = class Model
         columns = @columns()
         # Iterate through each transform column from left to right
         Object.entries(transformColumns)
-          .sort((curr, next) => curr[1] > next[1])
+          .sort((curr, next) -> curr[1] > next[1])
           .forEach((transform_col) =>
             if transform_col[0] != undefined && transform_col[1] != undefined
               index = Number(transform_col[0])
@@ -303,6 +308,24 @@ module.exports = class Model
 
         sensitivityColumns.splice(data.index, 1);
         sensitivityData.splice(data.index, 1);
+
+        @sensitivityColumns(sensitivityColumns)
+        @sensitivityData(sensitivityData)
+      , 100
+      adapter.subscribeToChanges()
+
+    adapter.on "model:updateSensitivity", (data) =>
+      setTimeout =>
+        columns = ko.unwrap @columns
+        sensitivityColumns = ko.unwrap @sensitivityColumns
+        sensitivityData = ko.unwrap @sensitivityData
+
+        # Find the column and replace it
+        sensitivityColumns.forEach((col, i) =>
+          if col.index == data.index
+            sensitivityColumns[i] = columns[data.index]
+            sensitivityData[i] = data.sensitivity
+        )
 
         @sensitivityColumns(sensitivityColumns)
         @sensitivityData(sensitivityData)
