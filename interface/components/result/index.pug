@@ -3,17 +3,17 @@
   table.terms
     thead
       tr
-        th(colspan="3") Current Model
+        th(colspan="3" title="Each row in this Table is a single term in the current model.") Current Model
       tr
-        th Term
+        th(title="This column shows the coefficient and multiplicands (product of independent variables) for each term in the current model.") Term
         // ko foreach: allstats().filter((x) => x.candidate)
-        th(data-bind="text: name")
+        th(data-bind="text: name, attr: { title:description }")
         // /ko
     tbody
       // ko foreach: result_fit().terms
       tr
         td.term
-          span.remove.fa.fa-close(data-bind="click:function(){selected(true);$parent.updateSensitivity()}")
+          span.remove.fa.fa-close(data-bind="click:function(){selected(true);$parent.updateSensitivity()}" title='Click on the "x" to remove a term from the current model.')
           span.operator(data-bind="text:coeff<0?'-':'+'")
           span.coeff(data-bind="num:Math.abs(coeff)")
           // ko foreach:term
@@ -44,21 +44,21 @@
           span.value(data-bind="num:$value")
         // /ko
       // /ko
-  a.button(data-bind="click:function(){model().show_export_code(true)}") Export to Code
+  a.button(data-bind="click:function(){model().show_export_code(true)}" title="Generate code for the current model that can be used in programs in Excel, C++, Matlab, Python, or JavaScript.") Export to Code
 
 .table-wrapper
   table.stats
     thead
       tr
-        th(colspan="4") Goodness of Fit Statistics
+        th(colspan="4" title="This Table shows global statistics for the current model as applied to either the FIT, CROSS, or VALIDATE data sets") Goodness of Fit Statistics
       tr
         th Stat
-        th Fit
+        th(title="The FIT dataset is used to compute the coefficients of the terms in both the “Current Model” table and the “Candidate Terms” Table.") Fit
         // ko if: result_cross() && data_cross()
-        th Cross
+        th(title="The CROSS dataset is used to compute the Goodness-of-Fit statistics in the “Candidate Terms” Table and in the corresponding rows of the “Goodness of Fit Statistics” Table.") Cross
         // /ko
         // ko if: result_validation() && data_validation()
-        th Validation
+        th(title="The VAL dataset is used to compute the Goodness-of-Fit statistics in this column the “Goodness of Fit Statistics” Table.") Validation
         // /ko
     tbody
       // ko with:{fit:result_fit, cross:result_cross, data_cross:data_cross, validation:result_validation, data_validation:data_validation}
@@ -67,7 +67,7 @@
 
       // ko ifnot:((name=='PLACEHOLDER') || (name=='s.e. SKEW') || (name=='s.e. XKURT'))
       tr.stat
-        td.name(data-bind="text:name")
+        td.name(data-bind="text:name, attr: { title:description }")
         td.value(data-bind="num:$component.round_stat($parent.fit().stats[id]), fmt: format")
         // ko if: ($parent.cross() && $parent.data_cross())
         td.value(data-bind="num:$component.round_stat($parent.cross().stats[id]), fmt: format")
@@ -89,7 +89,7 @@
       // /ko
       // ko if: name=='s.e. SKEW'
       tr.sestat
-        td.name(data-bind="text:name")
+        td.name(data-bind="text:name, attr: { title:description }")
         td.value(data-bind="num:$parent.fit().stats[id], fmt: format")
         // ko if: ($parent.cross() && $parent.data_cross())
         td.value(data-bind="num:$parent.cross().stats[id], fmt: format")
@@ -100,7 +100,7 @@
       // /ko
       // ko if: name=='s.e. XKURT'
       tr.sestat
-        td.name(data-bind="text:name")
+        td.name(data-bind="text:name, attr: { title:description }")
         td.value(data-bind="num:$parent.fit().stats[id], fmt: format")
         // ko if: ($parent.cross() && $parent.data_cross())
         td.value(data-bind="num:$parent.cross().stats[id], fmt: format")
