@@ -1,0 +1,69 @@
+
+tf-data-partition
+  z-index 1000
+
+  & > .background
+    display none
+    z-index 1000
+    width 100%
+    height 100%
+    background rgba(0,0,0,0.5)
+    top 0
+    left 0
+    right 0
+    bottom 0
+    position absolute
+
+  & > .data-partition
+    display none
+    position absolute
+    top 50%
+    left 50%
+    margin-top -175px
+    margin-left -325px
+    width 630px
+    height 430px
+    background #fff
+    border 1px solid #e9ebed
+    padding 10px
+    z-index 1000
+    box-shadow 0 0 3px 1px rgba(0,0,0,.5)
+
+  .active
+    display block
+
+  .container
+    width 100%
+    height 100%
+    display flex
+    flex-direction column
+    align-items flex-start
+    flex-wrap wrap
+  
+  .error_text
+    color #FF0000
+
+  .sub_partition
+    display flex
+    flex-direction row
+    width: 100%
+
+    & > p
+      display flex
+      justify-content flex-start
+      width 100px
+    
+    & > *
+      margin-right 20px
+    
+    .percent_container
+      display flex
+      
+      & > input
+        width 50px
+
+    .rows_container
+      display flex
+
+      & > input
+        width 100px

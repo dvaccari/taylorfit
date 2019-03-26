@@ -101,5 +101,9 @@ ko.components.register "tf-result",
 
     @round_stat = ( num ) ->
       Number(noExponents(num)).toFixed(8)
+      
+    @updateSensitivity = () ->
+      for column in model.sensitivityColumns()
+        model.update_sensitivity(column.index)
 
     return this

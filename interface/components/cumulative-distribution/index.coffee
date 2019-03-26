@@ -3,54 +3,7 @@ require "./index.styl"
 c3 = require "c3"
 Model = require "../Model"
 
-mean = (values) ->
-  sum = 0
-  i = 0
-  while i < values.length
-    sum += values[i]
-    i++
-  sum /= values.length
-  return sum
-
-variance = (values, mu) ->
-  sum = 0
-  i = 0
-  while i < values.length
-    sum += (values[i] - mu) * (values[i] - mu)
-    i++
-  return sum /= values.length
-
-calculateAutoCorrelation = (values, k) ->
-  mu = mean(values)
-  
-  normal_values = values.slice(0,values.length - k)
-  skipped_values = values.slice(k)
-
-  sum = 0
-  i = 0
-  while i < normal_values.length
-    sum += (normal_values[i] - mu) * (skipped_values[i] - mu)
-    i++
-  sum /= values.length
-  sum /= variance(values, mu)
-  return sum
-
-calculateStandardError = (acf, numValues) ->
-  i = 0
-  errors = []
-  sum = 0
-  while i < acf.length
-    sum += acf[i] * acf[i]
-    console.log('Sum: ', sum)
-    errors[i] = Math.sqrt((1 + 2 * sum) / numValues)
-    console.log(errors[i])
-    i++
-  console.log(errors)
-  return errors
-
-  
-
-ko.components.register "tf-autocorrelation",
+ko.components.register "tf-cumulative-distribution",
   template: do require "./index.pug"
   viewModel: ( params ) ->
 
@@ -59,16 +12,17 @@ ko.components.register "tf-autocorrelation",
       expects [model] to be observable"
     
     model = params.model()
-    @column_index = model.show_autocorrelation
+    @column_index = model.show_cumulative_distribution
 
     @active = ko.computed ( ) => @column_index() != undefined
     
     @column_name = ko.computed ( ) => 
       if !@active()
         return undefined
-      if typeof @column_index() == "string"
-        return @column_index()
-      return model.columns()[@column_index()].name
+      index = @column_index()
+      if typeof index == "string"
+        return index
+      return model.columns()[index].name
     
     @values = ko.computed ( ) => 
       if !@active()
@@ -81,11 +35,10 @@ ko.components.register "tf-autocorrelation",
           index = 1
         if index == "Residual"
           index = 2
-        return model["extra_#{model.data_plotted()}"]().map((row) => row[index])
       return model["data_#{model.data_plotted()}"]().map((row) => row[index])
 
     @close = ( ) ->
-      model.show_autocorrelation undefined
+      model.show_cumulative_distribution undefined
 
     @bucket_size = ko.observable(10);
 
@@ -93,43 +46,31 @@ ko.components.register "tf-autocorrelation",
       unless @active()
         return ""
 
-      # TODO : FINISH THIS
-
-      filtered = @values().filter((x) => !isNaN(x))
-
+      sorted = @values().filter((x) => !isNaN(x)).sort((a, b) => a - b)
+      min = sorted[0]
+      max = sorted[sorted.length - 1] + 1
       buckets = Array(@bucket_size()).fill(0)
+      bucket_width = (max - min) / @bucket_size()
+      sorted.forEach((x) => buckets[Math.floor((x - min) / bucket_width)]++)
+      
+      n = buckets.reduce (t, s) -> t + s
+      last = 0
+      for i in [0...buckets.length]
+        buckets[i] += last
+        last = buckets[i]
+        buckets[i] /= n
 
-      i = 0
-      k = @bucket_size()
-      while i < k
-        console.log('Calculating Autocorrelation in Bucket ', i)
-        buckets[i] = calculateAutoCorrelation(filtered, i+1)
-        console.log('Autocorrelation Value: ', buckets[i])
-        i++
-      z_score = 3
+      labels = Array(@bucket_size()).fill(0).map((x, index) => Math.ceil(index * bucket_width) + min)
 
-      errors = calculateStandardError(buckets, filtered.length)
-      errors = errors.map((value) => value * z_score)
-      negativeErrors = errors.map((value) => value * -1)
-
-      console.log(errors)
-
-      labels = Array(@bucket_size()).fill(0).map((x, index) => index + 1)
       # global varible 'chart' can be accessed in download function
       global.chart = c3.generate
-        bindto: "#autocorrelation"
+        bindto: "#cumulative-distribution"
         data:
           x: "x"
           columns: [
             ["x"].concat(labels),
-            [@column_name()].concat(buckets),
-            ['confidencePositive'].concat(errors),
-            ['confidenceNegative'].concat(negativeErrors)
+            [@column_name()].concat(buckets)
           ]
-          type: 'bar',
-          types:
-            confidencePositive: 'line'
-            confidenceNegative: 'line'
         size:
           height: 370
           width: 600
@@ -139,10 +80,13 @@ ko.components.register "tf-autocorrelation",
               format: d3.format('.3s')
           y:
             tick:
-              format: d3.format('.3f')
+              format: d3.format('%')
         legend:
           show: false
+
       return chart.element.innerHTML
+
+      
 
     @download = ( ) -> 
       if !@active()
@@ -154,27 +98,18 @@ ko.components.register "tf-autocorrelation",
       svg_element.removeAttribute "height"
       svg_element.removeAttribute "width"
       svg_element.style.overflow = "visible"
-
       svg_element.style.padding = "10px"
       box_size = svg_element.getBBox()
       svg_element.style.height = box_size.height 
       svg_element.style.width = box_size.width 
 
-      chart_line = svg_element.querySelectorAll ".c3-chart-line"
-      chart_line[1].style.opacity = 1
-      chart_line[2].style.opacity = 1
-
-      chart_bar = svg_element.querySelector ".c3-chart-bar"
-      chart_bar.style.opacity = 1
-
-      confidencePositive = svg_element.querySelector ".c3-line-confidencePositive"
-      confidencePositive.style.fill = "none"
-      confidenceNegative = svg_element.querySelector ".c3-line-confidenceNegative"
-      confidenceNegative.style.fill = "none"
+      chart_line = svg_element.querySelector ".c3-chart-line"
+      chart_line.style.opacity = 1
 
       node_list1 = svg_element.querySelectorAll ".c3-axis path"
       node_list2 = svg_element.querySelectorAll ".c3 line"
       node_list3 = svg_element.querySelectorAll "line"
+      node_list4 = svg_element.querySelectorAll ".c3 path"
 
       x_and_y = Array.from node_list1
       x_and_y.concat Array.from node_list2
@@ -186,9 +121,13 @@ ko.components.register "tf-autocorrelation",
       scale.forEach (e) ->
         e.style.fill = "none"
         e.style.stroke = "black" 
+      
+      path = Array.from node_list4
+      path.forEach (e) ->
+        e.style.fill = "none"
 
       svg_element.style.backgroundColor = "white"
-
+      
       xml = new XMLSerializer().serializeToString svg_element
       data_url = "data:image/svg+xml;base64," + btoa xml
 
@@ -219,6 +158,8 @@ ko.components.register "tf-autocorrelation",
         document.body.removeChild a_element
 
       return undefined
+
+
 
     @column_index.subscribe ( next ) =>
       if next then adapter.unsubscribeToChanges()

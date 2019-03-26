@@ -45,6 +45,10 @@ ko.components.register "tf-grid",
     @histogram_sensitivity = ( index ) ->
       model.show_histogram("Sensitivity_"+index.toString())
       model.data_plotted(@table)
+    
+    @cumulative_distribution = ( index ) ->
+      model.show_cumulative_distribution(index)
+      model.data_plotted(@table)
 
     @autocorrelation = ( index ) ->
       model.show_autocorrelation(index)
