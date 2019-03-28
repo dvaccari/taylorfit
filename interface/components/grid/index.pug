@@ -121,15 +121,21 @@ table.grid
     tr
       td.static
         span(data-bind="text:1+index")
-        tf-dropdown.row_header(params="align:'left'")
-          span.mark(data-bind="click:function(){partitionData($index())}")
-            | Row Partition
+        //- tf-dropdown.row_header(params="align:'left'")
+        //-   span.mark(data-bind="click:function(){partitionData($index())}")
+        //-     | Row Partition
       // ko foreach: $parent.rows()[index]
       td(data-bind="style:{background: $component.isHidden($index()) ? '#DCDCDC' : '#FFFFFF'}")
-        // ko if: $data !== null && $data !== ""
+        // ko if: $component.is_k_order_diff($component.cols()[$index()], $parent.index) && $data !== null && $data !== "" && $data !== 0
         span(data-bind="text:$component.round_cell($data)")
         // /ko
-        // ko if: $data === null || $data === ""
+        // ko if: $component.is_k_order_diff($component.cols()[$index()], $parent.index) && ($data === null || $data === "" || $data === 0)
+        span.placeholder No Data
+        // /ko
+        // ko if: !$component.is_k_order_diff($component.cols()[$index()], $parent.index) && $data !== null && $data !== ""
+        span(data-bind="text:$component.round_cell($data)")
+        // /ko
+        // ko if: !$component.is_k_order_diff($component.cols()[$index()], $parent.index) && ($data === null || $data === "")
         span.placeholder No Data
         // /ko
       // /ko
