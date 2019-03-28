@@ -12,6 +12,7 @@ ko.components.register "tf-graph",
       console.log("check here for data: ")
       console.log(data())
       
+      #calculate histogram
       getbuckets = (data) =>
           data_predicted = []
           for i in [0...data.length]
@@ -127,51 +128,91 @@ ko.components.register "tf-graph",
         counter = Math.floor((data_predicted[i] - min) / buckets_width)
         buckets[counter] = buckets[counter]+1
 
-      
-      
-      console.log("buckets_width: ")
-      console.log(buckets_width)
-      console.log("labels: ")
-      console.log(hist_labels)
-      console.log("buckets: ")
-      console.log(buckets)
-      console.log("labels")
-      console.log(['x'].concat(hist_labels))
-      console.log("concat2")
-      
-    
       row_labels = params.row_labels
       hist_legend = row_labels().slice(1)
-      console.log("row_labels")
-      console.log(row_labels())
-      console.log("hist_legend")
-      console.log(hist_legend)
 
+      #calculate autocorrelation
+      mean = (values) ->
+        sum = 0
+        i = 0
+        while i < values.length
+          sum += values[i]
+          i++
+        sum /= values.length
+        return sum
 
+      variance = (values, mu) ->
+        sum = 0
+        i = 0
+        while i < values.length
+          sum += (values[i] - mu) * (values[i] - mu)
+          i++
+        return sum /= values.length
+
+      calculateAutoCorrelation = (values, k) ->
+        mu = mean(values)
+        normal_values = values.slice(0,values.length - k)
+        skipped_values = values.slice(k)
+
+        sum = 0
+        i = 0
+        while i < normal_values.length
+          sum += (normal_values[i] - mu) * (skipped_values[i] - mu)
+          i++
+        sum /= values.length
+        sum /= variance(values, mu)
+        return sum
+
+      calculateStandardError = (acf, numValues) ->
+        i = 0
+        errors = []
+        sum = 0
+        while i < acf.length
+          sum += acf[i] * acf[i]
+          console.log('Sum: ', sum)
+          errors[i] = Math.sqrt((1 + 2 * sum) / numValues)
+          console.log(errors[i])
+          i++
+        console.log(errors)
+        return errors
+
+      autoc_data_predicted = []
+      for i in [0...data().length]
+        autoc_data_predicted[i] = data()[i][0]
+      filtered = autoc_data_predicted.filter((x) => !isNaN(x))
+      autoc_bucket_size = 10
+      
+      autoc_buckets = []
+      for i in [0...autoc_bucket_size]
+        autoc_buckets[i] = 0
+    
+      i=0
+      k = autoc_bucket_size
+      while i < k
+        console.log('Calculating Autocorrelation in Bucket ', i)
+        autoc_buckets[i] = calculateAutoCorrelation(filtered, i+1)
+        console.log('Autocorrelation Value: ', autoc_buckets[i])
+        i++
+      z_score = 3
+      errors = calculateStandardError(autoc_buckets, filtered.length)
+      errors = errors.map((value) => value * z_score)
+      negativeErrors = errors.map((value) => value * -1)
+      autoc_labels = Array(bucket_size).fill(0).map((x, index) => index + 1)
+      console.log("auto buckets")
+      console.log(autoc_buckets)
+      console.log("errors:")
+      console.log(errors)
+
+      #update graph
       row_labels.subscribe ( next ) ->  
         try
           if global.chart == chart_scatter   
               chart.load
                 xs: getxs()
                 rows: [next].concat data()
-                console.log("row_labels within next")
-                console.log(row_labels())
-                console.log("xs")
-                console.log(getxs())
-                console.log("data within next")
-                console.log(data())
           else if global.chart == chart_histogram
-            console.log("I AM IN SIDE HISTOGRAM NEXT")  
-            console.log("data within next")
-            console.log(data())
             data_sorted = sort_data_in_next(data())
-            console.log("data_sorted len")
-            console.log(data_sorted.length)
             if data_sorted.length == 1
-                console.log("buckets in MOTION")
-                console.log(getbuckets(data_sorted[0]))
-                console.log("datasorted0")
-                console.log(data_sorted[0])
                 chart.load
                     x: 'x'
                     columns: [
@@ -273,7 +314,39 @@ ko.components.register "tf-graph",
           show: true
           position: "inset"
       #Histogram Plot End here
+       
+            
+      #Autocorrelation Plot generation
+      chart_autoc = c3.generate
+        bindto: "#autocorrelation"
+        data:
+          x: "x"
+          columns: [
+            ["x"].concat(autoc_labels),
+            [hist_legend].concat(autoc_buckets),
+            ['confidencePositive'].concat(errors),
+            ['confidenceNegative'].concat(negativeErrors)
+          ]
+          type: 'bar',
+          types:
+            confidencePositive: 'line'
+            confidenceNegative: 'line'
+        size:
+          height: 370
+          width: 600
+        axis:
+          x:
+            tick:
+              format: d3.format('.3s')
+          y:
+            tick:
+              format: d3.format('.3f')
+        legend:
+          show: true
+          position:"inset"
 
+      #Autocorrelation plot Ends here
+        
       #Display Default Plot
       global.chart = chart_scatter
       element.appendChild chart.element
@@ -293,7 +366,11 @@ ko.components.register "tf-graph",
             element.removeChild chart.element
             global.chart = chart_scatter
             element.appendChild chart.element
-        
+        else if selectedvalue == "autocorrelation"
+            console.log("IN IF STATEMENT OF AUTO")
+            element.removeChild chart.element
+            global.chart = chart_autoc
+            element.appendChild chart.element
       return ""
 
     
