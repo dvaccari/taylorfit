@@ -114,8 +114,16 @@
       // /ko
 
 .table-wrapper
-  tf-graph(params="data:graph_data,row_labels:graph_row_labels,ylabel:'Residuals',xlabel:'Predicted Values'")
-
+  // /ko
+  tf-graph(params="data:graph_data,row_labels:graph_row_labels,ylabel:'Residuals',xlabel:'Predicted Values', graph_type:selectedvalue")
+  div.dropdown
+    span Graph Types: 
+    <select id="graphs" onchange="changeGraph();">
+      <option value="scatter" selected>Scatter</option>
+      <option value="histogram">Histogram</option>
+      <option value="normal">Normal</option>
+      <option value="autocorrelation">Autocorrelation</option>
+    </select>
 // /ko
 // ko ifnot:(result_fit && result_fit())
 span.nomodel Select candidate terms to create a model.

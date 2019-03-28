@@ -106,4 +106,8 @@ ko.components.register "tf-result",
       for column in model.sensitivityColumns()
         model.update_sensitivity(column.index)
 
+        
+    e = document.getElementById("graphs")
+    global.selectedvalue = e.options[e.selectedIndex].value
+      
     return this
