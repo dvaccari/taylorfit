@@ -120,6 +120,16 @@ ko.components.register "tf-histogram",
         e.style.stroke = "black" 
       
       svg_element.style.backgroundColor = "white"
+
+      fst_bar = svg_element.querySelector ".c3-shape-0"
+      if fst_bar
+        fst_bar_shape = fst_bar.getAttribute "d"
+        shape_arr = fst_bar_shape.split(" ") 
+        if (shape_arr[1].split(",")[0])*1 < 0
+          shape_arr[1] = "0," + shape_arr[1].split(",")[1]
+          shape_arr[2] = "L0," + shape_arr[2].split(",")[1]
+          new_fst_bar_shap = shape_arr.join(' ')
+          fst_bar.setAttribute "d", new_fst_bar_shap
       
       xml = new XMLSerializer().serializeToString svg_element
       data_url = "data:image/svg+xml;base64," + btoa xml
