@@ -38,7 +38,7 @@ ko.components.register "tf-histogram",
           index = 1
         if index == "Residual"
           index = 2
-        if index.indexOf("Sensitivity") != -1
+        if typeof index == "string" && index.indexOf("Sensitivity") != -1
           # format is: Sensitivity_index
           index = index.split("_")[1]
           return Object.values(model.sensitivityData()[index])
