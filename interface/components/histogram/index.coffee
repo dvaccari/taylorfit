@@ -3,6 +3,25 @@ require "./index.styl"
 c3 = require "c3"
 Model = require "../Model"
 
+median = (values) ->
+    sorted = values.filter((x) => !isNaN(x)).sort((a, b) => a - b)
+    half = Math.floor(sorted.length/2)
+    if(sorted.length % 2)
+        return sorted[half]
+    else
+        return (sorted[half-1] + sorted[half]) / 2.0
+
+IQR = (values) ->
+  sorted = values.filter((x) => !isNaN(x)).sort((a, b) => a - b)
+  if(values.length % 2)
+    Q1 = median(sorted.slice(0,Math.floor(values.length/2)))
+    Q3 = median(sorted.slice(Math.floor(values.length/2)+1))
+    return (Q3 - Q1)
+  else
+    Q1 = median(sorted.slice(0,values.length/2))
+    Q3 = median(sorted.slice(values.length/2))
+    return (Q3 - Q1)
+
 ko.components.register "tf-histogram",
   template: do require "./index.pug"
   viewModel: ( params ) ->
@@ -48,7 +67,7 @@ ko.components.register "tf-histogram",
     @close = ( ) ->
       model.show_histogram undefined
 
-    @bucket_size = ko.observable(10);
+    @bucket_size = ko.observable(10)
 
     @charthtml = ko.computed () =>
       unless @active()
@@ -167,6 +186,21 @@ ko.components.register "tf-histogram",
     @column_index.subscribe ( next ) =>
       if next then adapter.unsubscribeToChanges()
       else adapter.subscribeToChanges()
+      if @active()
+        # Freedman–Diaconis' choice
+        # h = width of a bin
+        h = if Math.round(2 * IQR(@values()) / (Math.pow(@values().length, 1/3))) then Math.round(2 * IQR(@values()) / (Math.pow(@values().length, 1/3))) else 1
+        sorted = @values().filter((x) => !isNaN(x)).sort((a, b) => a - b)
+        min = sorted[0]
+        max = sorted[sorted.length - 1] + 1
+        # k = number of buckets (bins)
+        k = Math.round((max - min) / h)
+        if k < 1
+          @bucket_size 1
+        else if k > @values().length
+          @bucket_size @values().length
+        else 
+          @bucket_size k 
 
     @inc = ( ) -> @bucket_size @bucket_size() + 1
     @dec = ( ) -> @bucket_size ((@bucket_size() - 1) || 1)
