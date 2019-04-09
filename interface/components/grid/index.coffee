@@ -33,6 +33,9 @@ ko.components.register "tf-grid",
     @sensitivityColumns  = model.sensitivityColumns
     @sensitivityData   = model.sensitivityData
 
+    @importanceRatioColumns  = model.importanceRatioColumns
+    @importanceRatioData   = model.importanceRatioData
+
     @clear = ( ) =>
       try @rows null
       try @result null
@@ -46,6 +49,10 @@ ko.components.register "tf-grid",
       model.show_histogram("Sensitivity_"+index.toString())
       model.data_plotted(@table)
     
+    @histogram_importanceratio = ( index ) ->
+      model.show_histogram("ImportanceRatio_"+index.toString())
+      model.data_plotted(@table)
+
     @cumulative_distribution = ( index ) ->
       model.show_cumulative_distribution(index)
       model.data_plotted(@table)
@@ -86,6 +93,32 @@ ko.components.register "tf-grid",
           found = true
       )
       return found
+
+    @xyplot_importanceRatio = ( index ) ->
+      # TODO maybe combine this with sensitivity
+      model.show_xyplot(["ImportanceRatio_"+index.toString(), "Index"])
+      model.data_plotted(@table)
+
+    @importanceRatio = ( index ) ->
+      model.show_importanceRatio( index )
+    
+    @deleteImportanceRatio = ( index, type ) ->
+      # Delete with either column index or ratio index
+      if type == "column"
+        model.importanceRatioColumns().forEach( (column, importanceRatioIndex) ->
+          if column.index == index
+            return model.delete_importanceRatio( importanceRatioIndex )
+        )
+      else if type == "importanceRatio"
+        model.delete_importanceRatio( index ) 
+
+    @hasImportanceRatio = ( index ) ->
+      found = false
+      model.importanceRatioColumns().forEach( (column) ->
+        if column.index == index
+          found = true
+      )
+      return found  
     
     # Is hidden if ignored or has transformed column
     @isHidden = ( index ) ->
@@ -137,11 +170,15 @@ ko.components.register "tf-grid",
         csv += ",Dependent,Predicted,Residual"
       if @sensitivityColumns().length > 0
         csv += "," + @sensitivityColumns().map((col) -> "Sensitivity "+col.name).join ","
+      if @importanceRatioColumns().length > 0
+        csv += "," + @importanceRatioColumns().map((col) -> "Importance Ratio "+col.name).join ","
       for row, index in rows
         csv += "\n" + row.join ","
         if extra then csv += "," + extra[index].join ","
         if @sensitivityData().length > 0
           csv += "," + @sensitivityData().map((col) -> col[index]).join ","
+        if @importanceRatioData().length > 0
+          csv += "," + @importanceRatioData().map((col) -> col[index]).join ","
 
       blob = new Blob [ csv ]
       uri = URL.createObjectURL blob

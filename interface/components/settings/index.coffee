@@ -121,6 +121,10 @@ ko.components.register "tf-settings",
       # Update sensitivity columns
       for column in model.sensitivityColumns()
         model.update_sensitivity(column.index)
+      
+      # Update importance ratio columns
+      for column in model.importanceRatioColumns()
+        model.update_importanceRatio(column.index)
 
     @clear_settings = ( ) ->
       model.exponents({1: true})

@@ -95,4 +95,9 @@ ko.components.register "tf-candidates",
       for column in model.sensitivityColumns()
         model.update_sensitivity(column.index)
 
+    @updateImportanceRatio = () ->
+      # TODO ?
+      for column in model.importanceRatioColumns()
+        model.update_importanceratio(column.index)
+
     return this

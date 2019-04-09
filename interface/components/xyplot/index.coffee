@@ -27,6 +27,9 @@ ko.components.register "tf-xyplot",
           if idx.indexOf("Sensitivity") != -1
             idx = idx.split("_")[1]
             return "Sensitivity " + model.sensitivityColumns()[idx].name
+          if idx.indexOf("ImportanceRatio") != -1
+            idx = idx.split("_")[1]
+            return "ImportanceRatio " + model.importanceRatioColumns()[idx].name
           return idx
         return @columns()[idx]
       )
@@ -47,6 +50,9 @@ ko.components.register "tf-xyplot",
         if column_names[index].indexOf("Sensitivity") != -1
           idx = idx.split("_")[1]
           return Object.values(model.sensitivityData()[idx])
+        if column_names[index].indexOf("ImportanceRatio") != -1
+          idx = idx.split("_")[1]
+          return Object.values(model.importanceRatioData()[idx])
         return model["data_#{model.data_plotted()}"]().map((row) => row[idx - 1])
       )
 

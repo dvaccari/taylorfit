@@ -45,9 +45,17 @@ table.grid
           span.mark(data-bind="click:function(){sensitivity($index())}")
             | Show Sensitivity
           // /ko
+          // ko ifnot: hasImportanceRatio($index())
+          span.mark(data-bind="click:function(){importanceRatio($index())}")
+            | Show Importance Ratio
+          // /ko
           // ko if: hasSensitivity($index())
           span.mark(data-bind="click:function(){deleteSensitivity($index(),'column')}")
             | Hide Sensitivity
+          // /ko
+          // ko if: hasImportanceRatio($index())
+          span.mark(data-bind="click:function(){deleteImportanceRatio($index(),'column')}")
+            | Hide Importance Ratio
           // /ko
           // ko if: table == "fit" && $index() !== dependent() && !isHidden($index())
           span.mark(data-bind="click:function(){showHideColumn(true, $index())}")
@@ -117,6 +125,26 @@ table.grid
           span.mark(data-bind="click:function(){deleteSensitivity($index(),'sensitivity')}")
             | Hide Sensitivity
       // /ko
+      // ko foreach: importanceRatioColumns
+      th
+        span Importance Ratio &nbsp;
+        // ko if:name
+        span(data-bind="text:name")
+        // /ko
+        // ko ifnot:name
+        span.placeholder
+          span X
+          sub(data-bind="text:index")
+        // /ko
+
+        tf-dropdown(params="shallow:1,align:'right'")
+          span.mark(data-bind="click:function(){histogram_importanceRatio($index())}")
+            | Histogram
+          span.mark(data-bind="click:function(){xyplot_importanceRatio($index())}")
+            | XY Plot
+          span.mark(data-bind="click:function(){deleteImportanceRatio($index(),'importanceRatio')}")
+            | Hide Importance Ratio
+      // /ko
 
   tbody
     // ko iter:{from:start,to:end}
@@ -153,6 +181,12 @@ table.grid
       td
         span(data-bind="float:$data[$parent.index]")
       // /ko
+      //- Display Importance Ratio Statistic
+      // ko foreach:$parent.importanceRatioData
+      td
+        span(data-bind="float:$data[$parent.index]")
+      // /ko
+
 
     //-
       // ko if:$parent.results

@@ -472,6 +472,36 @@ class Model extends CacheMixin(Observable) {
     return this;
   }
 
+  computeImportanceRatio(index, label=FIT_LABEL) {
+    if (index == undefined) {
+      return this;
+    }
+    //TODO
+    let model = this; 
+    let current_col = model[_data][label].col(index)['data'];
+    return {index:index, importanceRatio: current_col};
+  }
+
+  getImportanceRatio(index, label=FIT_LABEL) {
+    // TODO
+    let res = this.computeImportanceRatio(index, label);
+    this.fire('getImportanceRatio', res);
+    return this;
+  }
+
+  deleteImportanceRatio(index) {
+    // TODO
+    this.fire('deleteImportanceRatio', {index: index});
+    return this;
+  }
+
+  updateImportanceRatio(index, label=FIT_LABEL) {
+    // TODO
+    let res = this.computeImportanceRatio(index, label);
+    this.fire('updateImportanceRatio', res)
+    return this;
+  }
+
   get labels() {
     return Object.keys(this[_subsets])
       .filter((data_label) => this[_subsets][data_label]);
