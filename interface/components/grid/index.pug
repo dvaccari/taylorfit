@@ -37,6 +37,8 @@ table.grid
             | Cumulative Distribution
           span.mark(data-bind="click:function(){autocorrelation($index())}")
             | Autocorrelation
+          span.mark(data-bind="click:function(){qqplot($index())}")
+            | QQ Plot
           span.mark(data-bind="click:function(){xyplot($index() + 1)}")
             | XY Plot
           // ko ifnot: hasSensitivity($index())
