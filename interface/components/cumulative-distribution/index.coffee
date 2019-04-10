@@ -40,7 +40,7 @@ ko.components.register "tf-cumulative-distribution",
     @close = ( ) ->
       model.show_cumulative_distribution undefined
 
-    @bucket_size = ko.observable(10);
+    @bucket_size = ko.observable(10)
 
     @charthtml = ko.computed () =>
       unless @active()
@@ -183,6 +183,18 @@ ko.components.register "tf-cumulative-distribution",
     @column_index.subscribe ( next ) =>
       if next then adapter.unsubscribeToChanges()
       else adapter.subscribeToChanges()
+      if @active()
+        if (@values().length)
+          # Use Sturges' formula to determine the optimal number of buckets
+          # k = number of buckets (bins)
+          k = Math.ceil(Math.log2(@values().length)) + 1
+          numUniqueValues = @values().filter((val, i, arr) ->
+                              return arr.indexOf(val) == i
+                            ).length
+          if numUniqueValues < k
+            @bucket_size numUniqueValues 
+          else
+            @bucket_size k 
 
     @inc = ( ) -> @bucket_size @bucket_size() + 1
     @dec = ( ) -> @bucket_size ((@bucket_size() - 1) || 1)
