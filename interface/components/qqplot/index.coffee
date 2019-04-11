@@ -2,23 +2,6 @@
 require "./index.styl"
 c3 = require "c3"
 Model = require "../Model"
-
-mean = (values) ->
-  sum = 0
-  i = 0
-  while i < values.length
-    sum += values[i]
-    i++
-  sum /= values.length
-  return sum
-
-variance = (values, mu) ->
-  sum = 0
-  i = 0
-  while i < values.length
-    sum += (values[i] - mu) * (values[i] - mu)
-    i++
-  return sum /= values.length
   
 ko.components.register "tf-qqplot",
   template: do require "./index.pug"
@@ -64,29 +47,69 @@ ko.components.register "tf-qqplot",
         return ""
 
       sorted = @values().filter((x) => !isNaN(x)).sort((a, b) => a - b)
-      min = sorted[0]
-      max = sorted[sorted.length - 1] + 1
-      buckets = Array(@bucket_size()).fill(0)
-      bucket_width = (max - min) / @bucket_size()
-      sorted.forEach((x) => buckets[Math.floor((x - min) / bucket_width)]++)
+      # An ordinal sequence to rank the data points
+      rank = [1..sorted.length]
+      # Perform the quantile calculation over the data set points
+      quantile = rank.map((i) -> return (i - 0.5) / sorted.length)
       
-      n = buckets.reduce (t, s) -> t + s
-      last = 0
-      for i in [0...buckets.length]
-        buckets[i] += last
-        last = buckets[i]
-        buckets[i] /= n
+      # The following functions for calculating normal and critical values were adapted by John Walker from C implementations written by Gary Perlman of Wang Institute, Tyngsboro, MA 01879. 
+      Z_MAX = 6
+      # Convert z-score to probability
+      poz = (z) ->
+        if z == 0.0
+          x = 0.0
+        else 
+          y = 0.5 * Math.abs(z);
+          if (y > (Z_MAX * 0.5)) 
+            x = 1.0;
+          else if (y < 1.0) 
+            w = y * y
+            x = ((((((((0.000124818987 * w -
+                  0.001075204047) * w + 0.005198775019) * w -
+                  0.019198292004) * w + 0.059054035642) * w -
+                  0.151968751364) * w + 0.319152932694) * w -
+                  0.531923007300) * w + 0.797884560593) * y * 2.0
+          else 
+            y -= 2.0;
+            x = (((((((((((((-0.000045255659 * y +
+                  0.000152529290) * y - 0.000019538132) * y -
+                  0.000676904986) * y + 0.001390604284) * y -
+                  0.000794620820) * y - 0.002034254874) * y +
+                  0.006549791214) * y - 0.010557625006) * y +
+                  0.011630447319) * y - 0.009279453341) * y +
+                  0.005353579108) * y - 0.002141268741) * y +
+                  0.000535310849) * y + 0.999936657524
+        return (if z > 0.0 then ((x + 1.0) * 0.5) else ((1.0 - x) * 0.5))
+      # Convert probability to z-score
+      critz = (p) ->
+        Z_EPSILON = 0.000001;     # Accuracy of z approximation
+        minz = -Z_MAX;
+        maxz = Z_MAX;
+        zval = 0.0;
+        if p < 0.0
+          p = 0.0;
+        if p > 1.0
+          p = 1.0;
+        while (maxz - minz) > Z_EPSILON
+          pval = poz(zval)
+          if pval > p 
+              maxz = zval;
+          else
+              minz = zval;
+          zval = (maxz + minz) * 0.5;
+        return zval
 
-      labels = Array(@bucket_size()).fill(0).map((x, index) => Math.ceil(index * bucket_width) + min)
+      z_score = quantile.map((x) -> return critz(x))
 
       # global varible 'chart' can be accessed in download function
       global.chart = c3.generate
         bindto: "#qqplot"
         data:
+          type: "scatter"
           x: "x"
           columns: [
-            ["x"].concat(labels),
-            [@column_name()].concat(buckets)
+            ["x"].concat(z_score)
+            ["y"].concat(sorted)
           ]
         size:
           height: 370
@@ -94,10 +117,18 @@ ko.components.register "tf-qqplot",
         axis:
           x:
             tick:
+              count: 10
               format: d3.format('.3s')
+            label:
+              text: 'Theoretical Quantiles'
+              position: 'outer-center'
           y:
             tick:
-              format: d3.format('%')
+              count: 10
+              format: d3.format('.3s')
+            label:
+              text: 'Sample Quantiles'
+              position: 'outer-middle'
         legend:
           show: false
 
@@ -144,12 +175,26 @@ ko.components.register "tf-qqplot",
         e.style.fill = "none"
 
       svg_element.style.backgroundColor = "white"
+      tick = svg_element.querySelectorAll ".tick"
+      num_arr = Array(tick.length).fill(0).map((x, y) => y)
+
+      for num in num_arr
+        # use transform property to check if the SVG element is on the top position of y axis
+        transform_y_val = (getComputedStyle(tick[num]).getPropertyValue('transform').replace(/^matrix(3d)?\((.*)\)$/,'$2').split(/, /)[5])*1
+        if transform_y_val == 1
+          text = tick[num].getElementsByTagName("text")
+          # stop the loop once the SVG element on the top position of y axis is found
+          break
+
+      original_y = text[0].getAttribute "y"
+      text[0].setAttribute "y", original_y + 3
       
       xml = new XMLSerializer().serializeToString svg_element
       data_url = "data:image/svg+xml;base64," + btoa xml
 
       # Reset to original values
       svg_element.style.padding = null
+      text[0].setAttribute "y", original_y
       svg_element.setAttribute "height", original_height
       svg_element.setAttribute "width", original_width
       svg_element.style.backgroundColor = null
