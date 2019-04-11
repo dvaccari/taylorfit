@@ -476,10 +476,26 @@ class Model extends CacheMixin(Observable) {
     if (index == undefined) {
       return this;
     }
-    //TODO
     let model = this; 
-    let current_col = model[_data][label].col(index)['data'];
-    return {index:index, importanceRatio: current_col};
+    let num_rows = model[_data][FIT_LABEL].shape[0];
+    let current_col = model[_data][label].col(index);
+    let dependent_col = model[_data][label].col(model[_dependent]);
+
+    let sensitivity = this.computeSensitivity(index, label)['sensitivity'];
+    // Convert to matrix
+    sensitivity = new Matrix(num_rows, 1, sensitivity);
+
+    // Compute Standard Deviation of independent variable
+    let mean_x = statistics.compute('mean', {X: current_col});
+    let std_x = statistics.compute('std', {X: current_col, mean: mean_x});
+
+    // Compute Standard Deviation of dependent variable
+    let mean_y = statistics.compute('mean', {X: dependent_col});
+    let std_y = statistics.compute('std', {X: dependent_col, mean: mean_y});
+
+    let importance_ratio = sensitivity.dotMultiply(std_x / std_y);
+
+    return {index:index, importanceRatio: importance_ratio.data};
   }
 
   getImportanceRatio(index, label=FIT_LABEL) {
