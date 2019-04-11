@@ -47,28 +47,34 @@ ko.components.register "tf-cumulative-distribution",
         return ""
 
       sorted = @values().filter((x) => !isNaN(x)).sort((a, b) => a - b)
-      min = sorted[0]
-      max = sorted[sorted.length - 1] + 1
-      buckets = Array(@bucket_size()).fill(0)
-      bucket_width = (max - min) / @bucket_size()
-      sorted.forEach((x) => buckets[Math.floor((x - min) / bucket_width)]++)
-      n = buckets.reduce (t, s) -> t + s
-      last = 0
-      for i in [0...buckets.length]
-        buckets[i] += last
-        last = buckets[i]
-        buckets[i] /= n
+      count = {}
 
-      labels = Array(@bucket_size()).fill(0).map((x, index) => Math.ceil(index * bucket_width) + min)
+      for i in [0..sorted.length-1]
+        if !count[sorted[i]]
+          count[sorted[i]] = 0
+        ++count[sorted[i]]
+
+      console.log(count)
+      # console.log(Object.values(count))
+      # console.log(Object.keys(count))
+      cumulative_pct = Object.values(count)
+      n = Object.values(count).reduce (t, s) -> t + s
+      last = 0
+      for i in [0..cumulative_pct.length-1]
+        cumulative_pct[i] += last
+        last = cumulative_pct[i]
+        cumulative_pct[i] /= n
+      console.log(cumulative_pct)
 
       # global varible 'chart' can be accessed in download function
       global.chart = c3.generate
         bindto: "#cumulative-distribution"
         data:
+          type: "scatter"
           x: "x"
           columns: [
-            ["x"].concat(labels),
-            [@column_name()].concat(buckets)
+            ["x"].concat(Object.keys(count)),
+            ["y"].concat(cumulative_pct)
           ]
         size:
           height: 370
@@ -76,6 +82,7 @@ ko.components.register "tf-cumulative-distribution",
         axis:
           x:
             tick:
+              count: 10
               format: d3.format('.3s')
           y:
             min: 0
