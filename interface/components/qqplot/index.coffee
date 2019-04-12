@@ -2,7 +2,24 @@
 require "./index.styl"
 c3 = require "c3"
 Model = require "../Model"
-  
+
+mean = (values) ->
+  sum = 0
+  i = 0
+  while i < values.length
+    sum += values[i]
+    i++
+  sum /= values.length
+  return sum
+
+variance = (values, mu) ->
+  sum = 0
+  i = 0
+  while i < values.length
+    sum += (values[i] - mu) * (values[i] - mu)
+    i++
+  return sum /= values.length
+
 ko.components.register "tf-qqplot",
   template: do require "./index.pug"
   viewModel: ( params ) ->
@@ -47,6 +64,11 @@ ko.components.register "tf-qqplot",
         return ""
 
       sorted = @values().filter((x) => !isNaN(x)).sort((a, b) => a - b)
+      console.log(sorted)
+      mu = mean(sorted)
+      sigma = Math.sqrt(variance(sorted, mu))
+      student = sorted.map((x) -> return (x - mu) / sigma)
+
       # An ordinal sequence to rank the data points
       rank = [1..sorted.length]
       # Perform the quantile calculation over the data set points
@@ -100,6 +122,7 @@ ko.components.register "tf-qqplot",
         return zval
 
       z_score = quantile.map((x) -> return critz(x))
+      console.log(z_score)
 
       # global varible 'chart' can be accessed in download function
       global.chart = c3.generate
@@ -109,7 +132,7 @@ ko.components.register "tf-qqplot",
           x: "x"
           columns: [
             ["x"].concat(z_score)
-            ["y"].concat(sorted)
+            ["y"].concat(student)
           ]
         size:
           height: 370
@@ -131,7 +154,7 @@ ko.components.register "tf-qqplot",
               position: 'outer-middle'
         legend:
           show: false
-
+          
       return chart.element.innerHTML
 
       
@@ -226,8 +249,5 @@ ko.components.register "tf-qqplot",
     @column_index.subscribe ( next ) =>
       if next then adapter.unsubscribeToChanges()
       else adapter.subscribeToChanges()
-
-    @inc = ( ) -> @bucket_size @bucket_size() + 1
-    @dec = ( ) -> @bucket_size ((@bucket_size() - 1) || 1)
 
     return this
