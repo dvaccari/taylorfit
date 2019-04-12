@@ -47,24 +47,30 @@ ko.components.register "tf-cumulative-distribution",
         return ""
 
       sorted = @values().filter((x) => !isNaN(x)).sort((a, b) => a - b)
-      count = {}
+      occurrences = {}
 
       for i in [0..sorted.length-1]
-        if !count[sorted[i]]
-          count[sorted[i]] = 0
-        ++count[sorted[i]]
+        if !occurrences[sorted[i]]
+          occurrences[sorted[i]] = 0
+        ++occurrences[sorted[i]]
 
-      console.log(count)
-      # console.log(Object.values(count))
-      # console.log(Object.keys(count))
-      cumulative_pct = Object.values(count)
-      n = Object.values(count).reduce (t, s) -> t + s
+      keys = Object.keys(occurrences)
+      # Sort keys 
+      keys.sort((a, b) => a - b)
+      sorted_occurrences = {}
+      for i in [0..keys.length-1] 
+        key = keys[i]
+        value = occurrences[key]
+        sorted_occurrences[key] = value
+
+      cumulative_pct = Object.values(sorted_occurrences)
+
+      n = Object.values(sorted_occurrences).reduce (t, s) -> t + s
       last = 0
       for i in [0..cumulative_pct.length-1]
         cumulative_pct[i] += last
         last = cumulative_pct[i]
         cumulative_pct[i] /= n
-      console.log(cumulative_pct)
 
       # global varible 'chart' can be accessed in download function
       global.chart = c3.generate
@@ -73,7 +79,7 @@ ko.components.register "tf-cumulative-distribution",
           type: "scatter"
           x: "x"
           columns: [
-            ["x"].concat(Object.keys(count)),
+            ["x"].concat(keys),
             ["y"].concat(cumulative_pct)
           ]
         size:
@@ -84,6 +90,9 @@ ko.components.register "tf-cumulative-distribution",
             tick:
               count: 10
               format: d3.format('.3s')
+            label:
+              text: @column_name()
+              position: 'outer-center'
           y:
             min: 0
             max: 1
@@ -144,6 +153,7 @@ ko.components.register "tf-cumulative-distribution",
 
       for num in num_arr
         # use transform property to check if the SVG element is on the top position of y axis
+        # matrix(1, 0, 0, 1, 0, 1) -> ["1", "0", "0", "1", "0", "1"]
         transform_y_val = (getComputedStyle(tick[num]).getPropertyValue('transform').replace(/^matrix(3d)?\((.*)\)$/,'$2').split(/, /)[5])*1
         if transform_y_val == 1
           text = tick[num].getElementsByTagName("text")
@@ -190,20 +200,5 @@ ko.components.register "tf-cumulative-distribution",
     @column_index.subscribe ( next ) =>
       if next then adapter.unsubscribeToChanges()
       else adapter.subscribeToChanges()
-      if @active()
-        if (@values().length)
-          # Use Sturges' formula to determine the optimal number of buckets
-          # k = number of buckets (bins)
-          k = Math.ceil(Math.log2(@values().length)) + 1
-          numUniqueValues = @values().filter((val, i, arr) ->
-                              return arr.indexOf(val) == i
-                            ).length
-          if numUniqueValues < k
-            @bucket_size numUniqueValues 
-          else
-            @bucket_size k 
-
-    @inc = ( ) -> @bucket_size @bucket_size() + 1
-    @dec = ( ) -> @bucket_size ((@bucket_size() - 1) || 1)
 
     return this
