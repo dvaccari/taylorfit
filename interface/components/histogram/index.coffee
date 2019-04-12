@@ -56,7 +56,7 @@ ko.components.register "tf-histogram",
 
       sorted = @values().filter((x) => !isNaN(x)).sort((a, b) => a - b)
       min = sorted[0]
-      max = sorted[sorted.length - 1] + 1
+      max = sorted[sorted.length - 1]
       buckets = Array(@bucket_size()).fill(0)
       bucket_width = (max - min) / @bucket_size()
       sorted.forEach((x) => buckets[Math.floor((x - min) / bucket_width)]++)
@@ -167,8 +167,7 @@ ko.components.register "tf-histogram",
     @column_index.subscribe ( next ) =>
       if next then adapter.unsubscribeToChanges()
       else adapter.subscribeToChanges()
-      if @active()
-        if (@values().length)
+      if @active() && @values().length
           # Use Sturges' formula to determine the optimal number of buckets
           # k = number of buckets (bins)
           k = Math.ceil(Math.log2(@values().length)) + 1
