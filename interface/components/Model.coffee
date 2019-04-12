@@ -353,7 +353,6 @@ module.exports = class Model
 
     adapter.on "model:getImportanceRatio", (data) =>
       setTimeout =>
-        #TODO
         columns = ko.unwrap @columns
         importanceRatioColumns = ko.unwrap @importanceRatioColumns
         importanceRatioData = ko.unwrap @importanceRatioData
@@ -377,7 +376,6 @@ module.exports = class Model
     
     adapter.on "model:deleteImportanceRatio", (data) =>
       setTimeout =>        
-      # TODO
         importanceRatioColumns = ko.unwrap @importanceRatioColumns
         importanceRatioData = ko.unwrap @importanceRatioData
 
@@ -391,7 +389,6 @@ module.exports = class Model
 
     adapter.on "model:updateImportanceRatio", (data) =>
       setTimeout =>
-      # TODO
         columns = ko.unwrap @columns
         importanceRatioColumns = ko.unwrap @importanceRatioColumns
         importanceRatioData = ko.unwrap @importanceRatioData

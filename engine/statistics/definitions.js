@@ -147,6 +147,4 @@ module.exports = [
         return data.map((x) => Math.pow(x, exp));
       }
     })
-
-  // TODO add ImportanceRatio
 ];

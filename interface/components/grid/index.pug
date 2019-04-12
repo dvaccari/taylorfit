@@ -120,6 +120,7 @@ table.grid
         tf-dropdown(params="shallow:1,align:'right'")
           span.mark(data-bind="click:function(){histogram_sensitivity($index())}")
             | Histogram
+          // TODO Add Cumulative Distribution and Autocorrelation 
           span.mark(data-bind="click:function(){xyplot_sensitivity($index())}")
             | XY Plot
           span.mark(data-bind="click:function(){deleteSensitivity($index(),'sensitivity')}")
@@ -140,6 +141,7 @@ table.grid
         tf-dropdown(params="shallow:1,align:'right'")
           span.mark(data-bind="click:function(){histogram_importanceRatio($index())}")
             | Histogram
+          // TODO Add Cumulative Distribution and Autocorrelation
           span.mark(data-bind="click:function(){xyplot_importanceRatio($index())}")
             | XY Plot
           span.mark(data-bind="click:function(){deleteImportanceRatio($index(),'importanceRatio')}")

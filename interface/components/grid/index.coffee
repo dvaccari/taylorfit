@@ -49,7 +49,7 @@ ko.components.register "tf-grid",
       model.show_histogram("Sensitivity_"+index.toString())
       model.data_plotted(@table)
     
-    @histogram_importanceratio = ( index ) ->
+    @histogram_importanceRatio = ( index ) ->
       model.show_histogram("ImportanceRatio_"+index.toString())
       model.data_plotted(@table)
 
@@ -95,7 +95,6 @@ ko.components.register "tf-grid",
       return found
 
     @xyplot_importanceRatio = ( index ) ->
-      # TODO maybe combine this with sensitivity
       model.show_xyplot(["ImportanceRatio_"+index.toString(), "Index"])
       model.data_plotted(@table)
 

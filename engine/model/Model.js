@@ -499,20 +499,17 @@ class Model extends CacheMixin(Observable) {
   }
 
   getImportanceRatio(index, label=FIT_LABEL) {
-    // TODO
     let res = this.computeImportanceRatio(index, label);
     this.fire('getImportanceRatio', res);
     return this;
   }
 
   deleteImportanceRatio(index) {
-    // TODO
     this.fire('deleteImportanceRatio', {index: index});
     return this;
   }
 
   updateImportanceRatio(index, label=FIT_LABEL) {
-    // TODO
     let res = this.computeImportanceRatio(index, label);
     this.fire('updateImportanceRatio', res)
     return this;
