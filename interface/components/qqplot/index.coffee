@@ -64,7 +64,6 @@ ko.components.register "tf-qqplot",
         return ""
 
       sorted = @values().filter((x) => !isNaN(x)).sort((a, b) => a - b)
-      console.log(sorted)
       mu = mean(sorted)
       sigma = Math.sqrt(variance(sorted, mu))
       student = sorted.map((x) -> return (x - mu) / sigma)
@@ -122,7 +121,12 @@ ko.components.register "tf-qqplot",
         return zval
 
       z_score = quantile.map((x) -> return critz(x))
-      console.log(z_score)
+      min_z_score = z_score[0]
+      min_student = student[0]
+      max_z_score = z_score[z_score.length-1]
+      max_student = student[student.length-1]
+      min_scale_val = if min_z_score < min_student then Math.floor(min_z_score) else Math.floor(min_student)
+      max_scale_val = if max_z_score < max_student then Math.ceil(max_student) else Math.ceil(max_z_score)
 
       # global varible 'chart' can be accessed in download function
       global.chart = c3.generate
@@ -139,6 +143,12 @@ ko.components.register "tf-qqplot",
           width: 600
         axis:
           x:
+            min: min_scale_val
+            max: max_scale_val
+            # x axis has a default padding value
+            padding:
+              top: 0
+              bottom: 0
             tick:
               count: 10
               format: d3.format('.3s')
@@ -146,6 +156,12 @@ ko.components.register "tf-qqplot",
               text: 'Theoretical Quantiles'
               position: 'outer-center'
           y:
+            min: min_scale_val
+            max: max_scale_val
+            # y axis has a default padding value
+            padding:
+              top: 0
+              bottom: 0
             tick:
               count: 10
               format: d3.format('.3s')
@@ -154,7 +170,22 @@ ko.components.register "tf-qqplot",
               position: 'outer-middle'
         legend:
           show: false
-          
+        grid:
+          x:
+            lines: [
+                value: 0
+            ]
+      
+      svg_element = chart.element.querySelector "svg"
+      xgrid_line = svg_element.querySelector ".c3-xgrid-line"
+      vertical_line = xgrid_line.getElementsByTagName("line")[0]
+      event_rect_area = svg_element.querySelector ".c3-event-rect"
+      shape_width = event_rect_area.getAttribute "width"
+      x1 = vertical_line.getAttribute "x1"
+      x2 = vertical_line.getAttribute "x2"
+      vertical_line.setAttribute "x1", shape_width
+      vertical_line.setAttribute "x2", 0
+
       return chart.element.innerHTML
 
       
