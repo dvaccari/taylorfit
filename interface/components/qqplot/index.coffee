@@ -73,7 +73,7 @@ ko.components.register "tf-qqplot",
       # Perform the quantile calculation over the data set points
       quantile = rank.map((i) -> return (i - 0.5) / sorted.length)
       
-      # The following functions for calculating normal and critical values were adapted by John Walker from C implementations written by Gary Perlman of Wang Institute, Tyngsboro, MA 01879. 
+      # The following functions for converting Z score to Percentile and converting Percentile to Z score were adapted by John Walker from C implementations written by Gary Perlman of Wang Institute, Tyngsboro, MA 01879. 
       Z_MAX = 6
       # Convert z-score to probability
       poz = (z) ->
