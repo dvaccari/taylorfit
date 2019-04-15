@@ -153,7 +153,7 @@ ko.components.register "tf-qqplot",
               count: 10
               format: d3.format('.3s')
             label:
-              text: 'Theoretical Quantiles'
+              text: 'Normal Theoretical Quantiles'
               position: 'outer-center'
           y:
             min: min_scale_val
