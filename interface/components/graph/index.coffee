@@ -18,8 +18,8 @@ ko.components.register "tf-graph",
           data_predicted.sort (a, b) -> a - b
           
           min = data_predicted[0]
-          max = data_predicted[data_predicted.length - 1]+1
-          bucket_size = 10
+          max = data_predicted[data_predicted.length - 1]
+          bucket_size = Math.ceil(Math.log2(data_predicted.length)) + 1
           buckets_width = (max-min)/bucket_size
           hist_labels = []
           for i in [0...bucket_size-1]
@@ -44,8 +44,8 @@ ko.components.register "tf-graph",
           data_predicted.sort (a, b) -> a - b
           
           min = data_predicted[0]
-          max = data_predicted[data_predicted.length - 1]+1
-          bucket_size = 10
+          max = data_predicted[data_predicted.length - 1]
+          bucket_size = Math.ceil(Math.log2(data_predicted.length)) + 1
           buckets_width = (max-min)/bucket_size
           
           for i in [0...bucket_size]
@@ -93,8 +93,8 @@ ko.components.register "tf-graph",
       data_residual.sort (a, b) -> a - b
         
       min = data_predicted[0]
-      max = data_predicted[data_predicted.length - 1]+1
-      bucket_size = 10
+      max = data_predicted[data_predicted.length - 1]
+      bucket_size = Math.ceil(Math.log2(data_predicted.length)) + 1
       buckets_width = (max-min)/bucket_size
       
       hist_labels = []
@@ -326,25 +326,26 @@ ko.components.register "tf-graph",
       #Display Default Plot
       global.chart = chart_scatter
       element.appendChild chart.element
+      currchart = chart_scatter
       
       global.changeGraph = () ->
         e = document.getElementById("graphs")
         selectedvalue = e.options[e.selectedIndex].value
         if selectedvalue == "histogram"
-            if global.chart == chart_scatter || global.chart == chart_autoc || global.chart == chart_histogram
-                element.removeChild chart.element
+            
+            element.removeChild currchart.element
             global.chart = chart_histogram
+            currchart = chart_histogram
             element.appendChild chart.element
         else if selectedvalue == "scatter"
-            if global.chart == chart_scatter || global.chart == chart_autoc || global.chart == chart_histogram
-                element.removeChild chart.element
-            
+            element.removeChild currchart.element
             global.chart = chart_scatter
+            currchart = chart_scatter
             element.appendChild chart.element
         else if selectedvalue == "autocorrelation"
-            if global.chart == chart_scatter || global.chart == chart_autoc || global.chart == chart_histogram
-                element.removeChild chart.element
+            element.removeChild currchart.element
             global.chart = chart_autoc
+            currchart = chart_autoc
             element.appendChild chart.element
       
         
