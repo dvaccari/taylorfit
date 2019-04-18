@@ -48,7 +48,7 @@ ko.components.register "tf-histogram",
     @close = ( ) ->
       model.show_histogram undefined
 
-    @bucket_size = ko.observable(10);
+    @bucket_size = ko.observable(10)
 
     @charthtml = ko.computed () =>
       unless @active()
@@ -56,7 +56,7 @@ ko.components.register "tf-histogram",
 
       sorted = @values().filter((x) => !isNaN(x)).sort((a, b) => a - b)
       min = sorted[0]
-      max = sorted[sorted.length - 1] + 1
+      max = sorted[sorted.length - 1]
       buckets = Array(@bucket_size()).fill(0)
       bucket_width = (max - min) / @bucket_size()
       sorted.forEach((x) => buckets[Math.floor((x - min) / bucket_width)]++)
@@ -120,6 +120,16 @@ ko.components.register "tf-histogram",
         e.style.stroke = "black" 
       
       svg_element.style.backgroundColor = "white"
+
+      fst_bar = svg_element.querySelector ".c3-shape-0"
+      if fst_bar
+        fst_bar_shape = fst_bar.getAttribute "d"
+        shape_arr = fst_bar_shape.split(" ") 
+        if (shape_arr[1].split(",")[0])*1 < 0
+          shape_arr[1] = "0," + shape_arr[1].split(",")[1]
+          shape_arr[2] = "L0," + shape_arr[2].split(",")[1]
+          new_fst_bar_shap = shape_arr.join(' ')
+          fst_bar.setAttribute "d", new_fst_bar_shap
       
       xml = new XMLSerializer().serializeToString svg_element
       data_url = "data:image/svg+xml;base64," + btoa xml
@@ -157,6 +167,17 @@ ko.components.register "tf-histogram",
     @column_index.subscribe ( next ) =>
       if next then adapter.unsubscribeToChanges()
       else adapter.subscribeToChanges()
+      if @active() && @values().length
+          # Use Sturges' formula to determine the optimal number of buckets
+          # k = number of buckets (bins)
+          k = Math.ceil(Math.log2(@values().length)) + 1
+          numUniqueValues = @values().filter((val, i, arr) ->
+                              return arr.indexOf(val) == i
+                            ).length
+          if numUniqueValues < k
+            @bucket_size numUniqueValues 
+          else
+            @bucket_size k
 
     @inc = ( ) -> @bucket_size @bucket_size() + 1
     @dec = ( ) -> @bucket_size ((@bucket_size() - 1) || 1)
