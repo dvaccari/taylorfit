@@ -233,13 +233,13 @@ ko.components.register "tf-qqplot",
 
       svg_element.style.backgroundColor = "white"
       tick = svg_element.querySelectorAll ".tick"
-      num_arr = Array(tick.length).fill(0).map((x, y) => y)
 
-      for num in num_arr
+      for i in [0..tick.length-1]
         # use transform property to check if the SVG element is on the top position of y axis
-        transform_y_val = (getComputedStyle(tick[num]).getPropertyValue('transform').replace(/^matrix(3d)?\((.*)\)$/,'$2').split(/, /)[5])*1
+        # matrix(1, 0, 0, 1, 0, 1) -> ["1", "0", "0", "1", "0", "1"]
+        transform_y_val = (getComputedStyle(tick[i]).getPropertyValue('transform').replace(/^matrix(3d)?\((.*)\)$/,'$2').split(/, /)[5])*1
         if transform_y_val == 1
-          text = tick[num].getElementsByTagName("text")
+          text = tick[i].getElementsByTagName("text")
           # stop the loop once the SVG element on the top position of y axis is found
           break
 
