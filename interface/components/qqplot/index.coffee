@@ -22,7 +22,7 @@ variance = (values, mu) ->
   while i < values.length
     sum += (values[i] - mu) * (values[i] - mu)
     i++
-  return sum /= (values.length-1)
+  return sum /= (values.length - 1)
 
 ko.components.register "tf-qqplot",
   template: do require "./index.pug"
