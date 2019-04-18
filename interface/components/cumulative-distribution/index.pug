@@ -1,7 +1,5 @@
 .background(data-bind="css:{active:active}, click:close")
 .cumulative-distribution(data-bind="css:{active:active}")
   span.title(data-bind="text: column_name() + ' Cumulative Distribution'")
-  a.right(data-bind="click:inc") + Bucket
-  a.left(data-bind="click:dec") - Bucket
   a.download(data-bind="click:download") Download
   <div id="cumulative-distribution" data-bind="html: charthtml"></div>

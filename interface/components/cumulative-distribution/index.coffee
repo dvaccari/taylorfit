@@ -40,36 +40,47 @@ ko.components.register "tf-cumulative-distribution",
     @close = ( ) ->
       model.show_cumulative_distribution undefined
 
-    @bucket_size = ko.observable(10);
+    @bucket_size = ko.observable(10)
 
     @charthtml = ko.computed () =>
-      unless @active()
+      if !@active() || @values().length == 0
         return ""
 
       sorted = @values().filter((x) => !isNaN(x)).sort((a, b) => a - b)
-      min = sorted[0]
-      max = sorted[sorted.length - 1] + 1
-      buckets = Array(@bucket_size()).fill(0)
-      bucket_width = (max - min) / @bucket_size()
-      sorted.forEach((x) => buckets[Math.floor((x - min) / bucket_width)]++)
-      
-      n = buckets.reduce (t, s) -> t + s
-      last = 0
-      for i in [0...buckets.length]
-        buckets[i] += last
-        last = buckets[i]
-        buckets[i] /= n
+      occurrences = {}
 
-      labels = Array(@bucket_size()).fill(0).map((x, index) => Math.ceil(index * bucket_width) + min)
+      for i in [0..sorted.length-1]
+        if !occurrences[sorted[i]]
+          occurrences[sorted[i]] = 0
+        ++occurrences[sorted[i]]
+
+      keys = Object.keys(occurrences)
+      # Sort keys 
+      keys.sort((a, b) => a - b)
+      sorted_occurrences = {}
+      for i in [0..keys.length-1] 
+        key = keys[i]
+        value = occurrences[key]
+        sorted_occurrences[key] = value
+
+      cumulative_pct = Object.values(sorted_occurrences)
+
+      n = Object.values(sorted_occurrences).reduce (t, s) -> t + s
+      last = 0
+      for i in [0..cumulative_pct.length-1]
+        cumulative_pct[i] += last
+        last = cumulative_pct[i]
+        cumulative_pct[i] /= n
 
       # global varible 'chart' can be accessed in download function
       global.chart = c3.generate
         bindto: "#cumulative-distribution"
         data:
+          type: "scatter"
           x: "x"
           columns: [
-            ["x"].concat(labels),
-            [@column_name()].concat(buckets)
+            ["x"].concat(keys),
+            ["y"].concat(cumulative_pct)
           ]
         size:
           height: 370
@@ -77,8 +88,18 @@ ko.components.register "tf-cumulative-distribution",
         axis:
           x:
             tick:
+              count: 10
               format: d3.format('.3s')
+            label:
+              text: @column_name()
+              position: 'outer-center'
           y:
+            min: 0
+            max: 1
+            # y axis has a default padding value
+            padding:
+              top: 0
+              bottom: 0
             tick:
               format: d3.format('%')
         legend:
@@ -127,12 +148,27 @@ ko.components.register "tf-cumulative-distribution",
         e.style.fill = "none"
 
       svg_element.style.backgroundColor = "white"
+      tick = svg_element.querySelectorAll ".tick"
+      num_arr = Array(tick.length).fill(0).map((x, y) => y)
+
+      for num in num_arr
+        # use transform property to check if the SVG element is on the top position of y axis
+        # matrix(1, 0, 0, 1, 0, 1) -> ["1", "0", "0", "1", "0", "1"]
+        transform_y_val = (getComputedStyle(tick[num]).getPropertyValue('transform').replace(/^matrix(3d)?\((.*)\)$/,'$2').split(/, /)[5])*1
+        if transform_y_val == 1
+          text = tick[num].getElementsByTagName("text")
+          # stop the loop once the SVG element on the top position of y axis is found
+          break
+
+      original_y = text[0].getAttribute "y"
+      text[0].setAttribute "y", original_y + 3
       
       xml = new XMLSerializer().serializeToString svg_element
       data_url = "data:image/svg+xml;base64," + btoa xml
 
       # Reset to original values
       svg_element.style.padding = null
+      text[0].setAttribute "y", original_y
       svg_element.setAttribute "height", original_height
       svg_element.setAttribute "width", original_width
       svg_element.style.backgroundColor = null
@@ -164,8 +200,5 @@ ko.components.register "tf-cumulative-distribution",
     @column_index.subscribe ( next ) =>
       if next then adapter.unsubscribeToChanges()
       else adapter.subscribeToChanges()
-
-    @inc = ( ) -> @bucket_size @bucket_size() + 1
-    @dec = ( ) -> @bucket_size ((@bucket_size() - 1) || 1)
 
     return this
