@@ -61,6 +61,10 @@ ko.components.register "tf-grid",
     @xyplot_sensitivity = ( index ) ->
       model.show_xyplot(["Sensitivity_"+index.toString(), "Index"])
       model.data_plotted(@table)
+    
+    @qqplot = ( index ) ->
+      model.show_qqplot(index)
+      model.data_plotted(@table)
 
     @sensitivity = ( index ) ->
       model.show_sensitivity( index )

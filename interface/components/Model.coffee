@@ -58,6 +58,8 @@ CTRL =
     [ undefined    , WRAP_O                           , IGNORE ]
   show_xyplot:
     [ undefined    , WRAP_O                           , IGNORE ]
+  show_qqplot:
+    [ undefined    , WRAP_O                           , IGNORE ]
   show_transform:
     [ undefined    , WRAP_O                           , IGNORE ]
   show_sensitivity:
