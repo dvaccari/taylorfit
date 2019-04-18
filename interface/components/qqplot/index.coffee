@@ -192,7 +192,6 @@ ko.components.register "tf-qqplot",
 
       return chart.element.innerHTML
 
-      
 
     @download = ( ) -> 
       if !@active()
