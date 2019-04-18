@@ -4,6 +4,8 @@ c3 = require "c3"
 Model = require "../Model"
 
 mean = (values) ->
+  if values.length == 0
+    return NaN
   sum = 0
   i = 0
   while i < values.length
@@ -13,12 +15,14 @@ mean = (values) ->
   return sum
 
 variance = (values, mu) ->
+  if values.length == 0
+    return NaN
   sum = 0
   i = 0
   while i < values.length
     sum += (values[i] - mu) * (values[i] - mu)
     i++
-  return sum /= values.length
+  return sum /= (values.length-1)
 
 ko.components.register "tf-qqplot",
   template: do require "./index.pug"
@@ -60,7 +64,7 @@ ko.components.register "tf-qqplot",
     @bucket_size = ko.observable(10);
 
     @charthtml = ko.computed () =>
-      unless @active()
+      if !@active() || @values().length == 0
         return ""
 
       sorted = @values().filter((x) => !isNaN(x)).sort((a, b) => a - b)
