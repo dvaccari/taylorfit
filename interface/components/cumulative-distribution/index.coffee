@@ -43,7 +43,7 @@ ko.components.register "tf-cumulative-distribution",
     @bucket_size = ko.observable(10)
 
     @charthtml = ko.computed () =>
-      unless @active()
+      if !@active() || @values().length == 0
         return ""
 
       sorted = @values().filter((x) => !isNaN(x)).sort((a, b) => a - b)
