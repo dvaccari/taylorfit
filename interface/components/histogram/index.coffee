@@ -58,7 +58,7 @@ ko.components.register "tf-histogram",
       min = sorted[0]
       max = sorted[sorted.length - 1]
       buckets = Array(@bucket_size()).fill(0)
-      bucket_width = (max - min) / @bucket_size()
+      bucket_width = ((max - min) / @bucket_size()) + 0.000001
       sorted.forEach((x) => buckets[Math.floor((x - min) / bucket_width)]++)
       labels = Array(@bucket_size()).fill(0).map((x, index) => Math.ceil(index * bucket_width) + min)
       
