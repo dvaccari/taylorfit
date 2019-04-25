@@ -45,30 +45,51 @@ ko.components.register "tf-grid",
       model.show_histogram(index)
       model.data_plotted(@table)
 
-    @histogram_sensitivity = ( index ) ->
-      model.show_histogram("Sensitivity_"+index.toString())
-      model.data_plotted(@table)
-    
-    @histogram_importanceRatio = ( index ) ->
-      model.show_histogram("ImportanceRatio_"+index.toString())
-      model.data_plotted(@table)
+    @histogram_statistic = ( index, statistic ) ->
+      if statistic == "sensitivity"
+        model.show_histogram("Sensitivity_"+index.toString())
+        model.data_plotted(@table)
+      if statistic == "importanceRatio"
+        model.show_histogram("ImportanceRatio_"+index.toString())
+        model.data_plotted(@table)
 
     @cumulative_distribution = ( index ) ->
       model.show_cumulative_distribution(index)
       model.data_plotted(@table)
 
+    @cumulative_distribution_statistic = ( index, statistic ) ->
+      if statistic == "sensitivity"
+        model.show_cumulative_distribution("Sensitivity_"+index.toString())
+        model.data_plotted(@table)
+      if statistic == "importanceRatio"
+        model.show_cumulative_distribution("ImportanceRatio_"+index.toString())
+        model.data_plotted(@table)
+
+
     @autocorrelation = ( index ) ->
       model.show_autocorrelation(index)
       model.data_plotted(@table)
+
+    @autocorrelation_statistic = ( index, statistic ) ->
+      if statistic == "sensitivity"
+        model.show_autocorrelation("Sensitivity_"+index.toString())
+        model.data_plotted(@table)
+      if statistic == "importanceRatio"
+        model.show_autocorrelation("ImportanceRatio_"+index.toString())
+        model.data_plotted(@table)
 
     @xyplot = ( index ) ->
       model.show_xyplot([index, "Index"])
       model.data_plotted(@table)
 
-    @xyplot_sensitivity = ( index ) ->
-      model.show_xyplot(["Sensitivity_"+index.toString(), "Index"])
-      model.data_plotted(@table)
-    
+    @xyplot_statistic = ( index, statistic ) ->
+      if statistic == "sensitivity"
+        model.show_xyplot(["Sensitivity_"+index.toString(), "Index"])
+        model.data_plotted(@table)
+      if statistic == "importanceRatio"
+        model.show_xyplot(["ImportanceRatio_"+index.toString(), "Index"])
+        model.data_plotted(@table)
+
     @qqplot = ( index ) ->
       model.show_qqplot(index)
       model.data_plotted(@table)
@@ -93,10 +114,6 @@ ko.components.register "tf-grid",
           found = true
       )
       return found
-
-    @xyplot_importanceRatio = ( index ) ->
-      model.show_xyplot(["ImportanceRatio_"+index.toString(), "Index"])
-      model.data_plotted(@table)
 
     @importanceRatio = ( index ) ->
       model.show_importanceRatio( index )

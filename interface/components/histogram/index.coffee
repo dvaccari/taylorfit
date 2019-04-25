@@ -21,8 +21,6 @@ ko.components.register "tf-histogram",
         return undefined
       index = @column_index()
       if typeof index == "string"
-        # So then what is this?
-        # TODO IMPORTANCE RATIO
         if index.indexOf("Sensitivity") != -1
           index = index.split("_")[1]
           return "Sensitivity " + model.sensitivityColumns()[index].name
@@ -36,7 +34,6 @@ ko.components.register "tf-histogram",
       if !@active()
         return undefined
       index = @column_index()
-      # TODO IMPORTANCE RATIO
       if typeof index == "string"
         if index == "Dependent"
           index = 0
