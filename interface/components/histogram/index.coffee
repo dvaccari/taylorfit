@@ -51,14 +51,15 @@ ko.components.register "tf-histogram",
     @bucket_size = ko.observable(10)
 
     @charthtml = ko.computed () =>
-      unless @active()
+      if !@active() || @values().length == 0
         return ""
 
       sorted = @values().filter((x) => !isNaN(x)).sort((a, b) => a - b)
       min = sorted[0]
       max = sorted[sorted.length - 1]
       buckets = Array(@bucket_size()).fill(0)
-      bucket_width = ((max - min) / @bucket_size()) + 0.000001
+      # to avoid array index out of range
+      bucket_width = ((max - min) / @bucket_size()) + 0.0001
       sorted.forEach((x) => buckets[Math.floor((x - min) / bucket_width)]++)
       labels = Array(@bucket_size()).fill(0).map((x, index) => Math.ceil(index * bucket_width) + min)
       
