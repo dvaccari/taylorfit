@@ -73,7 +73,7 @@ ko.components.register "tf-autocorrelation",
           return "Sensitivity " + model.sensitivityColumns()[index].name
         if index.indexOf("ImportanceRatio") != -1
           index = index.split("_")[1]
-          return "ImportanceRatio " + model.importanceRatioColumns()[index].name
+          return "Importance Ratio " + model.importanceRatioColumns()[index].name
         return @column_index()
       return model.columns()[@column_index()].name
     

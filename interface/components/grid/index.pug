@@ -124,6 +124,8 @@ table.grid
             | Cumulative Distribution
           span.mark(data-bind="click:function(){autocorrelation_statistic($index(), 'sensitivity')}")
             | Autocorrelation
+          span.mark(data-bind="click:function(){qqplot_statistic($index(), 'sensitivity')}")
+            | QQ Plot
           span.mark(data-bind="click:function(){xyplot_statistic($index(), 'sensitivity')}")
             | XY Plot
           span.mark(data-bind="click:function(){deleteSensitivity($index(),'sensitivity')}")
@@ -148,6 +150,8 @@ table.grid
             | Cumulative Distribution
           span.mark(data-bind="click:function(){autocorrelation_statistic($index(), 'importanceRatio')}")
             | Autocorrelation
+          span.mark(data-bind="click:function(){qqplot_statistic($index(), 'importanceRatio')}")
+            | QQ Plot
           span.mark(data-bind="click:function(){xyplot_statistic($index(), 'importanceRatio')}")
             | XY Plot
           span.mark(data-bind="click:function(){deleteImportanceRatio($index(),'importanceRatio')}")

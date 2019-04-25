@@ -94,6 +94,14 @@ ko.components.register "tf-grid",
       model.show_qqplot(index)
       model.data_plotted(@table)
 
+    @qqplot_statistic = ( index, statistic ) ->
+      if statistic == "sensitivity"
+        model.show_qqplot("Sensitivity_"+index.toString())
+        model.data_plotted(@table)
+      if statistic == "importanceRatio"
+        model.show_qqplot("ImportanceRatio_"+index.toString())
+        model.data_plotted(@table)
+
     @sensitivity = ( index ) ->
       model.show_sensitivity( index )
     

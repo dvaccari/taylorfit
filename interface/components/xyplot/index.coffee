@@ -29,7 +29,7 @@ ko.components.register "tf-xyplot",
             return "Sensitivity " + model.sensitivityColumns()[idx].name
           if idx.indexOf("ImportanceRatio") != -1
             idx = idx.split("_")[1]
-            return "ImportanceRatio " + model.importanceRatioColumns()[idx].name
+            return "Importance Ratio " + model.importanceRatioColumns()[idx].name
           return idx
         return @columns()[idx]
       )
