@@ -68,6 +68,12 @@ CTRL =
     [ undefined   , SEND("deleteSensitivity", Number) , IGNORE ]
   update_sensitivity:
     [ undefined   , SEND("updateSensitivity", Number)  , IGNORE ]
+  show_importanceRatio:
+    [ undefined   , SEND("getImportanceRatio", Number)    , IGNORE ]
+  delete_importanceRatio:
+    [ undefined   , SEND("deleteImportanceRatio", Number) , IGNORE ]
+  update_importanceRatio:
+    [ undefined   , SEND("updateImportanceRatio", Number)  , IGNORE ]
 
   # Loaded from tf-loader
   columns:
@@ -127,6 +133,10 @@ CTRL =
   sensitivityColumns:
     [ []         , WRAP_A                            , UNWRAP ]
   sensitivityData:
+    [ []         , WRAP_A                            , UNWRAP ]
+  importanceRatioColumns:
+    [ []         , WRAP_A                            , UNWRAP ]
+  importanceRatioData:
     [ []         , WRAP_A                            , UNWRAP ]
 
 module.exports = class Model
@@ -340,6 +350,60 @@ module.exports = class Model
         @sensitivityData(sensitivityData)
       , 100
       adapter.subscribeToChanges()
+
+    adapter.on "model:getImportanceRatio", (data) =>
+      setTimeout =>
+        columns = ko.unwrap @columns
+        importanceRatioColumns = ko.unwrap @importanceRatioColumns
+        importanceRatioData = ko.unwrap @importanceRatioData
+
+        # Check if column already exists
+        colExists = false
+        importanceRatioColumns.forEach((col) =>
+          if col.index == data.index
+            colExists = true
+        )
+
+        if colExists == false
+          column = columns[data.index]
+          importanceRatioColumns.push(column)
+          importanceRatioData.push(data.importanceRatio)
+
+          @importanceRatioColumns(importanceRatioColumns)
+          @importanceRatioData(importanceRatioData)
+      , 100
+      adapter.subscribeToChanges()
+    
+    adapter.on "model:deleteImportanceRatio", (data) =>
+      setTimeout =>        
+        importanceRatioColumns = ko.unwrap @importanceRatioColumns
+        importanceRatioData = ko.unwrap @importanceRatioData
+
+        importanceRatioColumns.splice(data.index, 1);
+        importanceRatioData.splice(data.index, 1);
+
+        @importanceRatioColumns(importanceRatioColumns)
+        @importanceRatioData(importanceRatioData)
+      , 100
+      adapter.subscribeToChanges()
+
+    adapter.on "model:updateImportanceRatio", (data) =>
+      setTimeout =>
+        columns = ko.unwrap @columns
+        importanceRatioColumns = ko.unwrap @importanceRatioColumns
+        importanceRatioData = ko.unwrap @importanceRatioData
+
+        # Find the column and replace it
+        importanceRatioColumns.forEach((col, i) =>
+          if col.index == data.index
+            importanceRatioColumns[i] = columns[data.index]
+            importanceRatioData[i] = data.importanceRatio
+        )
+
+        @importanceRatioColumns(importanceRatioColumns)
+        @importanceRatioData(importanceRatioData)
+      , 100
+      adapter.subscribeToChanges()  
 
     adapter.on "progress.start", ( { curr, total } ) =>
       @progress 0.01

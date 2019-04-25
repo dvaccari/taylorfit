@@ -21,6 +21,12 @@ ko.components.register "tf-cumulative-distribution",
         return undefined
       index = @column_index()
       if typeof index == "string"
+        if index.indexOf("Sensitivity") != -1
+          index = index.split("_")[1]
+          return "Sensitivity " + model.sensitivityColumns()[index].name
+        if index.indexOf("ImportanceRatio") != -1
+          index = index.split("_")[1]
+          return "Importance Ratio " + model.importanceRatioColumns()[index].name
         return index
       return model.columns()[index].name
     
@@ -35,6 +41,14 @@ ko.components.register "tf-cumulative-distribution",
           index = 1
         if index == "Residual"
           index = 2
+        if typeof index == "string" && index.indexOf("Sensitivity") != -1
+          # format is: Sensitivity_index
+          index = index.split("_")[1]
+          return Object.values(model.sensitivityData()[index])
+        if typeof index == "string" && index.indexOf("ImportanceRatio") != -1
+          # format is: ImportanceRatio_index
+          index = index.split("_")[1]
+          return Object.values(model.importanceRatioData()[index]) 
       return model["data_#{model.data_plotted()}"]().map((row) => row[index])
 
     @close = ( ) ->

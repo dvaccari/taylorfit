@@ -13,7 +13,7 @@
       // ko foreach: result_fit().terms
       tr
         td.term
-          span.remove.fa.fa-close(data-bind="click:function(){selected(true);$parent.updateSensitivity()}" title='Click on the "x" to remove a term from the current model.')
+          span.remove.fa.fa-close(data-bind="click:function(){selected(true);$parent.updateSensitivity();$parent.updateImportanceRatio();}" title='Click on the "x" to remove a term from the current model.')
           span.operator(data-bind="text:coeff<0?'-':'+'")
           span.coeff(data-bind="num:Math.abs(coeff)")
           // ko foreach:term
