@@ -28,7 +28,7 @@ table.grid
           span X
           sub(data-bind="text:$index")
         // /ko
-        tf-dropdown(params="shallow:1,align:'right'")
+        tf-dropdown(params="shallow:1,align:'left'")
           span.mark(data-bind="click:function(){dependent($index())}")
             | Mark as Dependant
           span.mark(data-bind="click:function(){histogram($index())}")
