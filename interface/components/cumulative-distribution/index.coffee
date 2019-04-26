@@ -49,6 +49,7 @@ ko.components.register "tf-cumulative-distribution",
           # format is: ImportanceRatio_index
           index = index.split("_")[1]
           return Object.values(model.importanceRatioData()[index]) 
+        return model["extra_#{model.data_plotted()}"]().map((row) => row[index])
       return model["data_#{model.data_plotted()}"]().map((row) => row[index])
 
     @close = ( ) ->
