@@ -81,10 +81,16 @@ ko.components.register "tf-qqplot",
       if !@active() || @values().length == 0
         return ""
 
+      numUniqueValues = @values().filter((val, i, arr) ->
+                    return arr.indexOf(val) == i
+                  ).length
       sorted = @values().filter((x) => !isNaN(x)).sort((a, b) => a - b)
-      mu = mean(sorted)
-      sigma = Math.sqrt(variance(sorted, mu))
-      student = sorted.map((x) -> return (x - mu) / sigma)
+      if numUniqueValues != 1
+        mu = mean(sorted)
+        sigma = Math.sqrt(variance(sorted, mu))
+        student = sorted.map((x) -> return (x - mu) / sigma)
+      else
+        student = Array(sorted.length).fill(NaN)
 
       # An ordinal sequence to rank the data points
       rank = [1..sorted.length]
@@ -140,11 +146,15 @@ ko.components.register "tf-qqplot",
 
       z_score = quantile.map((x) -> return critz(x))
       min_z_score = z_score[0]
-      min_student = student[0]
       max_z_score = z_score[z_score.length-1]
-      max_student = student[student.length-1]
-      min_scale_val = if min_z_score < min_student then Math.floor(min_z_score) else Math.floor(min_student)
-      max_scale_val = if max_z_score < max_student then Math.ceil(max_student) else Math.ceil(max_z_score)
+      if numUniqueValues != 1
+        min_student = student[0]
+        max_student = student[student.length-1]
+        min_scale_val = if min_z_score < min_student then Math.floor(min_z_score) else Math.floor(min_student)
+        max_scale_val = if max_z_score < max_student then Math.ceil(max_student) else Math.ceil(max_z_score)
+      else
+        min_scale_val = min_z_score
+        max_scale_val = max_z_score
 
       # global varible 'chart' can be accessed in download function
       global.chart = c3.generate
