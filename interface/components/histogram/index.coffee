@@ -152,10 +152,10 @@ ko.components.register "tf-histogram",
       bars = bars[0]
       paths = bars.getElementsByTagName("path")
       if paths.length
-        lst_bar = paths[paths.length-1]
-        lst_bar_shape = lst_bar.getAttribute "d"
         event_rect_area = svg_element.querySelector ".c3-zoom-rect"
         shape_width = event_rect_area.getAttribute "width"
+        lst_bar = paths[paths.length-1]
+        lst_bar_shape = lst_bar.getAttribute "d"
         shape_arr = lst_bar_shape.split(" ") 
         if ((shape_arr[3].split(",")[0]).substring(1))*1 > shape_width
           shape_arr[3] = "L" + shape_width + "," + shape_arr[3].split(",")[1]
