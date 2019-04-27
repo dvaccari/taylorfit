@@ -66,10 +66,6 @@ ko.components.register "tf-histogram",
       # all values equal to the maximum will be in the last bin
       sorted.forEach((x) => if Math.floor((x - min) / bucket_width) == @bucket_size() then buckets[@bucket_size()-1]++ else buckets[Math.floor((x - min) / bucket_width)]++)
       labels = Array(@bucket_size()).fill(0).map((x, index) => Math.ceil(index * bucket_width) + min)
-      
-      numUniqueLabels = labels.filter((val, i, arr) ->
-                    return arr.indexOf(val) == i
-                  ).length
 
       # global varible 'chart' can be accessed in download function
       global.chart = c3.generate
