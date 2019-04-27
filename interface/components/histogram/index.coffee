@@ -57,12 +57,20 @@ ko.components.register "tf-histogram",
       sorted = @values().filter((x) => !isNaN(x)).sort((a, b) => a - b)
       min = sorted[0]
       max = sorted[sorted.length - 1]
+      bucket_width = (max - min) / @bucket_size()
+      # we can set bucket_width to any non-zero value when all data is identical
+      if bucket_width == 0
+        bucket_width = 0.1
+
       buckets = Array(@bucket_size()).fill(0)
-      # to avoid array index out of range
-      bucket_width = ((max - min) / @bucket_size()) + 0.0001
-      sorted.forEach((x) => buckets[Math.floor((x - min) / bucket_width)]++)
+      # all values equal to the maximum will be in the last bin
+      sorted.forEach((x) => if Math.floor((x - min) / bucket_width) == @bucket_size() then buckets[@bucket_size()-1]++ else buckets[Math.floor((x - min) / bucket_width)]++)
       labels = Array(@bucket_size()).fill(0).map((x, index) => Math.ceil(index * bucket_width) + min)
       
+      numUniqueLabels = labels.filter((val, i, arr) ->
+                    return arr.indexOf(val) == i
+                  ).length
+
       # global varible 'chart' can be accessed in download function
       global.chart = c3.generate
         bindto: "#histogram"
@@ -79,6 +87,14 @@ ko.components.register "tf-histogram",
         axis:
           x:
             tick:
+              count: () -> 
+                numUniqueLabels = labels.filter((val, i, arr) ->
+                                    return arr.indexOf(val) == i
+                                  ).length
+                # to avoid text label for each bin overlap on each other 
+                if numUniqueLabels < 9
+                  return numUniqueLabels                  
+                return 9
               format: d3.format('.3s')
         legend:
           show: false
@@ -132,6 +148,21 @@ ko.components.register "tf-histogram",
           new_fst_bar_shap = shape_arr.join(' ')
           fst_bar.setAttribute "d", new_fst_bar_shap
       
+      bars = svg_element.querySelectorAll ".c3-chart-bar"
+      bars = bars[0]
+      paths = bars.getElementsByTagName("path")
+      if paths.length
+        lst_bar = paths[paths.length-1]
+        lst_bar_shape = lst_bar.getAttribute "d"
+        event_rect_area = svg_element.querySelector ".c3-zoom-rect"
+        shape_width = event_rect_area.getAttribute "width"
+        shape_arr = lst_bar_shape.split(" ") 
+        if ((shape_arr[3].split(",")[0]).substring(1))*1 > shape_width
+          shape_arr[3] = "L" + shape_width + "," + shape_arr[3].split(",")[1]
+          shape_arr[4] = "L" + shape_width + "," + shape_arr[4].split(",")[1]
+          new_lst_bar_shap = shape_arr.join(' ')
+          lst_bar.setAttribute "d", new_lst_bar_shap
+
       xml = new XMLSerializer().serializeToString svg_element
       data_url = "data:image/svg+xml;base64," + btoa xml
 
@@ -175,8 +206,8 @@ ko.components.register "tf-histogram",
           numUniqueValues = @values().filter((val, i, arr) ->
                               return arr.indexOf(val) == i
                             ).length
-          if numUniqueValues < k
-            @bucket_size numUniqueValues 
+          if numUniqueValues == 1
+            @bucket_size 1 
           else
             @bucket_size k
 
