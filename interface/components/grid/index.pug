@@ -81,8 +81,12 @@ table.grid
         tf-dropdown(params="align:'right'")
           span.mark(data-bind="click:function(){histogram('Dependent')}")
             | Histogram
+          span.mark(data-bind="click:function(){cumulative_distribution('Dependent')}")
+            | Cumulative Distribution
           span.mark(data-bind="click:function(){autocorrelation('Dependent')}")
             | Autocorrelation
+          span.mark(data-bind="click:function(){qqplot('Dependent')}")
+            | QQ Plot
           span.mark(data-bind="click:function(){xyplot('Dependent')}")
             | XY Plot
       th.prd
@@ -90,8 +94,12 @@ table.grid
         tf-dropdown(params="align:'right'")
           span.mark(data-bind="click:function(){histogram('Predicted')}")
             | Histogram
+          span.mark(data-bind="click:function(){cumulative_distribution('Predicted')}")
+            | Cumulative Distribution
           span.mark(data-bind="click:function(){autocorrelation('Predicted')}")
             | Autocorrelation
+          span.mark(data-bind="click:function(){qqplot('Predicted')}")
+            | QQ Plot
           span.mark(data-bind="click:function(){xyplot('Predicted')}")
             | XY Plot
       th.err
@@ -99,8 +107,12 @@ table.grid
         tf-dropdown(params="align:'right'")
           span.mark(data-bind="click:function(){histogram('Residual')}")
             | Histogram
+          span.mark(data-bind="click:function(){cumulative_distribution('Residual')}")
+            | Cumulative Distribution
           span.mark(data-bind="click:function(){autocorrelation('Residual')}")
             | Autocorrelation
+          span.mark(data-bind="click:function(){qqplot('Residual')}")
+            | QQ Plot
           span.mark(data-bind="click:function(){xyplot('Residual')}")
             | XY Plot
       // /ko
