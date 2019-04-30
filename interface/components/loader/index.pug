@@ -1,5 +1,6 @@
 
 tf-data-partition(params="show_partition:show_partition,model:temp_model,parent:$component")
+tf-validate-data-partition(params="show_validate_partition:show_validate_partition,model:temp_model,parent:$component")
 input(type="file" accept=".csv" hidden
   data-bind="attr:{id:id},value:dataset")
 label.button.input-dataset(data-bind="attr:{for:id}")
