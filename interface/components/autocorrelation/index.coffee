@@ -66,7 +66,14 @@ ko.components.register "tf-autocorrelation",
     @column_name = ko.computed ( ) => 
       if !@active()
         return undefined
-      if typeof @column_index() == "string"
+      index = @column_index()
+      if typeof index == "string"
+        if index.indexOf("Sensitivity") != -1
+          index = index.split("_")[1]
+          return "Sensitivity " + model.sensitivityColumns()[index].name
+        if index.indexOf("ImportanceRatio") != -1
+          index = index.split("_")[1]
+          return "Importance Ratio " + model.importanceRatioColumns()[index].name
         return @column_index()
       return model.columns()[@column_index()].name
     
@@ -81,6 +88,22 @@ ko.components.register "tf-autocorrelation",
           index = 1
         if index == "Residual"
           index = 2
+        if index == "Low Confidence"
+          index = 3
+        if index == "High Confidence"
+          index = 4
+        if index == "Low Prediction"
+          index = 3
+        if index == "High Prediction"
+          index = 4
+        if typeof index == "string" && index.indexOf("Sensitivity") != -1
+          # format is: Sensitivity_index
+          index = index.split("_")[1]
+          return Object.values(model.sensitivityData()[index])
+        if typeof index == "string" && index.indexOf("ImportanceRatio") != -1
+          # format is: ImportanceRatio_index
+          index = index.split("_")[1]
+          return Object.values(model.importanceRatioData()[index])
         return model["extra_#{model.data_plotted()}"]().map((row) => row[index])
       return model["data_#{model.data_plotted()}"]().map((row) => row[index])
 

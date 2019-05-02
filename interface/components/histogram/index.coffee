@@ -24,6 +24,9 @@ ko.components.register "tf-histogram",
         if index.indexOf("Sensitivity") != -1
           index = index.split("_")[1]
           return "Sensitivity " + model.sensitivityColumns()[index].name
+        if index.indexOf("ImportanceRatio") != -1
+          index = index.split("_")[1]
+          return "Importance Ratio " + model.importanceRatioColumns()[index].name
         return index
       return model.columns()[index].name
     
@@ -41,30 +44,47 @@ ko.components.register "tf-histogram",
           index = 1
         if index == "Residual"
           index = 2
+        if index == "Low Confidence"
+          index = 3
+        if index == "High Confidence"
+          index = 4
+        if index == "Low Prediction"
+          index = 5
+        if index == "High Prediction"
+          index = 6
         if typeof index == "string" && index.indexOf("Sensitivity") != -1
           # format is: Sensitivity_index
           index = index.split("_")[1]
           return Object.values(model.sensitivityData()[index])
+        if typeof index == "string" && index.indexOf("ImportanceRatio") != -1
+          # format is: ImportanceRatio_index
+          index = index.split("_")[1]
+          return Object.values(model.importanceRatioData()[index])
         return model["extra_#{model.data_plotted()}"]().map((row) => row[index])
       return model["data_#{model.data_plotted()}"]().map((row) => row[index])
 
     @close = ( ) ->
       model.show_histogram undefined
 
-    @bucket_size = ko.observable(10);
+    @bucket_size = ko.observable(10)
 
     @charthtml = ko.computed () =>
-      unless @active()
+      if !@active() || @values().length == 0
         return ""
 
-      sorted = @values().filter((x) => !isNaN(x)).sort((a, b) => a - b)
+      sorted = @values().fi1lter((x) => !isNaN(x)).sort((a, b) => a - b)
       min = sorted[0]
-      max = sorted[sorted.length - 1] + 1
-      buckets = Array(@bucket_size()).fill(0)
+      max = sorted[sorted.length - 1]
       bucket_width = (max - min) / @bucket_size()
-      sorted.forEach((x) => buckets[Math.floor((x - min) / bucket_width)]++)
+      # we can set bucket_width to any non-zero value when all data is identical
+      if bucket_width == 0
+        bucket_width = 0.1
+
+      buckets = Array(@bucket_size()).fill(0)
+      # all values equal to the maximum will be in the last bin
+      sorted.forEach((x) => if Math.floor((x - min) / bucket_width) == @bucket_size() then buckets[@bucket_size()-1]++ else buckets[Math.floor((x - min) / bucket_width)]++)
       labels = Array(@bucket_size()).fill(0).map((x, index) => Math.ceil(index * bucket_width) + min)
-      
+
       # global varible 'chart' can be accessed in download function
       global.chart = c3.generate
         bindto: "#histogram"
@@ -81,6 +101,14 @@ ko.components.register "tf-histogram",
         axis:
           x:
             tick:
+              count: () -> 
+                numUniqueLabels = labels.filter((val, i, arr) ->
+                                    return arr.indexOf(val) == i
+                                  ).length
+                # to avoid text label for each bin overlap on each other 
+                if numUniqueLabels < 9
+                  return numUniqueLabels                  
+                return 9
               format: d3.format('.3s')
         legend:
           show: false
@@ -123,7 +151,32 @@ ko.components.register "tf-histogram",
         e.style.stroke = "black" 
       
       svg_element.style.backgroundColor = "white"
+
+      fst_bar = svg_element.querySelector ".c3-shape-0"
+      if fst_bar
+        fst_bar_shape = fst_bar.getAttribute "d"
+        shape_arr = fst_bar_shape.split(" ") 
+        if (shape_arr[1].split(",")[0])*1 < 0
+          shape_arr[1] = "0," + shape_arr[1].split(",")[1]
+          shape_arr[2] = "L0," + shape_arr[2].split(",")[1]
+          new_fst_bar_shap = shape_arr.join(' ')
+          fst_bar.setAttribute "d", new_fst_bar_shap
       
+      bars = svg_element.querySelectorAll ".c3-chart-bar"
+      bars = bars[0]
+      paths = bars.getElementsByTagName("path")
+      if paths.length
+        event_rect_area = svg_element.querySelector ".c3-zoom-rect"
+        shape_width = event_rect_area.getAttribute "width"
+        lst_bar = paths[paths.length-1]
+        lst_bar_shape = lst_bar.getAttribute "d"
+        shape_arr = lst_bar_shape.split(" ") 
+        if ((shape_arr[3].split(",")[0]).substring(1))*1 > shape_width
+          shape_arr[3] = "L" + shape_width + "," + shape_arr[3].split(",")[1]
+          shape_arr[4] = "L" + shape_width + "," + shape_arr[4].split(",")[1]
+          new_lst_bar_shap = shape_arr.join(' ')
+          lst_bar.setAttribute "d", new_lst_bar_shap
+
       xml = new XMLSerializer().serializeToString svg_element
       data_url = "data:image/svg+xml;base64," + btoa xml
 
@@ -160,6 +213,17 @@ ko.components.register "tf-histogram",
     @column_index.subscribe ( next ) =>
       if next then adapter.unsubscribeToChanges()
       else adapter.subscribeToChanges()
+      if @active() && @values().length
+          # Use Sturges' formula to determine the optimal number of buckets
+          # k = number of buckets (bins)
+          k = Math.ceil(Math.log2(@values().length)) + 1
+          numUniqueValues = @values().filter((val, i, arr) ->
+                              return arr.indexOf(val) == i
+                            ).length
+          if numUniqueValues == 1
+            @bucket_size 1 
+          else
+            @bucket_size k
 
     @inc = ( ) -> @bucket_size @bucket_size() + 1
     @dec = ( ) -> @bucket_size ((@bucket_size() - 1) || 1)

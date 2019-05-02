@@ -106,6 +106,27 @@ function initializeModel() {
     });
   });
 
+  m.on('getImportanceRatio', (data) => {
+    postMessage({
+      type: 'model:getImportanceRatio',
+      data: data
+    });
+  });
+  
+  m.on('deleteImportanceRatio', (data) => {
+    postMessage({
+      type: 'model:deleteImportanceRatio',
+      data: data
+    });
+  });
+
+  m.on('updateImportanceRatio', (data) => {
+    postMessage({
+      type: 'model:updateImportanceRatio',
+      data: data
+    });
+  });
+
   return m;
 }
 
@@ -117,7 +138,8 @@ let subscribeToChanges = (m, updateNow = true) => {
   subscriptionIds = m.on([
     'setData', 'setExponents', 'setMultiplicands', 'setDependent',
     'setLags', 'addTerm', 'removeTerm', 'clear', 'subset', 'setColumns',
-    'getSensitivity', 'deleteSensitivity', 'updateSensitivity'
+    'getSensitivity', 'deleteSensitivity', 'updateSensitivity',
+    'getImportanceRatio', 'deleteImportanceRatio', 'updateImportanceRatio'
   ], () => {
     m.getCandidates()
      .then((cands) => postMessage({ type: 'candidates', data: cands }));
@@ -236,6 +258,18 @@ onmessage = function (e) {
     
     case 'updateSensitivity':
       m.updateSensitivity(data);
+      break;
+    
+    case 'getImportanceRatio':
+      m.getImportanceRatio(data);
+      break;
+    
+    case 'deleteImportanceRatio':
+      m.deleteImportanceRatio(data);
+      break;
+    
+    case 'updateImportanceRatio':
+      m.updateImportanceRatio(data);
       break;
     
     case 'reset':

@@ -128,6 +128,15 @@ module.exports = new class WorkerAdapter extends ME
 
   updateSensitivity: ( x ) ->
     @post "updateSensitivity", x
-    
+
+  getImportanceRatio: ( x ) ->
+    @post "getImportanceRatio", x
+
+  deleteImportanceRatio: ( x ) ->
+    @post "deleteImportanceRatio", x
+
+  updateImportanceRatio: ( x ) ->
+    @post "updateImportanceRatio", x
+
   clear: ( ) ->
     @post "clear"

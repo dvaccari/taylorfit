@@ -1,4 +1,6 @@
 utils = require('../../engine/utils');
+Matrix = require('../../engine/matrix/Matrix');
+tdistr = require('../../engine/statistics/distributions-socr').tdistr;
 
 Transformation = require "./transform/label.json"
 CROSS_LABEL = require("../../engine/labels.json").CROSS_LABEL
@@ -58,6 +60,8 @@ CTRL =
     [ undefined    , WRAP_O                           , IGNORE ]
   show_xyplot:
     [ undefined    , WRAP_O                           , IGNORE ]
+  show_qqplot:
+    [ undefined    , WRAP_O                           , IGNORE ]
   show_transform:
     [ undefined    , WRAP_O                           , IGNORE ]
   show_sensitivity:
@@ -66,6 +70,12 @@ CTRL =
     [ undefined   , SEND("deleteSensitivity", Number) , IGNORE ]
   update_sensitivity:
     [ undefined   , SEND("updateSensitivity", Number)  , IGNORE ]
+  show_importanceRatio:
+    [ undefined   , SEND("getImportanceRatio", Number)    , IGNORE ]
+  delete_importanceRatio:
+    [ undefined   , SEND("deleteImportanceRatio", Number) , IGNORE ]
+  update_importanceRatio:
+    [ undefined   , SEND("updateImportanceRatio", Number)  , IGNORE ]
 
   # Loaded from tf-loader
   columns:
@@ -126,6 +136,10 @@ CTRL =
     [ []         , WRAP_A                            , UNWRAP ]
   sensitivityData:
     [ []         , WRAP_A                            , UNWRAP ]
+  importanceRatioColumns:
+    [ []         , WRAP_A                            , UNWRAP ]
+  importanceRatioData:
+    [ []         , WRAP_A                            , UNWRAP ]
 
 module.exports = class Model
 
@@ -160,13 +174,32 @@ module.exports = class Model
 
           results = [ ]
           dep = @dependent()
-
+          #zero_vector = new Matrix(1,)
+          X = new Matrix(data.length, data[0].length + 1)
+          X0 = new Matrix(data[0].length + 1, 1)
+          i = 0
+          while(i < X.shape[0])
+            X.set(i, 0, 1)
+            ++i
+          i = 0
+          while(i < X.shape[0])
+            j = 0
+            while(j < data[0].length)
+              X.set(i, j+1, data[i][j])
+              ++j
+            ++i
+          X0.set(0,0,1)
           for row, index in data
+            X0.set(index+1, 0, row[index])
             d = row[dep]; p = pred[index]
-            results.push [ d, p, d - p ]
+            se_fit = Math.sqrt( Math.abs(d - p) * X0.T.dot((X.T.dot(X)).inv()).dot(X0).get(0,0))
+            se_pred = Math.sqrt( Math.abs(d - p) *(1 + X0.T.dot((X.T.dot(X)).inv()).dot(X0).get(0,0)))
+            results.push [ d, p, d - p, 
+            p - tdistr(X.shape[0] - 1 , @psig()) * se_fit, p + tdistr(X.shape[0] - 1 , @psig()) * se_fit, 
+            p - tdistr(X.shape[0] - 1 , @psig()) * se_pred, p + tdistr(X.shape[0] - 1 , @psig()) * se_pred, ]
 
           return results
-
+#Math.abs(d - p)* X0.T.dot((X.T.dot(X)).inv()).dot(X0)
     mapper = ( terms, fn ) =>
       cols = ko.unwrap @columns
       # filter out terms that couldn't get a coefficient calculated
@@ -247,7 +280,14 @@ module.exports = class Model
         columns = @columns()
         # Iterate through each transform column from left to right
         Object.entries(transformColumns)
-          .sort((curr, next) -> curr[1] > next[1])
+          .sort(
+            (curr, next) ->
+              if curr[1] < next[1]
+                -1
+              else if curr[1] > next[1]
+                1
+              else 0
+          )
           .forEach((transform_col) =>
             if transform_col[0] != undefined && transform_col[1] != undefined
               index = Number(transform_col[0])
@@ -331,6 +371,60 @@ module.exports = class Model
         @sensitivityData(sensitivityData)
       , 100
       adapter.subscribeToChanges()
+
+    adapter.on "model:getImportanceRatio", (data) =>
+      setTimeout =>
+        columns = ko.unwrap @columns
+        importanceRatioColumns = ko.unwrap @importanceRatioColumns
+        importanceRatioData = ko.unwrap @importanceRatioData
+
+        # Check if column already exists
+        colExists = false
+        importanceRatioColumns.forEach((col) =>
+          if col.index == data.index
+            colExists = true
+        )
+
+        if colExists == false
+          column = columns[data.index]
+          importanceRatioColumns.push(column)
+          importanceRatioData.push(data.importanceRatio)
+
+          @importanceRatioColumns(importanceRatioColumns)
+          @importanceRatioData(importanceRatioData)
+      , 100
+      adapter.subscribeToChanges()
+    
+    adapter.on "model:deleteImportanceRatio", (data) =>
+      setTimeout =>        
+        importanceRatioColumns = ko.unwrap @importanceRatioColumns
+        importanceRatioData = ko.unwrap @importanceRatioData
+
+        importanceRatioColumns.splice(data.index, 1);
+        importanceRatioData.splice(data.index, 1);
+
+        @importanceRatioColumns(importanceRatioColumns)
+        @importanceRatioData(importanceRatioData)
+      , 100
+      adapter.subscribeToChanges()
+
+    adapter.on "model:updateImportanceRatio", (data) =>
+      setTimeout =>
+        columns = ko.unwrap @columns
+        importanceRatioColumns = ko.unwrap @importanceRatioColumns
+        importanceRatioData = ko.unwrap @importanceRatioData
+
+        # Find the column and replace it
+        importanceRatioColumns.forEach((col, i) =>
+          if col.index == data.index
+            importanceRatioColumns[i] = columns[data.index]
+            importanceRatioData[i] = data.importanceRatio
+        )
+
+        @importanceRatioColumns(importanceRatioColumns)
+        @importanceRatioData(importanceRatioData)
+      , 100
+      adapter.subscribeToChanges()  
 
     adapter.on "progress.start", ( { curr, total } ) =>
       @progress 0.01

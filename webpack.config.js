@@ -98,7 +98,8 @@ module.exports = {
     new webpack.optimize.UglifyJsPlugin(),
     new HtmlWebpackPlugin({
       title: 'TaylorFit',
-      chunks: ['interface', 'subworkers']
+      chunks: ['interface', 'subworkers'],
+      template: './template/index.hbs'
     })
   ]
 };

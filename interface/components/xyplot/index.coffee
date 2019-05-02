@@ -16,7 +16,7 @@ ko.components.register "tf-xyplot",
 
     @active = ko.computed ( ) => @column_indexes() != undefined
 
-    @columns = ko.observable ["Index"].concat(model.columns().map((x) => x.name)).concat(["Dependent", "Predicted", "Residual"])
+    @columns = ko.observable ["Index"].concat(model.columns().map((x) => x.name)).concat(["Dependent", "Predicted", "Residual", "Low Confidence", "High Confidence", "Low Prediction", "High Prediction"])
     
     @column_names = ko.computed ( ) => 
       if !@active()
@@ -27,6 +27,9 @@ ko.components.register "tf-xyplot",
           if idx.indexOf("Sensitivity") != -1
             idx = idx.split("_")[1]
             return "Sensitivity " + model.sensitivityColumns()[idx].name
+          if idx.indexOf("ImportanceRatio") != -1
+            idx = idx.split("_")[1]
+            return "Importance Ratio " + model.importanceRatioColumns()[idx].name
           return idx
         return @columns()[idx]
       )
@@ -44,9 +47,20 @@ ko.components.register "tf-xyplot",
           return model["extra_#{model.data_plotted()}"]().map((row) => row[1])
         if column_names[index] == "Residual"
           return model["extra_#{model.data_plotted()}"]().map((row) => row[2])
+        if column_names[index] == "Low Confidence"
+          return model["extra_#{model.data_plotted()}"]().map((row) => row[3])
+        if column_names[index] == "High Confidence"
+          return model["extra_#{model.data_plotted()}"]().map((row) => row[4])
+        if column_names[index] == "Low Prediction"
+          return model["extra_#{model.data_plotted()}"]().map((row) => row[5])
+        if column_names[index] == "High Prediction"
+          return model["extra_#{model.data_plotted()}"]().map((row) => row[6])
         if column_names[index].indexOf("Sensitivity") != -1
           idx = idx.split("_")[1]
           return Object.values(model.sensitivityData()[idx])
+        if column_names[index].indexOf("ImportanceRatio") != -1
+          idx = idx.split("_")[1]
+          return Object.values(model.importanceRatioData()[idx])
         return model["data_#{model.data_plotted()}"]().map((row) => row[idx - 1])
       )
 

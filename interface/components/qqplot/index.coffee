@@ -3,7 +3,28 @@ require "./index.styl"
 c3 = require "c3"
 Model = require "../Model"
 
-ko.components.register "tf-cumulative-distribution",
+mean = (values) ->
+  if values.length == 0
+    return NaN
+  sum = 0
+  i = 0
+  while i < values.length
+    sum += values[i]
+    i++
+  sum /= values.length
+  return sum
+
+variance = (values, mu) ->
+  if values.length == 0
+    return NaN
+  sum = 0
+  i = 0
+  while i < values.length
+    sum += (values[i] - mu) * (values[i] - mu)
+    i++
+  return sum /= (values.length - 1)
+
+ko.components.register "tf-qqplot",
   template: do require "./index.pug"
   viewModel: ( params ) ->
 
@@ -12,7 +33,7 @@ ko.components.register "tf-cumulative-distribution",
       expects [model] to be observable"
     
     model = params.model()
-    @column_index = model.show_cumulative_distribution
+    @column_index = model.show_qqplot
 
     @active = ko.computed ( ) => @column_index() != undefined
     
@@ -48,81 +69,154 @@ ko.components.register "tf-cumulative-distribution",
         if typeof index == "string" && index.indexOf("ImportanceRatio") != -1
           # format is: ImportanceRatio_index
           index = index.split("_")[1]
-          return Object.values(model.importanceRatioData()[index]) 
+          return Object.values(model.importanceRatioData()[index])
         return model["extra_#{model.data_plotted()}"]().map((row) => row[index])
       return model["data_#{model.data_plotted()}"]().map((row) => row[index])
 
     @close = ( ) ->
-      model.show_cumulative_distribution undefined
+      model.show_qqplot undefined
 
-    @bucket_size = ko.observable(10)
+    @bucket_size = ko.observable(10);
 
     @charthtml = ko.computed () =>
       if !@active() || @values().length == 0
         return ""
 
+      numUniqueValues = @values().filter((val, i, arr) ->
+                    return arr.indexOf(val) == i
+                  ).length
       sorted = @values().filter((x) => !isNaN(x)).sort((a, b) => a - b)
-      occurrences = {}
+      if numUniqueValues != 1
+        mu = mean(sorted)
+        sigma = Math.sqrt(variance(sorted, mu))
+        student = sorted.map((x) -> return (x - mu) / sigma)
+      else
+        student = Array(sorted.length).fill(NaN)
 
-      for i in [0..sorted.length-1]
-        if !occurrences[sorted[i]]
-          occurrences[sorted[i]] = 0
-        ++occurrences[sorted[i]]
+      # An ordinal sequence to rank the data points
+      rank = [1..sorted.length]
+      # Perform the quantile calculation over the data set points
+      quantile = rank.map((i) -> return (i - 0.5) / sorted.length)
+      
+      # The following functions for converting Z score to Percentile and converting Percentile to Z score were adapted by John Walker from C implementations written by Gary Perlman of Wang Institute, Tyngsboro, MA 01879. 
+      Z_MAX = 6
+      # Convert z-score to probability
+      poz = (z) ->
+        if z == 0.0
+          x = 0.0
+        else 
+          y = 0.5 * Math.abs(z);
+          if (y > (Z_MAX * 0.5)) 
+            x = 1.0;
+          else if (y < 1.0) 
+            w = y * y
+            x = ((((((((0.000124818987 * w -
+                  0.001075204047) * w + 0.005198775019) * w -
+                  0.019198292004) * w + 0.059054035642) * w -
+                  0.151968751364) * w + 0.319152932694) * w -
+                  0.531923007300) * w + 0.797884560593) * y * 2.0
+          else 
+            y -= 2.0;
+            x = (((((((((((((-0.000045255659 * y +
+                  0.000152529290) * y - 0.000019538132) * y -
+                  0.000676904986) * y + 0.001390604284) * y -
+                  0.000794620820) * y - 0.002034254874) * y +
+                  0.006549791214) * y - 0.010557625006) * y +
+                  0.011630447319) * y - 0.009279453341) * y +
+                  0.005353579108) * y - 0.002141268741) * y +
+                  0.000535310849) * y + 0.999936657524
+        return (if z > 0.0 then ((x + 1.0) * 0.5) else ((1.0 - x) * 0.5))
+      # Convert probability to z-score
+      critz = (p) ->
+        Z_EPSILON = 0.000001;     # Accuracy of z approximation
+        minz = -Z_MAX;
+        maxz = Z_MAX;
+        zval = 0.0;
+        if p < 0.0
+          p = 0.0;
+        if p > 1.0
+          p = 1.0;
+        while (maxz - minz) > Z_EPSILON
+          pval = poz(zval)
+          if pval > p 
+              maxz = zval;
+          else
+              minz = zval;
+          zval = (maxz + minz) * 0.5;
+        return zval
 
-      keys = Object.keys(occurrences)
-      # Sort keys 
-      keys.sort((a, b) => a - b)
-      sorted_occurrences = {}
-      for i in [0..keys.length-1] 
-        key = keys[i]
-        value = occurrences[key]
-        sorted_occurrences[key] = value
-
-      cumulative_pct = Object.values(sorted_occurrences)
-
-      n = Object.values(sorted_occurrences).reduce (t, s) -> t + s
-      last = 0
-      for i in [0..cumulative_pct.length-1]
-        cumulative_pct[i] += last
-        last = cumulative_pct[i]
-        cumulative_pct[i] /= n
+      z_score = quantile.map((x) -> return critz(x))
+      min_z_score = z_score[0]
+      max_z_score = z_score[z_score.length-1]
+      if numUniqueValues != 1
+        min_student = student[0]
+        max_student = student[student.length-1]
+        min_scale_val = if min_z_score < min_student then Math.floor(min_z_score) else Math.floor(min_student)
+        max_scale_val = if max_z_score < max_student then Math.ceil(max_student) else Math.ceil(max_z_score)
+      else
+        min_scale_val = min_z_score
+        max_scale_val = max_z_score
 
       # global varible 'chart' can be accessed in download function
       global.chart = c3.generate
-        bindto: "#cumulative-distribution"
+        bindto: "#qqplot"
         data:
           type: "scatter"
           x: "x"
           columns: [
-            ["x"].concat(keys),
-            ["y"].concat(cumulative_pct)
+            ["x"].concat(z_score)
+            ["y"].concat(student)
           ]
         size:
           height: 370
           width: 600
         axis:
           x:
+            min: min_scale_val
+            max: max_scale_val
+            # x axis has a default padding value
+            padding:
+              top: 0
+              bottom: 0
             tick:
               count: 10
               format: d3.format('.3s')
             label:
-              text: @column_name()
+              text: 'Normal Theoretical Quantiles'
               position: 'outer-center'
           y:
-            min: 0
-            max: 1
+            min: min_scale_val
+            max: max_scale_val
             # y axis has a default padding value
             padding:
               top: 0
               bottom: 0
             tick:
-              format: d3.format('%')
+              count: 10
+              format: d3.format('.3s')
+            label:
+              text: 'Sample Quantiles'
+              position: 'outer-middle'
         legend:
           show: false
+        grid:
+          x:
+            lines: [
+                value: 0
+            ]
+      
+      svg_element = chart.element.querySelector "svg"
+      xgrid_line = svg_element.querySelector ".c3-xgrid-line"
+      vertical_line = xgrid_line.getElementsByTagName("line")[0]
+      event_rect_area = svg_element.querySelector ".c3-event-rect"
+      shape_width = event_rect_area.getAttribute "width"
+      x1 = vertical_line.getAttribute "x1"
+      x2 = vertical_line.getAttribute "x2"
+      vertical_line.setAttribute "x1", shape_width
+      vertical_line.setAttribute "x2", 0
 
       return chart.element.innerHTML
 
-      
 
     @download = ( ) -> 
       if !@active()
@@ -164,14 +258,13 @@ ko.components.register "tf-cumulative-distribution",
 
       svg_element.style.backgroundColor = "white"
       tick = svg_element.querySelectorAll ".tick"
-      num_arr = Array(tick.length).fill(0).map((x, y) => y)
 
-      for num in num_arr
+      for i in [0..tick.length-1]
         # use transform property to check if the SVG element is on the top position of y axis
         # matrix(1, 0, 0, 1, 0, 1) -> ["1", "0", "0", "1", "0", "1"]
-        transform_y_val = (getComputedStyle(tick[num]).getPropertyValue('transform').replace(/^matrix(3d)?\((.*)\)$/,'$2').split(/, /)[5])*1
+        transform_y_val = (getComputedStyle(tick[i]).getPropertyValue('transform').replace(/^matrix(3d)?\((.*)\)$/,'$2').split(/, /)[5])*1
         if transform_y_val == 1
-          text = tick[num].getElementsByTagName("text")
+          text = tick[i].getElementsByTagName("text")
           # stop the loop once the SVG element on the top position of y axis is found
           break
 

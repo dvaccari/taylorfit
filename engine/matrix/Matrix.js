@@ -471,7 +471,7 @@ class Matrix {
   toJSON() {
     let i, rows;
 
-    for (i = 1, rows = []; i < this[_m]; i += 1) {
+    for (i = 1, rows = []; i <= this[_m]; i += 1) {
       rows.push(Array.from(this[_data].slice((i-1)*this[_n], i*this[_n])));
     }
     return rows;

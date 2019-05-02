@@ -1,6 +1,6 @@
 .wrapper
   // ko if:model().data_validation()
-  p You have imported a validation dataset. This should be the final step in the fitting process, and no further changes should be made to add or remove terms in the current model based on the goodness-of-fit results with the validation data (although coefficients may be updated).
+  p Warning: Do not use validation dataset results for adding or removing terms.
   // /ko
   header
     span.title(title="This Table shows all terms not in the Current Model, along with their selected statistics.") Candidate Terms
@@ -39,7 +39,7 @@
           // /ko
         //- This is the candidate terms
         // ko foreach: result
-        tr.candidate(data-bind="click:function(){selected(true);$parent.current_page(0);$parent.updateSensitivity();},css:{selected:selected}")
+        tr.candidate(data-bind="click:function(){selected(true);$parent.current_page(0);$parent.updateSensitivity();$parent.updateImportanceRatio();},css:{selected:selected}")
           td.term
             span.coeff
               span(data-bind="num:coeff")
