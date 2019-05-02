@@ -115,42 +115,6 @@ table.grid
             | QQ Plot
           span.mark(data-bind="click:function(){xyplot('Residual')}")
             | XY Plot
-      th.loconf
-        span Low Confidence
-        tf-dropdown(params="align:'right'")
-          span.mark(data-bind="click:function(){histogram('Low Confidence')}")
-            | Histogram
-          span.mark(data-bind="click:function(){autocorrelation('Low Confidence')}")
-            | Autocorrelation
-          span.mark(data-bind="click:function(){xyplot('Low Confidence')}")
-            | XY Plot
-      th.hiconf
-        span High Confidence
-        tf-dropdown(params="align:'right'")
-          span.mark(data-bind="click:function(){histogram('High Confidence')}")
-            | Histogram
-          span.mark(data-bind="click:function(){autocorrelation('High Confidence')}")
-            | Autocorrelation
-          span.mark(data-bind="click:function(){xyplot('High Confidence')}")
-            | XY Plot
-      th.lopred
-        span Low Prediction
-        tf-dropdown(params="align:'right'")
-          span.mark(data-bind="click:function(){histogram('Low Prediction')}")
-            | Histogram
-          span.mark(data-bind="click:function(){autocorrelation('Low Prediction')}")
-            | Autocorrelation
-          span.mark(data-bind="click:function(){xyplot('Low Prediction')}")
-            | XY Plot
-      th.hipred
-        span High Prediction
-        tf-dropdown(params="align:'right'")
-          span.mark(data-bind="click:function(){histogram('High Prediction')}")
-            | Histogram
-          span.mark(data-bind="click:function(){autocorrelation('High Prediction')}")
-            | Autocorrelation
-          span.mark(data-bind="click:function(){xyplot('High Prediction')}")
-            | XY Plot
       // /ko
 
       // ko foreach: sensitivityColumns

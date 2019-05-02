@@ -191,7 +191,7 @@ ko.components.register "tf-grid",
       cols = @cols(); rows = @rows(); extra = @extra()
       csv = @cols().map(( v ) -> v.name).join ","
       if extra
-        csv += ",Dependent,Predicted,Residual,Low Confidence,High Confidence,Low Prediction,High Prediction"
+        csv += ",Dependent,Predicted,Residual"
       if @sensitivityColumns().length > 0
         csv += "," + @sensitivityColumns().map((col) -> "Sensitivity "+col.name).join ","
       if @importanceRatioColumns().length > 0

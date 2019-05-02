@@ -16,7 +16,7 @@ ko.components.register "tf-xyplot",
 
     @active = ko.computed ( ) => @column_indexes() != undefined
 
-    @columns = ko.observable ["Index"].concat(model.columns().map((x) => x.name)).concat(["Dependent", "Predicted", "Residual", "Low Confidence", "High Confidence", "Low Prediction", "High Prediction"])
+    @columns = ko.observable ["Index"].concat(model.columns().map((x) => x.name)).concat(["Dependent", "Predicted", "Residual"])
     
     @column_names = ko.computed ( ) => 
       if !@active()
@@ -47,14 +47,6 @@ ko.components.register "tf-xyplot",
           return model["extra_#{model.data_plotted()}"]().map((row) => row[1])
         if column_names[index] == "Residual"
           return model["extra_#{model.data_plotted()}"]().map((row) => row[2])
-        if column_names[index] == "Low Confidence"
-          return model["extra_#{model.data_plotted()}"]().map((row) => row[3])
-        if column_names[index] == "High Confidence"
-          return model["extra_#{model.data_plotted()}"]().map((row) => row[4])
-        if column_names[index] == "Low Prediction"
-          return model["extra_#{model.data_plotted()}"]().map((row) => row[5])
-        if column_names[index] == "High Prediction"
-          return model["extra_#{model.data_plotted()}"]().map((row) => row[6])
         if column_names[index].indexOf("Sensitivity") != -1
           idx = idx.split("_")[1]
           return Object.values(model.sensitivityData()[idx])

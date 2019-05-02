@@ -88,14 +88,6 @@ ko.components.register "tf-autocorrelation",
           index = 1
         if index == "Residual"
           index = 2
-        if index == "Low Confidence"
-          index = 3
-        if index == "High Confidence"
-          index = 4
-        if index == "Low Prediction"
-          index = 3
-        if index == "High Prediction"
-          index = 4
         if typeof index == "string" && index.indexOf("Sensitivity") != -1
           # format is: Sensitivity_index
           index = index.split("_")[1]
