@@ -1,6 +1,6 @@
 require "./index.styl"
+
 c3 = require "c3"
-Model = require "../Model"
 
 ko.components.register "tf-graph",
   template: "<span></span>"
@@ -9,211 +9,15 @@ ko.components.register "tf-graph",
 
       # TODO: check for observability
       data = params.data
-      
-      #calculate histogram
-      getbuckets = (data) =>
-          data_predicted = []
-          for i in [0...data.length]
-            data_predicted[i] = data[i][0]
-          data_predicted.sort (a, b) -> a - b
-          
-          min = data_predicted[0]
-          max = data_predicted[data_predicted.length - 1]
-          bucket_size = Math.ceil(Math.log2(data_predicted.length)) + 1
-          buckets_width = (max-min)/bucket_size
-          hist_labels = []
-          for i in [0...bucket_size-1]
-            n = (min + (i*buckets_width)).toFixed(2)
-            hist_labels[i] = n
-          hist_labels.push(max.toFixed(2))
-
-          buckets = []
-          for i in [0...bucket_size]
-            buckets[i] = 0
-          for i in [0...data.length]
-            counter = Math.floor((data_predicted[i] - min) / buckets_width)
-            buckets[counter] = buckets[counter]+1
-
-          return buckets
-        
-      get_hist_labels = (data) =>
-          result = []
-          data_predicted = []
-          for i in [0...data.length]
-            data_predicted[i] = data[i][0]
-          data_predicted.sort (a, b) -> a - b
-          
-          min = data_predicted[0]
-          max = data_predicted[data_predicted.length - 1]
-          bucket_size = Math.ceil(Math.log2(data_predicted.length)) + 1
-          buckets_width = (max-min)/bucket_size
-          
-          for i in [0...bucket_size]
-            n = (min + (i*buckets_width)).toFixed(2)
-            result[i] = n
-          return result
-      
-      sort_data_in_next = (data) =>
-          data_length = data[0].length
-          if data_length == 2
-              return [data]
-          else if data_length == 4
-              listone = []
-              listtwo = []
-              for i in [0...data.length]
-                if(data[i][0] != null && data[i][1] != null)
-                    listone[i] = [data[i][0], data[i][1]]
-                if(data[i][2] != null && data[i][3] != null)
-                    listtwo[i] = [data[i][2], data[i][3]]
-
-              return [listone, listtwo]
-          else if data_length == 6
-              listone = []
-              listtwo = []
-              listthree = []
-              for i in [0...data.length]
-                if(data[i][0] != null && data[i][1] != null)
-                    listone[i] = [data[i][0], data[i][1]]
-                if(data[i][1] != null && data[i][2] != null)
-                    listtwo[i] = [data[i][2], data[i][3]]
-                if(data[i][4] != null && data[i][5] != null)
-                    listthree[i] = [data[i][4], data[i][5]]
-                
-
-              return [listone, listtwo, listthree]
-                
-            
-      data_predicted = []
-      for i in [0...data().length]
-        data_predicted[i] = data()[i][0]
-      data_predicted.sort (a, b) -> a - b
-      data_residual = []
-      for i in [0...data().length]
-        data_residual[i] = data()[i][1]
-      data_residual.sort (a, b) -> a - b
-        
-      min = data_predicted[0]
-      max = data_predicted[data_predicted.length - 1]
-      bucket_size = Math.ceil(Math.log2(data_predicted.length)) + 1
-      buckets_width = (max-min)/bucket_size
-      
-      hist_labels = []
-      for i in [0...bucket_size-1]
-        n = (min + (i*buckets_width)).toFixed(2)
-        hist_labels[i] = n
-      hist_labels.push(max.toFixed(2))
-    
-      buckets = []
-      for i in [0...bucket_size]
-        buckets[i] = 0
-      for i in [0...data().length]
-        counter = Math.floor((data_predicted[i] - min) / buckets_width)
-        buckets[counter] = buckets[counter]+1
-
       row_labels = params.row_labels
-      hist_legend = row_labels().slice(1)
 
-      #calculate autocorrelation
-      mean = (values) ->
-        sum = 0
-        i = 0
-        while i < values.length
-          sum += values[i]
-          i++
-        sum /= values.length
-        return sum
-
-      variance = (values, mu) ->
-        sum = 0
-        i = 0
-        while i < values.length
-          sum += (values[i] - mu) * (values[i] - mu)
-          i++
-        return sum /= values.length
-
-      calculateAutoCorrelation = (values, k) ->
-        mu = mean(values)
-        normal_values = values.slice(0,values.length - k)
-        skipped_values = values.slice(k)
-
-        sum = 0
-        i = 0
-        while i < normal_values.length
-          sum += (normal_values[i] - mu) * (skipped_values[i] - mu)
-          i++
-        sum /= values.length
-        sum /= variance(values, mu)
-        return sum
-
-      calculateStandardError = (acf, numValues) ->
-        i = 0
-        errors = []
-        sum = 0
-        while i < acf.length
-          sum += acf[i] * acf[i]
-          errors[i] = Math.sqrt((1 + 2 * sum) / numValues)
-
-          i++
-        console.log(errors)
-        return errors
-
-      autoc_data_predicted = []
-      for i in [0...data().length]
-        autoc_data_predicted[i] = data()[i][0]
-      filtered = autoc_data_predicted.filter((x) => !isNaN(x))
-      autoc_bucket_size = 10
-      
-      autoc_buckets = []
-      for i in [0...autoc_bucket_size]
-        autoc_buckets[i] = 0
-    
-      i=0
-      k = autoc_bucket_size
-      while i < k
-        autoc_buckets[i] = calculateAutoCorrelation(filtered, i+1)
-        i++
-      z_score = 3
-      errors = calculateStandardError(autoc_buckets, filtered.length)
-      errors = errors.map((value) => value * z_score)
-      negativeErrors = errors.map((value) => value * -1)
-      autoc_labels = Array(bucket_size).fill(0).map((x, index) => index + 1)
-
-      #update graph
-      row_labels.subscribe ( next ) ->  
+      row_labels.subscribe ( next ) ->
         try
-          if global.chart == chart_scatter   
-              chart.load
-                xs: getxs()
-                rows: [next].concat data()
-          else if global.chart == chart_histogram
-            data_sorted = sort_data_in_next(data())
-            if data_sorted.length == 1
-                chart.load
-                    x: 'x'
-                    columns: [
-                                ['x'].concat(get_hist_labels(data_sorted[0])),
-                                ["Fit Data"].concat(getbuckets(data_sorted[0]))
-                             ]
-            else if data_sorted.length == 2
-                chart.load
-                    x: 'x'
-                    columns: [
-                                ['x'].concat(get_hist_labels(data_sorted[0].concat(data_sorted[1]))),
-                                ["Fit Data"].concat(getbuckets(data_sorted[0])),
-                                ["Cross Data"].concat(getbuckets(data_sorted[1]))
-                             ]
-            else if data_sorted.length == 3
-                chart.load
-                    x: 'x'
-                    columns: [
-                                ['x'].concat(get_hist_labels( data_sorted[0].concat(data_sorted[1]).concat(data_sorted[2]) )),
-                                ["Fit Data"].concat(getbuckets(data_sorted[0])),
-                                ["Cross Data"].concat(getbuckets(data_sorted[1])),
-                                ["Validation Data"].concat(getbuckets(data_sorted[2]))
-                             ]
+          chart.load
+            xs: getxs()
+            rows: [next].concat data()
         catch error
           console.error error
-        
 
       getxs = () =>
         xs = []
@@ -221,13 +25,12 @@ ko.components.register "tf-graph",
         for i in [0...labels.length / 2]
           xs[labels[i * 2 + 1]] = labels[i * 2]
         return xs
-    
-      #Default: Scatter plot with C3
-      chart_scatter = c3.generate
+
+      chart = c3.generate
         data:
           type: "scatter"
           xs: getxs()
-          rows: [row_labels()].concat data()
+          rows: [row_labels()].concat data() or [ 0, 0, 0 ]
         axis:
           x:
             label:
@@ -258,100 +61,13 @@ ko.components.register "tf-graph",
           contents: ( [ d ] ) ->
             return "(#{ko.formatters.float d.x},
             #{ko.formatters.float d.value})"
-      #Scatter Plot End here
 
-      #Histogram Plot with C3
-      data_sorted = sort_data_in_next(data())
-      chart_histogram = c3.generate
-        data:
-          type: 'bar'
-          x: 'x'
-          columns:
-            [
-              ['x'].concat(hist_labels), 
-              [hist_legend].concat(buckets)
-            ]
-        axis:
-          x:
-            label:
-              text: params.xlabel
-              position: "outer-center"
-            type: 'category'
-            tick:
-              count: 5
-          y:
-            label:
-              position: "outer-middle"
-            min: 0
-            padding:
-              top: 0
-              bottom: 0
-        legend:
-          show: true
-          position: "inset"
-      #Histogram Plot End here
-       
-            
-      #Autocorrelation Plot generation
-      chart_autoc = c3.generate
-        bindto: "#autocorrelation"
-        data:
-          x: "x"
-          columns: [
-            ["x"].concat(autoc_labels),
-            [hist_legend].concat(autoc_buckets),
-            ['confidencePositive'].concat(errors),
-            ['confidenceNegative'].concat(negativeErrors)
-          ]
-          type: 'bar',
-          types:
-            confidencePositive: 'line'
-            confidenceNegative: 'line'
-        size:
-          height: 370
-          width: 600
-        axis:
-          x:
-            tick:
-              format: d3.format('.3s')
-          y:
-            tick:
-              format: d3.format('.3f')
-        legend:
-          show: true
-          position:"inset"
+      global.chart = chart
 
-      #Autocorrelation plot Ends here
-        
-      #Display Default Plot
-      global.chart = chart_scatter
       element.appendChild chart.element
-      currchart = chart_scatter
-      
-      global.changeGraph = () ->
-        e = document.getElementById("graphs")
-        selectedvalue = e.options[e.selectedIndex].value
-        if selectedvalue == "histogram"
-            
-            element.removeChild currchart.element
-            global.chart = chart_histogram
-            currchart = chart_histogram
-            element.appendChild chart.element
-        else if selectedvalue == "scatter"
-            element.removeChild currchart.element
-            global.chart = chart_scatter
-            currchart = chart_scatter
-            element.appendChild chart.element
-        else if selectedvalue == "autocorrelation"
-            element.removeChild currchart.element
-            global.chart = chart_autoc
-            currchart = chart_autoc
-            element.appendChild chart.element
-      
-        
-        
+
       download_chart = () ->
-        svg_element = global.chart.element.querySelector "svg"
+        svg_element = chart.element.querySelector "svg"
         original_height = svg_element.getAttribute "height" 
         original_width = svg_element.getAttribute "width" 
 
@@ -440,8 +156,7 @@ ko.components.register "tf-graph",
           document.body.appendChild(a_element)
           a_element.click()
           a_element.remove()
-      
-      
+
       download_button = document.createElement "button"
       download_button.innerText = "DOWNLOAD"
       download_button.onclick = download_chart
@@ -488,9 +203,3 @@ ko.components.register "tf-graph",
           ), 1000
           
       return { }
-
-    
-    
-    
-    
-    
