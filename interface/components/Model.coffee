@@ -1,6 +1,4 @@
 utils = require('../../engine/utils');
-Matrix = require('../../engine/matrix/Matrix');
-tdistr = require('../../engine/statistics/distributions-socr').tdistr;
 
 Transformation = require "./transform/label.json"
 CROSS_LABEL = require("../../engine/labels.json").CROSS_LABEL
@@ -174,32 +172,13 @@ module.exports = class Model
 
           results = [ ]
           dep = @dependent()
-          #zero_vector = new Matrix(1,)
-          X = new Matrix(data.length, data[0].length + 1)
-          X0 = new Matrix(data[0].length + 1, 1)
-          i = 0
-          while(i < X.shape[0])
-            X.set(i, 0, 1)
-            ++i
-          i = 0
-          while(i < X.shape[0])
-            j = 0
-            while(j < data[0].length)
-              X.set(i, j+1, data[i][j])
-              ++j
-            ++i
-          X0.set(0,0,1)
+
           for row, index in data
-            X0.set(index+1, 0, row[index])
             d = row[dep]; p = pred[index]
-            se_fit = Math.sqrt( Math.abs(d - p) * X0.T.dot((X.T.dot(X)).inv()).dot(X0).get(0,0))
-            se_pred = Math.sqrt( Math.abs(d - p) *(1 + X0.T.dot((X.T.dot(X)).inv()).dot(X0).get(0,0)))
-            results.push [ d, p, d - p, 
-            p - tdistr(X.shape[0] - 1 , @psig()) * se_fit, p + tdistr(X.shape[0] - 1 , @psig()) * se_fit, 
-            p - tdistr(X.shape[0] - 1 , @psig()) * se_pred, p + tdistr(X.shape[0] - 1 , @psig()) * se_pred, ]
+            results.push [ d, p, d - p ]
 
           return results
-#Math.abs(d - p)* X0.T.dot((X.T.dot(X)).inv()).dot(X0)
+
     mapper = ( terms, fn ) =>
       cols = ko.unwrap @columns
       # filter out terms that couldn't get a coefficient calculated
