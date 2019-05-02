@@ -106,11 +106,6 @@ ko.components.register "tf-result",
       for column in model.sensitivityColumns()
         model.update_sensitivity(column.index)
 
-        
-    e = document.getElementById("graphs")
-    global.selectedvalue = e.options[e.selectedIndex].value
-      
-
     @updateImportanceRatio = () ->
       for column in model.importanceRatioColumns()
         model.update_importanceRatio(column.index)
