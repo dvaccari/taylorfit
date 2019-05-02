@@ -1,0 +1,24 @@
+.background(data-bind="css:{active:active}")
+.validate-data-partition(data-bind="css:{active:active}")
+  div.container
+    p Data Partition
+    div.sub_partition
+      p Validate
+      span.percent_container
+        input(type="number"
+          data-bind="numeric,textInput:validate_p,event:{keyup:change_validate_partition},css:{invalid:validate_invalid}"
+          placeholder="0")
+        p %
+      span.rows_container
+        p Rows
+        input(type="number"
+          data-bind="numeric, textInput:validate_row_start,event:{keyup:change_validate_start_row},css:{invalid:validate_invalid}")
+        p - 
+        input(type="number"
+          data-bind="numeric, textInput:validate_row_end,event:{keyup:change_validate_end_row},css:{invalid:validate_invalid}")
+    button.option(
+      data-bind="click:function(){import_validate_dataset()}"
+    ) Import
+    // ko ifnot: error_msg == undefined
+    span.error_text(data-bind="text: error_msg")
+    // /ko

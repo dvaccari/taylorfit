@@ -55,6 +55,7 @@ ko.components.register "tf-loader",
     # --- for loading just dataset
     @dataset = ko.observable null
     @show_partition = ko.observable undefined
+    @show_validate_partition = ko.observable undefined
     @temp_model = ko.observable undefined
     @dataset.subscribe ( next ) =>
       # Importing CSV file
@@ -68,11 +69,26 @@ ko.components.register "tf-loader",
           #   "data_#{@table}": model.rows
           #   name: model.name
           #   columns: model.cols
+        else if ( @table == "validation" )
+          @temp_model(model)
+          @show_validate_partition(true)
         else
           m = params.model()
           # TODO: check for column length
           m["data_#{@table}"] model.rows
           m["name_#{@table}"] = model.name
+    
+    @import_validate_partition = (
+      validate_row_start,
+      validate_row_end,
+    ) ->
+      model = @temp_model()
+      data_validate = if validate_row_start != 0
+      then model.rows[validate_row_start - 1..validate_row_end - 1]
+      else undefined
+      m = params.model()
+      m["data_validation"] data_validate
+      m["name_validation"] = model.name
     
      # --- Use from data partition modal
     @import_partition = (
