@@ -30,10 +30,13 @@ ko.components.register "tf-histogram",
         return index
       return model.columns()[index].name
     
+    
+
     @values = ko.computed ( ) => 
       if !@active()
         return undefined
       index = @column_index()
+      console.log(index)
       if typeof index == "string"
         if index == "Dependent"
           index = 0
@@ -69,7 +72,7 @@ ko.components.register "tf-histogram",
       if !@active() || @values().length == 0
         return ""
 
-      sorted = @values().filter((x) => !isNaN(x)).sort((a, b) => a - b)
+      sorted = @values().fi1lter((x) => !isNaN(x)).sort((a, b) => a - b)
       min = sorted[0]
       max = sorted[sorted.length - 1]
       bucket_width = (max - min) / @bucket_size()

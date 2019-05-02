@@ -119,7 +119,7 @@ ko.components.register "tf-autocorrelation",
       # TODO : FINISH THIS
 
       filtered = @values().filter((x) => !isNaN(x))
-
+    
       buckets = Array(@bucket_size()).fill(0)
 
       i = 0
@@ -135,9 +135,12 @@ ko.components.register "tf-autocorrelation",
       errors = errors.map((value) => value * z_score)
       negativeErrors = errors.map((value) => value * -1)
 
-      console.log(errors)
+
+
+
 
       labels = Array(@bucket_size()).fill(0).map((x, index) => index + 1)
+
       # global varible 'chart' can be accessed in download function
       global.chart = c3.generate
         bindto: "#autocorrelation"
