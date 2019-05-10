@@ -72,7 +72,11 @@ ko.components.register "tf-histogram",
       buckets = Array(@bucket_size()).fill(0)
       # all values equal to the maximum will be in the last bin
       sorted.forEach((x) => if Math.floor((x - min) / bucket_width) == @bucket_size() then buckets[@bucket_size()-1]++ else buckets[Math.floor((x - min) / bucket_width)]++)
-      labels = Array(@bucket_size()).fill(0).map((x, index) => Math.ceil(index * bucket_width) + min)
+      column_name = @column_name()
+      if column_name.indexOf("Sensitivity") != -1 || column_name.indexOf("Importance Ratio") != -1
+        labels = Array(@bucket_size()).fill(0).map((x, index) => index * bucket_width + min)
+      else
+        labels = Array(@bucket_size()).fill(0).map((x, index) => Math.ceil(index * bucket_width) + min)
 
       # global varible 'chart' can be accessed in download function
       global.chart = c3.generate
@@ -97,7 +101,11 @@ ko.components.register "tf-histogram",
                 # to avoid text label for each bin overlap on each other 
                 if numUniqueLabels < 9
                   return numUniqueLabels                  
-                return 9
+                else
+                  if column_name.indexOf("Sensitivity") != -1 || column_name.indexOf("Importance Ratio") != -1
+                    # avoid tick labels overlap when labels are very long
+                    return 8                  
+                  return 9
               format: d3.format('.3s')
         legend:
           show: false
