@@ -41,6 +41,7 @@ table.grid
             | QQ Plot
           span.mark(data-bind="click:function(){xyplot($index() + 1)}")
             | XY Plot
+          // ko ifnot: istimeseries()
           // ko ifnot: hasSensitivity($index())
           span.mark(data-bind="click:function(){sensitivity($index())}")
             | Show Sensitivity
@@ -56,6 +57,7 @@ table.grid
           // ko if: hasImportanceRatio($index())
           span.mark(data-bind="click:function(){deleteImportanceRatio($index(),'column')}")
             | Hide Importance Ratio
+          // /ko
           // /ko
           // ko if: table == "fit" && $index() !== dependent() && !isHidden($index())
           span.mark(data-bind="click:function(){showHideColumn(true, $index())}")
