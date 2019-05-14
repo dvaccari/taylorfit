@@ -6,7 +6,16 @@ const statistics      = require('../statistics');
 const utils           = require('../utils');
 const perf            = require('../perf');
 const Observable      = require('../observable');
-const { FIT_LABEL }   = require('../labels.json');
+const {
+  FIT_LABEL,
+  CROSS_LABEL,
+  VALIDATION_LABEL,
+  LOG,
+  K_ORDER_DIFFERENCE,
+  STANDARDIZE,
+  RESCALE,
+  DELETE,
+}   = require('../labels.json');
 
 const CandidateWorker = require('./CandidateWorker');
 const TermPool        = require('./TermPool');
@@ -67,26 +76,82 @@ class Model extends CacheMixin(Observable) {
     return this;
   }
 
+  transformColumn(label, data) {
+    var index = data.index;
+    if (index === undefined || isNaN(index)) {
+      return this;
+    }
+    var data_labels = data.data_labels || [FIT_LABEL, CROSS_LABEL, VALIDATION_LABEL];
+    // Need to do this for all dataset and not just "fit" data
+    // If clear cross and validation data in UI, doesn't clear respective data in Model, so will throw error
+    data_labels.map((data_label) => {
+      if (this[_data][data_label]) {
+        var col = this[_data][data_label].col(index)
+        switch (label) {
+          case (DELETE):
+            this.setData(
+              this[_data][data_label].delColumn(index),
+              data_label
+            );
+            break;
+          case (LOG):
+            var transform_col = statistics.compute(label, {X: col})
+            // this[_data][data_label] = this[_data][data_label].appendM(transform_col);
+            this.setData(this[_data][data_label].appendM(transform_col), data_label)
+            break;
+          case (K_ORDER_DIFFERENCE):
+            var k = data.k;
+            var transform_col = statistics.compute(label, {X: col, k: k})
+            // this[_data][data_label] = this[_data][data_label].appendM(transform_col);
+            this.setData(this[_data][data_label].appendM(transform_col), data_label)
+            break;
+          case (STANDARDIZE):
+            var mean = statistics.compute("mean", {X: col})
+            var std = statistics.compute("std", {X: col, mean: mean})
+            console.log("Mean", mean);
+            console.log("Std", std)
+            var transform_col = statistics.compute(label, {X: col, mean: mean, std: std})
+            // this[_data][data_label] = this[_data][data_label].appendM(transform_col);
+            this.setData(this[_data][data_label].appendM(transform_col), data_label)
+            break;
+          case (RESCALE):
+            var rms = statistics.compute("RMS", {X: col});
+            var transform_col = statistics.compute(label, {X: col, RMS: rms});
+            // this[_data][data_label] = this[_data][data_label].appendM(transform_col);
+            this.setData(this[_data][data_label].appendM(transform_col), data_label)
+            break;
+          default:
+            break;
+        }
+      }
+    });
+    this.fire('dataTransform', {label, index});
+    return this;
+  }
+
   setData(data, label=FIT_LABEL) {
+    data = (data == null) ? undefined : data;
     label = (label == null) ? FIT_LABEL : label;
 
-    if (!(data instanceof Matrix)) {
+    if (data && !(data instanceof Matrix)) {
       data = new Matrix(data);
     }
-
-    if (label !== FIT_LABEL &&
-        data.shape[1] !== this[_data][FIT_LABEL].shape[1]) {
-      throw new Error(
-        `Data for '${label}' is not the same shape as '${FIT_LABEL}'`
-      );
-    } else {
-      this[_use_cols] = utils.range(0, data.shape[1]);
+    if (data) {
+      if (label !== FIT_LABEL &&
+          data.shape[1] !== this[_data][FIT_LABEL].shape[1]) {
+        // throw new Error(
+        //   `Data for '${label}' is not the same shape as '${FIT_LABEL}'`
+        // );
+      } else {
+        this[_use_cols] = utils.range(0, data.shape[1]);
+      }
     }
-
+    var curr_data = this[_data][label];
     this[_data][label] = data;
-    this[_subsets][label] = utils.range(0, data.shape[0]);
+    this[_subsets][label] = data ? utils.range(0, data.shape[0]) : undefined;
 
-    this[_terms] = this[_terms].map(term => term.isIntercept ? this.termpool.get(INTERCEPT) : term);
+    this[_terms] = this[_terms]
+      .map(term => term.isIntercept ? this.termpool.get(INTERCEPT) : term);
     this.uncache('X');
     this.uncache('y');
     this.uncache('data');
@@ -94,6 +159,13 @@ class Model extends CacheMixin(Observable) {
 
     this.termpool.uncache();
     this.fire('setData', { data, label });
+    // First time importing data
+    if (curr_data === undefined &&
+      (label == CROSS_LABEL || label == VALIDATION_LABEL) &&
+      data &&
+      data.shape[1] < this[_data][FIT_LABEL].shape[1]) {
+        this.fire('propogateTransform', {data_label: label});
+    }
     return this;
   }
 
@@ -155,6 +227,10 @@ class Model extends CacheMixin(Observable) {
       });
   }
 
+  getLabelData(label) {
+    return this[_data][label];
+  }
+
   getModel(testLabel) {
     let highestLag = this.highestLag()
       , X = this.X().lo(highestLag)
@@ -184,8 +260,14 @@ class Model extends CacheMixin(Observable) {
 
     let residuals = stats.y.sub(stats.yHat);
     residuals = residuals.data;
-
-    return { highestLag: this.highestLag(), terms, stats, predicted, residuals };
+    
+    return {
+      highestLag: this.highestLag(),
+      terms,
+      stats,
+      predicted,
+      residuals
+    };
   }
 
   getCandidatesSync() {
@@ -324,8 +406,118 @@ class Model extends CacheMixin(Observable) {
     return this[_data][label].subset(this[_subsets][label]);
   }
 
+  computeSensitivity(index, label=FIT_LABEL) {
+    if (index == undefined) {
+      return this;
+    }
+    let model = this; // to use within loops below
+    let num_rows = model[_data][FIT_LABEL].shape[0];
+    let derivative = new Matrix(num_rows, 1, new Array(num_rows).fill(0))
+    
+    this.terms.forEach(function (t) {
+      let contains_variable = false; // Check if the variable we are deriving on is in this term
+      let derivative_part = new Matrix(num_rows, 1, new Array(num_rows).fill(1))
+
+      // One coefficient per term
+      let term_coef = 2 * t.getStats()['coeff']
+      
+      // t.valueOf() is an Array which contains information for each variable of the term
+      let tValues = t.valueOf();
+      tValues.forEach(function(tValue) {
+          let current_index = tValue[0];
+          let current_exp = tValue[1];
+          
+          // Get the current column of data
+          let current_col = model[_data][label].col(current_index)['data'];
+
+          let part;
+          if (current_index == index) {
+            // Current variable exists in term, should be used in derivative
+            contains_variable = true;
+
+            // current_exp * [COLUMN DATA]^(current_exp - 1)
+            part = statistics.compute('sensitivity_part', { data:current_col, exp:current_exp, derivative:true });
+          }
+          else {
+            // [COLUMN DATA]^(current_exp)
+            part = statistics.compute('sensitivity_part', { data: current_col, exp: current_exp, derivative:false });
+          }
+          derivative_part = derivative_part.dotMultiply(new Matrix(num_rows, 1, part));
+        });
+
+        if (contains_variable) {
+          // Add to overall derivative
+          derivative = derivative.add(derivative_part.dotMultiply(term_coef));
+        }
+    
+    });
+
+    return {index: index, sensitivity: derivative.data}
+  }
+
+  getSensitivity(index, label=FIT_LABEL) {
+    let res = this.computeSensitivity(index, label);
+    this.fire('getSensitivity', res);
+    return this;
+  }
+
+  deleteSensitivity(index) {
+    this.fire('deleteSensitivity', {index: index});
+    return this;
+  }
+
+  updateSensitivity(index, label=FIT_LABEL) {
+    let res = this.computeSensitivity(index, label);
+    this.fire('updateSensitivity', res)
+    return this;
+  }
+
+  computeImportanceRatio(index, label=FIT_LABEL) {
+    if (index == undefined) {
+      return this;
+    }
+    let model = this; 
+    let num_rows = model[_data][FIT_LABEL].shape[0];
+    let current_col = model[_data][label].col(index);
+    let dependent_col = model[_data][label].col(model[_dependent]);
+
+    let sensitivity = this.computeSensitivity(index, label)['sensitivity'];
+    // Convert to matrix
+    sensitivity = new Matrix(num_rows, 1, sensitivity);
+
+    // Compute Standard Deviation of independent variable
+    let mean_x = statistics.compute('mean', {X: current_col});
+    let std_x = statistics.compute('std', {X: current_col, mean: mean_x});
+
+    // Compute Standard Deviation of dependent variable
+    let mean_y = statistics.compute('mean', {X: dependent_col});
+    let std_y = statistics.compute('std', {X: dependent_col, mean: mean_y});
+
+    let importance_ratio = sensitivity.dotMultiply(std_x / std_y);
+
+    return {index:index, importanceRatio: importance_ratio.data};
+  }
+
+  getImportanceRatio(index, label=FIT_LABEL) {
+    let res = this.computeImportanceRatio(index, label);
+    this.fire('getImportanceRatio', res);
+    return this;
+  }
+
+  deleteImportanceRatio(index) {
+    this.fire('deleteImportanceRatio', {index: index});
+    return this;
+  }
+
+  updateImportanceRatio(index, label=FIT_LABEL) {
+    let res = this.computeImportanceRatio(index, label);
+    this.fire('updateImportanceRatio', res)
+    return this;
+  }
+
   get labels() {
-    return Object.keys(this[_subsets]);
+    return Object.keys(this[_subsets])
+      .filter((data_label) => this[_subsets][data_label]);
   }
 
   get terms() {

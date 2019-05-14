@@ -13,18 +13,20 @@ sortBy = ( stat ) -> SORT[stat?.sort ? "*"].bind null, stat?.id
 ko.components.register "tf-candidates",
   template: do require "./index.pug"
   viewModel: ( params ) ->
-    unless ko.isObservable params.model
+    unless ko.isObservable(params.model)
       throw new TypeError "components/candidates:
       expects [model] to be observable"
 
     readjust = ( ) =>
       setTimeout =>
-        @result.maxWidth 60 + document.querySelector(
+        @result.maxWidth 65 + document.querySelector(
           ".candidate-wrapper > .candidates").clientWidth
 
     model = params.model() # now static
+    hiddenColumns = model.hiddenColumns
+    transform_columns = model.transform_columns
 
-    @current_page = ko.observable null
+    @current_page = ko.observable(null)
 
     @timeseries = model.timeseries
     @psig = model.psig
@@ -37,17 +39,24 @@ ko.components.register "tf-candidates",
 
     @sort = ko.observable SORT["*"]
     @sort.subscribe ( method ) =>
-      @source @candidates().sort method
+      @source(@candidates().filter((c) => !isHiddenColumn(c.term)).sort(method))
 
     @candidates.subscribe ( next ) =>
-      @source next.sort @sort()
+      @source(next.sort(@sort()).filter((c) => !isHiddenColumn(c.term)))
+
+    # When hidden columns change in CTRL, subscribe and change visible candidates
+    hiddenColumns.subscribe ( next ) =>
+      @source(@candidates().sort(@sort()).filter((c) => !isHiddenColumn(c.term)))
+    
+    transform_columns.subscribe ( next ) =>
+      @source(@candidates().sort(@sort()).filter((c) -> !isHiddenColumn(c.term)))
 
     @getStat = ( id ) =>
       return parseFloat(model.cross_or_fit().stats[id])
 
     @result.maxWidth = ko.observable 0
     @result.maxWidth.subscribe ( next ) ->
-      if next <= 60
+      if next <= 65
         readjust()
       document.querySelector(".split-model > .split-data > .candidates-pane")
         .style.maxWidth = next + "px"
@@ -56,6 +65,14 @@ ko.components.register "tf-candidates",
       document.querySelector(".split-model > .split-data > .model-pane")
         .style.minWidth = "calc(100% - #{next}px)"
 
+    # See if that term index is in hiddenColumns or transform_columns
+    isHiddenColumn = ( terms ) ->
+      cols = hiddenColumns()
+      transform_cols = transform_columns()
+      return terms.find((t) ->
+        cols[t.index] ||
+        transform_cols[t.index]
+      )
 
     @sortby = ( stat ) =>
       for s in allstats()
@@ -73,5 +90,13 @@ ko.components.register "tf-candidates",
           stats = allstats().filter ( stat ) -> stat.selected()
           # @sort (sortBy stats[stats.length - 1])
     , null, "arrayChange"
+
+    @updateSensitivity = () ->
+      for column in model.sensitivityColumns()
+        model.update_sensitivity(column.index)
+
+    @updateImportanceRatio = () ->
+      for column in model.importanceRatioColumns()
+        model.update_importanceRatio(column.index)
 
     return this

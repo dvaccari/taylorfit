@@ -1,17 +1,17 @@
 
 span.title(data-bind="text:name")
-tf-pager(params="source:rows,start:start,end:end")
-a.save(data-bind="click:save") Export Data
+tf-pager(params="source:rows,start:start,end:end" title="Choose page from this Table")
+a.save(data-bind="click:save" title="Create CSV file with all columns from this Table") Export Data
 // ko if:table == "fit"
 span.name(data-bind="text:model().name")
 // /ko
 // ko if:table == "cross"
 span.name(data-bind="text:model().name_cross")
-a.clear(data-bind="click:clear") Clear Data
+a.clear(data-bind="click:clear" title="Delete this Data Table (Cross or Validation Tables only)") Clear Data
 // /ko
 // ko if:table == "validation"
 span.name(data-bind="text:model().name_validation")
-a.clear(data-bind="click:clear") Clear Data
+a.clear(data-bind="click:clear" title="Delete this Data Table (Cross or Validation Tables only)") Clear Data
 // /ko
 table.grid
   thead
@@ -19,7 +19,7 @@ table.grid
       th
         //- empty for row numbers
       // ko foreach: cols
-      th(data-bind="css:{dependent:$index() === $parent.dependent()}")
+      th(data-bind="style:{background: $component.isHidden($index()) ? '#DCDCDC' : '#FFFFFF'},css:{dependent:$index() === $parent.dependent()}")
         // ko if:name
         span(data-bind="text:name")
         // /ko
@@ -28,17 +28,53 @@ table.grid
           span X
           sub(data-bind="text:$index")
         // /ko
-        tf-dropdown(params="shallow:1,align:'right'")
+        tf-dropdown(params="shallow:1,align:'left'")
           span.mark(data-bind="click:function(){dependent($index())}")
             | Mark as Dependant
           span.mark(data-bind="click:function(){histogram($index())}")
             | Histogram
+          span.mark(data-bind="click:function(){cumulative_distribution($index())}")
+            | Cumulative Distribution
           span.mark(data-bind="click:function(){autocorrelation($index())}")
             | Autocorrelation
+          span.mark(data-bind="click:function(){qqplot($index())}")
+            | QQ Plot
           span.mark(data-bind="click:function(){xyplot($index() + 1)}")
             | XY Plot
-          //- span.mark(data-bind="click:function(){logarithm_col($index())}")
-          //-   | Logarithm
+          // ko ifnot: istimeseries()
+          // ko ifnot: hasSensitivity($index())
+          span.mark(data-bind="click:function(){sensitivity($index())}")
+            | Show Sensitivity
+          // /ko
+          // ko ifnot: hasImportanceRatio($index())
+          span.mark(data-bind="click:function(){importanceRatio($index())}")
+            | Show Importance Ratio
+          // /ko
+          // ko if: hasSensitivity($index())
+          span.mark(data-bind="click:function(){deleteSensitivity($index(),'column')}")
+            | Hide Sensitivity
+          // /ko
+          // ko if: hasImportanceRatio($index())
+          span.mark(data-bind="click:function(){deleteImportanceRatio($index(),'column')}")
+            | Hide Importance Ratio
+          // /ko
+          // /ko
+          // ko if: table == "fit" && $index() !== dependent() && !isHidden($index())
+          span.mark(data-bind="click:function(){showHideColumn(true, $index())}")
+            | Ignore Column
+          // /ko
+          // ko if: table == "fit" && $index() !== dependent() && isHidden($index())
+          span.mark(data-bind="click:function(){showHideColumn(false, $index())}")
+            | Show Column
+          // /ko
+          // ko if: table == "fit" && !isHidden($index())
+          span.mark(data-bind="click:function(){showTransformColumn($index())}")
+            | Transform Column
+          // /ko
+          // ko if: table == "fit" && $index() !== dependent() && canDeleteTransformColumn($index())
+          span.mark(data-bind="click:function(){deleteTransformColumn($index())}")
+            | Delete Transform Column
+          // /ko
       // /ko
     
       // ko if: extra
@@ -47,8 +83,12 @@ table.grid
         tf-dropdown(params="align:'right'")
           span.mark(data-bind="click:function(){histogram('Dependent')}")
             | Histogram
+          span.mark(data-bind="click:function(){cumulative_distribution('Dependent')}")
+            | Cumulative Distribution
           span.mark(data-bind="click:function(){autocorrelation('Dependent')}")
             | Autocorrelation
+          span.mark(data-bind="click:function(){qqplot('Dependent')}")
+            | QQ Plot
           span.mark(data-bind="click:function(){xyplot('Dependent')}")
             | XY Plot
       th.prd
@@ -56,8 +96,12 @@ table.grid
         tf-dropdown(params="align:'right'")
           span.mark(data-bind="click:function(){histogram('Predicted')}")
             | Histogram
+          span.mark(data-bind="click:function(){cumulative_distribution('Predicted')}")
+            | Cumulative Distribution
           span.mark(data-bind="click:function(){autocorrelation('Predicted')}")
             | Autocorrelation
+          span.mark(data-bind="click:function(){qqplot('Predicted')}")
+            | QQ Plot
           span.mark(data-bind="click:function(){xyplot('Predicted')}")
             | XY Plot
       th.err
@@ -65,23 +109,89 @@ table.grid
         tf-dropdown(params="align:'right'")
           span.mark(data-bind="click:function(){histogram('Residual')}")
             | Histogram
+          span.mark(data-bind="click:function(){cumulative_distribution('Residual')}")
+            | Cumulative Distribution
           span.mark(data-bind="click:function(){autocorrelation('Residual')}")
             | Autocorrelation
+          span.mark(data-bind="click:function(){qqplot('Residual')}")
+            | QQ Plot
           span.mark(data-bind="click:function(){xyplot('Residual')}")
             | XY Plot
       // /ko
+
+      // ko foreach: sensitivityColumns
+      th
+        span Sensitivity&nbsp;
+        // ko if:name
+        span(data-bind="text:name")
+        // /ko
+        // ko ifnot:name
+        span.placeholder
+          span X
+          sub(data-bind="text:index")
+        // /ko
+
+        tf-dropdown(params="shallow:1,align:'right'")
+          span.mark(data-bind="click:function(){histogram_statistic($index(), 'sensitivity')}")
+            | Histogram
+          span.mark(data-bind="click:function(){cumulative_distribution_statistic($index(), 'sensitivity')}")
+            | Cumulative Distribution
+          span.mark(data-bind="click:function(){autocorrelation_statistic($index(), 'sensitivity')}")
+            | Autocorrelation
+          span.mark(data-bind="click:function(){qqplot_statistic($index(), 'sensitivity')}")
+            | QQ Plot
+          span.mark(data-bind="click:function(){xyplot_statistic($index(), 'sensitivity')}")
+            | XY Plot
+          span.mark(data-bind="click:function(){deleteSensitivity($index(),'sensitivity')}")
+            | Hide Sensitivity
+      // /ko
+      // ko foreach: importanceRatioColumns
+      th
+        span Importance Ratio &nbsp;
+        // ko if:name
+        span(data-bind="text:name")
+        // /ko
+        // ko ifnot:name
+        span.placeholder
+          span X
+          sub(data-bind="text:index")
+        // /ko
+
+        tf-dropdown(params="shallow:1,align:'right'")
+          span.mark(data-bind="click:function(){histogram_statistic($index(), 'importanceRatio')}")
+            | Histogram
+          span.mark(data-bind="click:function(){cumulative_distribution_statistic($index(), 'importanceRatio')}")
+            | Cumulative Distribution
+          span.mark(data-bind="click:function(){autocorrelation_statistic($index(), 'importanceRatio')}")
+            | Autocorrelation
+          span.mark(data-bind="click:function(){qqplot_statistic($index(), 'importanceRatio')}")
+            | QQ Plot
+          span.mark(data-bind="click:function(){xyplot_statistic($index(), 'importanceRatio')}")
+            | XY Plot
+          span.mark(data-bind="click:function(){deleteImportanceRatio($index(),'importanceRatio')}")
+            | Hide Importance Ratio
+      // /ko
+
   tbody
     // ko iter:{from:start,to:end}
     tr
       td.static
         span(data-bind="text:1+index")
-      
+        //- tf-dropdown.row_header(params="align:'left'")
+        //-   span.mark(data-bind="click:function(){partitionData($index())}")
+        //-     | Row Partition
       // ko foreach: $parent.rows()[index]
-      td
-        // ko if: $data !== null && $data !== ""
-        span(data-bind="text:$data")
+      td(data-bind="style:{background: $component.isHidden($index()) ? '#DCDCDC' : '#FFFFFF'}")
+        // ko if: $component.is_k_order_diff($component.cols()[$index()], $parent.index) && $data !== null && $data !== "" && $data !== 0
+        span(data-bind="text:$component.round_cell($data)")
         // /ko
-        // ko if: $data === null || $data === ""
+        // ko if: $component.is_k_order_diff($component.cols()[$index()], $parent.index) && ($data === null || $data === "" || $data === 0)
+        span.placeholder No Data
+        // /ko
+        // ko if: !$component.is_k_order_diff($component.cols()[$index()], $parent.index) && $data !== null && $data !== ""
+        span(data-bind="text:$component.round_cell($data)")
+        // /ko
+        // ko if: !$component.is_k_order_diff($component.cols()[$index()], $parent.index) && ($data === null || $data === "")
         span.placeholder No Data
         // /ko
       // /ko
@@ -91,7 +201,19 @@ table.grid
         span(data-bind="float:$data")
       // /ko
       // /ko
-      
+
+      //- Display Sensitivity Statistic
+      // ko foreach:$parent.sensitivityData
+      td
+        span(data-bind="float:$data[$parent.index]")
+      // /ko
+      //- Display Importance Ratio Statistic
+      // ko foreach:$parent.importanceRatioData
+      td
+        span(data-bind="float:$data[$parent.index]")
+      // /ko
+
+
     //-
       // ko if:$parent.results
       // ko with:{dep:$data[$parent.dependent()], pred:(r = $parent.results()) ? r.predicted[$index()] : null}

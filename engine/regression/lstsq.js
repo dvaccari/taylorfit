@@ -67,7 +67,7 @@ function lstsqSVD(A, U, S, V, b) {
  *    BIC     = log(MSE) + Np*log(Nd)/Nd
  *    t_i     = B' / sqrt( inv(X'X)[i,i] * MSE )   / is element-wise
  *    SKEW    = sum((y-y')^3/N/s^3)
- *    KURT    = sum((y-y')^4/N/s^4)
+ *    XKURT    = sum((y-y')^4/N/s^4)
  *
  * @return {object} Regression results
  */

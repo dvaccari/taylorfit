@@ -1,23 +1,23 @@
 .wrapper
   // ko if:model().data_validation()
-  p You have imported a validation dataset. This should be the final step in the fitting process, and no further changes should be made to add or remove terms in the current model based on the goodness-of-fit results with the validation data (although coefficients may be updated).
+  p Warning: Do not use validation dataset results for adding or removing terms.
   // /ko
   header
-    span.title Candidate Terms
-  tf-pager(params="source:source,result:result,current:current_page")
+    span.title(title="This Table shows all terms not in the Current Model, along with their selected statistics.") Candidate Terms
+  tf-pager(params="source:source,result:result,current:current_page" title="Choose page from this Table")
   .candidate-wrapper
     table.candidates(data-bind="if:candidates().length")
       thead
         tr
           th
             div.centering
-              div.fixing Term
+              div.fixing(title="This column shows the coefficient and multiplicands (product of independent variables) for each candidate term.") Term
           // ko foreach:allstats
           // ko if:!global && sort && selected()
           th
             div.centering
               div.fixing(data-bind="click:function(){$parent.sortby($data)}")
-                span(data-bind="text:name")
+                span(data-bind="text:name, attr: { title:description }")
                 // ko if: sorting
                 i.fa.fa-sort
                 // /ko
@@ -27,7 +27,8 @@
       tbody
         tr.candidate.current
           td.term
-            span.coeff Current Model
+            span.coeff(title='Items in this row are statistics from "Cross" column of Goodness-of-Fit Statistics Table') Current Model
+          //- This is the column values
           // ko foreach:allstats
           // ko if:!global && sort && selected()
           td.stat
@@ -36,8 +37,9 @@
             // /ko
           // /ko
           // /ko
-        // ko foreach:result
-        tr.candidate(data-bind="click:function(){selected(true);$parent.current_page(0);},css:{selected:selected}")
+        //- This is the candidate terms
+        // ko foreach: result
+        tr.candidate(data-bind="click:function(){selected(true);$parent.current_page(0);$parent.updateSensitivity();$parent.updateImportanceRatio();},css:{selected:selected}")
           td.term
             span.coeff
               span(data-bind="num:coeff")
