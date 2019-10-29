@@ -45,6 +45,7 @@
   "dependencies": {
     "ajv": "^6.10.2",
     "c3": "^0.4.23",
+    "coffeescript": "^2.4.1",
     "combinations-js": "^1.1.2",
     "core-js": "^2.6.10",
     "d3": "^4.13.0",
