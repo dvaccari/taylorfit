@@ -3,6 +3,8 @@ span.title(data-bind="text:name")
 tf-pager(params="source:rows,start:start,end:end" title="Choose page from this Table")
 a.save(data-bind="click:save" title="Create CSV file with all columns from this Table") Export Data
 // ko if:table == "fit"
+tf-loader(params="model:model,table:'fit'")
+//div.button(data-bind="click:show_partition" title="replace data") replace data
 span.name(data-bind="text:model().name")
 // /ko
 // ko if:table == "cross"

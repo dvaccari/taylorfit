@@ -244,4 +244,6 @@ ko.components.register "tf-grid",
       if next then adapter.unsubscribeToChanges()
       else adapter.subscribeToChanges()
 
+    @show_partition = ( ) =>
+      console.log "This message"
     return this
