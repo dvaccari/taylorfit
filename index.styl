@@ -1,0 +1,64 @@
+
+tf-header
+  color white
+  background blue
+  position fixed
+  size 100% header-height
+  box-sizing border-box
+  z-index 100000
+  box-shadow 0 0 3px rgba(black, 0.3)
+  display flex
+  justify-content space-between
+
+  .loader
+    position absolute
+    background purple
+    bottom -4px
+    height 4px
+    box-sizing border-box
+    display block
+    transition 300ms
+    transition-timing-function ease
+    //transition-timing-function cubic-bezier(0.645, 0.045, 0.355, 1)
+    box-shadow 0 0 3px purple
+    &:after
+      display block
+      content ""
+      box-sizing border-box
+      size 4px
+      box-shadow 0 0 4px 3px rgba(purple, 0.6)
+      background purple
+      position absolute
+      right 0
+
+
+  .settings
+    float right
+    padding 20px 24px
+    transition 300ms
+    box-sizing border-box
+    height header-height
+    background darken(blue, 10%)
+    &:hover
+      background darken(blue, 20%)
+    & > .fa
+      margin-left 10px
+
+  .button
+    background darken(green,10%)
+
+  .title
+    display inline-block
+    font-size 25pt
+    padding 12px 32px
+    font-family "Cookie"
+    color white
+
+  .name
+    padding-left 15px
+    font-size 18pt
+
+  tf-loader
+    hr, .small
+      display none
+
