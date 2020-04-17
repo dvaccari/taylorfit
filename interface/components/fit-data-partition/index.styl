@@ -1,0 +1,84 @@
+
+tf-fit-data-partition
+  z-index 1000
+
+  & > .background
+    display none
+    z-index 1000
+    width 100%
+    height 100%
+    background rgba(0,0,0,0.5)
+    top 0
+    left 0
+    right 0
+    bottom 0
+    position absolute
+
+  & > .fit-data-partition
+    display none
+    position absolute
+    top 50%
+    left 50%
+    margin-top -175px
+    margin-left -325px
+    width 630px
+    height 200px
+    background #fff
+    border 1px solid #e9ebed
+    padding 10px
+    z-index 1000
+    box-shadow 0 0 3px 1px rgba(0,0,0,.5)
+
+  .active
+    display block
+
+  .container
+    width 100%
+    height 100%
+    display flex
+    flex-direction column
+    align-items flex-start
+    flex-wrap wrap
+  
+  .error_text
+    color #FF0000
+
+  .sub_partition
+    display flex
+    flex-direction row
+    width: 100%
+
+    & > p
+      display flex
+      justify-content flex-start
+      width 100px
+    
+    & > *
+      margin-right 20px
+    
+    .percent_container
+      display flex
+      justify-content center
+      align-items center
+      
+      & > input
+        width 50px
+        height 30px
+        border-bottom 1px solid black
+        text-align center
+        margin-right 10px
+
+    .rows_container
+      display flex
+      justify-content center
+      align-items center
+
+      & > input
+        width 100px
+      
+      & > input
+        margin-left 10px
+        margin-right 10px
+        border-bottom 1px solid black
+        height 30px
+        text-align center

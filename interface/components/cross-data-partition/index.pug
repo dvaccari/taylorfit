@@ -1,0 +1,27 @@
+.background(data-bind="css:{active:active}")
+.cross-data-partition(data-bind="css:{active:active}")
+  div.container
+    p Data Partition
+    div.sub_partition
+      p cross
+      span.percent_container
+        input(type="number"
+          data-bind="numeric,textInput:cross_p,event:{keyup:change_cross_partition},css:{invalid:cross_invalid}"
+          placeholder="0")
+        p %
+      span.rows_container
+        p Rows
+        input(type="number"
+          data-bind="numeric, textInput:cross_row_start,event:{keyup:change_cross_start_row},css:{invalid:cross_invalid}")
+        p - 
+        input(type="number"
+          data-bind="numeric, textInput:cross_row_end,event:{keyup:change_cross_end_row},css:{invalid:cross_invalid}")
+    button.option(
+      data-bind="click:function(){import_cross_dataset()}"
+    ) Import
+    button.option(
+      data-bind="click:function(){close_window()}"
+    ) Close
+    // ko ifnot: error_msg == undefined
+    span.error_text(data-bind="text: error_msg")
+    // /ko

@@ -213,7 +213,7 @@ ko.components.register "tf-cumulative-distribution",
 
 
     @column_index.subscribe ( next ) =>
-      if next then adapter.unsubscribeToChanges()
-      else adapter.subscribeToChanges()
+      #if next then adapter.unsubscribeToChanges()
+      #else adapter.subscribeToChanges()
 
     return this

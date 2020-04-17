@@ -155,7 +155,7 @@ let subscribeToChanges = (m, updateNow = true) => {
 let unsubscribeToChanges = (m) => m.removeListener(subscriptionIds);
 
 // By default, subscribe
-subscribeToChanges(m, false);
+//subscribeToChanges(m, false);
 
 /**
  * Function calls off subscription handler from engine/model.js

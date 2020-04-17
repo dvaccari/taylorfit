@@ -236,8 +236,8 @@ ko.components.register "tf-autocorrelation",
       return undefined
 
     @column_index.subscribe ( next ) =>
-      if next then adapter.unsubscribeToChanges()
-      else adapter.subscribeToChanges()
+      #if next then adapter.unsubscribeToChanges()
+      #else adapter.subscribeToChanges()
 
     @inc = ( ) -> @bucket_size @bucket_size() + 1
     @dec = ( ) -> @bucket_size ((@bucket_size() - 1) || 1)

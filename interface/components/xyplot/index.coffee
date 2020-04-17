@@ -29,7 +29,7 @@ ko.components.register "tf-xyplot",
             return "Sensitivity " + model.sensitivityColumns()[idx].name
           if idx.indexOf("ImportanceRatio") != -1
             idx = idx.split("_")[1]
-            return "Importance Ratio " + model.importanceRatioColumns()[idx].name
+            #return "Importance Ratio " + model.importanceRatioColumns()[idx].name
           return idx
         return @columns()[idx]
       )
@@ -64,6 +64,12 @@ ko.components.register "tf-xyplot",
         return ""
 
       # global varible 'chart' can be accessed in download function
+      x = 0;
+      while x < Object.keys(@values()[0]).length
+        if @values()[0][x] == undefined or @values()[0][x] == null
+          @values()[0][x] = 0;
+        x += 1
+      #@values()[0][2] = 0;
       global.chart = c3.generate
         bindto: "#xyplot"
         data:
@@ -193,8 +199,8 @@ ko.components.register "tf-xyplot",
 
 
     @column_indexes.subscribe ( next ) =>
-      if next then adapter.unsubscribeToChanges()
-      else adapter.subscribeToChanges()
+      #if next then adapter.unsubscribeToChanges()
+      #else adapter.subscribeToChanges()
 
     # @inc = ( ) -> @bucket_size @bucket_size() + 1
     # @dec = ( ) -> @bucket_size ((@bucket_size() - 1) || 1)

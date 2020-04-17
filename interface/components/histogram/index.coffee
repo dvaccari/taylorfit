@@ -208,8 +208,8 @@ ko.components.register "tf-histogram",
 
 
     @column_index.subscribe ( next ) =>
-      if next then adapter.unsubscribeToChanges()
-      else adapter.subscribeToChanges()
+      #if next then adapter.unsubscribeToChanges()
+      #else adapter.subscribeToChanges()
       if @active() && @values().length
           # Use Sturges' formula to determine the optimal number of buckets
           # k = number of buckets (bins)
