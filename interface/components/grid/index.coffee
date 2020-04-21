@@ -1,5 +1,6 @@
 require "./index.styl"
 Transformation = require "../transform/label.json"
+math = require "mathjs"
 
 ko.components.register "tf-grid",
   template: do require "./index.pug"
@@ -252,7 +253,9 @@ ko.components.register "tf-grid",
       rows = @rows()
       extra = @extra()
       sensitive = @sensitivityData()
+      #console.log Object.keys(sensitive).length
       importance = @importanceRatioData()
+      #console.log Object.keys(importance).length
       while k < rowLength
         if !totals.length
           totals = rows[k].slice(0)
@@ -279,20 +282,16 @@ ko.components.register "tf-grid",
               totals[i] = totals[i] + extra[k][j]
               i++;
               j++;
-          sensitive.forEach( (col) ->
-            iter = 1
-            while iter < col.length
-              totals[i] = totals[i] + col[iter]
-              iter++
-            i++
-          )
-          importance.forEach( (col) ->
-            iter = 1
-            while iter < col.length
-              totals[i] = totals[i] + col[iter]
-              iter++
-            i++
-          )
+          j = 0;
+          while j < Object.keys(sensitive).length
+            totals[i] = totals[i] + sensitive[0][j]
+            i++;
+            j++;
+          j = 0
+          while j < Object.keys(importance).length
+            totals[i] = totals[i] + importance[0][j]
+            i++;
+            j++
         k++
       i = 0
       totals.forEach( (total) ->
@@ -412,10 +411,7 @@ ko.components.register "tf-grid",
       means = @mean();
       i = 0;
       @colData.forEach( (col) ->
-        mean = means[i];
-        result.push(Math.sqrt(col.reduce((sq, n) ->
-          return sq + Math.pow(n-mean,2);
-        , 0) / (col.length - 1)))
+        result.push(math.std(col));
       )
       return result;
 
