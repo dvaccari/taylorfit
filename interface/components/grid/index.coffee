@@ -247,57 +247,13 @@ ko.components.register "tf-grid",
       index < col.k
 
     @mean = ( ) ->
+      #console.log @getColData()
       totals = []
-      rowLength = @rows().length
       k = 0
-      rows = @rows()
-      extra = @extra()
-      sensitive = @sensitivityData()
-      #console.log Object.keys(sensitive).length
-      importance = @importanceRatioData()
-      #console.log Object.keys(importance).length
-      while k < rowLength
-        if !totals.length
-          totals = rows[k].slice(0)
-          if extra
-            extra[k].forEach( (dataPoint) ->
-              totals.push(dataPoint)
-            )
-          sensitive.forEach( (col) ->
-            totals.push(col[0])
-          )
-          importance.forEach( (col) ->
-            totals.push(col[0]);
-          )
-        else
-          i = 0
-          j = 0
-          while j < rows[k].length
-            totals[i] = totals[i] + rows[k][j]
-            i++;
-            j++;
-          j = 0
-          if extra
-            while j < extra[k].length
-              totals[i] = totals[i] + extra[k][j]
-              i++;
-              j++;
-          j = 0;
-          while j < Object.keys(sensitive).length
-            totals[i] = totals[i] + sensitive[0][j]
-            i++;
-            j++;
-          j = 0
-          while j < Object.keys(importance).length
-            totals[i] = totals[i] + importance[0][j]
-            i++;
-            j++
+      while k < @getColData().length
+        totals.push(math.mean(@getColData()[k]))
         k++
-      i = 0
-      totals.forEach( (total) ->
-        totals[i] = total/(rowLength);
-        i++;
-      )
+      #console.log totals
       return totals;
     @flipMean = ( ) ->
       @toggleMean = !@toggleMean
