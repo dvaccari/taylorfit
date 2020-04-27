@@ -1,10 +1,12 @@
 .questions(data-bind="css:{active:active}")
   span.title Settings
     header
-      span.button.info(data-bind="click:recalculate" title="Calculate.")
-          | Recalculate
   span.statlist
     header
+      span.button.info(data-bind="click:autofit" title="Automatically generates a model.")
+        | Autofit Model
+      span.button.info(data-bind="click:recalculate" title="Calculate.")
+        | Recalculate
       span.button.warning(data-bind="click:clear_settings" title="Resets Max Multiplicands, Exponents, Lags, Display Precision, and Alpha to default values.")
         | Clear Settings
       span.title Goodness-of-Fit Statistics
