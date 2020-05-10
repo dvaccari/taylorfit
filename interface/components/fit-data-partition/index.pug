@@ -1,0 +1,27 @@
+.background(data-bind="css:{active:active}")
+.fit-data-partition(data-bind="css:{active:active}")
+  div.container
+    p Data Partition
+    div.sub_partition
+      p fit
+      span.percent_container
+        input(type="number"
+          data-bind="numeric,textInput:fit_p,event:{keyup:change_fit_partition},css:{invalid:fit_invalid}"
+          placeholder="0")
+        p %
+      span.rows_container
+        p Rows
+        input(type="number"
+          data-bind="numeric, textInput:fit_row_start,event:{keyup:change_fit_start_row},css:{invalid:fit_invalid}")
+        p - 
+        input(type="number"
+          data-bind="numeric, textInput:fit_row_end,event:{keyup:change_fit_end_row},css:{invalid:fit_invalid}")
+    button.option(
+      data-bind="click:function(){import_fit_dataset()}"
+    ) Import
+    button.option(
+      data-bind="click:function(){close_window()}"
+    ) Close
+    // ko ifnot: error_msg == undefined
+    span.error_text(data-bind="text: error_msg")
+    // /ko

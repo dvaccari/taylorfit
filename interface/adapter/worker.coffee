@@ -34,7 +34,7 @@ class ME
 module.exports = new class WorkerAdapter extends ME
 
   constructor: ( ) ->
-    super
+    super()
 
     @worker = new Worker "engine-worker.js"
 

@@ -1,0 +1,18 @@
+//tf-data-partition(params="show_partition:show_partition,model:temp_model,parent:$component")
+tf-fit-data-partition(params="show_fit_partition: show_fit_partition, model:temp_model, parent:$component")
+tf-cross-data-partition(params="show_cross_partition: show_cross_partition, model:temp_model, parent:$component")
+//tf-validate-data-partition(params="show_validate_partition:show_validate_partition,model:temp_model,parent:$component")
+input(type="file" accept=".csv" hidden
+  data-bind="attr:{id:id},value:dataset")
+label.button.input-dataset(data-bind="attr:{for:id}")
+  span
+    | Replace&nbsp;
+    //ko if:table == 'fit'
+    // span(data-bind="text:table" title="Open new Data File for use in final validation")
+    // /ko
+
+    // ko if:table == 'cross'
+    //span(data-bind="text:table" title="Open new Data File for use in cross-validation")
+    // /ko
+    | &nbsp;Data
+

@@ -122,7 +122,7 @@ ko.components.register "tf-transform",
       @close()
     
     @transform_index.subscribe ( next ) ->
-      if next then adapter.unsubscribeToChanges()
-      else adapter.subscribeToChanges()
+      #if next then adapter.unsubscribeToChanges()
+      #else adapter.subscribeToChanges()
 
     return this

@@ -1,16 +1,19 @@
-
 span.title(data-bind="text:name")
 tf-pager(params="source:rows,start:start,end:end" title="Choose page from this Table")
 a.save(data-bind="click:save" title="Create CSV file with all columns from this Table") Export Data
 // ko if:table == "fit"
+//div.button(data-bind="click:show_partition" title="replace data") replace data
 span.name(data-bind="text:model().name")
+tf-replace(params="model:model,table:'fit'")
 // /ko
 // ko if:table == "cross"
 span.name(data-bind="text:model().name_cross")
+tf-replace(params="model:model,table:'cross'")
 a.clear(data-bind="click:clear" title="Delete this Data Table (Cross or Validation Tables only)") Clear Data
 // /ko
 // ko if:table == "validation"
 span.name(data-bind="text:model().name_validation")
+//tf-replace(params="model:model,table:'validation'")
 a.clear(data-bind="click:clear" title="Delete this Data Table (Cross or Validation Tables only)") Clear Data
 // /ko
 table.grid
@@ -41,7 +44,7 @@ table.grid
             | QQ Plot
           span.mark(data-bind="click:function(){xyplot($index() + 1)}")
             | XY Plot
-          // ko ifnot: istimeseries()
+          // ko  // ifnot: istimeseries()
           // ko ifnot: hasSensitivity($index())
           span.mark(data-bind="click:function(){sensitivity($index())}")
             | Show Sensitivity
@@ -76,7 +79,6 @@ table.grid
             | Delete Transform Column
           // /ko
       // /ko
-    
       // ko if: extra
       th.dep
         span Dependent
@@ -118,7 +120,6 @@ table.grid
           span.mark(data-bind="click:function(){xyplot('Residual')}")
             | XY Plot
       // /ko
-
       // ko foreach: sensitivityColumns
       th
         span Sensitivity&nbsp;
@@ -130,7 +131,6 @@ table.grid
           span X
           sub(data-bind="text:index")
         // /ko
-
         tf-dropdown(params="shallow:1,align:'right'")
           span.mark(data-bind="click:function(){histogram_statistic($index(), 'sensitivity')}")
             | Histogram
@@ -156,7 +156,6 @@ table.grid
           span X
           sub(data-bind="text:index")
         // /ko
-
         tf-dropdown(params="shallow:1,align:'right'")
           span.mark(data-bind="click:function(){histogram_statistic($index(), 'importanceRatio')}")
             | Histogram
@@ -171,8 +170,130 @@ table.grid
           span.mark(data-bind="click:function(){deleteImportanceRatio($index(),'importanceRatio')}")
             | Hide Importance Ratio
       // /ko
-
+  //- div.toggle Toggle Fundamental Statistics
+  //- tf-dropdown(params="")
+  //-   // ko if: !hasMean()
+  //-   span.mark(data-bind="click:function(){flipMean()}")
+  //-     | Show Mean
+  //-   // /ko
+  //-   // ko if: hasMean()
+  //-   span.mark(data-bind="click:function(){flipMean()}")
+  //-     | Hide Mean
+  //-   span.mark(data-bind="text:toggleMean")
+  //-   // /ko
   tbody
+    // ko if: hasMean()
+    tr.stat
+      td.static.stat(title="Mean") Mean
+
+      // ko foreach: mean()
+      td.stat(data-bind="style:{background: $component.isHidden($index()) ? '#DCDCDC' : '#f2f2f2'}")
+        //ko if: ($data !== null && $data !== "" && $data !== 0)
+        span(data-bind="text:$component.round_cell($data)")
+        // /ko
+        // ko if: ($data === null || $data === "" || $data === 0)
+        span.placeholder No Data
+        // /ko
+      // /ko
+    // /ko
+    // ko if: toggle
+    tr.stat
+      td.static.stat(title="Standard Deviation") SD
+
+      // ko foreach: sd()
+      td.stat(data-bind="style:{background: $component.isHidden($index()) ? '#DCDCDC' : '#f2f2f2'}")
+        //ko if: ($data !== null && $data !== "" && $data !== 0)
+        span(data-bind="text:$component.round_cell($data)")
+        // /ko
+        // ko if: ($data === null || $data === "" || $data === 0)
+        span.placeholder No Data
+        // /ko
+      // /ko
+    // /ko
+    // ko if: toggle
+    tr.stat
+      td.static.stat(title="Root Mean Square") RMS
+
+      // ko foreach: rms()
+      td.stat(data-bind="style:{background: $component.isHidden($index()) ? '#DCDCDC' : '#f2f2f2'}")
+        //ko if: ($data !== null && $data !== "" && $data !== 0)
+        span(data-bind="text:$component.round_cell($data)")
+        // /ko
+        // ko if: ($data === null || $data === "" || $data === 0)
+        span.placeholder No Data
+        // /ko
+      // /ko
+    // /ko
+    //ko if: toggle
+    tr.stat
+      td.static.stat(title="Minimum.") Min
+
+      // ko foreach: min()
+      td.stat(data-bind="style:{background: $component.isHidden($index()) ? '#DCDCDC' : '#f2f2f2'}")
+        //ko if: ($data !== null && $data !== "" && $data !== 0)
+        span(data-bind="text:$component.round_cell($data)")
+        // /ko
+        // ko if: ($data === null || $data === "" || $data === 0)
+        span.placeholder No Data
+        // /ko
+      // /ko
+    // /ko
+    //ko if: toggle
+    tr.stat
+      td.static.stat(title="First Quartile.") 25%
+
+      // ko foreach: firstQuartile()
+      td.stat(data-bind="style:{background: $component.isHidden($index()) ? '#DCDCDC' : '#f2f2f2'}")
+        //ko if: ($data !== null && $data !== "" && $data !== 0)
+        span(data-bind="text:$component.round_cell($data)")
+        // /ko
+        // ko if: ($data === null || $data === "" || $data === 0)
+        span.placeholder No Data
+        // /ko
+      // /ko
+    // /ko
+    //ko if: toggle
+    tr.stat
+      td.static.stat(title="Median.") Med
+
+      // ko foreach: med()
+      td.stat(data-bind="style:{background: $component.isHidden($index()) ? '#DCDCDC' : '#f2f2f2'}")
+        //ko if: ($data !== null && $data !== "" && $data !== 0)
+        span(data-bind="text:$component.round_cell($data)")
+        // /ko
+        // ko if: ($data === null || $data === "" || $data === 0)
+        span.placeholder No Data
+        // /ko
+      // /ko
+    // /ko
+    //ko if: toggle
+    tr.stat
+      td.static.stat(title="Third Quartile.") 75%
+
+      // ko foreach: thirdQuartile()
+      td.stat(data-bind="style:{background: $component.isHidden($index()) ? '#DCDCDC' : '#f2f2f2'}")
+        //ko if: ($data !== null && $data !== "" && $data !== 0)
+        span(data-bind="text:$component.round_cell($data)")
+        // /ko
+        // ko if: ($data === null || $data === "" || $data === 0)
+        span.placeholder No Data
+        // /ko
+      // /ko
+    // /ko
+    //ko if: toggle
+    tr.stat
+      td.static.stat(title="Max.") Max
+
+      // ko foreach: max()
+      td.stat(data-bind="style:{background: $component.isHidden($index()) ? '#DCDCDC' : '#f2f2f2'}")
+        //ko if: ($data !== null && $data !== "" && $data !== 0)
+        span(data-bind="text:$component.round_cell($data)")
+        // /ko
+        // ko if: ($data === null || $data === "" || $data === 0)
+        span.placeholder No Data
+        // /ko
+      // /ko
+    // /ko
     // ko iter:{from:start,to:end}
     tr
       td.static
@@ -201,7 +322,6 @@ table.grid
         span(data-bind="float:$data")
       // /ko
       // /ko
-
       //- Display Sensitivity Statistic
       // ko foreach:$parent.sensitivityData
       td
@@ -212,8 +332,6 @@ table.grid
       td
         span(data-bind="float:$data[$parent.index]")
       // /ko
-
-
     //-
       // ko if:$parent.results
       // ko with:{dep:$data[$parent.dependent()], pred:(r = $parent.results()) ? r.predicted[$index()] : null}

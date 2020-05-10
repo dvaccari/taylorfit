@@ -1,7 +1,6 @@
-
 require "./index.styl"
 Model = require "../Model"
-Combintations = require "combinations-js"
+Combinations = require "combinations-js"
 
 download = ( name, type, content ) ->
   a = document.createElement "a"
@@ -23,9 +22,44 @@ ko.components.register "tf-settings",
       throw new TypeError "components/options:
       expects [model] to be observable"
 
+    # params.model.subscribe( (r) => 
+    #   console.log("\n\n\n\n\n\n\n\n\nTHIS IS A MODEL SUBSCRIPTION\n\n\n\n\n");
+    #   console.log(r);
+    # )
+
     model = params.model() # now static
 
+    @modelResult = model.result_fit
+    @candidates = model.candidates
+    @crossResult = model.result_cross
+    @alpha = model.psig
+
+    @currModel = model.result_fit();
+    @currCandidates = model.candidates();
+    @currCross = model.result_cross();
+    @currAlpha = model.psig();
+    @clicked = false;
+    @runRemove = false;
+
+    @candidates.subscribe( (r) =>
+      if !@clicked
+        @currCandidates = r;
+    )
+
+    @crossResult.subscribe( (r) =>
+      if !@clicked
+        @currCross = r;
+    )
+
+    @alpha.subscribe( (r) =>
+      @currAlpha = r;
+    )
+
+    # @rows = model.data_fit();
     @active = model.show_settings
+    
+    #model = model.show_settings(true)
+    
 
     @exponents = model.exponents
     @multiplicands = model.multiplicands
@@ -63,16 +97,16 @@ ko.components.register "tf-settings",
       while i <= @multiplicands()
 
         if n_lags <= 1 or (zero_lag == false)
-          c = Combintations comb_vals, i
+          c = Combinations comb_vals, i
           p = Math.pow(base, i)
           accum += c * p
         else
           if i == 0
             accum += 1
           else
-            c1 = Combintations comb_vals, i
+            c1 = Combinations comb_vals, i
             p1 = Math.pow(base, i)
-            c2 = Combintations comb_vals, i - 1
+            c2 = Combinations comb_vals, i - 1
             p2 = Math.pow(base, i-1) * e * (n_lags - 1)
             accum += (c1 * p1) + (c2 * p2)
         i++
@@ -99,10 +133,35 @@ ko.components.register "tf-settings",
 
     @timeseries.subscribe ( next ) =>
       @lags { 0: true } unless next
+      
 
-    @active.subscribe ( next ) ->
-      if next then adapter.unsubscribeToChanges()
-      else adapter.subscribeToChanges()
+    @active.subscribe (next) ->
+      #if unchange then adapter.unsubscribeToChanges()
+      #if next then adapter.unsubscribeToChanges()
+      #adapter.unsubscribeToChanges()
+      adapter.unsubscribeToChanges();
+      
+
+    @recalculate = ( ) ->
+      #if ko.computed(true) then adapter.subscribeToChanges()
+      #@active.subscribe (next)
+      #if next then adapter.unsubscribeToChanges()
+      #if adapter.addTerm then adapter.unsubscribeToChanges()
+      #@active.subscribe(next)
+      #else adapter.subscribeToChanges()
+      
+      #condition = @checkIfCandidateToBeAdded();
+      #if condition == true
+        adapter.subscribeToChanges();
+        adapter.unsubscribeToChanges();
+      #else 
+       # adapter.unsubscribeToChanges();
+
+      
+
+
+    
+
 
     @download_model = ( ) ->
       model = params.model()
@@ -121,7 +180,7 @@ ko.components.register "tf-settings",
       # Update sensitivity columns
       for column in model.sensitivityColumns()
         model.update_sensitivity(column.index)
-      
+
       # Update importance ratio columns
       for column in model.importanceRatioColumns()
         model.update_importanceRatio(column.index)
@@ -135,5 +194,146 @@ ko.components.register "tf-settings",
       ko.precision(5)
       # Clear the selected stats to the default
       allstats().forEach((stat) => stat.selected(stat.default))
+
+    @updateExponents = () ->
+      currExponents = model.exponents();
+      if !('-1' in currExponents)
+        currExponents['-1'] = true;
+        currExponents['2'] = true;
+        model.exponents(currExponents);
+        performAddCycle();
+      else
+        @clicked = false;
+    
+    @updateMultiplicands = () ->
+      currNumMultiplicands = model.multiplicands();
+      if currNumMultiplicands < 3
+        model.multiplicands(currNumMultiplicands + 1);
+        @performAddCycle();
+      else
+        # @updateExponents();
+        @clicked = false;
+
+    @removeLargestPAboveAlpha = () ->
+      termsInModel = @currModel.terms;
+      alpha = @currAlpha;
+      largestP = null;
+      termsInModel.forEach( (term) ->
+        if (term.stats.pt > alpha && largestP == null)
+          largestP = term;
+        else if (term.stats.pt > alpha && term.stats.pt > largestP)
+          largestP = term;
+      )
+      if largestP != null
+        removedTerm = [];
+        for term in largestP.term
+          innerTerm = [term.index, term.exp, term.lag];
+          removedTerm.push(innerTerm);
+        adapter.subscribeToChanges();
+        adapter.removeTerm(removedTerm);
+      
+    @checkIfTermAboveAlpha = ( ) ->
+      termsInModel = @currModel.terms;
+      alpha = @currAlpha;
+      returnVal = false;
+      termsInModel.forEach( (term) ->
+        if (term.stats.pt > alpha) 
+          returnVal = true;
+      )
+      return returnVal;
+      
+    @addSmallestPBelowAlpha = () ->
+      alpha = @currAlpha;
+      crossRsq = @currCross.stats.Rsq;
+      smallestP = null;
+      @currCandidates.forEach( (candidate) ->
+        if (candidate.stats.pt < alpha && smallestP == null && candidate.stats.Rsq > crossRsq)
+          smallestP = candidate;
+        else if (candidate.stats.pt < alpha && candidate.stats.pt < smallestP && candidate.stats.Rsq > crossRsq)
+          smallestP = candidate;
+      )
+      if smallestP != null
+        addedTerm = []
+        for term in smallestP.term
+          innerTerm = [term.index, term.exp, term.lag];
+          addedTerm.push(innerTerm);
+        adapter.subscribeToChanges();
+        adapter.addTerm(addedTerm);
+      
+    @checkIfCandidateToBeAdded = () ->
+      crossRsq = @currCross.stats.Rsq;
+      alpha = @currAlpha;
+      returnVal = false;
+      @currCandidates.forEach( (candidate) ->
+        if (candidate.stats.pt < alpha && candidate.stats.Rsq > crossRsq)
+          returnVal = true
+      )
+      return returnVal;
+
+    @performRemoveCycle = ( ) ->
+      condition = @checkIfTermAboveAlpha();
+      if condition == true
+        @removeLargestPAboveAlpha()
+      else
+        #update mult and exp then maybe when those are done have @clicked be false in those functions
+        @updateMultiplicands();
+        @runRemove = false;
+      adapter.subscribeToChanges();
+
+    @performAddCycle = ( ) ->
+      condition = @checkIfCandidateToBeAdded();
+      if condition == true
+        @addSmallestPBelowAlpha();
+      else
+        @runRemove = true;
+      adapter.subscribeToChanges();
+
+    @runAddRemoveCycle = ( ) ->
+      @performAddCycle();
+      if @runRemove
+        @performRemoveCycle();
+
+    @modelResult.subscribe( (r) =>
+      if @clicked
+        if JSON.stringify(@currModel) != JSON.stringify(r)
+          @currModel = r;
+          @candidates.subscribe( (candidateRes) =>
+            if JSON.stringify(@currCandidates) != JSON.stringify(candidateRes)
+              @currCandidates = candidateRes;
+              @runAddRemoveCycle();
+              # @crossResult.subscribe( (crossRes) =>
+              # if JSON.stringify(@currCross) != JSON.stringify(crossRes)
+                  # @currCross = crossRes;
+                  # @runAddRemoveCycle();
+              # )
+          )
+      else
+        @currModel = r;
+    )
+
+    @autofit = ( ) ->
+      @clicked = true;
+      @performAddCycle();
+      # params.model().candidates() represents the potential pool of choices to add to the model from the right panel
+      # Can get p(t) and adjR2 with .stats.pt or .stats.adjRsq
+      # console.log(params.model().candidates());
+
+      # params.model().result_fit().terms gets you the current terms of the model
+      # console.log(params.model().result_fit().terms);
+
+      # params.model().result_fit().terms[index of term].stats gives t and p(t) of the term (P(t) cant be above alpha)
+      # console.log(params.model().result_fit().terms[0].stats);
+
+      # params.model().multiplicands() gets you number of multiplicands set
+      # console.log(params.model().multiplicands());
+
+      # params.model().exponents() gets you a dictionary with exponents {1: true, 2: true, -1: true} etc.
+      # console.log(params.model().exponents());
+
+      # params.model().psig() gives you value of alpha
+      # console.log(params.model().psig());
+
+      # Also see something for setMultiplicands and setExponents
+
 
     return this
