@@ -52,7 +52,7 @@
     "knockout": "^3.5.0",
     "lodash": "^4.17.19",
     "mathjs": "^6.6.4",
-    "papaparse": "^4.1.2",
+    "papaparse": "^5.2.0",
     "yarn": "^1.22.0"
   },
   "repository": "git@github.com:tsu-complete/taylorfit.git"
