@@ -1,5 +1,5 @@
 
-# TaylorFit
+# TaylorFit-staging
 
 TaylorFit is a multivariate polynomial regression application that fits data to
 a predictive model consisting of a polynomial function, such as
@@ -8,6 +8,8 @@ a predictive model consisting of a polynomial function, such as
 
 where `x`, `y`, and `xy` are terms selected by the user, and `a`, `b`, and `c`
 are coefficients determined using least squares regression.
+
+This is a staging version of [github.com/dvaccari/taylorfit](https://github.com/dvaccari/taylorfit). This version is hosted on [github.io/taylorfit-staging](https://mikechunko.github.io/taylorfit-staging/)
 
 
 ## On the Web
