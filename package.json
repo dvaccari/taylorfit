@@ -39,8 +39,8 @@
     "stylus": "^0.54.5",
     "stylus-loader": "^2.5.1",
     "url-loader": "^4.1.0",
-    "webpack": "^2.5.1",
-    "webpack-dev-server": "^3.1.11",
+    "webpack": "^3.2.0",
+    "webpack-dev-server": "^2.9.4",
     "worker-loader": "^0.8.0"
   },
   "dependencies": {
@@ -53,6 +53,7 @@
     "lodash": "^4.17.19",
     "mathjs": "^6.6.4",
     "papaparse": "^5.2.0",
+    "webpack-cli": "^3.3.12",
     "yarn": "^1.22.0"
   },
   "repository": "git@github.com:tsu-complete/taylorfit.git"
