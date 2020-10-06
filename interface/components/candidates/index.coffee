@@ -22,7 +22,8 @@ ko.components.register "tf-candidates",
         @result.maxWidth 65 + document.querySelector(
           ".candidate-wrapper > .candidates").clientWidth
 
-    global.send_incoming_stats()
+    if performance.navigation.type != performance.navigation.TYPE_RELOAD
+      global.send_incoming_stats()
 
     model = params.model() # now static
     hiddenColumns = model.hiddenColumns

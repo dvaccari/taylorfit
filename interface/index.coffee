@@ -37,7 +37,8 @@ global.send_incoming_stats = () ->
         console.log("Sorting allstats")
   adapter.requestStatisticsMetadata()
 
-send_incoming_stats()
+if performance.navigation.type == performance.navigation.TYPE_RELOAD
+  send_incoming_stats()
 
 # --- include components
 require "./components"
