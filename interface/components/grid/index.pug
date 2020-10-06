@@ -4,16 +4,16 @@ a.save(data-bind="click:save" title="Create CSV file with all columns from this 
 // ko if:table == "fit"
 //div.button(data-bind="click:show_partition" title="replace data") replace data
 span.name(data-bind="text:model().name")
-tf-replace(params="model:model,table:'fit'")
+tf-replace(params="model:model,table:'fit'", title="Replace current data with new data. Ensure new data has same number of columns. Model coefficients will be updated, but terms will not change. This feature can be used to fit the current model to all data combined as final step in regression.")
 // /ko
 // ko if:table == "cross"
 span.name(data-bind="text:model().name_cross")
-tf-replace(params="model:model,table:'cross'")
+tf-replace(params="model:model,table:'cross'", title="Replace current data with new data. Ensure new data has same number of columns. Model coefficients will be updated, but terms will not change. This feature can be used to fit the current model to all data combined as final step in regression.")
 a.clear(data-bind="click:clear" title="Delete this Data Table (Cross or Validation Tables only)") Clear Data
 // /ko
 // ko if:table == "validation"
 span.name(data-bind="text:model().name_validation")
-//tf-replace(params="model:model,table:'validation'")
+tf-replace(params="model:model,table:'validation'", title="Replace current data with new data. Ensure new data has same number of columns. Model coefficients will be updated, but terms will not change. This feature can be used to fit the current model to all data combined as final step in regression.")
 a.clear(data-bind="click:clear" title="Delete this Data Table (Cross or Validation Tables only)") Clear Data
 // /ko
 table.grid
