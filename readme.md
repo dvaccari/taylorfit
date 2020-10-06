@@ -36,9 +36,6 @@ browser capabilities that emulate native execution.
 6. Run the server
     - Run `npm run debug` to start the development server (includes hot reloading)
     - Run `npm start` to start the production server
-        - If you get an error like `invalid "instanceof" keyword value Promise` run \
-        `npm install webpack-cli` \
-        `npm install webpack@3.2.0 webpack-dev-server@2.9.4 --save-dev`
 7. Run `npm run test` to run the test suite
 
 ## Export to gh-pages
