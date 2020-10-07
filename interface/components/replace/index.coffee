@@ -86,26 +86,35 @@ ko.components.register "tf-replace",
     @import_fit_partition = (
       fit_row_start,
       fit_row_end,
+      ncols,
     ) ->
       model = @temp_model()
       data_fit = if fit_row_start != 0
       then model.rows[fit_row_start - 1..fit_row_end - 1]
       else undefined
       m = params.model()
-      m["data_fit"] data_fit
-      m["name_fit"] = model.name
+      # Checks if the number of columns matches
+      if(m["columns"]().length != ncols)
+       console.log("column mismatch")
+      else
+       m["data_fit"] data_fit
+       m["name_fit"] = model.name
     
     @import_cross_partition = (
       cross_row_start,
       cross_row_end,
+      ncols,
     ) ->
       model = @temp_model()
       data_cross = if cross_row_start != 0
       then model.rows[cross_row_start - 1..cross_row_end - 1]
       else undefined
       m = params.model()
-      m["data_cross"] data_cross
-      m["name_cross"] = model.name
+      if(m["columns"]().length != ncols)
+       console.log("column mismatch")
+      else
+       m["data_cross"] data_cross
+       m["name_cross"] = model.name
     
      # --- Use from data partition modal
     @import_partition = (

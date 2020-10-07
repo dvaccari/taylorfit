@@ -103,6 +103,7 @@ ko.components.register "tf-cross-data-partition",
       cross_row_start = Number(@cross_row_start()) || 0
       cross_row_end = Number(@cross_row_end()) || 0
       data_rows = model().rows.length
+      ncols = model().cols.length
       # Check if percentage 0-100
       sum_p = cross_p
       if @cross_invalid()
@@ -127,6 +128,7 @@ ko.components.register "tf-cross-data-partition",
       params.parent.import_cross_partition(
         cross_row_start,
         cross_row_end,
+        ncols,
       )
       window.location.reload()
       return true

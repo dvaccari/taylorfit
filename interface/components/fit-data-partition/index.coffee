@@ -103,6 +103,7 @@ ko.components.register "tf-fit-data-partition",
       fit_row_start = Number(@fit_row_start()) || 0
       fit_row_end = Number(@fit_row_end()) || 0
       data_rows = model().rows.length
+      ncols = model().cols.length
       # Check if percentage 0-100
       sum_p = fit_p
       if @fit_invalid()
@@ -127,6 +128,7 @@ ko.components.register "tf-fit-data-partition",
       params.parent.import_fit_partition(
         fit_row_start,
         fit_row_end,
+        ncols,
       )
       window.location.reload()
       return true
