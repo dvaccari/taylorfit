@@ -41,8 +41,8 @@ browser capabilities that emulate native execution.
 ## Export to gh-pages
 
 1. Run `npm run build`
-2. Copy the build directory
+2. Copy the build directory (`cp -r build/ ../build/`)
 3. Run `git checkout gh-pages`
-4. Paste the build directory files into the main directory
-5. Push up the code
+4. Paste the build directory files into the main directory (`mv ../build/* . && rm -r ../build/` [be careful you don't have another `build` directory in one level up from your clone])
+5. Push up the code (`git add -A && git commit -m "..." && git push`)
 6. Run `git checkout master`
