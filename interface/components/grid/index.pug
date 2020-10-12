@@ -122,7 +122,7 @@ table.grid
       // /ko
       // ko foreach: sensitivityColumns
       th
-        span Sensitivity&nbsp;
+        span Sens.&nbsp;
         // ko if:name
         span(data-bind="text:name")
         // /ko
@@ -226,7 +226,7 @@ table.grid
     // /ko
     //ko if: toggle
     tr.stat
-      td.static.stat(title="Minimum.") Min
+      td.static.stat(title="Minimum") Min
 
       // ko foreach: min()
       td.stat(data-bind="style:{background: $component.isHidden($index()) ? '#DCDCDC' : '#f2f2f2'}")
@@ -240,7 +240,7 @@ table.grid
     // /ko
     //ko if: toggle
     tr.stat
-      td.static.stat(title="First Quartile.") 25%
+      td.static.stat(title="First Quartile") 25%
 
       // ko foreach: firstQuartile()
       td.stat(data-bind="style:{background: $component.isHidden($index()) ? '#DCDCDC' : '#f2f2f2'}")
@@ -254,7 +254,7 @@ table.grid
     // /ko
     //ko if: toggle
     tr.stat
-      td.static.stat(title="Median.") Med
+      td.static.stat(title="Median") Med
 
       // ko foreach: med()
       td.stat(data-bind="style:{background: $component.isHidden($index()) ? '#DCDCDC' : '#f2f2f2'}")
@@ -268,7 +268,7 @@ table.grid
     // /ko
     //ko if: toggle
     tr.stat
-      td.static.stat(title="Third Quartile.") 75%
+      td.static.stat(title="Third Quartile") 75%
 
       // ko foreach: thirdQuartile()
       td.stat(data-bind="style:{background: $component.isHidden($index()) ? '#DCDCDC' : '#f2f2f2'}")
