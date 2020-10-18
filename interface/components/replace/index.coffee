@@ -61,7 +61,7 @@ ko.components.register "tf-replace",
     @temp_model = ko.observable undefined
     @dataset.subscribe ( next ) =>
       # Importing CSV file
-      read_csv document.getElementById(@id).files[0]
+      await read_csv document.getElementById(@id).files[0]
       # Completed parsing CSV to build model
       .then ( model ) =>
         if @init # Importing data
@@ -151,7 +151,7 @@ ko.components.register "tf-replace",
     if @init
       @model = ko.observable null
       @model.subscribe ( next ) ->
-        read_model document.getElementById("input-model").files[0]
+        await read_model document.getElementById("input-model").files[0]
         .then ( model ) -> params.model new Model model
 
     return this

@@ -21,9 +21,10 @@ ko.components.register "tf-candidates",
       setTimeout =>
         @result.maxWidth 65 + document.querySelector(
           ".candidate-wrapper > .candidates").clientWidth
-
+	
+	# Can safely be delayed
     if performance.navigation.type != performance.navigation.TYPE_RELOAD
-      global.send_incoming_stats()
+      setTimeout(global.send_incoming_stats, 1000)
 
     model = params.model() # now static
     hiddenColumns = model.hiddenColumns
