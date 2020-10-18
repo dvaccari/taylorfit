@@ -86,7 +86,10 @@ module.exports = {
     }, {
       test: /\.jsx?$/,
       exclude: /node_modules/,
-      loader: 'babel-loader?presets[]=es2017'
+      loader: 'babel-loader',
+      options: {
+      	presets: ['@babel/preset-env']
+      }
     }]
   },
   plugins: [
