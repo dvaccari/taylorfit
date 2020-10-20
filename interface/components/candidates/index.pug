@@ -5,6 +5,13 @@
   header
     span.title(title="This Table shows all terms not in the Current Model, along with their selected statistics.") Candidate Terms
   tf-pager(params="source:source,result:result,current:current_page" title="Choose page from this Table")
+  - var showTerms = {val: 1}
+  - var myFunction = function (x) {x.val = 1 - x.val; return x.val}
+  header
+    //3 different attempts to oscillate between 0 and 1, none of which work
+    //button(type="button", onclick="(function(){" + showTerms.val + "= 1 -" + showTerms.val + "; console.log(" + showTerms.val + ")})()") Toggle Terms
+    //button(type="button", onclick="(function(){if (typeof showTerms === 'undefined'){var showTerms = 1} else {showTerms = 1 - showTerms}; console.log(showTerms)})()") Toggle Terms
+    button(type="button", onclick="console.log(" + myFunction(showTerms) + ")") Toggle Terms
   .candidate-wrapper
     table.candidates(data-bind="if:candidates().length")
       thead
