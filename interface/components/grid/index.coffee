@@ -53,6 +53,9 @@ ko.components.register "tf-grid",
       if statistic == "sensitivity"
         model.show_histogram("Sensitivity_"+index.toString())
         model.data_plotted(@table)
+      if statistic == "confidence"
+        model.show_histogram("Confidence_"+index.toString())
+        model.data_plotted(@table)
       if statistic == "importanceRatio"
         model.show_histogram("ImportanceRatio_"+index.toString())
         model.data_plotted(@table)
@@ -64,6 +67,9 @@ ko.components.register "tf-grid",
     @cumulative_distribution_statistic = ( index, statistic ) ->
       if statistic == "sensitivity"
         model.show_cumulative_distribution("Sensitivity_"+index.toString())
+        model.data_plotted(@table)
+      if statistic == "confidence"
+        model.show_cumulative_distribution("Confidence_"+index.toString())
         model.data_plotted(@table)
       if statistic == "importanceRatio"
         model.show_cumulative_distribution("ImportanceRatio_"+index.toString())
@@ -78,6 +84,9 @@ ko.components.register "tf-grid",
       if statistic == "sensitivity"
         model.show_autocorrelation("Sensitivity_"+index.toString())
         model.data_plotted(@table)
+       if statistic == "confidence"
+        model.show_autocorrelation("Confidence_"+index.toString())
+        model.data_plotted(@table)
       if statistic == "importanceRatio"
         model.show_autocorrelation("ImportanceRatio_"+index.toString())
         model.data_plotted(@table)
@@ -90,6 +99,9 @@ ko.components.register "tf-grid",
       if statistic == "sensitivity"
         model.show_xyplot(["Sensitivity_"+index.toString(), "Index"])
         model.data_plotted(@table)
+      if statistic == "confidence"
+        model.show_xyplot(["Confidence_"+index.toString(), "Index"])
+        model.data_plotted(@table)
       if statistic == "importanceRatio"
         model.show_xyplot(["ImportanceRatio_"+index.toString(), "Index"])
         model.data_plotted(@table)
@@ -101,6 +113,9 @@ ko.components.register "tf-grid",
     @qqplot_statistic = ( index, statistic ) ->
       if statistic == "sensitivity"
         model.show_qqplot("Sensitivity_"+index.toString())
+        model.data_plotted(@table)
+      if statistic == "confidence"
+        model.show_qqplot("Confidence_"+index.toString())
         model.data_plotted(@table)
       if statistic == "importanceRatio"
         model.show_qqplot("ImportanceRatio_"+index.toString())
@@ -233,6 +248,8 @@ ko.components.register "tf-grid",
         csv += ",Dependent,Predicted,Residual"
       if @sensitivityColumns().length > 0
         csv += "," + @sensitivityColumns().map((col) -> "Sensitivity "+col.name).join ","
+      if @confidenceColumns().length > 0
+        csv += "," + @confidenceColumns().map((col) -> "Confidence "+col.name).join ","
       if @importanceRatioColumns().length > 0
         csv += "," + @importanceRatioColumns().map((col) -> "Importance Ratio "+col.name).join ","
       for row, index in rows
@@ -241,6 +258,8 @@ ko.components.register "tf-grid",
         if extra then csv += "," + extra[index].join ","
         if @sensitivityData().length > 0
           csv += "," + @sensitivityData().map((col) -> col[index]).join ","
+        if @confidenceData().length > 0
+          csv += "," + @confidenceData().map((col) -> col[index]).join ","
         if @importanceRatioData().length > 0
           csv += "," + @importanceRatioData().map((col) -> col[index]).join ","
 

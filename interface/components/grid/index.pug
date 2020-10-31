@@ -114,7 +114,7 @@ table.grid
             | QQ Plot
           span.mark(data-bind="click:function(){xyplot('Predicted')}")
             | XY Plot
-          span.mark(data-bind="click:function(){sensitivity('Predicted')}")
+          span.mark(data-bind="click:function(){confidence('Predicted')}")
             | Show Confidence Interval
       th.err
         span Residual
@@ -167,18 +167,18 @@ table.grid
           sub(data-bind="text:index")
         // /ko
         tf-dropdown(params="shallow:1,align:'right'")
-          span.mark(data-bind="click:function(){histogram_statistic($index(), 'sensitivity')}")
+          span.mark(data-bind="click:function(){histogram_statistic($index(), 'confidence')}")
             | Histogram
-          span.mark(data-bind="click:function(){cumulative_distribution_statistic($index(), 'sensitivity')}")
+          span.mark(data-bind="click:function(){cumulative_distribution_statistic($index(), 'confidence')}")
             | Cumulative Distribution
-          span.mark(data-bind="click:function(){autocorrelation_statistic($index(), 'sensitivity')}")
+          span.mark(data-bind="click:function(){autocorrelation_statistic($index(), 'confidence')}")
             | Autocorrelation
-          span.mark(data-bind="click:function(){qqplot_statistic($index(), 'sensitivity')}")
+          span.mark(data-bind="click:function(){qqplot_statistic($index(), 'confidence')}")
             | QQ Plot
-          span.mark(data-bind="click:function(){xyplot_statistic($index(), 'sensitivity')}")
+          span.mark(data-bind="click:function(){xyplot_statistic($index(), 'confidence')}")
             | XY Plot
-          span.mark(data-bind="click:function(){deleteSensitivity($index(),'sensitivity')}")
-            | Hide Sensitivity
+          span.mark(data-bind="click:function(){deleteConfidence($index(),'confidence')}")
+            | Hide Confidence Interval
       // /ko
       // ko foreach: importanceRatioColumns
       th
@@ -359,6 +359,11 @@ table.grid
       // /ko
       //- Display Sensitivity Statistic
       // ko foreach:$parent.sensitivityData
+      td
+        span(data-bind="float:$data[$parent.index]")
+      // /ko
+      //- Display Confidence Statistic
+      // ko foreach:$parent.confidenceData
       td
         span(data-bind="float:$data[$parent.index]")
       // /ko
