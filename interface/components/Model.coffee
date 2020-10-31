@@ -68,6 +68,12 @@ CTRL =
     [ undefined   , SEND("deleteSensitivity", Number) , IGNORE ]
   update_sensitivity:
     [ undefined   , SEND("updateSensitivity", Number)  , IGNORE ]
+  show_confidence:
+    [ undefined   , SEND("getConfidence", Number)    , IGNORE ]
+  delete_confidence:
+    [ undefined   , SEND("deleteConfidence", Number) , IGNORE ]
+  update_confidence:
+    [ undefined   , SEND("updateConfidence", Number)  , IGNORE ]
   show_importanceRatio:
     [ undefined   , SEND("getImportanceRatio", Number)    , IGNORE ]
   delete_importanceRatio:
@@ -133,6 +139,10 @@ CTRL =
   sensitivityColumns:
     [ []         , WRAP_A                            , UNWRAP ]
   sensitivityData:
+    [ []         , WRAP_A                            , UNWRAP ]
+  confidenceColumns:
+    [ []         , WRAP_A                            , UNWRAP ]
+  confidenceData:
     [ []         , WRAP_A                            , UNWRAP ]
   importanceRatioColumns:
     [ []         , WRAP_A                            , UNWRAP ]
@@ -348,6 +358,60 @@ module.exports = class Model
 
         @sensitivityColumns(sensitivityColumns)
         @sensitivityData(sensitivityData)
+      , 100
+      adapter.subscribeToChanges()
+
+    adapter.on "model:getConfidence", (data) =>
+      setTimeout =>
+        columns = ko.unwrap @columns
+        confidenceColumns = ko.unwrap @confidenceColumns
+        confidenceData = ko.unwrap @confidenceData
+
+        # Check if column already exists
+        colExists = false
+        confidenceColumns.forEach((col) =>
+          if col.index == data.index
+            colExists = true
+        )
+
+        if colExists == false
+          column = columns[data.index]
+          confidenceColumns.push(column)
+          confidenceData.push(data.confidence)
+
+          @confidenceColumns(confidenceColumns)
+          @confidenceData(confidenceData)
+      , 100
+      adapter.subscribeToChanges()
+    
+    adapter.on "model:deleteConfidence", (data) =>
+      setTimeout =>        
+        confidenceColumns = ko.unwrap @confidenceColumns
+        confidenceData = ko.unwrap @confidenceData
+
+        confidenceColumns.splice(data.index, 1);
+        confidenceData.splice(data.index, 1);
+
+        @confidenceColumns(confidenceColumns)
+        @confidenceData(confidenceData)
+      , 100
+      adapter.subscribeToChanges()
+
+    adapter.on "model:updateConfidence", (data) =>
+      setTimeout =>
+        columns = ko.unwrap @columns
+        confidenceColumns = ko.unwrap @confidenceColumns
+        confidenceData = ko.unwrap @confidenceData
+
+        # Find the column and replace it
+        confidenceColumns.forEach((col, i) =>
+          if col.index == data.index
+            confidenceColumns[i] = columns[data.index]
+            confidenceData[i] = data.confidence
+        )
+
+        @confidenceColumns(confidenceColumns)
+        @confidenceData(confidenceData)
       , 100
       adapter.subscribeToChanges()
 

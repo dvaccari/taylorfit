@@ -106,6 +106,27 @@ function initializeModel() {
     });
   });
 
+  m.on('getConfidence', (data) => {
+    postMessage({
+      type: 'model:getConfidence',
+      data: data
+    });
+  });
+  
+  m.on('deleteConfidence', (data) => {
+    postMessage({
+      type: 'model:deleteConfidence',
+      data: data
+    });
+  });
+
+  m.on('updateConfidence', (data) => {
+    postMessage({
+      type: 'model:updateConfidence',
+      data: data
+    });
+  });
+
   m.on('getImportanceRatio', (data) => {
     postMessage({
       type: 'model:getImportanceRatio',
@@ -139,6 +160,7 @@ let subscribeToChanges = (m, updateNow = true) => {
     'setData', 'setExponents', 'setMultiplicands', 'setDependent',
     'setLags', 'addTerm', 'removeTerm', 'clear', 'subset', 'setColumns',
     'getSensitivity', 'deleteSensitivity', 'updateSensitivity',
+    'getConfidence', 'deleteConfidence', 'updateConfidence',
     'getImportanceRatio', 'deleteImportanceRatio', 'updateImportanceRatio'
   ], () => {
     m.getCandidates()
@@ -258,6 +280,18 @@ onmessage = function (e) {
     
     case 'updateSensitivity':
       m.updateSensitivity(data);
+      break;
+
+    case 'getConfidence':
+      m.getConfidence(data);
+      break;
+    
+    case 'deleteConfidence':
+      m.deleteConfidence(data);
+      break;
+    
+    case 'updateConfidence':
+      m.updateConfidence(data);
       break;
     
     case 'getImportanceRatio':

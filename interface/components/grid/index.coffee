@@ -34,6 +34,8 @@ ko.components.register "tf-grid",
 
     @sensitivityColumns  = model.sensitivityColumns
     @sensitivityData   = model.sensitivityData
+    @confidenceColumns  = model.confidenceColumns
+    @confidenceData   = model.confidenceData
     @importanceRatioColumns  = model.importanceRatioColumns
     @importanceRatioData   = model.importanceRatioData
 
@@ -123,6 +125,27 @@ ko.components.register "tf-grid",
     @hasSensitivity = ( index ) ->
       found = false
       model.sensitivityColumns().forEach( (column) ->
+        if column.index == index
+          found = true
+      )
+      return found
+
+    @confidence = ( index ) ->
+      model.show_confidence( index )
+
+    @deleteConfidence = ( index, type ) ->
+      # Delete with either column index or confidence index
+      if type == "column"
+        model.confidenceColumns().forEach( (column, confidenceIndex) ->
+          if column.index == index
+            return model.delete_confidence( confidenceIndex )
+        )
+      else if type == "confidence"
+        model.delete_confidence( index )
+
+    @hasConfidence = ( index ) ->
+      found = false
+      model.confidenceColumns().forEach( (column) ->
         if column.index == index
           found = true
       )
@@ -267,6 +290,7 @@ ko.components.register "tf-grid",
       rows = @rows();
       extra = @extra();
       sensitive = @sensitivityData();
+      confidenc = @confidenceData();
       importance = @importanceRatioData();
       while k < rows.length
         if master.length == 0
@@ -292,6 +316,9 @@ ko.components.register "tf-grid",
               j++;
         k++
       sensitive.forEach( (col) ->
+        master.push(Object.values(col))
+      )
+      confidenc.forEach( (col) ->
         master.push(Object.values(col))
       )
       importance.forEach( (col) ->
@@ -378,6 +405,7 @@ ko.components.register "tf-grid",
       rows = @rows()
       extra = @extra()
       sensitive = @sensitivityData()
+      confidenc = @confidenceData()
       importance = @importanceRatioData()
       while k < rowLength
         if !min.length
@@ -387,6 +415,9 @@ ko.components.register "tf-grid",
               min.push(dataPoint)
             )
           sensitive.forEach( (col) ->
+            min.push(col[0])
+          )
+          confidenc.forEach( (col) ->
             min.push(col[0])
           )
           importance.forEach( (col) ->
@@ -415,6 +446,14 @@ ko.components.register "tf-grid",
               iter++
             i++
           )
+          confidenc.forEach( (col) ->
+            iter = 1
+            while iter < col.length
+              if col[iter] < min[i]
+                min[i] = col[iter]
+              iter++
+            i++
+          )
           importance.forEach( (col) ->
             iter = 1
             while iter < col.length
@@ -433,6 +472,7 @@ ko.components.register "tf-grid",
       rows = @rows()
       extra = @extra()
       sensitive = @sensitivityData()
+      confidenc = @confidenceData()
       importance = @importanceRatioData()
       while k < rowLength
         if !max.length
@@ -442,6 +482,9 @@ ko.components.register "tf-grid",
               max.push(dataPoint)
             )
           sensitive.forEach( (col) ->
+            max.push(col[0])
+          )
+          confidenc.forEach( (col) ->
             max.push(col[0])
           )
           importance.forEach( (col) ->
@@ -463,6 +506,14 @@ ko.components.register "tf-grid",
               i++;
               j++;
           sensitive.forEach( (col) ->
+            iter = 1
+            while iter < col.length
+              if col[iter] > max[i]
+                max[i] = col[iter]
+              iter++
+            i++
+          )
+          confidenc.forEach( (col) ->
             iter = 1
             while iter < col.length
               if col[iter] > max[i]

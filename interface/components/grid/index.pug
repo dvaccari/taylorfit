@@ -49,6 +49,10 @@ table.grid
           span.mark(data-bind="click:function(){sensitivity($index())}")
             | Show Sensitivity
           // /ko
+          // /ko
+          // ko ifnot: hasConfidence($index())
+          span.mark(data-bind="click:function(){confidence($index())}")
+            | Show Confidence Interval
           // ko ifnot: hasImportanceRatio($index())
           span.mark(data-bind="click:function(){importanceRatio($index())}")
             | Show Importance Ratio
@@ -56,6 +60,10 @@ table.grid
           // ko if: hasSensitivity($index())
           span.mark(data-bind="click:function(){deleteSensitivity($index(),'column')}")
             | Hide Sensitivity
+          // /ko
+          // ko if: hasConfidence($index())
+          span.mark(data-bind="click:function(){deleteConfidence($index(),'column')}")
+            | Hide Confidence Interval
           // /ko
           // ko if: hasImportanceRatio($index())
           span.mark(data-bind="click:function(){deleteImportanceRatio($index(),'column')}")
@@ -106,6 +114,8 @@ table.grid
             | QQ Plot
           span.mark(data-bind="click:function(){xyplot('Predicted')}")
             | XY Plot
+          span.mark(data-bind="click:function(){sensitivity('Predicted')}")
+            | Show Confidence Interval
       th.err
         span Residual
         tf-dropdown(params="align:'right'")
@@ -123,6 +133,31 @@ table.grid
       // ko foreach: sensitivityColumns
       th
         span Sens.&nbsp;
+        // ko if:name
+        span(data-bind="text:name")
+        // /ko
+        // ko ifnot:name
+        span.placeholder
+          span X
+          sub(data-bind="text:index")
+        // /ko
+        tf-dropdown(params="shallow:1,align:'right'")
+          span.mark(data-bind="click:function(){histogram_statistic($index(), 'sensitivity')}")
+            | Histogram
+          span.mark(data-bind="click:function(){cumulative_distribution_statistic($index(), 'sensitivity')}")
+            | Cumulative Distribution
+          span.mark(data-bind="click:function(){autocorrelation_statistic($index(), 'sensitivity')}")
+            | Autocorrelation
+          span.mark(data-bind="click:function(){qqplot_statistic($index(), 'sensitivity')}")
+            | QQ Plot
+          span.mark(data-bind="click:function(){xyplot_statistic($index(), 'sensitivity')}")
+            | XY Plot
+          span.mark(data-bind="click:function(){deleteSensitivity($index(),'sensitivity')}")
+            | Hide Sensitivity
+      // /ko
+      // ko foreach: confidenceColumns
+      th
+        span C.I.&nbsp;
         // ko if:name
         span(data-bind="text:name")
         // /ko

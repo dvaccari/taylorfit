@@ -146,5 +146,19 @@ module.exports = [
       else {
         return data.map((x) => Math.pow(x, exp));
       }
+    }),
+
+  Statistic('confidence_part' , ['data', 'exp', 'derivative'],
+    ({data, exp, derivative}) => {
+      if (data == undefined) {
+        return -1;
+      }
+
+      if (derivative) {
+        return data.map((x) => 1 + exp * (Math.pow(x, (exp - 1))));
+      }
+      else {
+        return data.map((x) => 1 + Math.pow(x, exp));
+      }
     })
 ];

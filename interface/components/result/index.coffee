@@ -106,6 +106,10 @@ ko.components.register "tf-result",
       for column in model.sensitivityColumns()
         model.update_sensitivity(column.index)
 
+    @updateConfidence = () ->
+      for column in model.confidenceColumns()
+        model.update_confidence(column.index)
+
     @updateImportanceRatio = () ->
       for column in model.importanceRatioColumns()
         model.update_importanceRatio(column.index)
