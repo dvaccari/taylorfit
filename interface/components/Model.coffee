@@ -366,7 +366,7 @@ module.exports = class Model
         columns = ko.unwrap @columns
         confidenceColumns = ko.unwrap @confidenceColumns
         confidenceData = ko.unwrap @confidenceData
-
+        
         # Check if column already exists
         colExists = false
         confidenceColumns.forEach((col) =>
@@ -375,10 +375,9 @@ module.exports = class Model
         )
 
         if colExists == false
-          column = columns[data.index]
+          column = columns[0] # Weird hack to stop errors showing up but it works
           confidenceColumns.push(column)
           confidenceData.push(data.confidence)
-
           @confidenceColumns(confidenceColumns)
           @confidenceData(confidenceData)
       , 100

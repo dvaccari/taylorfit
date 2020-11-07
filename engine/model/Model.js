@@ -476,10 +476,15 @@ class Model extends CacheMixin(Observable) {
     if (index == undefined) {
       return this;
     }
+
+    console.log("In compute confidence"); // ! Debug
+
     let model = this; // to use within loops below
     let num_rows = model[_data][FIT_LABEL].shape[0];
-    let derivative = new Matrix(num_rows, 1, new Array(num_rows).fill(0))
+    let derivative = new Matrix(num_rows, 1, new Array(num_rows).fill(1))
     
+    console.log("In compute confidence1"); // ! Debug
+
     this.terms.forEach(function (t) {
       let contains_variable = false; // Check if the variable we are deriving on is in this term
       let derivative_part = new Matrix(num_rows, 1, new Array(num_rows).fill(1))
@@ -491,10 +496,13 @@ class Model extends CacheMixin(Observable) {
       let tValues = t.valueOf();
       tValues.forEach(function(tValue) {
           let current_index = tValue[0];
+          console.log(current_index);
           let current_exp = tValue[1];
+          console.log(current_exp);
           
           // Get the current column of data
           let current_col = model[_data][label].col(current_index)['data'];
+          console.log(current_col);
 
           let part;
           if (current_index == index) {
@@ -509,6 +517,7 @@ class Model extends CacheMixin(Observable) {
             part = statistics.compute('confidence_part', { data: current_col, exp: current_exp, derivative:false });
           }
           derivative_part = derivative_part.dotMultiply(new Matrix(num_rows, 1, part));
+          derivative = derivative.add(new Matrix(num_rows, 1, new Array(num_rows).fill(2))) // ! Debug
         });
 
         if (contains_variable) {

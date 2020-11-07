@@ -49,10 +49,6 @@ table.grid
           span.mark(data-bind="click:function(){sensitivity($index())}")
             | Show Sensitivity
           // /ko
-          // /ko
-          // ko ifnot: hasConfidence($index())
-          span.mark(data-bind="click:function(){confidence($index())}")
-            | Show Confidence Interval
           // ko ifnot: hasImportanceRatio($index())
           span.mark(data-bind="click:function(){importanceRatio($index())}")
             | Show Importance Ratio
@@ -60,10 +56,6 @@ table.grid
           // ko if: hasSensitivity($index())
           span.mark(data-bind="click:function(){deleteSensitivity($index(),'column')}")
             | Hide Sensitivity
-          // /ko
-          // ko if: hasConfidence($index())
-          span.mark(data-bind="click:function(){deleteConfidence($index(),'column')}")
-            | Hide Confidence Interval
           // /ko
           // ko if: hasImportanceRatio($index())
           span.mark(data-bind="click:function(){deleteImportanceRatio($index(),'column')}")
@@ -114,6 +106,7 @@ table.grid
             | QQ Plot
           span.mark(data-bind="click:function(){xyplot('Predicted')}")
             | XY Plot
+
           span.mark(data-bind="click:function(){confidence('Predicted')}")
             | Show Confidence Interval
       th.err
