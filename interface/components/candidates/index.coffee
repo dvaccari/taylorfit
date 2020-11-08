@@ -30,6 +30,12 @@ ko.components.register "tf-candidates",
     hiddenColumns = model.hiddenColumns
     transform_columns = model.transform_columns
 
+    @sig_terms = ko.observable(false)
+    @toggleTerms = ->
+      @sig_terms(!@sig_terms())
+      console.log @sig_terms()
+      
+    
     @current_page = ko.observable(null)
 
     @timeseries = model.timeseries

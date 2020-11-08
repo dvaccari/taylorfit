@@ -5,9 +5,9 @@
   header
     span.title(title="This Table shows all terms not in the Current Model, along with their selected statistics.") Candidate Terms
   tf-pager(params="source:source,result:result,current:current_page" title="Choose page from this Table")
-  header(class='tracker') All terms
+  header(class='tracker') All Terms
   header
-    button(type="button", onclick="var temp = document.getElementsByClassName('tracker')[0]; var temp2 = (temp.innerHTML === 'All terms') ? 'Sig Terms' : 'All terms'; console.log(temp2); temp.innerHTML = temp2") Toggle Terms
+    button(type="button", onclick="var temp = document.getElementsByClassName('tracker')[0]; var temp2 = (temp.innerHTML === 'All Terms') ? 'Sig Terms' : 'All Terms'; temp.innerHTML = temp2", data-bind="click: $data.toggleTerms") Toggle Terms
   .candidate-wrapper
     table.candidates(data-bind="if:candidates().length")
       thead
@@ -42,7 +42,7 @@
           // /ko
         //- This is the candidate terms
         // ko foreach: result
-        tr.candidate(data-bind="click:function(){selected(true);$parent.current_page(0);$parent.updateSensitivity();$parent.updateImportanceRatio();},css:{selected:selected}")
+        tr.candidate(data-bind="click:function(){selected(true);$parent.current_page(0);$parent.updateSensitivity();$parent.updateImportanceRatio();},css:{selected:selected}, if : (!$data.sig_terms) || $data.stats.F > model().cross_or_fit().stats.F")
           td.term
             span.coeff
               span(data-bind="num:coeff")
