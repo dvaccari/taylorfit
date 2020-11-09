@@ -161,6 +161,9 @@ class Term extends CacheMixin() {
         , i, col;
 
       for (i = 0; i < this[_parts].length; i += 1) {
+      	//TODO: Pause calculation to allow message to pass
+      	if(self.stopping)
+  		  return prod;
         col = data.col(this[_parts][i][0]);
 
         // Check for negative exponent & potential 0 value

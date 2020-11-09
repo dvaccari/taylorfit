@@ -15,6 +15,8 @@ const {
   DELETE,
 } = require('../labels.json');
 
+self.stopping = false;
+
 const Transformation = require("../../interface/components/transform/label.json")
 
 const getCandidateProgressInterval  = 50;
@@ -206,7 +208,14 @@ onmessage = function (e) {
     case 'clear':
       m[type](data);
       break;
-
+      
+    // Receive message from worker.coffee
+    // TODO: Interrupt code to receive message during work
+	case 'stopCalc':
+	  console.error("Cancelled calculation!");
+	  self.stopping = true;// Variable is accessible to workers (i.e. Term.js)
+	  break;
+	  
     // this one's special
     case 'setData':
       m[type](data.data, data.label);

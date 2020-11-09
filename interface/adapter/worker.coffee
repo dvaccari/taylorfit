@@ -58,7 +58,10 @@ module.exports = new class WorkerAdapter extends ME
       type: target,
       data: message
     })
-
+  # Send data to engine-worker.js
+  stopCalc: ( ) ->
+    console.error("Stopped/cancelled calc");
+    @post "stopCalc"
   setData: ( x, label ) ->
     @post "setData", { data: x, label }
   setExponents: ( x ) ->
