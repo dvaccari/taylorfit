@@ -1,0 +1,403 @@
+/*!   export candidateOnly [provided] [unused] [could be renamed] */
+
+/*!   export default [provided] [unused] [could be renamed] */
+
+/*!   export delete [provided] [unused] [could be renamed] */
+
+/*!   export description [provided] [unused] [could be renamed] */
+
+/*!   export displayName [provided] [unused] [could be renamed] */
+
+/*!   export format [provided] [unused] [could be renamed] */
+
+/*!   export globalOnly [provided] [unused] [could be renamed] */
+
+/*!   export id [provided] [unused] [could be renamed] */
+
+/*!   export k_order_diff [provided] [unused] [could be renamed] */
+
+/*!   export log [provided] [unused] [could be renamed] */
+
+/*!   export rescale [provided] [unused] [could be renamed] */
+
+/*!   export show [provided] [unused] [could be renamed] */
+
+/*!   export sort [provided] [unused] [could be renamed] */
+
+/*!   export standardize [provided] [unused] [could be renamed] */
+
+/*!   exports [maybe provided (runtime-defined)] [no usage info in candidate-worker, engine-worker] */
+
+/*! ../../interface/components/transform/label.json */
+
+/*! ../labels.json */
+
+/*! ../matrix */
+
+/*! ../model */
+
+/*! ../observable */
+
+/*! ../perf */
+
+/*! ../regression */
+
+/*! ../statistics */
+
+/*! ../statistics/distributions-socr */
+
+/*! ../statistics/metadata.json */
+
+/*! ../utils */
+
+/*! ./CacheMixin */
+
+/*! ./CandidateWorker */
+
+/*! ./Matrix */
+
+/*! ./Model */
+
+/*! ./Observable */
+
+/*! ./Statistic */
+
+/*! ./Term */
+
+/*! ./TermPool */
+
+/*! ./combos */
+
+/*! ./definitions */
+
+/*! ./distributions-socr */
+
+/*! ./lstsq */
+
+/*! ./metadata.json */
+
+/*! ./subworkers */
+
+/*! ./svd-golub-reinsch */
+
+/*! ./topsort */
+
+/*! ./utils */
+
+/*! CommonJS bailout: module.exports is used directly at 123:0-14 */
+
+/*! CommonJS bailout: module.exports is used directly at 128:0-14 */
+
+/*! CommonJS bailout: module.exports is used directly at 161:0-14 */
+
+/*! CommonJS bailout: module.exports is used directly at 17:0-14 */
+
+/*! CommonJS bailout: module.exports is used directly at 267:0-14 */
+
+/*! CommonJS bailout: module.exports is used directly at 348:0-14 */
+
+/*! CommonJS bailout: module.exports is used directly at 41:0-14 */
+
+/*! CommonJS bailout: module.exports is used directly at 42:0-14 */
+
+/*! CommonJS bailout: module.exports is used directly at 45:0-14 */
+
+/*! CommonJS bailout: module.exports is used directly at 785:0-14 */
+
+/*! CommonJS bailout: module.exports is used directly at 84:0-14 */
+
+/*! CommonJS bailout: module.exports is used directly at 942:0-14 */
+
+/*! CommonJS bailout: module.exports is used directly at 9:0-14 */
+
+/*! CommonJS bailout: module.exports.range(...) prevents optimization as module.exports is passed as call context at 66:11-31 */
+
+/*! ModuleConcatenation bailout: Module is not an ECMAScript module */
+
+/*! default exports */
+
+/*! dynamic exports */
+
+/*! export 0 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export 1 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export 10 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export 11 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export 12 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export 13 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export 14 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export 15 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export 16 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export 17 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export 18 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export 19 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export 2 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export 20 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export 21 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export 22 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export 23 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export 24 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export 25 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export 26 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export 27 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export 28 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export 29 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export 3 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export 30 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export 31 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export 32 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export 33 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export 34 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export 35 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export 36 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export 37 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export 38 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export 39 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export 4 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export 40 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export 41 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export 5 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export 6 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export 7 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export 8 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export 9 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export CROSS_LABEL [provided] [maybe used in engine-worker (runtime-defined); used in interface] [usage prevents renaming] */
+
+/*! export DELETE [provided] [maybe used in engine-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export FIT_LABEL [provided] [maybe used in engine-worker (runtime-defined); used in interface] [usage prevents renaming] */
+
+/*! export K_ORDER_DIFFERENCE [provided] [maybe used in engine-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export K_ORDER_DIFFERENCE [provided] [maybe used in engine-worker, interface (runtime-defined)] [usage prevents renaming] */
+
+/*! export LOG [provided] [maybe used in engine-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export LOG [provided] [maybe used in engine-worker, interface (runtime-defined)] [usage prevents renaming] */
+
+/*! export RESCALE [provided] [maybe used in engine-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export RESCALE [provided] [maybe used in engine-worker, interface (runtime-defined)] [usage prevents renaming] */
+
+/*! export STANDARDIZE [provided] [maybe used in engine-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export STANDARDIZE [provided] [maybe used in engine-worker, interface (runtime-defined)] [usage prevents renaming] */
+
+/*! export Transform [provided] [maybe used in engine-worker, interface (runtime-defined)] [usage prevents renaming] */
+
+/*! export VALIDATION_LABEL [provided] [maybe used in engine-worker (runtime-defined); used in interface] [usage prevents renaming] */
+
+/*! export argmax [provided] [maybe used in engine-worker, candidate-worker, interface (runtime-defined)] [usage prevents renaming] */
+
+/*! export clone [provided] [maybe used in engine-worker, candidate-worker, interface (runtime-defined)] [usage prevents renaming] */
+
+/*! export combinations [provided] [maybe used in engine-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export combinationsFromBins [provided] [maybe used in engine-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export convertRange [provided] [maybe used in engine-worker, candidate-worker, interface (runtime-defined)] [usage prevents renaming] */
+
+/*! export formatNum [provided] [maybe used in engine-worker, candidate-worker, interface (runtime-defined)] [usage prevents renaming] */
+
+/*! export generateTerms [provided] [maybe used in engine-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export join [provided] [maybe used in engine-worker, candidate-worker, interface (runtime-defined)] [usage prevents renaming] */
+
+/*! export lstsq [provided] [used in candidate-worker, engine-worker] [renamed to N] */
+
+/*! export lstsqNE [provided] [maybe used in candidate-worker, engine-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export lstsqSVD [provided] [maybe used in candidate-worker, engine-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export padAll [provided] [maybe used in engine-worker, candidate-worker, interface (runtime-defined)] [usage prevents renaming] */
+
+/*! export pf [provided] [maybe used in candidate-worker, engine-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export pt [provided] [maybe used in candidate-worker, engine-worker (runtime-defined)] [usage prevents renaming] */
+
+/*! export range [provided] [maybe used in engine-worker, candidate-worker, interface (runtime-defined)] [usage prevents renaming] */
+
+/*! export sign [provided] [maybe used in engine-worker, candidate-worker, interface (runtime-defined)] [usage prevents renaming] */
+
+/*! export split [provided] [maybe used in engine-worker, candidate-worker, interface (runtime-defined)] [usage prevents renaming] */
+
+/*! export splitToSize [provided] [maybe used in engine-worker, candidate-worker, interface (runtime-defined)] [usage prevents renaming] */
+
+/*! export sum [provided] [maybe used in engine-worker, candidate-worker, interface (runtime-defined)] [usage prevents renaming] */
+
+/*! export svd [provided] [unused] [provision prevents renaming] -> ./engine/regression/svd-golub-reinsch.js */
+
+/*! export zeros [provided] [maybe used in engine-worker, candidate-worker, interface (runtime-defined)] [usage prevents renaming] */
+
+/*! exports [maybe provided (runtime-defined)] [maybe used in candidate-worker, engine-worker (runtime-defined)] -> ./engine/matrix/Matrix.js */
+
+/*! exports [maybe provided (runtime-defined)] [maybe used in engine-worker (runtime-defined)] -> ./engine/model/Model.js */
+
+/*! exports [maybe provided (runtime-defined)] [maybe used in engine-worker (runtime-defined)] -> ./engine/observable/Observable.js */
+
+/*! other exports [not provided] [maybe used in candidate-worker, engine-worker (runtime-defined)] */
+
+/*! other exports [not provided] [maybe used in engine-worker (runtime-defined)] */
+
+/*! other exports [not provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] */
+
+/*! other exports [not provided] [maybe used in engine-worker, candidate-worker, interface (runtime-defined)] */
+
+/*! other exports [not provided] [maybe used in engine-worker, interface (runtime-defined)] */
+
+/*! runtime requirements:  */
+
+/*! runtime requirements: __webpack_require__ */
+
+/*! runtime requirements: __webpack_require__, module */
+
+/*! runtime requirements: module */
+
+/*! runtime requirements: module, __webpack_require__ */
+
+/*! unknown exports (runtime-defined) */
+
+/*!************************!*\
+  !*** ./engine/perf.js ***!
+  \************************/
+
+/*!*************************!*\
+  !*** ./engine/utils.js ***!
+  \*************************/
+
+/*!****************************!*\
+  !*** ./engine/labels.json ***!
+  \****************************/
+
+/*!******************************!*\
+  !*** ./engine/model/Term.js ***!
+  \******************************/
+
+/*!*******************************!*\
+  !*** ./engine/model/Model.js ***!
+  \*******************************/
+
+/*!*******************************!*\
+  !*** ./engine/model/index.js ***!
+  \*******************************/
+
+/*!********************************!*\
+  !*** ./engine/matrix/index.js ***!
+  \********************************/
+
+/*!********************************!*\
+  !*** ./engine/model/combos.js ***!
+  \********************************/
+
+/*!*********************************!*\
+  !*** ./engine/matrix/Matrix.js ***!
+  \*********************************/
+
+/*!**********************************!*\
+  !*** ./engine/model/TermPool.js ***!
+  \**********************************/
+
+/*!************************************!*\
+  !*** ./engine/model/CacheMixin.js ***!
+  \************************************/
+
+/*!************************************!*\
+  !*** ./engine/observable/index.js ***!
+  \************************************/
+
+/*!************************************!*\
+  !*** ./engine/regression/index.js ***!
+  \************************************/
+
+/*!************************************!*\
+  !*** ./engine/regression/lstsq.js ***!
+  \************************************/
+
+/*!************************************!*\
+  !*** ./engine/statistics/index.js ***!
+  \************************************/
+
+/*!*************************************!*\
+  !*** ./engine/worker/subworkers.js ***!
+  \*************************************/
+
+/*!**************************************!*\
+  !*** ./engine/statistics/topsort.js ***!
+  \**************************************/
+
+/*!****************************************!*\
+  !*** ./engine/statistics/Statistic.js ***!
+  \****************************************/
+
+/*!****************************************!*\
+  !*** ./engine/worker/engine-worker.js ***!
+  \****************************************/
+
+/*!*****************************************!*\
+  !*** ./engine/model/CandidateWorker.js ***!
+  \*****************************************/
+
+/*!*****************************************!*\
+  !*** ./engine/observable/Observable.js ***!
+  \*****************************************/
+
+/*!*****************************************!*\
+  !*** ./engine/statistics/metadata.json ***!
+  \*****************************************/
+
+/*!******************************************!*\
+  !*** ./engine/statistics/definitions.js ***!
+  \******************************************/
+
+/*!************************************************!*\
+  !*** ./engine/regression/svd-golub-reinsch.js ***!
+  \************************************************/
+
+/*!*************************************************!*\
+  !*** ./engine/statistics/distributions-socr.js ***!
+  \*************************************************/
+
+/*!***************************************************!*\
+  !*** ./interface/components/transform/label.json ***!
+  \***************************************************/
