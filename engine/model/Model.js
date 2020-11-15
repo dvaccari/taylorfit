@@ -483,9 +483,13 @@ class Model extends CacheMixin(Observable) {
 
     let model = this; // to use within loops below
     let num_rows = model[_data][FIT_LABEL].shape[0];
-    let derivative = new Matrix(num_rows, 1, new Array(num_rows).fill(1))
+    let derivative = new Matrix(num_rows, 1, new Array(num_rows).fill(0))
     
     console.log("In compute confidence1"); // ! Debug
+
+    this.terms.forEach(function (t) {
+      derivative = derivative.add(new Matrix(num_rows, 1, new Array(num_rows).fill(1)));
+    });
 
     /*this.terms.forEach(function (t) {
       let contains_variable = false; // Check if the variable we are deriving on is in this term
