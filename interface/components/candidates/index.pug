@@ -42,7 +42,7 @@
           // /ko
         //- This is the candidate terms
         // ko foreach: result
-        tr.candidate(data-bind="click:function(){selected(true);$parent.current_page(0);$parent.updateSensitivity();$parent.updateImportanceRatio();},css:{selected:selected}, if : (!$data.sig_terms) || $data.stats.F > model().cross_or_fit().stats.F")
+        tr.candidate(data-bind="click:function(){selected(true);$parent.current_page(0);$parent.updateSensitivity();console.log(\"candidates pug update\");$parent.updateConfidence();$parent.updateImportanceRatio();},css:{selected:selected}, if : (!$data.sig_terms) || $data.stats.F > model().cross_or_fit().stats.F")
           td.term
             span.coeff
               span(data-bind="num:coeff")

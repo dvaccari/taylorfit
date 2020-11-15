@@ -106,9 +106,14 @@ table.grid
             | QQ Plot
           span.mark(data-bind="click:function(){xyplot('Predicted')}")
             | XY Plot
-
-          span.mark(data-bind="click:function(){confidence('Predicted')}")
+          // ko ifnot: hasConfidence(0)
+          span.mark(data-bind="click:function(){confidence(0)}")
             | Show Confidence Interval
+          // /ko
+          // ko if: hasConfidence(0)
+          span.mark(data-bind="click:function(){deleteConfidence(0,'column')}")
+            | Hide Confidence Interval
+          // /ko
       th.err
         span Residual
         tf-dropdown(params="align:'right'")

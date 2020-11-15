@@ -24,6 +24,9 @@ ko.components.register "tf-cumulative-distribution",
         if index.indexOf("Sensitivity") != -1
           index = index.split("_")[1]
           return "Sensitivity " + model.sensitivityColumns()[index].name
+        if index.indexOf("Confidence") != -1
+          index = index.split("_")[1]
+          return "Confidence " + model.confidenceColumns()[index].name
         if index.indexOf("ImportanceRatio") != -1
           index = index.split("_")[1]
           return "Importance Ratio " + model.importanceRatioColumns()[index].name
@@ -45,6 +48,10 @@ ko.components.register "tf-cumulative-distribution",
           # format is: Sensitivity_index
           index = index.split("_")[1]
           return Object.values(model.sensitivityData()[index])
+        if typeof index == "string" && index.indexOf("Confidence") != -1
+          # format is: Confidence_index
+          index = index.split("_")[1]
+          return Object.values(model.confidenceData()[index])
         if typeof index == "string" && index.indexOf("ImportanceRatio") != -1
           # format is: ImportanceRatio_index
           index = index.split("_")[1]

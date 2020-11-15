@@ -369,6 +369,7 @@ class Model extends CacheMixin(Observable) {
 
     this.uncache('highestLag');
     this.fire('addTerm', term);
+    this.updateConfidence(0);  // ! This is an awful patch - please fix the underlying issue 
     return this;
   }
 
@@ -378,6 +379,7 @@ class Model extends CacheMixin(Observable) {
     this.uncache('y');
     this.uncache('highestLag');
     this.fire('removeTerm', term);
+    this.updateConfidence(0);  // ! This is an awful patch - please fix the underlying issue
     return this;
   }
 
@@ -473,11 +475,11 @@ class Model extends CacheMixin(Observable) {
   }
 
   computeConfidence(index, label=FIT_LABEL) {
+    console.log("In compute confidence"); // ! Debug
+
     if (index == undefined) {
       return this;
     }
-
-    console.log("In compute confidence"); // ! Debug
 
     let model = this; // to use within loops below
     let num_rows = model[_data][FIT_LABEL].shape[0];
@@ -485,7 +487,7 @@ class Model extends CacheMixin(Observable) {
     
     console.log("In compute confidence1"); // ! Debug
 
-    this.terms.forEach(function (t) {
+    /*this.terms.forEach(function (t) {
       let contains_variable = false; // Check if the variable we are deriving on is in this term
       let derivative_part = new Matrix(num_rows, 1, new Array(num_rows).fill(1))
 
@@ -525,7 +527,7 @@ class Model extends CacheMixin(Observable) {
           derivative = derivative.add(derivative_part.dotMultiply(term_coef));
         }
     
-    });
+    });*/
 
     return {index: index, confidence: derivative.data}
   }

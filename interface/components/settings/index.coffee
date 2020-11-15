@@ -22,11 +22,6 @@ ko.components.register "tf-settings",
       throw new TypeError "components/options:
       expects [model] to be observable"
 
-    # params.model.subscribe( (r) => 
-    #   console.log("\n\n\n\n\n\n\n\n\nTHIS IS A MODEL SUBSCRIPTION\n\n\n\n\n");
-    #   console.log(r);
-    # )
-
     model = params.model() # now static
 
     @modelResult = model.result_fit
@@ -180,6 +175,10 @@ ko.components.register "tf-settings",
       # Update sensitivity columns
       for column in model.sensitivityColumns()
         model.update_sensitivity(column.index)
+
+      # Update confidence columns
+      for column in model.confidenceColumns()
+        model.update_confidence(column.index)
 
       # Update importance ratio columns
       for column in model.importanceRatioColumns()
