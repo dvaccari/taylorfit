@@ -260,7 +260,7 @@ class Model extends CacheMixin(Observable) {
 
     let residuals = stats.y.sub(stats.yHat);
     residuals = residuals.data;
-    
+
     return {
       highestLag: this.highestLag(),
       terms,
@@ -369,7 +369,7 @@ class Model extends CacheMixin(Observable) {
 
     this.uncache('highestLag');
     this.fire('addTerm', term);
-    this.updateConfidence(0);  // ! This is an awful patch - please fix the underlying issue 
+    this.updateConfidence(0);  // ! This is an awful patch - please fix the underlying issue
     return this;
   }
 
@@ -415,20 +415,20 @@ class Model extends CacheMixin(Observable) {
     let model = this; // to use within loops below
     let num_rows = model[_data][FIT_LABEL].shape[0];
     let derivative = new Matrix(num_rows, 1, new Array(num_rows).fill(0))
-    
+
     this.terms.forEach(function (t) {
       let contains_variable = false; // Check if the variable we are deriving on is in this term
       let derivative_part = new Matrix(num_rows, 1, new Array(num_rows).fill(1))
 
       // One coefficient per term
       let term_coef = 2 * t.getStats()['coeff']
-      
+
       // t.valueOf() is an Array which contains information for each variable of the term
       let tValues = t.valueOf();
       tValues.forEach(function(tValue) {
           let current_index = tValue[0];
           let current_exp = tValue[1];
-          
+
           // Get the current column of data
           let current_col = model[_data][label].col(current_index)['data'];
 
@@ -451,7 +451,7 @@ class Model extends CacheMixin(Observable) {
           // Add to overall derivative
           derivative = derivative.add(derivative_part.dotMultiply(term_coef));
         }
-    
+
     });
 
     return {index: index, sensitivity: derivative.data}
@@ -475,7 +475,7 @@ class Model extends CacheMixin(Observable) {
   }
 
   computeConfidence(index, label=FIT_LABEL) {
-    console.log("In compute confidence"); // ! Debug
+    console.log("In compute confidence: ", index); // ! Debug
 
     if (index == undefined) {
       return this;
@@ -483,57 +483,30 @@ class Model extends CacheMixin(Observable) {
 
     let model = this; // to use within loops below
     let num_rows = model[_data][FIT_LABEL].shape[0];
-    let derivative = new Matrix(num_rows, 1, new Array(num_rows).fill(0))
-    
-    console.log("In compute confidence1"); // ! Debug
+    let Z = new Matrix(num_rows, this.terms.length, null);
+    let confidence = new Matrix(num_rows, 1, new Array(num_rows).fill(0));
 
+    // Build up the Z matrix (forms the core matrix)
+    let i = 0;
     this.terms.forEach(function (t) {
-      derivative = derivative.add(new Matrix(num_rows, 1, new Array(num_rows).fill(1)));
+      let j = 0;
+      let d = t.col();
+      while (j < d.shape[0]) {
+        Z.set(j, i, d.get(j, 0));
+        j += 1;
+      }
+      i += 1;
     });
 
-    /*this.terms.forEach(function (t) {
-      let contains_variable = false; // Check if the variable we are deriving on is in this term
-      let derivative_part = new Matrix(num_rows, 1, new Array(num_rows).fill(1))
+    // The core matrix
+    let core = ((Z.T).dot(Z)).inv();
 
-      // One coefficient per term
-      let term_coef = 2 * t.getStats()['coeff']
-      
-      // t.valueOf() is an Array which contains information for each variable of the term
-      let tValues = t.valueOf();
-      tValues.forEach(function(tValue) {
-          let current_index = tValue[0];
-          console.log(current_index);
-          let current_exp = tValue[1];
-          console.log(current_exp);
-          
-          // Get the current column of data
-          let current_col = model[_data][label].col(current_index)['data'];
-          console.log(current_col);
+    this.terms.forEach(function (t) {
+      confidence = confidence.add(new Matrix(num_rows, 1, new Array(num_rows).fill(1))); // ! Debug to test CI calculations
+    });
 
-          let part;
-          if (current_index == index) {
-            // Current variable exists in term, should be used in derivative
-            contains_variable = true;
 
-            // current_exp * [COLUMN DATA]^(current_exp - 1)
-            part = statistics.compute('confidence_part', { data:current_col, exp:current_exp, derivative:true });
-          }
-          else {
-            // [COLUMN DATA]^(current_exp)
-            part = statistics.compute('confidence_part', { data: current_col, exp: current_exp, derivative:false });
-          }
-          derivative_part = derivative_part.dotMultiply(new Matrix(num_rows, 1, part));
-          derivative = derivative.add(new Matrix(num_rows, 1, new Array(num_rows).fill(2))) // ! Debug
-        });
-
-        if (contains_variable) {
-          // Add to overall derivative
-          derivative = derivative.add(derivative_part.dotMultiply(term_coef));
-        }
-    
-    });*/
-
-    return {index: index, confidence: derivative.data}
+    return {index: index, confidence: confidence.data}
   }
 
   getConfidence(index, label=FIT_LABEL) {
@@ -548,6 +521,7 @@ class Model extends CacheMixin(Observable) {
   }
 
   updateConfidence(index, label=FIT_LABEL) {
+    //console.log("MODEL JS UPDATE: ", index);
     let res = this.computeConfidence(index, label);
     this.fire('updateConfidence', res)
     return this;
@@ -557,7 +531,7 @@ class Model extends CacheMixin(Observable) {
     if (index == undefined) {
       return this;
     }
-    let model = this; 
+    let model = this;
     let num_rows = model[_data][FIT_LABEL].shape[0];
     let current_col = model[_data][label].col(index);
     let dependent_col = model[_data][label].col(model[_dependent]);
