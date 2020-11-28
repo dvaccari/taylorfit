@@ -20,9 +20,7 @@ global.allstats = ko.observableArray [ ]
 global.send_incoming_stats = () ->
   adapter.on "statisticsMetadata", ( data ) ->
     for stat in data
-      console.log(stat.sort);
       if stat.show != false
-        console.log("Sorting allstats push")
         allstats.push
           id: stat.id
           name: stat.displayName or stat.id
@@ -34,7 +32,6 @@ global.send_incoming_stats = () ->
           sorting: ko.observable false
           format: stat.format or "float"
           description: stat.description
-        console.log("Sorting allstats")
   adapter.requestStatisticsMetadata()
 
 if performance.navigation.type == performance.navigation.TYPE_RELOAD

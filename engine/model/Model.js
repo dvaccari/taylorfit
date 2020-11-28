@@ -36,6 +36,112 @@ const INTERCEPT       = [[0, 0, 0]];
 
 const N_CANDIDATE_WORKERS     = 8;
 
+// The following is taken from the Google code archive https://code.google.com/archive/p/statistics-distributions-js/
+
+function tdistr ($n, $p) {
+	if ($n <= 0 || Math.abs($n) - Math.abs(integer($n)) != 0) {
+		throw("Invalid n: $n\n");
+	}
+	if ($p <= 0 || $p >= 1) {
+		throw("Invalid p: $p\n");
+	}
+	return _subt($n-0, $p-0);
+}
+
+function _subt ($n, $p) {
+
+	if ($p >= 1 || $p <= 0) {
+		throw("Invalid p: $p\n");
+	}
+
+	if ($p == 0.5) {
+		return 0;
+	} else if ($p < 0.5) {
+		return - _subt($n, 1 - $p);
+	}
+
+	var $u = _subu($p);
+	var $u2 = Math.pow($u, 2);
+
+	var $a = ($u2 + 1) / 4;
+	var $b = ((5 * $u2 + 16) * $u2 + 3) / 96;
+	var $c = (((3 * $u2 + 19) * $u2 + 17) * $u2 - 15) / 384;
+	var $d = ((((79 * $u2 + 776) * $u2 + 1482) * $u2 - 1920) * $u2 - 945) 
+				/ 92160;
+	var $e = (((((27 * $u2 + 339) * $u2 + 930) * $u2 - 1782) * $u2 - 765) * $u2
+			+ 17955) / 368640;
+
+	var $x = $u * (1 + ($a + ($b + ($c + ($d + $e / $n) / $n) / $n) / $n) / $n);
+
+	if ($n <= Math.pow(log10($p), 2) + 3) {
+		var $round;
+		do { 
+			var $p1 = _subtprob($n, $x);
+			var $n1 = $n + 1;
+			var $delta = ($p1 - $p) / Math.exp(($n1 * Math.log($n1 / ($n + $x * $x)) 
+					+ Math.log($n/$n1/2/Math.PI) - 1 
+					+ (1/$n1 - 1/$n) / 6) / 2);
+			$x += $delta;
+			$round = $delta, Math.abs(integer(log10(Math.abs($x))-4));
+		} while (($x) && ($round != 0));
+	}
+	return $x;
+}
+
+function _subtprob ($n, $x) {
+
+	var $a;
+        var $b;
+	var $w = Math.atan2($x / Math.sqrt($n), 1);
+	var $z = Math.pow(Math.cos($w), 2);
+	var $y = 1;
+
+	for (var $i = $n-2; $i >= 2; $i -= 2) {
+		$y = 1 + ($i-1) / $i * $z * $y;
+	} 
+
+	if ($n % 2 == 0) {
+		$a = Math.sin($w)/2;
+		$b = .5;
+	} else {
+		$a = ($n == 1) ? 0 : Math.sin($w)*Math.cos($w)/Math.PI;
+		$b= .5 + $w/Math.PI;
+	}
+	return max(0, 1 - $b - $a * $y);
+}
+
+function _subu ($p) {
+	var $y = -Math.log(4 * $p * (1 - $p));
+	var $x = Math.sqrt(
+		$y * (1.570796288
+		  + $y * (.03706987906
+		  	+ $y * (-.8364353589E-3
+			  + $y *(-.2250947176E-3
+			  	+ $y * (.6841218299E-5
+				  + $y * (0.5824238515E-5
+					+ $y * (-.104527497E-5
+					  + $y * (.8360937017E-7
+						+ $y * (-.3231081277E-8
+						  + $y * (.3657763036E-10
+							+ $y *.6936233982E-12)))))))))));
+	if ($p>.5)
+                $x = -$x;
+	return $x;
+}
+
+function integer ($i) {
+  if ($i > 0)
+          return Math.floor($i);
+  else
+          return Math.ceil($i);
+}
+
+function log10 ($n) {
+	return Math.log($n) / Math.log(10);
+}
+
+// End of Google code archive functions
+
 class Model extends CacheMixin(Observable) {
 
   constructor() {
@@ -475,7 +581,10 @@ class Model extends CacheMixin(Observable) {
   }
 
   computeConfidence(index, label=FIT_LABEL) {
-    console.log("In compute confidence: ", index); // ! Debug
+    // Confidence-related TODOs:
+    // TODO: Get model alpha
+    // TODO: Make this work for non-fit tables
+    // TODO: Make CI not hardcoded to treat the 1st column as the dependent
 
     if (index == undefined) {
       return this;
@@ -501,10 +610,37 @@ class Model extends CacheMixin(Observable) {
     // The core matrix
     let core = ((Z.T).dot(Z)).inv();
 
-    this.terms.forEach(function (t) {
-      confidence = confidence.add(new Matrix(num_rows, 1, new Array(num_rows).fill(1))); // ! Debug to test CI calculations
-    });
+    // Compute our z matrix (transposed; same thing as Z but using data from the table with the given label)
+    let z_T = null;
+    if (label === "FIT_LABEL") {
+      z_T = Z;
+    }
+    else { // TODO: Calculate z_T this work for other datasets
+      z_T = Z;
+    }
 
+    // This seems to be the easiest way to recompute MSE and tCrit
+    var y = this.y(label)
+    , ZT            = Z.T
+    , pseudoInverse = ZT.dot(Z).inv()
+    , BHat          = pseudoInverse.dot(ZT).dot(y)
+    , yHat          = Z.dot(BHat)
+    , nd            = Z.shape[0]
+    , np            = Z.shape[1]
+    , sse           = y.sub(yHat).dotPow(2).sum()
+    , mse           = sse / (nd - np)
+    , df            = nd - np
+    , alpha         = 0.05  // TODO Don't use a hardcoded alpha value
+    , tCrit         = tdistr(df, alpha/2);
+
+    // Calculate Q for each entry (z_T_i * core * z_T_i.T)
+    for (i = 0; i < num_rows; i++) {
+      z_T_i = z_T.row(i, null);
+      Q = z_T_i.dot(core).dot(z_T_i.T).get(0, 0);
+      se_fit = Math.sqrt(mse * Q);
+
+      confidence.set(i, 0, tCrit * se_fit);
+    }
 
     return {index: index, confidence: confidence.data}
   }
