@@ -580,3 +580,4 @@ ko.components.register "tf-grid",
     @show_partition = ( ) =>
       console.log "This message"
     return this
+    
