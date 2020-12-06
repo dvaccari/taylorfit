@@ -363,7 +363,7 @@ table.grid
       //- Display Confidence Statistic
       // ko foreach:$parent.confidenceData
       td
-        span(data-bind="float:$data[$parent.index]")
+        span(data-bind="float:$data[$parent.index + $component.getRowOffset()]")
       // /ko
       //- Display Importance Ratio Statistic
       // ko foreach:$parent.importanceRatioData

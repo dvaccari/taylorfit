@@ -289,19 +289,30 @@ ko.components.register "tf-grid",
       index < col.k
 
     @mean = ( ) ->
-      #console.log @getColData()
       totals = []
       k = 0
       while k < @getColData().length
         totals.push(math.mean(@getColData()[k]))
         k++
-      #console.log totals
       return totals;
     @flipMean = ( ) ->
       @toggleMean = !@toggleMean
 
     @hasMean = ( ) ->
       return @toggleMean;
+
+    @getRowOffset = ( ) ->
+      # Calculate the offset of the rows for the table
+      # E.g., the sum of the number of rows of all preceding tables
+      offset = 0
+      if @table == "cross"
+        offset += model["data_fit"]().length
+      else if @table == "validation"
+        offset += model["data_fit"]().length
+        if model["data_cross"]() != undefined
+          offset += model["data_cross"]().length
+
+      return offset;
 
     @getColData = ( ) ->
       master = [];
@@ -337,12 +348,23 @@ ko.components.register "tf-grid",
       sensitive.forEach( (col) ->
         master.push(Object.values(col))
       )
+
+      offset = 0
+      if @table == "cross"
+        offset += model["data_fit"]().length
+      else if @table == "validation"
+        offset += model["data_fit"]().length
+        if model["data_cross"]() != undefined
+          offset += model["data_cross"]().length
+
       confidenc.forEach( (col) ->
-        master.push(Object.values(col))
+        master.push(Object.values(col.slice(offset)))
       )
+
       importance.forEach( (col) ->
         master.push(Object.values(col))
       )
+
       return master;
     @colData = @getColData();
 
@@ -580,4 +602,4 @@ ko.components.register "tf-grid",
     @show_partition = ( ) =>
       console.log "This message"
     return this
-    
+
