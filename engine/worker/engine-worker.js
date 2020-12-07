@@ -16,6 +16,7 @@ const {
 } = require('../labels.json');
 
 self.stopping = false;
+self.psig = 0.05;
 
 const Transformation = require("../../interface/components/transform/label.json")
 
@@ -211,11 +212,15 @@ onmessage = function (e) {
       
     // Receive message from worker.coffee
     // TODO: Interrupt code to receive message during work
-	case 'stopCalc':
-	  console.error("Cancelled calculation!");
-	  self.stopping = true;// Variable is accessible to workers (i.e. Term.js)
-	  break;
-	  
+    case 'stopCalc':
+      console.error("Cancelled calculation!");
+      self.stopping = true;// Variable is accessible to workers (i.e. Term.js)
+      break;
+    case 'sendPsig':
+      console.debug("Psig acquired:" + data);
+      self.psig = data;
+      // data is psig
+      break;
     // this one's special
     case 'setData':
       m[type](data.data, data.label);

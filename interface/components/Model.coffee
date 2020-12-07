@@ -155,6 +155,13 @@ module.exports = class Model
 
     console.debug "model/input", o
 
+    # Sets on startup
+    setTimeout =>
+      psig = ko.unwrap @psig
+      adapter.sendPsig(psig)
+      console.debug "PSIG sending"
+    , 0
+
     adapter.unsubscribeToChanges()
 
     for k, v of utils.clone(CTRL)
@@ -209,7 +216,7 @@ module.exports = class Model
           adapter["#{fn}Term"] t.term
           # For some reason doesn't listen to change, so need add subscription for model change
           adapter.subscribeToChanges()
-        return result
+        return result 
 
     adapter.on "candidates", ( candidates ) =>
       setTimeout =>

@@ -324,7 +324,8 @@ class Model extends CacheMixin(Observable) {
     // Pass a chunk of candidates to each worker to be computed
     let workerPromises = candsPerWorker.map(
       (cands, i) => this[_cand_workers][i].compute(cands, onProgress));
-
+    
+    console.debug("Current Psig: " + self.psig);
     return Promise
       .all(workerPromises)
       .then((candidates) => {

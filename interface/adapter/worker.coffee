@@ -62,6 +62,9 @@ module.exports = new class WorkerAdapter extends ME
   stopCalc: ( ) ->
     console.error("Stopped/cancelled calc");
     @post "stopCalc"
+  sendPsig: ( x ) ->
+    console.debug("Sending PSIG" + x)
+    @post "sendPsig", x
   setData: ( x, label ) ->
     @post "setData", { data: x, label }
   setExponents: ( x ) ->

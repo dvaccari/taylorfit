@@ -63,6 +63,13 @@ ko.components.register "tf-settings",
     @candidates = model.candidates
     @psig = model.psig
 
+    @psig.subscribe ( next ) =>
+      setTimeout =>
+        psig = ko.unwrap @psig
+        adapter.sendPsig(psig)
+        console.debug "PSIG sending"
+      , 0
+
     @multiplicands_max = ko.observable 0
     @num_terms = ko.observable 0
     ko.computed ( ) =>
