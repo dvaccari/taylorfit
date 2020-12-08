@@ -66,7 +66,7 @@ function _subt ($n, $p) {
 	var $a = ($u2 + 1) / 4;
 	var $b = ((5 * $u2 + 16) * $u2 + 3) / 96;
 	var $c = (((3 * $u2 + 19) * $u2 + 17) * $u2 - 15) / 384;
-	var $d = ((((79 * $u2 + 776) * $u2 + 1482) * $u2 - 1920) * $u2 - 945) 
+	var $d = ((((79 * $u2 + 776) * $u2 + 1482) * $u2 - 1920) * $u2 - 945)
 				/ 92160;
 	var $e = (((((27 * $u2 + 339) * $u2 + 930) * $u2 - 1782) * $u2 - 765) * $u2
 			+ 17955) / 368640;
@@ -75,11 +75,11 @@ function _subt ($n, $p) {
 
 	if ($n <= Math.pow(log10($p), 2) + 3) {
 		var $round;
-		do { 
+		do {
 			var $p1 = _subtprob($n, $x);
 			var $n1 = $n + 1;
-			var $delta = ($p1 - $p) / Math.exp(($n1 * Math.log($n1 / ($n + $x * $x)) 
-					+ Math.log($n/$n1/2/Math.PI) - 1 
+			var $delta = ($p1 - $p) / Math.exp(($n1 * Math.log($n1 / ($n + $x * $x))
+					+ Math.log($n/$n1/2/Math.PI) - 1
 					+ (1/$n1 - 1/$n) / 6) / 2);
 			$x += $delta;
 			$round = $delta, Math.abs(integer(log10(Math.abs($x))-4));
@@ -98,7 +98,7 @@ function _subtprob ($n, $x) {
 
 	for (var $i = $n-2; $i >= 2; $i -= 2) {
 		$y = 1 + ($i-1) / $i * $z * $y;
-	} 
+	}
 
 	if ($n % 2 == 0) {
 		$a = Math.sin($w)/2;
@@ -324,8 +324,7 @@ class Model extends CacheMixin(Observable) {
     // Pass a chunk of candidates to each worker to be computed
     let workerPromises = candsPerWorker.map(
       (cands, i) => this[_cand_workers][i].compute(cands, onProgress));
-    
-    console.debug("Current Psig: " + self.psig);
+
     return Promise
       .all(workerPromises)
       .then((candidates) => {
@@ -582,7 +581,6 @@ class Model extends CacheMixin(Observable) {
   }
 
   computeConfidence(index, label=FIT_LABEL) {
-    // Confidence-related TODOs:
     // TODO: Get model alpha
     // TODO: Make this work for non-fit tables
     // TODO: Make CI not hardcoded to treat the 1st column as the dependent
@@ -594,31 +592,21 @@ class Model extends CacheMixin(Observable) {
     let model = this; // to use within loops below
     let num_rows = model[_data][FIT_LABEL].shape[0];
     let Z = new Matrix(num_rows, this.terms.length, null);
-    let confidence = new Matrix(num_rows, 1, new Array(num_rows).fill(0));
+    let confidence = new Matrix(num_rows*5, 1, new Array(num_rows*5).fill(0));
 
     // Build up the Z matrix (forms the core matrix)
     let i = 0;
     this.terms.forEach(function (t) {
-      let j = 0;
-      let d = t.col();
-      while (j < d.shape[0]) {
+      let d = t.col();  // Get term data
+
+      for (j = 0; j < d.shape[0]; j++) {
         Z.set(j, i, d.get(j, 0));
-        j += 1;
       }
       i += 1;
     });
 
     // The core matrix
     let core = ((Z.T).dot(Z)).inv();
-
-    // Compute our z matrix (transposed; same thing as Z but using data from the table with the given label)
-    let z_T = null;
-    if (label === "FIT_LABEL") {
-      z_T = Z;
-    }
-    else { // TODO: Calculate z_T this work for other datasets
-      z_T = Z;
-    }
 
     // This seems to be the easiest way to recompute MSE and tCrit
     var y = this.y(label)
@@ -631,8 +619,16 @@ class Model extends CacheMixin(Observable) {
     , sse           = y.sub(yHat).dotPow(2).sum()
     , mse           = sse / (nd - np)
     , df            = nd - np
-    , alpha         = 0.05  // TODO Don't use a hardcoded alpha value
+    , alpha         = self.psig
     , tCrit         = tdistr(df, alpha/2);
+
+    // Compute our z matrix (transposed; same thing as Z but using data from the table with the given label)
+    let z_T = null;
+
+    // Fit
+
+    // z_T is identical to Z for the fit data set
+    z_T = Z;
 
     // Calculate Q for each entry (z_T_i * core * z_T_i.T)
     for (i = 0; i < num_rows; i++) {
@@ -640,7 +636,72 @@ class Model extends CacheMixin(Observable) {
       Q = z_T_i.dot(core).dot(z_T_i.T).get(0, 0);
       se_fit = Math.sqrt(mse * Q);
 
+      // Update confidence for this entry
       confidence.set(i, 0, tCrit * se_fit);
+    }
+
+    offset = num_rows;
+
+    // Cross
+    if (model[_data][CROSS_LABEL] != null) {
+      num_rows_ = model[_data][CROSS_LABEL].shape[0];
+      z_T = new Matrix(num_rows_, this.terms.length, null);
+
+      // Build up z
+      let i = 0;
+      this.terms.forEach(function (t) {
+        let d = t.col(CROSS_LABEL);  // Get term data
+
+        for (j = 0; j < d.shape[0]; j++) {
+          z_T.set(j, i, d.get(j, 0));
+        }
+        i += 1;
+      });
+
+      try {
+        // Calculate Q for each entry (z_T_i * core * z_T_i.T)
+        for (i = 0; i < num_rows_; i++) {
+          z_T_i = z_T.row(i, null);
+          Q = z_T_i.dot(core).dot(z_T_i.T).get(0, 0);
+          se_fit = Math.sqrt(mse * Q);
+
+          // Update confidence for this entry
+          confidence.set(i + offset, 0, tCrit * se_fit);
+        }} catch (e) {
+        console.log("Something unexpected happened in cross CI:", e);
+      }
+
+      offset += num_rows_;
+    }
+
+    // Valid
+    if (model[_data][VALIDATION_LABEL] != null) {
+      num_rows_ = model[_data][VALIDATION_LABEL].shape[0];
+      z_T = new Matrix(num_rows_, this.terms.length, null);
+
+       // Build up z
+       let i = 0;
+       this.terms.forEach(function (t) {
+         let d = t.col(VALIDATION_LABEL);  // Get term data
+
+         for (j = 0; j < d.shape[0]; j++) {
+           z_T.set(j, i, d.get(j, 0));
+         }
+         i += 1;
+       });
+
+       try {
+        // Calculate Q for each entry (z_T_i * core * z_T_i.T)
+        for (i = 0; i < num_rows_; i++) {
+          z_T_i = z_T.row(i, null);
+          Q = z_T_i.dot(core).dot(z_T_i.T).get(0, 0);
+          se_fit = Math.sqrt(mse * Q);
+
+          // Update confidence for this entry
+          confidence.set(i + offset, 0, tCrit * se_fit);
+        }} catch (e) {
+        console.log("Something unexpected happened in validation CI:", e);
+       }
     }
 
     return {index: index, confidence: confidence.data}
@@ -658,7 +719,6 @@ class Model extends CacheMixin(Observable) {
   }
 
   updateConfidence(index, label=FIT_LABEL) {
-    //console.log("MODEL JS UPDATE: ", index);
     let res = this.computeConfidence(index, label);
     this.fire('updateConfidence', res)
     return this;
