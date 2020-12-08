@@ -48,7 +48,7 @@
     "combinations-js": "^1.1.2",
     "core-js": "^2.4.1",
     "d3": "^4.7.4",
-    "fast-csv": "^2.3.0",
+    "fast-csv": "^4.3.6",
     "knockout": "^3.5.0",
     "lodash": "^4.17.19",
     "mathjs": "^6.6.4",
