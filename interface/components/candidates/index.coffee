@@ -21,7 +21,7 @@ ko.components.register "tf-candidates",
       setTimeout =>
         @result.maxWidth 65 + document.querySelector(
           ".candidate-wrapper > .candidates").clientWidth
-	
+
 	# Can safely be delayed
     if performance.navigation.type != performance.navigation.TYPE_RELOAD
       setTimeout(global.send_incoming_stats, 1000)
@@ -34,8 +34,8 @@ ko.components.register "tf-candidates",
     @toggleTerms = ->
       @sig_terms(!@sig_terms())
       console.log @sig_terms()
-      
-    
+
+
     @current_page = ko.observable(null)
 
     @timeseries = model.timeseries
@@ -57,7 +57,7 @@ ko.components.register "tf-candidates",
     # When hidden columns change in CTRL, subscribe and change visible candidates
     hiddenColumns.subscribe ( next ) =>
       @source(@candidates().sort(@sort()).filter((c) => !isHiddenColumn(c.term)))
-    
+
     transform_columns.subscribe ( next ) =>
       @source(@candidates().sort(@sort()).filter((c) -> !isHiddenColumn(c.term)))
 
@@ -106,9 +106,8 @@ ko.components.register "tf-candidates",
         model.update_sensitivity(column.index)
 
     @updateConfidence = () ->
-      console.log("candidates coffee update");
       for column in model.confidenceColumns()
-        model.update_confidence(column.index)
+        model.update_confidence(column.index);
 
     @updateImportanceRatio = () ->
       for column in model.importanceRatioColumns()

@@ -52,9 +52,9 @@ ko.components.register "tf-settings",
 
     # @rows = model.data_fit();
     @active = model.show_settings
-    
+
     #model = model.show_settings(true)
-    
+
 
     @exponents = model.exponents
     @multiplicands = model.multiplicands
@@ -135,14 +135,14 @@ ko.components.register "tf-settings",
 
     @timeseries.subscribe ( next ) =>
       @lags { 0: true } unless next
-      
+
 
     @active.subscribe (next) ->
       #if unchange then adapter.unsubscribeToChanges()
       #if next then adapter.unsubscribeToChanges()
       #adapter.unsubscribeToChanges()
       adapter.unsubscribeToChanges();
-      
+
 
     @recalculate = ( ) ->
       #if ko.computed(true) then adapter.subscribeToChanges()
@@ -151,18 +151,18 @@ ko.components.register "tf-settings",
       #if adapter.addTerm then adapter.unsubscribeToChanges()
       #@active.subscribe(next)
       #else adapter.subscribeToChanges()
-      
+
       #condition = @checkIfCandidateToBeAdded();
       #if condition == true
         adapter.subscribeToChanges();
         adapter.unsubscribeToChanges();
-      #else 
+      #else
        # adapter.unsubscribeToChanges();
 
-      
 
 
-    
+
+
 
 
     @download_model = ( ) ->
@@ -210,7 +210,7 @@ ko.components.register "tf-settings",
         performAddCycle();
       else
         @clicked = false;
-    
+
     @updateMultiplicands = () ->
       currNumMultiplicands = model.multiplicands();
       if currNumMultiplicands < 3
@@ -237,17 +237,17 @@ ko.components.register "tf-settings",
           removedTerm.push(innerTerm);
         adapter.subscribeToChanges();
         adapter.removeTerm(removedTerm);
-      
+
     @checkIfTermAboveAlpha = ( ) ->
       termsInModel = @currModel.terms;
       alpha = @currAlpha;
       returnVal = false;
       termsInModel.forEach( (term) ->
-        if (term.stats.pt > alpha) 
+        if (term.stats.pt > alpha)
           returnVal = true;
       )
       return returnVal;
-      
+
     @addSmallestPBelowAlpha = () ->
       alpha = @currAlpha;
       crossRsq = @currCross.stats.Rsq;
@@ -265,7 +265,7 @@ ko.components.register "tf-settings",
           addedTerm.push(innerTerm);
         adapter.subscribeToChanges();
         adapter.addTerm(addedTerm);
-      
+
     @checkIfCandidateToBeAdded = () ->
       crossRsq = @currCross.stats.Rsq;
       alpha = @currAlpha;

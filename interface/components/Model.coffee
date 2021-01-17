@@ -204,7 +204,7 @@ module.exports = class Model
         result =
           selected: ko.observable false
           stats: t.stats
-          # TODO, remove hack
+          # TODO: remove hack
           coeff: t.coeff or t.stats.coeff
           term: t.term.map ( term ) ->
             name: cols[term[0]]?.name
@@ -216,7 +216,7 @@ module.exports = class Model
           adapter["#{fn}Term"] t.term
           # For some reason doesn't listen to change, so need add subscription for model change
           adapter.subscribeToChanges()
-        return result 
+        return result
 
     adapter.on "candidates", ( candidates ) =>
       setTimeout =>
@@ -244,7 +244,7 @@ module.exports = class Model
           stats: model.stats
           predicted: model.predicted
       , 100
-    
+
     adapter.on("data:transform", ( data ) =>
       setTimeout =>
         @data_fit(data.fit)
@@ -336,9 +336,9 @@ module.exports = class Model
           @sensitivityData(sensitivityData)
       , 100
       adapter.subscribeToChanges()
-    
+
     adapter.on "model:deleteSensitivity", (data) =>
-      setTimeout =>        
+      setTimeout =>
         sensitivityColumns = ko.unwrap @sensitivityColumns
         sensitivityData = ko.unwrap @sensitivityData
 
@@ -373,7 +373,7 @@ module.exports = class Model
         columns = ko.unwrap @columns
         confidenceColumns = ko.unwrap @confidenceColumns
         confidenceData = ko.unwrap @confidenceData
-        
+
         # Check if column already exists
         colExists = false
         confidenceColumns.forEach((col) =>
@@ -389,9 +389,9 @@ module.exports = class Model
           @confidenceData(confidenceData)
       , 100
       adapter.subscribeToChanges()
-    
+
     adapter.on "model:deleteConfidence", (data) =>
-      setTimeout =>        
+      setTimeout =>
         confidenceColumns = ko.unwrap @confidenceColumns
         confidenceData = ko.unwrap @confidenceData
 
@@ -443,9 +443,9 @@ module.exports = class Model
           @importanceRatioData(importanceRatioData)
       , 100
       adapter.subscribeToChanges()
-    
+
     adapter.on "model:deleteImportanceRatio", (data) =>
-      setTimeout =>        
+      setTimeout =>
         importanceRatioColumns = ko.unwrap @importanceRatioColumns
         importanceRatioData = ko.unwrap @importanceRatioData
 
@@ -473,7 +473,7 @@ module.exports = class Model
         @importanceRatioColumns(importanceRatioColumns)
         @importanceRatioData(importanceRatioData)
       , 100
-      adapter.subscribeToChanges()  
+      adapter.subscribeToChanges()
 
     adapter.on "progress.start", ( { curr, total } ) =>
       @progress 0.01

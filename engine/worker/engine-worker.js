@@ -87,14 +87,14 @@ function initializeModel() {
   m.on('error', (error) =>
     postMessage({ type: 'error', data: error })
   );
-  
+
   m.on('getSensitivity', (data) => {
     postMessage({
       type: 'model:getSensitivity',
       data: data
     });
   });
-  
+
   m.on('deleteSensitivity', (data) => {
     postMessage({
       type: 'model:deleteSensitivity',
@@ -115,7 +115,7 @@ function initializeModel() {
       data: data
     });
   });
-  
+
   m.on('deleteConfidence', (data) => {
     postMessage({
       type: 'model:deleteConfidence',
@@ -136,7 +136,7 @@ function initializeModel() {
       data: data
     });
   });
-  
+
   m.on('deleteImportanceRatio', (data) => {
     postMessage({
       type: 'model:deleteImportanceRatio',
@@ -209,7 +209,7 @@ onmessage = function (e) {
     case 'clear':
       m[type](data);
       break;
-      
+
     // Receive message from worker.coffee
     // TODO: Interrupt code to receive message during work
     case 'stopCalc':
@@ -218,8 +218,8 @@ onmessage = function (e) {
       break;
     case 'sendPsig':
       console.debug("Psig acquired:" + data);
-      self.psig = data;
       // data is psig
+      self.psig = data;
       break;
     // this one's special
     case 'setData':
@@ -287,11 +287,11 @@ onmessage = function (e) {
     case 'getSensitivity':
       m.getSensitivity(data);
       break;
-    
+
     case 'deleteSensitivity':
       m.deleteSensitivity(data);
       break;
-    
+
     case 'updateSensitivity':
       m.updateSensitivity(data);
       break;
@@ -299,27 +299,27 @@ onmessage = function (e) {
     case 'getConfidence':
       m.getConfidence(data);
       break;
-    
+
     case 'deleteConfidence':
       m.deleteConfidence(data);
       break;
-    
+
     case 'updateConfidence':
       m.updateConfidence(data);
       break;
-    
+
     case 'getImportanceRatio':
       m.getImportanceRatio(data);
       break;
-    
+
     case 'deleteImportanceRatio':
       m.deleteImportanceRatio(data);
       break;
-    
+
     case 'updateImportanceRatio':
       m.updateImportanceRatio(data);
       break;
-    
+
     case 'reset':
       m = new Model();
       break;

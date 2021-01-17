@@ -10,20 +10,20 @@ ko.components.register "tf-xyplot",
     unless ko.isObservable params.model
       throw new TypeError "components/options:
       expects [model] to be observable"
-    
+
     model = params.model()
     @column_indexes = model.show_xyplot
 
     @active = ko.computed ( ) => @column_indexes() != undefined
 
     @columns = ko.observable ["Index"].concat(model.columns().map((x) => x.name)).concat(["Dependent", "Predicted", "Residual"])
-    
-    @column_names = ko.computed ( ) => 
+
+    @column_names = ko.computed ( ) =>
       if !@active()
         return [undefined, undefined]
       return @column_indexes().map((idx) =>
         if typeof idx == "string"
-          # Special Case for Sensitivity 
+          # Special Case for Sensitivity
           if idx.indexOf("Sensitivity") != -1
             idx = idx.split("_")[1]
             return "Sensitivity " + model.sensitivityColumns()[idx].name
@@ -33,8 +33,8 @@ ko.components.register "tf-xyplot",
           return idx
         return @columns()[idx]
       )
-    
-    @values = ko.computed ( ) => 
+
+    @values = ko.computed ( ) =>
       if !@active()
         return undefined
       column_names = @column_names()
@@ -64,10 +64,6 @@ ko.components.register "tf-xyplot",
         return ""
 
       # global varible 'chart' can be accessed in download function
-      #console.log model.importanceRatioData();
-      #console.log(@column_indexes());
-      #console.log(@column_names());
-      #console.log @values();
       x = 0;
       while x < Object.keys(@values()[0]).length
         if @values()[0][x] == undefined or @values()[0][x] == null
@@ -106,7 +102,7 @@ ko.components.register "tf-xyplot",
 
       return chart.element.innerHTML
 
-    @download = ( ) -> 
+    @download = ( ) ->
       if !@active()
         return undefined
       svg_element = chart.element.querySelector "svg"
@@ -132,16 +128,16 @@ ko.components.register "tf-xyplot",
       x_and_y.concat Array.from node_list2
       x_and_y.forEach (e) ->
         e.style.fill = "none"
-        e.style.stroke = "black" 
+        e.style.stroke = "black"
 
       scale = Array.from node_list3
       scale.forEach (e) ->
         e.style.fill = "none"
-        e.style.stroke = "black" 
+        e.style.stroke = "black"
 
       svg_element.style.backgroundColor = "white"
       tick = svg_element.querySelectorAll ".tick"
-      # the number of tick texts in a plot depends on the content of the plot     
+      # the number of tick texts in a plot depends on the content of the plot
       num_arr = Array(tick.length).fill(0).map((x, y) => y)
       # tick[19], tick[13], tick[12], tick[3], tick[10] are more likely be the SVG element on the top position of y axis
       # put 19, 13, 12, 3, 10 to the beginning of the array (get these values by doing lots of testing)
@@ -165,7 +161,7 @@ ko.components.register "tf-xyplot",
       original_y = text[0].getAttribute "y"
       text[0].setAttribute "y", original_y+3
 
-      
+
       xml = new XMLSerializer().serializeToString svg_element
       data_url = "data:image/svg+xml;base64," + btoa xml
 
@@ -175,7 +171,7 @@ ko.components.register "tf-xyplot",
       svg_element.setAttribute "height", original_height
       svg_element.setAttribute "width", original_width
       svg_element.style.backgroundColor = null
-      
+
 
       img = new Image()
       img.src = data_url

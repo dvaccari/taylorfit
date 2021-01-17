@@ -581,9 +581,7 @@ class Model extends CacheMixin(Observable) {
   }
 
   computeConfidence(index, label=FIT_LABEL) {
-    // TODO: Get model alpha
-    // TODO: Make this work for non-fit tables
-    // TODO: Make CI not hardcoded to treat the 1st column as the dependent
+    // TODO: Make CI not hardcoded to treat the 1st (0th) column as the dependent
 
     if (index == undefined) {
       return this;
