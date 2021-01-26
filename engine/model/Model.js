@@ -476,7 +476,7 @@ class Model extends CacheMixin(Observable) {
     this.uncache('highestLag');
     this.fire('addTerm', term);
     console.log(this[_dependent]);
-    this.updateConfidence(this[_dependent]);  // ! This is an awful patch - please fix the underlying issue
+    this.updateConfidence(this[_dependent]);  // ! This is an awful patch; see https://github.com/MikeChunko/taylorfit-staging/issues/5
     return this;
   }
 
@@ -486,7 +486,7 @@ class Model extends CacheMixin(Observable) {
     this.uncache('y');
     this.uncache('highestLag');
     this.fire('removeTerm', term);
-    this.updateConfidence(this[_dependent]);  // ! This is an awful patch - please fix the underlying issue
+    this.updateConfidence(this[_dependent]);  // ! This is an awful patch; see https://github.com/MikeChunko/taylorfit-staging/issues/5
     return this;
   }
 
