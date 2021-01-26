@@ -106,12 +106,12 @@ table.grid
             | QQ Plot
           span.mark(data-bind="click:function(){xyplot('Predicted')}")
             | XY Plot
-          // ko ifnot: hasConfidence(0)
-          span.mark(data-bind="click:function(){confidence(0)}")
+          // ko ifnot: hasConfidence(dependent())
+          span.mark(data-bind="click:function(){confidence(dependent())}")
             | Show Confidence Interval
           // /ko
-          // ko if: hasConfidence(0)
-          span.mark(data-bind="click:function(){deleteConfidence(0,'column')}")
+          // ko if: hasConfidence(dependent())
+          span.mark(data-bind="click:function(){deleteConfidence(dependent(),'column')}")
             | Hide Confidence Interval
           // /ko
       th.err

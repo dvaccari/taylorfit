@@ -475,7 +475,8 @@ class Model extends CacheMixin(Observable) {
 
     this.uncache('highestLag');
     this.fire('addTerm', term);
-    this.updateConfidence(0);  // ! This is an awful patch - please fix the underlying issue
+    console.log(this[_dependent]);
+    this.updateConfidence(this[_dependent]);  // ! This is an awful patch - please fix the underlying issue
     return this;
   }
 
@@ -485,7 +486,7 @@ class Model extends CacheMixin(Observable) {
     this.uncache('y');
     this.uncache('highestLag');
     this.fire('removeTerm', term);
-    this.updateConfidence(0);  // ! This is an awful patch - please fix the underlying issue
+    this.updateConfidence(this[_dependent]);  // ! This is an awful patch - please fix the underlying issue
     return this;
   }
 
@@ -581,8 +582,9 @@ class Model extends CacheMixin(Observable) {
   }
 
   computeConfidence(index, label=FIT_LABEL) {
-    // TODO: Make CI not hardcoded to treat the 1st (0th) column as the dependent
-
+    // Note: Only updated on show/hide and add/remove terms,
+    // even though change dependent and alpha also affect CI.
+    // This is to save resources as CI calculation is computationally expensive.
     if (index == undefined) {
       return this;
     }
