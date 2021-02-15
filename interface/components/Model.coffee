@@ -74,6 +74,12 @@ CTRL =
     [ undefined   , SEND("deleteConfidence", Number) , IGNORE ]
   update_confidence:
     [ undefined   , SEND("updateConfidence", Number)  , IGNORE ]
+  show_prediction:
+    [ undefined   , SEND("getPrediction", Number)    , IGNORE ]
+  delete_prediction:
+    [ undefined   , SEND("deletePrediction", Number) , IGNORE ]
+  update_prediction:
+    [ undefined   , SEND("updatePrediction", Number)  , IGNORE ]
   show_importanceRatio:
     [ undefined   , SEND("getImportanceRatio", Number)    , IGNORE ]
   delete_importanceRatio:
@@ -143,6 +149,10 @@ CTRL =
   confidenceColumns:
     [ []         , WRAP_A                            , UNWRAP ]
   confidenceData:
+    [ []         , WRAP_A                            , UNWRAP ]
+  predictionColumns:
+    [ []         , WRAP_A                            , UNWRAP ]
+  predictionData:
     [ []         , WRAP_A                            , UNWRAP ]
   importanceRatioColumns:
     [ []         , WRAP_A                            , UNWRAP ]
@@ -418,6 +428,59 @@ module.exports = class Model
 
         @confidenceColumns(confidenceColumns)
         @confidenceData(confidenceData)
+      , 100
+      adapter.subscribeToChanges()
+    
+    adapter.on "model:getPrediction", (data) =>
+      setTimeout =>
+        columns = ko.unwrap @columns
+        predictionColumns = ko.unwrap @predictionColumns
+        predictionData = ko.unwrap @predictionData
+
+        # Check if column already exists
+        colExists = false
+        predictionColumns.forEach((col) =>
+          if col.index == data.index
+            colExists = true
+        )
+
+        if colExists == false
+          column = columns[0] # Weird hack to stop errors showing up but it works
+          predictionColumns.push(column)
+          predictionData.push(data.prediction)
+          @predictionColumns(predictionColumns)
+          @predictionData(predictionData)
+      , 100
+      adapter.subscribeToChanges()
+
+    adapter.on "model:deletePrediction", (data) =>
+      setTimeout =>
+        predictionColumns = ko.unwrap @predictionColumns
+        predictionData = ko.unwrap @predictionData
+
+        predictionColumns.splice(data.index, 1);
+        predictionData.splice(data.index, 1);
+
+        @predictionColumns(predictionColumns)
+        @predictionData(predictionData)
+      , 100
+      adapter.subscribeToChanges()
+
+    adapter.on "model:updatePrediction", (data) =>
+      setTimeout =>
+        columns = ko.unwrap @columns
+        predictionColumns = ko.unwrap @predictionColumns
+        predictionData = ko.unwrap @predictionData
+
+        # Find the column and replace it
+        predictionColumns.forEach((col, i) =>
+          if col.index == data.index
+            predictionColumns[i] = columns[data.index]
+            predictionData[i] = data.prediction
+        )
+
+        @predictionColumns(predictionColumns)
+        @predictionData(predictionData)
       , 100
       adapter.subscribeToChanges()
 

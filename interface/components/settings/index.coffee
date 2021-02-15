@@ -187,6 +187,10 @@ ko.components.register "tf-settings",
       for column in model.confidenceColumns()
         model.update_confidence(column.index)
 
+      # Update prediction columns
+      for column in model.predictionColumns()
+        model.update_prediction(column.index)
+
       # Update importance ratio columns
       for column in model.importanceRatioColumns()
         model.update_importanceRatio(column.index)

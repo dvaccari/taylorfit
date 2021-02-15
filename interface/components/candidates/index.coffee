@@ -109,6 +109,10 @@ ko.components.register "tf-candidates",
       for column in model.confidenceColumns()
         model.update_confidence(column.index);
 
+    @updatePrediction = () ->
+      for column in model.predictionColumns()
+        model.update_prediction(column.index);
+
     @updateImportanceRatio = () ->
       for column in model.importanceRatioColumns()
         model.update_importanceRatio(column.index)

@@ -477,6 +477,7 @@ class Model extends CacheMixin(Observable) {
     this.fire('addTerm', term);
     console.log(this[_dependent]);
     this.updateConfidence(this[_dependent]);  // ! This is an awful patch; see https://github.com/MikeChunko/taylorfit-staging/issues/5
+    this.updatePrediction(this[_dependent]);  // ! This is an awful patch; see https://github.com/MikeChunko/taylorfit-staging/issues/5
     return this;
   }
 
@@ -487,6 +488,7 @@ class Model extends CacheMixin(Observable) {
     this.uncache('highestLag');
     this.fire('removeTerm', term);
     this.updateConfidence(this[_dependent]);  // ! This is an awful patch; see https://github.com/MikeChunko/taylorfit-staging/issues/5
+    this.updatePrediction(this[_dependent]);  // ! This is an awful patch; see https://github.com/MikeChunko/taylorfit-staging/issues/5
     return this;
   }
 
@@ -704,6 +706,8 @@ class Model extends CacheMixin(Observable) {
        }
     }
 
+    console.log("SE_FIT", se_fit);
+
     return {index: index, confidence: confidence.data}
   }
 
@@ -721,6 +725,149 @@ class Model extends CacheMixin(Observable) {
   updateConfidence(index, label=FIT_LABEL) {
     let res = this.computeConfidence(index, label);
     this.fire('updateConfidence', res)
+    return this;
+  }
+
+  computePrediction(index, label=FIT_LABEL) {
+    // Note: Only updated on show/hide and add/remove terms,
+    // even though change dependent and alpha also affect PI.
+    // This is to save resources as PI calculation is computationally expensive.
+    if (index == undefined) {
+      return this;
+    }
+
+    let model = this; // to use within loops below
+    let num_rows = model[_data][FIT_LABEL].shape[0];
+    let Z = new Matrix(num_rows, this.terms.length, null);
+    let prediction = new Matrix(num_rows*5, 1, new Array(num_rows*5).fill(0));
+
+    // Build up the Z matrix (forms the core matrix)
+    let i = 0;
+    this.terms.forEach(function (t) {
+      let d = t.col();  // Get term data
+
+      for (j = 0; j < d.shape[0]; j++) {
+        Z.set(j, i, d.get(j, 0));
+      }
+      i += 1;
+    });
+
+    // The core matrix
+    let core = ((Z.T).dot(Z)).inv();
+
+    // This seems to be the easiest way to recompute MSE and tCrit
+    var y = this.y(label)
+    , ZT            = Z.T
+    , pseudoInverse = ZT.dot(Z).inv()
+    , BHat          = pseudoInverse.dot(ZT).dot(y)
+    , yHat          = Z.dot(BHat)
+    , nd            = Z.shape[0]
+    , np            = Z.shape[1]
+    , sse           = y.sub(yHat).dotPow(2).sum()
+    , mse           = sse / (nd - np)
+    , df            = nd - np
+    , alpha         = self.psig
+    , tCrit         = tdistr(df, alpha/2);
+
+    // Compute our z matrix (transposed; same thing as Z but using data from the table with the given label)
+    let z_T = null;
+
+    // Fit
+
+    // z_T is identical to Z for the fit data set
+    z_T = Z;
+
+    // Calculate Q for each entry (z_T_i * core * z_T_i.T)
+    for (i = 0; i < num_rows; i++) {
+      z_T_i = z_T.row(i, null);
+      Q = z_T_i.dot(core).dot(z_T_i.T).get(0, 0);
+      se_pred = Math.sqrt(mse * (1 + Q));
+
+      // Update prediction for this entry
+      prediction.set(i, 0, tCrit * se_pred);
+    }
+
+    offset = num_rows;
+
+    // Cross
+    if (model[_data][CROSS_LABEL] != null) {
+      num_rows_ = model[_data][CROSS_LABEL].shape[0];
+      z_T = new Matrix(num_rows_, this.terms.length, null);
+
+      // Build up z
+      let i = 0;
+      this.terms.forEach(function (t) {
+        let d = t.col(CROSS_LABEL);  // Get term data
+
+        for (j = 0; j < d.shape[0]; j++) {
+          z_T.set(j, i, d.get(j, 0));
+        }
+        i += 1;
+      });
+
+      try {
+        // Calculate Q for each entry (z_T_i * core * z_T_i.T)
+        for (i = 0; i < num_rows_; i++) {
+          z_T_i = z_T.row(i, null);
+          Q = z_T_i.dot(core).dot(z_T_i.T).get(0, 0);
+          se_pred = Math.sqrt(mse * Q);
+
+          // Update prediction for this entry
+          prediction.set(i + offset, 0, tCrit * se_pred);
+        }} catch (e) {
+        console.log("Something unexpected happened in cross PI:", e);
+      }
+
+      offset += num_rows_;
+    }
+
+    // Valid
+    if (model[_data][VALIDATION_LABEL] != null) {
+      num_rows_ = model[_data][VALIDATION_LABEL].shape[0];
+      z_T = new Matrix(num_rows_, this.terms.length, null);
+
+       // Build up z
+       let i = 0;
+       this.terms.forEach(function (t) {
+         let d = t.col(VALIDATION_LABEL);  // Get term data
+
+         for (j = 0; j < d.shape[0]; j++) {
+           z_T.set(j, i, d.get(j, 0));
+         }
+         i += 1;
+       });
+
+       try {
+        // Calculate Q for each entry (z_T_i * core * z_T_i.T)
+        for (i = 0; i < num_rows_; i++) {
+          z_T_i = z_T.row(i, null);
+          Q = z_T_i.dot(core).dot(z_T_i.T).get(0, 0);
+          se_pred = Math.sqrt(mse * Q);
+
+          // Update prediction for this entry
+          prediction.set(i + offset, 0, tCrit * se_pred);
+        }} catch (e) {
+        console.log("Something unexpected happened in validation PI:", e);
+       }
+    }
+
+    return {index: index, prediction: prediction.data}
+  }
+
+  getPrediction(index, label=FIT_LABEL) {
+    let res = this.computePrediction(index, label);
+    this.fire('getPrediction', res);
+    return this;
+  }
+
+  deletePrediction(index) {
+    this.fire('deletePrediction', {index: index});
+    return this;
+  }
+
+  updatePrediction(index, label=FIT_LABEL) {
+    let res = this.computePrediction(index, label);
+    this.fire('updatePrediction', res)
     return this;
   }
 

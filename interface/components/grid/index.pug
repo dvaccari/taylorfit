@@ -114,6 +114,14 @@ table.grid
           span.mark(data-bind="click:function(){deleteConfidence(dependent(),'column')}")
             | Hide Confidence Interval
           // /ko
+          // ko ifnot: hasPrediction(dependent())
+          span.mark(data-bind="click:function(){prediction(dependent())}")
+            | Show Prediction Interval
+          // /ko
+          // ko if: hasPrediction(dependent())
+          span.mark(data-bind="click:function(){deletePrediction(dependent(),'column')}")
+            | Hide Prediction Interval
+          // /ko
       th.err
         span Residual
         tf-dropdown(params="align:'right'")
@@ -177,6 +185,31 @@ table.grid
             | XY Plot
           span.mark(data-bind="click:function(){deleteConfidence($index(),'confidence')}")
             | Hide Confidence Interval
+      // /ko
+      // ko foreach: predictionColumns
+      th
+        span P.I.&nbsp;
+        // ko if:name
+        span(data-bind="text:name")
+        // /ko
+        // ko ifnot:name
+        span.placeholder
+          span X
+          sub(data-bind="text:index")
+        // /ko
+        tf-dropdown(params="shallow:1,align:'right'")
+          span.mark(data-bind="click:function(){histogram_statistic($index(), 'prediction')}")
+            | Histogram
+          span.mark(data-bind="click:function(){cumulative_distribution_statistic($index(), 'prediction')}")
+            | Cumulative Distribution
+          span.mark(data-bind="click:function(){autocorrelation_statistic($index(), 'prediction')}")
+            | Autocorrelation
+          span.mark(data-bind="click:function(){qqplot_statistic($index(), 'prediction')}")
+            | QQ Plot
+          span.mark(data-bind="click:function(){xyplot_statistic($index(), 'prediction')}")
+            | XY Plot
+          span.mark(data-bind="click:function(){deletePrediction($index(),'prediction')}")
+            | Hide Prediction Interval
       // /ko
       // ko foreach: importanceRatioColumns
       th
@@ -362,6 +395,11 @@ table.grid
       // /ko
       //- Display Confidence Statistic
       // ko foreach:$parent.confidenceData
+      td
+        span(data-bind="float:$data[$parent.index + $component.getRowOffset()]")
+      // /ko
+      //- Display Prediction Statistic
+      // ko foreach:$parent.predictionData
       td
         span(data-bind="float:$data[$parent.index + $component.getRowOffset()]")
       // /ko

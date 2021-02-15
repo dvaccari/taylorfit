@@ -130,6 +130,27 @@ function initializeModel() {
     });
   });
 
+  m.on('getPrediction', (data) => {
+    postMessage({
+      type: 'model:getPrediction',
+      data: data
+    });
+  });
+
+  m.on('deletePrediction', (data) => {
+    postMessage({
+      type: 'model:deletePrediction',
+      data: data
+    });
+  });
+
+  m.on('updatePrediction', (data) => {
+    postMessage({
+      type: 'model:updatePrediction',
+      data: data
+    });
+  });
+
   m.on('getImportanceRatio', (data) => {
     postMessage({
       type: 'model:getImportanceRatio',
@@ -164,6 +185,7 @@ let subscribeToChanges = (m, updateNow = true) => {
     'setLags', 'addTerm', 'removeTerm', 'clear', 'subset', 'setColumns',
     'getSensitivity', 'deleteSensitivity', 'updateSensitivity',
     'getConfidence', 'deleteConfidence', 'updateConfidence',
+    'getPrediction', 'deletePrediction', 'updatePrediction',
     'getImportanceRatio', 'deleteImportanceRatio', 'updateImportanceRatio'
   ], () => {
     m.getCandidates()
@@ -306,6 +328,18 @@ onmessage = function (e) {
 
     case 'updateConfidence':
       m.updateConfidence(data);
+      break;
+
+    case 'getPrediction':
+      m.getPrediction(data);
+      break;
+
+    case 'deletePrediction':
+      m.deletePrediction(data);
+      break;
+
+    case 'updatePrediction':
+      m.updatePrediction(data);
       break;
 
     case 'getImportanceRatio':

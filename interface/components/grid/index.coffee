@@ -36,6 +36,8 @@ ko.components.register "tf-grid",
     @sensitivityData   = model.sensitivityData
     @confidenceColumns  = model.confidenceColumns
     @confidenceData   = model.confidenceData
+    @predictionColumns  = model.predictionColumns
+    @predictionData   = model.predictionData
     @importanceRatioColumns  = model.importanceRatioColumns
     @importanceRatioData   = model.importanceRatioData
 
@@ -56,6 +58,9 @@ ko.components.register "tf-grid",
       if statistic == "confidence"
         model.show_histogram("Confidence_"+index.toString())
         model.data_plotted(@table)
+      if statistic == "prediction"
+        model.show_histogram("Prediction_"+index.toString())
+        model.data_plotted(@table)
       if statistic == "importanceRatio"
         model.show_histogram("ImportanceRatio_"+index.toString())
         model.data_plotted(@table)
@@ -71,6 +76,9 @@ ko.components.register "tf-grid",
       if statistic == "confidence"
         model.show_cumulative_distribution("Confidence_"+index.toString())
         model.data_plotted(@table)
+      if statistic == "prediction"
+        model.show_cumulative_distribution("Prediction_"+index.toString())
+        model.data_plotted(@table)
       if statistic == "importanceRatio"
         model.show_cumulative_distribution("ImportanceRatio_"+index.toString())
         model.data_plotted(@table)
@@ -84,8 +92,11 @@ ko.components.register "tf-grid",
       if statistic == "sensitivity"
         model.show_autocorrelation("Sensitivity_"+index.toString())
         model.data_plotted(@table)
-       if statistic == "confidence"
+      if statistic == "confidence"
         model.show_autocorrelation("Confidence_"+index.toString())
+        model.data_plotted(@table)
+      if statistic == "prediction"
+        model.show_autocorrelation("Prediction_"+index.toString())
         model.data_plotted(@table)
       if statistic == "importanceRatio"
         model.show_autocorrelation("ImportanceRatio_"+index.toString())
@@ -102,6 +113,9 @@ ko.components.register "tf-grid",
       if statistic == "confidence"
         model.show_xyplot(["Confidence_"+index.toString(), "Index"])
         model.data_plotted(@table)
+      if statistic == "prediction"
+        model.show_xyplot(["Prediction_"+index.toString(), "Index"])
+        model.data_plotted(@table)
       if statistic == "importanceRatio"
         model.show_xyplot(["ImportanceRatio_"+index.toString(), "Index"])
         model.data_plotted(@table)
@@ -116,6 +130,9 @@ ko.components.register "tf-grid",
         model.data_plotted(@table)
       if statistic == "confidence"
         model.show_qqplot("Confidence_"+index.toString())
+        model.data_plotted(@table)
+      if statistic == "prediction"
+        model.show_qqplot("Prediction_"+index.toString())
         model.data_plotted(@table)
       if statistic == "importanceRatio"
         model.show_qqplot("ImportanceRatio_"+index.toString())
@@ -161,6 +178,27 @@ ko.components.register "tf-grid",
     @hasConfidence = ( index ) ->
       found = false
       model.confidenceColumns().forEach( (column) ->
+        if column.index == index
+          found = true
+      )
+      return found
+
+    @prediction = ( index ) ->
+      model.show_prediction( index )
+
+    @deletePrediction = ( index, type ) ->
+      # Delete with either column index or prediction index
+      if type == "column"
+        model.predictionColumns().forEach( (column, predictionIndex) ->
+          if column.index == index
+            return model.delete_prediction( predictionIndex )
+        )
+      else if type == "prediction"
+        model.delete_prediction( index )
+
+    @hasPrediction = ( index ) ->
+      found = false
+      model.predictionColumns().forEach( (column) ->
         if column.index == index
           found = true
       )
@@ -250,6 +288,8 @@ ko.components.register "tf-grid",
         csv += "," + @sensitivityColumns().map((col) -> "Sensitivity "+col.name).join ","
       if @confidenceColumns().length > 0
         csv += "," + @confidenceColumns().map((col) -> "Confidence "+col.name).join ","
+      if @predictionColumns().length > 0
+        csv += "," + @predictionColumns().map((col) -> "Prediction "+col.name).join ","
       if @importanceRatioColumns().length > 0
         csv += "," + @importanceRatioColumns().map((col) -> "Importance Ratio "+col.name).join ","
       for row, index in rows
@@ -260,6 +300,8 @@ ko.components.register "tf-grid",
           csv += "," + @sensitivityData().map((col) -> col[index]).join ","
         if @confidenceData().length > 0
           csv += "," + @confidenceData().map((col) -> col[index]).join ","
+        if @predictionData().length > 0
+          csv += "," + @predictionData().map((col) -> col[index]).join ","
         if @importanceRatioData().length > 0
           csv += "," + @importanceRatioData().map((col) -> col[index]).join ","
 
@@ -321,6 +363,7 @@ ko.components.register "tf-grid",
       extra = @extra();
       sensitive = @sensitivityData();
       confidenc = @confidenceData();
+      predict = @predictionData();
       importance = @importanceRatioData();
       while k < rows.length
         if master.length == 0
@@ -358,6 +401,10 @@ ko.components.register "tf-grid",
           offset += model["data_cross"]().length
 
       confidenc.forEach( (col) ->
+        master.push(Object.values(col.slice(offset)))
+      )
+
+      predict.forEach( (col) ->
         master.push(Object.values(col.slice(offset)))
       )
 
@@ -447,6 +494,7 @@ ko.components.register "tf-grid",
       extra = @extra()
       sensitive = @sensitivityData()
       confidenc = @confidenceData()
+      predict = @predictionData()
       importance = @importanceRatioData()
       while k < rowLength
         if !min.length
@@ -459,6 +507,9 @@ ko.components.register "tf-grid",
             min.push(col[0])
           )
           confidenc.forEach( (col) ->
+            min.push(col[0])
+          )
+          predict.forEach( (col) ->
             min.push(col[0])
           )
           importance.forEach( (col) ->
@@ -495,6 +546,14 @@ ko.components.register "tf-grid",
               iter++
             i++
           )
+          predict.forEach( (col) ->
+            iter = 1
+            while iter < col.length
+              if col[iter] < min[i]
+                min[i] = col[iter]
+              iter++
+            i++
+          )
           importance.forEach( (col) ->
             iter = 1
             while iter < col.length
@@ -514,6 +573,7 @@ ko.components.register "tf-grid",
       extra = @extra()
       sensitive = @sensitivityData()
       confidenc = @confidenceData()
+      predict = @predictionData()
       importance = @importanceRatioData()
       while k < rowLength
         if !max.length
@@ -526,6 +586,9 @@ ko.components.register "tf-grid",
             max.push(col[0])
           )
           confidenc.forEach( (col) ->
+            max.push(col[0])
+          )
+          predict.forEach( (col) ->
             max.push(col[0])
           )
           importance.forEach( (col) ->
@@ -555,6 +618,14 @@ ko.components.register "tf-grid",
             i++
           )
           confidenc.forEach( (col) ->
+            iter = 1
+            while iter < col.length
+              if col[iter] > max[i]
+                max[i] = col[iter]
+              iter++
+            i++
+          )
+          predict.forEach( (col) ->
             iter = 1
             while iter < col.length
               if col[iter] > max[i]
