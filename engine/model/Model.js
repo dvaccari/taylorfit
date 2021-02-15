@@ -706,8 +706,6 @@ class Model extends CacheMixin(Observable) {
        }
     }
 
-    console.log("SE_FIT", se_fit);
-
     return {index: index, confidence: confidence.data}
   }
 
