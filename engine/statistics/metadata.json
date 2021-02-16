@@ -28,14 +28,14 @@
   { "id": "SKEW", "sort": "<", "description": "Skewness" },
   { "id": "XKURT", "sort": "<", "description": "Excess kurtosis" },
 
-  { "id": "PLACEHOLDER"}, 
+  { "id": "PLACEHOLDER"},
 
   { "id": "AIC", "sort": ">", "description": "Akaike Information Criterion" },
   { "id": "BIC", "sort": ">", "description": "Bayesian Information Criterion" },
-  { "id": "F", "sort": "<", "description": "F-statistic" },  
-  { "id": "pF", "displayName": "p(F)", "sort": ">", "description": "Probability that a larger value of the F-statistic occurs by chance. This is a test of overall model fitness." },  
+  { "id": "F", "sort": "<", "description": "F-statistic" },
+  { "id": "pF", "displayName": "p(F)", "sort": ">", "description": "Probability that a larger value of the F-statistic occurs by chance. This is a test of overall model fitness." },
 
-  { "id": "PLACEHOLDER"}, 
+  { "id": "PLACEHOLDER"},
 
   { "id": "seSKEW", "displayName": "s.e. SKEW", "sort": "<", "description": "Estimated standard error of the skewness. If SKEW > 2*s.e.SKEW, there is evidence that residual errors are not normally distributed." },
   { "id": "seXKURT", "displayName": "s.e. XKURT", "sort": "<", "description": "Estimated standard error of the kurtosis. If |ExKurt|> 2*s.e.ExKurt, there is evidence that residual errors are not normally distributed." },

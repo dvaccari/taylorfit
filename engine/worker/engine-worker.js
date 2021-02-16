@@ -3,9 +3,9 @@
 
 require('./subworkers');
 
-const perf      = require('../perf');
+const perf = require('../perf');
 const statsMeta = require('../statistics/metadata.json');
-const Model     = require('../model');
+const Model = require('../model');
 const {
   FIT_LABEL, CROSS_LABEL, VALIDATION_LABEL,
   LOG,
@@ -20,9 +20,9 @@ self.psig = 0.05;
 
 const Transformation = require("../../interface/components/transform/label.json")
 
-const getCandidateProgressInterval  = 50;
-let   onGetCandidateId              = 0;
-let   m         = initializeModel();
+const getCandidateProgressInterval = 50;
+let onGetCandidateId = 0;
+let m = initializeModel();
 
 function log() {
   console.debug('[Engine]:', ...arguments);
@@ -189,15 +189,15 @@ let subscribeToChanges = (m, updateNow = true) => {
     'getImportanceRatio', 'deleteImportanceRatio', 'updateImportanceRatio'
   ], () => {
     m.getCandidates()
-     .then((cands) => postMessage({ type: 'candidates', data: cands }));
+      .then((cands) => postMessage({ type: 'candidates', data: cands }));
     m.labels.forEach((label) =>
       postMessage({ type: `model:${label}`, data: m.getModel(label) })
     );
   });
 
-  if (updateNow) {
+  if (updateNow)
     m.fire('setData');
-  }
+
 };
 let unsubscribeToChanges = (m) => m.removeListener(subscriptionIds);
 
@@ -209,9 +209,8 @@ let unsubscribeToChanges = (m) => m.removeListener(subscriptionIds);
  */
 onmessage = function (e) {
   // If it's for a sub-worker, just ignore it
-  if (e.data._from != null) {
+  if (e.data._from != null)
     return;
-  }
 
   let type = e.data.type
     , data = e.data.data
@@ -219,8 +218,8 @@ onmessage = function (e) {
 
   log(e.data);
 
-  switch(type) {
-    // only works because the event type is the same as the method name
+  switch (type) {
+    // Only works because the event type is the same as the method name
     case 'setExponents':
     case 'setMultiplicands':
     case 'setDependent':
@@ -236,12 +235,10 @@ onmessage = function (e) {
     // TODO: Interrupt code to receive message during work
     case 'stopCalc':
       console.error("Cancelled calculation!");
-      self.stopping = true;// Variable is accessible to workers (i.e. Term.js)
+      self.stopping = true;  // Variable is accessible to workers (i.e. Term.js)
       break;
     case 'sendPsig':
-      console.debug("Psig acquired:" + data);
-      // data is psig
-      self.psig = data;
+      self.psig = data;  // Data is psig
       break;
     // this one's special
     case 'setData':

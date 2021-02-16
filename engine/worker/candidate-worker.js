@@ -6,9 +6,9 @@ if (typeof window !== 'undefined') {
 
 const UPDATE_INTERVAL = 200;
 
-const Matrix      = require('../matrix');
-const lstsq       = require('../regression').lstsq;
-const statistics  = require('../statistics');
+const Matrix = require('../matrix');
+const lstsq = require('../regression').lstsq;
+const statistics = require('../statistics');
 
 onmessage = ({ data: { fit, cross, validation, candidates, jobId } }) => {
   fit.X = new Matrix(fit.X.m, fit.X.n, fit.X.data);
@@ -23,9 +23,9 @@ onmessage = ({ data: { fit, cross, validation, candidates, jobId } }) => {
 
   let results = candidates.map(({ fit, cross, validation, lag }, i) => {
     // Can't find a fit if exponent is -1 and divisor is 0
-    if (!fit) {
+    if (!fit)
       return NaN;
-    }
+
     // reconstruct matrices (they were deconstructed for transport)
     fit = {
       X: model.fit.X
@@ -40,20 +40,19 @@ onmessage = ({ data: { fit, cross, validation, candidates, jobId } }) => {
       y: model.cross.y.lo(lag)
     };
 
-    if (i % UPDATE_INTERVAL === 0) {
+    if (i % UPDATE_INTERVAL === 0)
       postMessage({ type: 'progress', data: i, jobId });
-    }
 
     try {
       // Compute stats for fit, then take t and P(t) (these come from fit data)
       let stats = statistics(lstsq(fit.X, fit.y));
-      let t = stats.t.get(0, stats.t.shape[0]-1);
-      let pt = stats.pt.get(0, stats.pt.shape[0]-1);
+      let t = stats.t.get(0, stats.t.shape[0] - 1);
+      let pt = stats.pt.get(0, stats.pt.shape[0] - 1);
 
       // Then, use the cross data to compute the rest of the statistics
       stats = statistics(lstsq(cross.X, cross.y, stats.weights))
 
-      stats.coeff = stats.weights.get(0, stats.weights.shape[0]-1);
+      stats.coeff = stats.weights.get(0, stats.weights.shape[0] - 1);
       stats.t = t;
       stats.pt = pt;
       delete stats.weights;
@@ -66,4 +65,3 @@ onmessage = ({ data: { fit, cross, validation, candidates, jobId } }) => {
   });
   postMessage({ type: 'result', data: results, jobId });
 };
-
