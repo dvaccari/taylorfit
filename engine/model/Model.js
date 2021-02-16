@@ -792,7 +792,7 @@ class Model extends CacheMixin(Observable) {
         for (i = 0; i < num_rows_; i++) {
           z_T_i = z_T.row(i, null);
           Q = z_T_i.dot(core).dot(z_T_i.T).get(0, 0);
-          se_pred = Math.sqrt(mse * Q);
+          se_pred = Math.sqrt(mse * (1 + Q));
 
           // Update prediction for this entry
           prediction.set(i + offset, 0, tCrit * se_pred);
@@ -824,7 +824,7 @@ class Model extends CacheMixin(Observable) {
         for (i = 0; i < num_rows_; i++) {
           z_T_i = z_T.row(i, null);
           Q = z_T_i.dot(core).dot(z_T_i.T).get(0, 0);
-          se_pred = Math.sqrt(mse * Q);
+          se_pred = Math.sqrt(mse * (1 + Q));
 
           // Update prediction for this entry
           prediction.set(i + offset, 0, tCrit * se_pred);
