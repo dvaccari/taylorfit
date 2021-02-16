@@ -1,7 +1,4 @@
-
-
 const math = require('mathjs');
-
 
 let lstsq = math.parse("inv(A'*A)*A'*b");
 
@@ -18,5 +15,3 @@ for (var i = 0; i < CT; i += 1) {
   lstsq.eval({ A: X, b: y });
 }
 console.timeEnd('lstsq');
-
-

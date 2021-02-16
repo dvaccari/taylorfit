@@ -1,8 +1,8 @@
 /*global Worker*/
 
-const { FIT_LABEL, CROSS_LABEL, VALIDATION_LABEL }  = require('../labels.json');
+const { FIT_LABEL, CROSS_LABEL, VALIDATION_LABEL } = require('../labels.json');
 //const CandidateWorkerScript       = require('../worker/candidate-worker.js');
-const perf                        = require('../perf');
+const perf = require('../perf');
 
 const randomId = () => Math.floor(Math.random() * 1e16).toString(16);
 
@@ -22,9 +22,9 @@ function unwrapMatrix(matrix) {
 class CandidateWorker {
 
   constructor(model) {
-    if (typeof Worker === 'undefined' || !Worker) {
+    if (typeof Worker === 'undefined' || !Worker)
       throw new Error('Web workers unavailable');
-    }
+
     this.id = counter();
     this.worker = new Worker('candidate-worker.js');
     this.model = model;
@@ -37,27 +37,26 @@ class CandidateWorker {
       this.worker.addEventListener(
         'message',
         ({ data: { data, type, jobId } }) => {
-          if (jobId !== thisJobId) {
+          if (jobId !== thisJobId)
             return;
-          }
 
           switch (type) {
-          case 'progress':
-            update && update(this.id, data);
-            break;
+            case 'progress':
+              update && update(this.id, data);
+              break;
 
-          case 'result':
-            resolve(data.map((stats, i) => ({
-              term: candidates[i].valueOf(),
-              coeff: stats.coeff,
-              stats
-            })));
-            perf.end('candidate-worker');
-            break;
+            case 'result':
+              resolve(data.map((stats, i) => ({
+                term: candidates[i].valueOf(),
+                coeff: stats.coeff,
+                stats
+              })));
+              perf.end('candidate-worker');
+              break;
 
-          default:
-            console.error(`[CandidateWorker${this.id}]: Invalid type '${type}'`);
-            break;
+            default:
+              console.error(`[CandidateWorker${this.id}]: Invalid type '${type}'`);
+              break;
           }
         }
       );
@@ -95,8 +94,8 @@ class CandidateWorker {
         let fit;
         try {
           fit = unwrapMatrix(term.col(FIT_LABEL));
-        } catch (e) {}
-        
+        } catch (e) { }
+
         let lag = Math.max(this.model.highestLag(), term.lag);
         let cross;
         let validation;

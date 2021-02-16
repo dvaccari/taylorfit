@@ -1,4 +1,3 @@
-
 const Matrix          = require('../matrix');
 const lstsq           = require('../regression').lstsq;
 const statistics      = require('../statistics');
@@ -39,30 +38,26 @@ const N_CANDIDATE_WORKERS     = 8;
 // The following is taken from the Google code archive https://code.google.com/archive/p/statistics-distributions-js/
 
 function tdistr ($n, $p) {
-	if ($n <= 0 || Math.abs($n) - Math.abs(integer($n)) != 0) {
+	if ($n <= 0 || Math.abs($n) - Math.abs(integer($n)) != 0)
 		throw("Invalid n: $n\n");
-	}
-	if ($p <= 0 || $p >= 1) {
+
+	if ($p <= 0 || $p >= 1)
 		throw("Invalid p: $p\n");
-	}
+
 	return _subt($n-0, $p-0);
 }
 
 function _subt ($n, $p) {
-
-	if ($p >= 1 || $p <= 0) {
+	if ($p >= 1 || $p <= 0)
 		throw("Invalid p: $p\n");
-	}
 
-	if ($p == 0.5) {
+	if ($p == 0.5)
 		return 0;
-	} else if ($p < 0.5) {
+	else if ($p < 0.5)
 		return - _subt($n, 1 - $p);
-	}
 
 	var $u = _subu($p);
 	var $u2 = Math.pow($u, 2);
-
 	var $a = ($u2 + 1) / 4;
 	var $b = ((5 * $u2 + 16) * $u2 + 3) / 96;
 	var $c = (((3 * $u2 + 19) * $u2 + 17) * $u2 - 15) / 384;
@@ -70,7 +65,6 @@ function _subt ($n, $p) {
 				/ 92160;
 	var $e = (((((27 * $u2 + 339) * $u2 + 930) * $u2 - 1782) * $u2 - 765) * $u2
 			+ 17955) / 368640;
-
 	var $x = $u * (1 + ($a + ($b + ($c + ($d + $e / $n) / $n) / $n) / $n) / $n);
 
 	if ($n <= Math.pow(log10($p), 2) + 3) {
@@ -89,16 +83,14 @@ function _subt ($n, $p) {
 }
 
 function _subtprob ($n, $x) {
-
 	var $a;
-        var $b;
+  var $b;
 	var $w = Math.atan2($x / Math.sqrt($n), 1);
 	var $z = Math.pow(Math.cos($w), 2);
 	var $y = 1;
 
-	for (var $i = $n-2; $i >= 2; $i -= 2) {
+	for (var $i = $n-2; $i >= 2; $i -= 2)
 		$y = 1 + ($i-1) / $i * $z * $y;
-	}
 
 	if ($n % 2 == 0) {
 		$a = Math.sin($w)/2;
@@ -125,15 +117,15 @@ function _subu ($p) {
 						  + $y * (.3657763036E-10
 							+ $y *.6936233982E-12)))))))))));
 	if ($p>.5)
-                $x = -$x;
+    $x = -$x;
 	return $x;
 }
 
 function integer ($i) {
   if ($i > 0)
-          return Math.floor($i);
+    return Math.floor($i);
   else
-          return Math.ceil($i);
+    return Math.ceil($i);
 }
 
 function log10 ($n) {
@@ -184,9 +176,9 @@ class Model extends CacheMixin(Observable) {
 
   transformColumn(label, data) {
     var index = data.index;
-    if (index === undefined || isNaN(index)) {
+    if (index === undefined || isNaN(index))
       return this;
-    }
+
     var data_labels = data.data_labels || [FIT_LABEL, CROSS_LABEL, VALIDATION_LABEL];
     // Need to do this for all dataset and not just "fit" data
     // If clear cross and validation data in UI, doesn't clear respective data in Model, so will throw error
@@ -239,18 +231,17 @@ class Model extends CacheMixin(Observable) {
     data = (data == null) ? undefined : data;
     label = (label == null) ? FIT_LABEL : label;
 
-    if (data && !(data instanceof Matrix)) {
+    if (data && !(data instanceof Matrix))
       data = new Matrix(data);
-    }
+
     if (data) {
       if (label !== FIT_LABEL &&
           data.shape[1] !== this[_data][FIT_LABEL].shape[1]) {
         // throw new Error(
         //   `Data for '${label}' is not the same shape as '${FIT_LABEL}'`
         // );
-      } else {
+      } else
         this[_use_cols] = utils.range(0, data.shape[1]);
-      }
     }
     var curr_data = this[_data][label];
     this[_data][label] = data;
@@ -272,6 +263,7 @@ class Model extends CacheMixin(Observable) {
       data.shape[1] < this[_data][FIT_LABEL].shape[1]) {
         this.fire('propogateTransform', {data_label: label});
     }
+
     return this;
   }
 
@@ -295,9 +287,8 @@ class Model extends CacheMixin(Observable) {
   }
 
   getCandidates() {
-    if (this[_cand_workers] == null) {
+    if (this[_cand_workers] == null)
       return this.getCandidatesSync();
-    }
 
     this.fire('getCandidates.start');
 
@@ -448,15 +439,14 @@ class Model extends CacheMixin(Observable) {
     this.uncache('y');
     this.uncache('data');
 
-    if (this[_data][label] == null) {
+    if (this[_data][label] == null)
       throw new ReferenceError('Cannot find data for \'' + label + '\'');
-    }
 
-    if (!Array.isArray(start)) {
+    if (!Array.isArray(start))
       start = utils.range(start, end || this[_data][label].shape[0]);
-    } else {
+     else
       start = start.slice();
-    }
+
     this[_subsets][label] = start;
 
     this.fire('subset', start);
@@ -475,7 +465,6 @@ class Model extends CacheMixin(Observable) {
 
     this.uncache('highestLag');
     this.fire('addTerm', term);
-    console.log(this[_dependent]);
     this.updateConfidence(this[_dependent]);  // ! This is an awful patch; see https://github.com/MikeChunko/taylorfit-staging/issues/5
     this.updatePrediction(this[_dependent]);  // ! This is an awful patch; see https://github.com/MikeChunko/taylorfit-staging/issues/5
     return this;
@@ -497,9 +486,9 @@ class Model extends CacheMixin(Observable) {
   }
 
   X(label=FIT_LABEL) {
-    if (this[_data][label] == null) {
+    if (this[_data][label] == null)
       throw new ReferenceError('Cannot find data for \'' + label + '\'');
-    }
+
     return this[_terms].reduce(
       (prev, curr) => prev.hstack(curr.col(label)),
       new Matrix(this[_subsets][label].length, 0)
@@ -511,16 +500,16 @@ class Model extends CacheMixin(Observable) {
   }
 
   data(label=FIT_LABEL) {
-    if (this[_data][label] == null) {
+    if (this[_data][label] == null)
       throw new ReferenceError('Cannot find data for \'' + label + '\'');
-    }
+
     return this[_data][label].subset(this[_subsets][label]);
   }
 
   computeSensitivity(index, label=FIT_LABEL) {
-    if (index == undefined) {
+    if (index == undefined)
       return this;
-    }
+
     let model = this; // to use within loops below
     let num_rows = model[_data][FIT_LABEL].shape[0];
     let derivative = new Matrix(num_rows, 1, new Array(num_rows).fill(0))
@@ -548,18 +537,15 @@ class Model extends CacheMixin(Observable) {
 
             // current_exp * [COLUMN DATA]^(current_exp - 1)
             part = statistics.compute('sensitivity_part', { data:current_col, exp:current_exp, derivative:true });
-          }
-          else {
-            // [COLUMN DATA]^(current_exp)
+          } else // [COLUMN DATA]^(current_exp)
             part = statistics.compute('sensitivity_part', { data: current_col, exp: current_exp, derivative:false });
-          }
+
           derivative_part = derivative_part.dotMultiply(new Matrix(num_rows, 1, part));
         });
 
-        if (contains_variable) {
-          // Add to overall derivative
+        if (contains_variable) // Add to overall derivative
           derivative = derivative.add(derivative_part.dotMultiply(term_coef));
-        }
+
 
     });
 
@@ -587,9 +573,8 @@ class Model extends CacheMixin(Observable) {
     // Note: Only updated on show/hide and add/remove terms,
     // even though change dependent and alpha also affect CI.
     // This is to save resources as CI calculation is computationally expensive.
-    if (index == undefined) {
+    if (index == undefined)
       return this;
-    }
 
     let model = this; // to use within loops below
     let num_rows = model[_data][FIT_LABEL].shape[0];
@@ -601,9 +586,9 @@ class Model extends CacheMixin(Observable) {
     this.terms.forEach(function (t) {
       let d = t.col();  // Get term data
 
-      for (j = 0; j < d.shape[0]; j++) {
+      for (j = 0; j < d.shape[0]; j++)
         Z.set(j, i, d.get(j, 0));
-      }
+
       i += 1;
     });
 
@@ -654,9 +639,9 @@ class Model extends CacheMixin(Observable) {
       this.terms.forEach(function (t) {
         let d = t.col(CROSS_LABEL);  // Get term data
 
-        for (j = 0; j < d.shape[0]; j++) {
+        for (j = 0; j < d.shape[0]; j++)
           z_T.set(j, i, d.get(j, 0));
-        }
+
         i += 1;
       });
 
@@ -686,9 +671,9 @@ class Model extends CacheMixin(Observable) {
        this.terms.forEach(function (t) {
          let d = t.col(VALIDATION_LABEL);  // Get term data
 
-         for (j = 0; j < d.shape[0]; j++) {
+         for (j = 0; j < d.shape[0]; j++)
            z_T.set(j, i, d.get(j, 0));
-         }
+
          i += 1;
        });
 
@@ -730,9 +715,8 @@ class Model extends CacheMixin(Observable) {
     // Note: Only updated on show/hide and add/remove terms,
     // even though change dependent and alpha also affect PI.
     // This is to save resources as PI calculation is computationally expensive.
-    if (index == undefined) {
+    if (index == undefined)
       return this;
-    }
 
     let model = this; // to use within loops below
     let num_rows = model[_data][FIT_LABEL].shape[0];
@@ -744,9 +728,9 @@ class Model extends CacheMixin(Observable) {
     this.terms.forEach(function (t) {
       let d = t.col();  // Get term data
 
-      for (j = 0; j < d.shape[0]; j++) {
+      for (j = 0; j < d.shape[0]; j++)
         Z.set(j, i, d.get(j, 0));
-      }
+
       i += 1;
     });
 
@@ -797,9 +781,9 @@ class Model extends CacheMixin(Observable) {
       this.terms.forEach(function (t) {
         let d = t.col(CROSS_LABEL);  // Get term data
 
-        for (j = 0; j < d.shape[0]; j++) {
+        for (j = 0; j < d.shape[0]; j++)
           z_T.set(j, i, d.get(j, 0));
-        }
+
         i += 1;
       });
 
@@ -829,9 +813,9 @@ class Model extends CacheMixin(Observable) {
        this.terms.forEach(function (t) {
          let d = t.col(VALIDATION_LABEL);  // Get term data
 
-         for (j = 0; j < d.shape[0]; j++) {
+         for (j = 0; j < d.shape[0]; j++)
            z_T.set(j, i, d.get(j, 0));
-         }
+
          i += 1;
        });
 
@@ -870,9 +854,9 @@ class Model extends CacheMixin(Observable) {
   }
 
   computeImportanceRatio(index, label=FIT_LABEL) {
-    if (index == undefined) {
+    if (index == undefined)
       return this;
-    }
+
     let model = this;
     let num_rows = model[_data][FIT_LABEL].shape[0];
     let current_col = model[_data][label].col(index);
@@ -929,4 +913,3 @@ CacheMixin.cache(Model, 'y', [FIT_LABEL]);
 CacheMixin.cache(Model, 'data', [FIT_LABEL]);
 
 module.exports = Model;
-

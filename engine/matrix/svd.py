@@ -1,4 +1,3 @@
-
 import numpy as np
 
 a = np.array([[22,10, 2,  3, 7],
@@ -24,9 +23,3 @@ aatinv = np.linalg.inv(aat)
 print(np.dot(aatinv, aat))
 
 print(np.linalg.cond(aat) > np.finfo(aat.dtype).eps)
-
-
-#print(bhat)
-#print(bhat2)
-
-

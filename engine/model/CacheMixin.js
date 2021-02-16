@@ -1,8 +1,7 @@
-
 const _cache = Symbol('cache');
 const _mixinref = Symbol('CacheMixin_ref');
 
-const CacheMixin = (superclass=class{}) => class extends superclass {
+const CacheMixin = (superclass = class { }) => class extends superclass {
 
   constructor() {
     super(...arguments);
@@ -17,9 +16,8 @@ const CacheMixin = (superclass=class{}) => class extends superclass {
       return this;
     }
 
-    if (this[_cache][functionName] == null) {
+    if (this[_cache][functionName] == null)
       return this;
-    }
 
     if (args.length <= 0) {
       this[_cache][functionName] = {};
@@ -42,34 +40,31 @@ const CacheMixin = (superclass=class{}) => class extends superclass {
 };
 
 // Static function that should be used to specify functions to apply caching to
-CacheMixin.cache = (clazz, functionName, defaultArgs=[]) => {
+CacheMixin.cache = (clazz, functionName, defaultArgs = []) => {
   let originalFunction = clazz.prototype[functionName];
 
-  if (clazz[_mixinref] !== true) {
+  if (clazz[_mixinref] !== true)
     throw new TypeError('Class must extend CacheMixin');
-  }
 
-  if (originalFunction == null) {
+  if (originalFunction == null)
     throw new ReferenceError(
       `${clazz.name}.prototype.${functionName} is not a function`
     );
-  }
 
   // Overwrite prototype definition with wrapper that caches results
   clazz.prototype[functionName] = function () {
     let args = Array.prototype.slice.apply(arguments)
-          .concat(defaultArgs.slice(arguments.length));
+      .concat(defaultArgs.slice(arguments.length));
     args.length = originalFunction.length + defaultArgs.length;
 
     let argsKey = args.toString();
 
-    if (this[_cache][functionName] == null) {
+    if (this[_cache][functionName] == null)
       this[_cache][functionName] = {};
-    }
 
-    if (argsKey in this[_cache][functionName]) {
+    if (argsKey in this[_cache][functionName])
       return this[_cache][functionName][argsKey];
-    }
+
     this[_cache][functionName][argsKey] = originalFunction.apply(this, args);
     return this[_cache][functionName][argsKey];
   };
@@ -80,4 +75,3 @@ CacheMixin.cache = (clazz, functionName, defaultArgs=[]) => {
 };
 
 module.exports = CacheMixin;
-

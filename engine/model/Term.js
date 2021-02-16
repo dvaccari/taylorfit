@@ -1,22 +1,21 @@
 'use strict';
 
-const CacheMixin  = require('./CacheMixin');
-const statistics  = require('../statistics');
-const lstsq       = require('../regression').lstsq;
-const Matrix      = require('../matrix');
+const CacheMixin = require('./CacheMixin');
+const statistics = require('../statistics');
+const lstsq = require('../regression').lstsq;
+const Matrix = require('../matrix');
 const {
   FIT_LABEL,
   CROSS_LABEL
-}                 = require('../labels.json');
+} = require('../labels.json');
 
 /**
  * Private members
  *
  * @private
  */
-const _parts      = Symbol('parts');
-const _model      = Symbol('model');
-
+const _parts = Symbol('parts');
+const _model = Symbol('model');
 
 /**
  * Term is a combination of input columns, exponents, and lags, such as x^2*y^3.
@@ -39,24 +38,23 @@ class Term extends CacheMixin() {
    */
   constructor(model, parts) {
     super();
-    if (!parts.every(Array.isArray)) {
+    if (!parts.every(Array.isArray))
       throw new TypeError('Part does not match: [col, exp (,lag)]');
-    }
 
     this[_parts] = parts.map((part) => {
-      if (part.length < 2) {
+      if (part.length < 2)
         throw new TypeError('Part does not match: [col, exp (,lag)]');
-      }
-      if (part.length < 3) {
+
+      if (part.length < 3)
         return part.concat(0);
-      }
+
       return part.slice();
     });
 
     this[_model] = model;
     this.isIntercept = parts[0][0] === 0 &&
-                       parts[0][1] === 0 &&
-                       parts.length === 1;
+      parts[0][1] === 0 &&
+      parts.length === 1;
 
     try {
       this.col();
@@ -77,8 +75,8 @@ class Term extends CacheMixin() {
       // Otherwise, just use the fit data
       let regression = lstsq(this.X(FIT_LABEL), this.y(FIT_LABEL));
       let stats = statistics(regression);
-      let t = stats.t.get(0, stats.t.shape[0]-1);
-      let pt = stats.pt.get(0, stats.pt.shape[0]-1);
+      let t = stats.t.get(0, stats.t.shape[0] - 1);
+      let pt = stats.pt.get(0, stats.pt.shape[0] - 1);
 
       Object.assign(regression, {
         X: this.X(CROSS_LABEL),
@@ -87,7 +85,7 @@ class Term extends CacheMixin() {
 
       stats = statistics(regression);
 
-      stats.coeff = stats.weights.get(0, stats.weights.shape[0]-1);
+      stats.coeff = stats.weights.get(0, stats.weights.shape[0] - 1);
       stats.t = t;
       stats.pt = pt;
       delete stats.weights;
@@ -99,27 +97,27 @@ class Term extends CacheMixin() {
     }
   }
 
-  X(subset=FIT_LABEL) {
+  X(subset = FIT_LABEL) {
     let lag = Math.max(this[_model].highestLag(), this.lag);
 
     try {
       return this[_model].X(subset).hstack(this.col(subset)).lo(lag);
     } catch (e) {
-      if (subset !== FIT_LABEL) {
+      if (subset !== FIT_LABEL)
         return this.X(FIT_LABEL);
-      }
+
       throw e;
     }
   }
 
-  y(subset=FIT_LABEL) {
+  y(subset = FIT_LABEL) {
     let lag = Math.max(this[_model].highestLag(), this.lag);
     try {
       return this[_model].y(subset).lo(lag);
     } catch (e) {
-      if (subset !== FIT_LABEL) {
+      if (subset !== FIT_LABEL)
         return this.y(FIT_LABEL);
-      }
+
       throw e;
     }
   }
@@ -154,32 +152,31 @@ class Term extends CacheMixin() {
    *
    * @return {Matrix<n,1>} n x 1 Matrix -- polynomial combo of columns in term
    */
-  col(subset=FIT_LABEL) {
+  col(subset = FIT_LABEL) {
     try {
       let data = this[_model].data(subset)
         , prod = Matrix.zeros(data.shape[0], 1).add(1)
         , i, col;
 
       for (i = 0; i < this[_parts].length; i += 1) {
-      	//TODO: Pause calculation to allow message to pass
-      	if(self.stopping)
-  		  return prod;
+        //TODO: Pause calculation to allow message to pass
+        if (self.stopping)
+          return prod;
         col = data.col(this[_parts][i][0]);
 
         // Check for negative exponent & potential 0 value
-        if (col.max() * col.min() <= 0 && this[_parts][i][1] < 0) {
+        if (col.max() * col.min() <= 0 && this[_parts][i][1] < 0)
           throw new Error(`Divide by zero error for column ${this[_parts][i][0]}`);
-        }
 
         prod = prod.dotMultiply(col.dotPow(this[_parts][i][1])
-                                  .shift(this[_parts][i][2]));
+          .shift(this[_parts][i][2]));
       }
 
       return prod;
     } catch (e) {
-      if (subset !== FIT_LABEL) {
+      if (subset !== FIT_LABEL)
         return this.col(FIT_LABEL);
-      }
+
       throw e;
     }
   }
@@ -196,8 +193,8 @@ class Term extends CacheMixin() {
   inspect(depth, options) {
     return 'Term < ' + this[_parts]
       .map((t) => String.fromCharCode(t[0] + 97)
-           + '^' + t[1]
-           + '[' + t[2] + ']')
+        + '^' + t[1]
+        + '[' + t[2] + ']')
       .join(' * ') + ' >';
   }
 

@@ -10,16 +10,15 @@ const utils = require('../utils');
  * @param {boolean} [replacement] If true, an item from `terms` can be repeated
  *                                in a single combination
  */
-let combinations = function(terms, k, replacement) {
+let combinations = function (terms, k, replacement) {
   var combos = [];
   var i;
 
-  if (k < 1) {
+  if (k < 1)
     return combos;
-  }
-  if (k === 1) {
+
+  if (k === 1)
     return terms.map((term) => [term]);
-  }
 
   for (i = 0; i < terms.length; i += 1) {
     var subCombos = combinations(
@@ -46,19 +45,19 @@ let combinations = function(terms, k, replacement) {
  *                      combination, only one item from each bin can be present
  * @return {*[][]} Combos
  */
-let combinationsFromBins = function(bins, k) {
+let combinationsFromBins = function (bins, k) {
   var combos = [];
   var i;
 
-  if (k < 1) {
+  if (k < 1)
     return combos;
-  }
-  if (bins.length <= 0) {
+
+  if (bins.length <= 0)
     return combos;
-  }
-  if (k === 1) {
+
+  if (k === 1)
     return utils.join(bins).map((term) => [term]);
-  }
+
   for (i = 0; i < bins[0].length; i += 1) {
     var subCombos = combinationsFromBins(bins.slice(1), k - 1);
     combos = combos.concat(subCombos.map((combo) => [bins[0][i]].concat(combo)));
@@ -78,7 +77,7 @@ let combinationsFromBins = function(bins, k) {
  * @param {number[]}  lags        Array of lags (similar to exponents)
  * @return {[number, number][][]} List of terms
  */
-let generateTerms = function(dep, indep, exponents, multipliers, lags) {
+let generateTerms = function (dep, indep, exponents, multipliers, lags) {
   let bins = indep.map(
     (i) => utils.join(exponents.map(
       (e) => lags.map(
@@ -99,4 +98,3 @@ let generateTerms = function(dep, indep, exponents, multipliers, lags) {
 module.exports.generateTerms = generateTerms;
 module.exports.combinations = combinations;
 module.exports.combinationsFromBins = combinationsFromBins;
-
