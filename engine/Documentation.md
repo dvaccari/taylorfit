@@ -73,7 +73,5 @@ Also returns statistics
 
 ### svd-golub-reinsch.js
 
-Return the SVD (u , q , v) for a given matrix A, using the 
+Return the SVD (u , q , v) for a given matrix A, using the
 Golub-Reinsch Algorithm
-
-

@@ -1,8 +1,6 @@
-
 const Model   = require('./model');
 const utils   = require('./utils');
 const Matrix  = require('./matrix').Matrix;
-
 
 // TODO: replace input to model() with object per data contract once it is
 //       finalized
@@ -18,4 +16,3 @@ module.exports.model = (data, dependent, exponents, multipliers) => {
 
   return new Model(inputColumns, outputColumn, exponents, multipliers);
 };
-
