@@ -32,7 +32,6 @@ const _terms          = Symbol('terms');
 const _cand_workers   = Symbol('candWorkers');
 
 const INTERCEPT       = [[0, 0, 0]];
-
 const N_CANDIDATE_WORKERS     = 8;
 
 // The following is taken from the Google code archive https://code.google.com/archive/p/statistics-distributions-js/
@@ -180,7 +179,7 @@ class Model extends CacheMixin(Observable) {
       return this;
 
     var data_labels = data.data_labels || [FIT_LABEL, CROSS_LABEL, VALIDATION_LABEL];
-    // Need to do this for all dataset and not just "fit" data
+    // Need to do this for all datasets and not just "fit" data
     // If clear cross and validation data in UI, doesn't clear respective data in Model, so will throw error
     data_labels.map((data_label) => {
       if (this[_data][data_label]) {
@@ -194,28 +193,21 @@ class Model extends CacheMixin(Observable) {
             break;
           case (LOG):
             var transform_col = statistics.compute(label, {X: col})
-            // this[_data][data_label] = this[_data][data_label].appendM(transform_col);
             this.setData(this[_data][data_label].appendM(transform_col), data_label)
             break;
           case (K_ORDER_DIFFERENCE):
-            var k = data.k;
-            var transform_col = statistics.compute(label, {X: col, k: k})
-            // this[_data][data_label] = this[_data][data_label].appendM(transform_col);
+            var transform_col = statistics.compute(label, {X: col, k: data.k})
             this.setData(this[_data][data_label].appendM(transform_col), data_label)
             break;
           case (STANDARDIZE):
             var mean = statistics.compute("mean", {X: col})
             var std = statistics.compute("std", {X: col, mean: mean})
-            console.log("Mean", mean);
-            console.log("Std", std)
             var transform_col = statistics.compute(label, {X: col, mean: mean, std: std})
-            // this[_data][data_label] = this[_data][data_label].appendM(transform_col);
             this.setData(this[_data][data_label].appendM(transform_col), data_label)
             break;
           case (RESCALE):
             var rms = statistics.compute("RMS", {X: col});
             var transform_col = statistics.compute(label, {X: col, RMS: rms});
-            // this[_data][data_label] = this[_data][data_label].appendM(transform_col);
             this.setData(this[_data][data_label].appendM(transform_col), data_label)
             break;
           default:
@@ -234,15 +226,11 @@ class Model extends CacheMixin(Observable) {
     if (data && !(data instanceof Matrix))
       data = new Matrix(data);
 
-    if (data) {
-      if (label !== FIT_LABEL &&
-          data.shape[1] !== this[_data][FIT_LABEL].shape[1]) {
-        // throw new Error(
-        //   `Data for '${label}' is not the same shape as '${FIT_LABEL}'`
-        // );
-      } else
+    if (data)
+      if (label == FIT_LABEL ||
+          data.shape[1] == this[_data][FIT_LABEL].shape[1])
         this[_use_cols] = utils.range(0, data.shape[1]);
-    }
+
     var curr_data = this[_data][label];
     this[_data][label] = data;
     this[_subsets][label] = data ? utils.range(0, data.shape[0]) : undefined;
@@ -417,7 +405,6 @@ class Model extends CacheMixin(Observable) {
 
   setColumns(cols) {
     this[_use_cols] = cols.slice();
-
     this[_terms] = [this.termpool.get(INTERCEPT)];
     this.uncache();
     this.fire('setColumns', cols);
@@ -499,6 +486,18 @@ class Model extends CacheMixin(Observable) {
     return this.data(label).subset(':', this[_dependent]);
   }
 
+  // Get the critical t-value
+  tCrit() {
+    // This doubles as an "undefined" check
+    if (this.tCrit.alpha != self.psig || this.tCrit.df != this.terms[0].col().shape[0] - this.terms.length) {
+      this.tCrit.alpha = self.psig;
+      this.tCrit.df = this.terms[0].col().shape[0] - this.terms.length;
+      this.tCrit.t = tdistr(this.tCrit.df, this.tCrit.alpha/2);
+    }
+
+    return this.tCrit.t;
+  }
+
   data(label=FIT_LABEL) {
     if (this[_data][label] == null)
       throw new ReferenceError('Cannot find data for \'' + label + '\'');
@@ -515,11 +514,10 @@ class Model extends CacheMixin(Observable) {
     let derivative = new Matrix(num_rows, 1, new Array(num_rows).fill(0))
 
     this.terms.forEach(function (t) {
-      let contains_variable = false; // Check if the variable we are deriving on is in this term
+      let contains_variable = false;  // Check if the variable we are deriving on is in this term
       let derivative_part = new Matrix(num_rows, 1, new Array(num_rows).fill(1))
 
-      // One coefficient per term
-      let term_coef = 2 * t.getStats()['coeff']
+      let term_coef = 2 * t.getStats()['coeff']  // One coefficient per term
 
       // t.valueOf() is an Array which contains information for each variable of the term
       let tValues = t.valueOf();
@@ -529,8 +527,8 @@ class Model extends CacheMixin(Observable) {
 
           // Get the current column of data
           let current_col = model[_data][label].col(current_index)['data'];
-
           let part;
+
           if (current_index == index) {
             // Current variable exists in term, should be used in derivative
             contains_variable = true;
@@ -545,8 +543,6 @@ class Model extends CacheMixin(Observable) {
 
         if (contains_variable) // Add to overall derivative
           derivative = derivative.add(derivative_part.dotMultiply(term_coef));
-
-
     });
 
     return {index: index, sensitivity: derivative.data}
@@ -592,8 +588,7 @@ class Model extends CacheMixin(Observable) {
       i += 1;
     });
 
-    // The core matrix
-    let core = ((Z.T).dot(Z)).inv();
+    let core = ((Z.T).dot(Z)).inv();  // The core matrix
 
     // This seems to be the easiest way to recompute MSE and tCrit
     var y = this.y(label)
@@ -605,17 +600,13 @@ class Model extends CacheMixin(Observable) {
     , np            = Z.shape[1]
     , sse           = y.sub(yHat).dotPow(2).sum()
     , mse           = sse / (nd - np)
-    , df            = nd - np
-    , alpha         = self.psig
-    , tCrit         = tdistr(df, alpha/2);
+    , tCritVal      = this.tCrit();
 
     // Compute our z matrix (transposed; same thing as Z but using data from the table with the given label)
     let z_T = null;
 
-    // Fit
-
-    // z_T is identical to Z for the fit data set
-    z_T = Z;
+    // Fit data set
+    z_T = Z; // z_T is identical to Z for the fit data set
 
     // Calculate Q for each entry (z_T_i * core * z_T_i.T)
     for (i = 0; i < num_rows; i++) {
@@ -624,12 +615,12 @@ class Model extends CacheMixin(Observable) {
       se_fit = Math.sqrt(mse * Q);
 
       // Update confidence for this entry
-      confidence.set(i, 0, tCrit * se_fit);
+      confidence.set(i, 0, tCritVal * se_fit);
     }
 
     offset = num_rows;
 
-    // Cross
+    // Cross data set
     if (model[_data][CROSS_LABEL] != null) {
       num_rows_ = model[_data][CROSS_LABEL].shape[0];
       z_T = new Matrix(num_rows_, this.terms.length, null);
@@ -653,7 +644,7 @@ class Model extends CacheMixin(Observable) {
           se_fit = Math.sqrt(mse * Q);
 
           // Update confidence for this entry
-          confidence.set(i + offset, 0, tCrit * se_fit);
+          confidence.set(i + offset, 0, tCritVal * se_fit);
         }} catch (e) {
         console.log("Something unexpected happened in cross CI:", e);
       }
@@ -661,7 +652,7 @@ class Model extends CacheMixin(Observable) {
       offset += num_rows_;
     }
 
-    // Valid
+    // Valid data set
     if (model[_data][VALIDATION_LABEL] != null) {
       num_rows_ = model[_data][VALIDATION_LABEL].shape[0];
       z_T = new Matrix(num_rows_, this.terms.length, null);
@@ -685,7 +676,7 @@ class Model extends CacheMixin(Observable) {
           se_fit = Math.sqrt(mse * Q);
 
           // Update confidence for this entry
-          confidence.set(i + offset, 0, tCrit * se_fit);
+          confidence.set(i + offset, 0, tCritVal * se_fit);
         }} catch (e) {
         console.log("Something unexpected happened in validation CI:", e);
        }
@@ -734,8 +725,7 @@ class Model extends CacheMixin(Observable) {
       i += 1;
     });
 
-    // The core matrix
-    let core = ((Z.T).dot(Z)).inv();
+    let core = ((Z.T).dot(Z)).inv();  // The core matrix
 
     // This seems to be the easiest way to recompute MSE and tCrit
     var y = this.y(label)
@@ -747,17 +737,13 @@ class Model extends CacheMixin(Observable) {
     , np            = Z.shape[1]
     , sse           = y.sub(yHat).dotPow(2).sum()
     , mse           = sse / (nd - np)
-    , df            = nd - np
-    , alpha         = self.psig
-    , tCrit         = tdistr(df, alpha/2);
+    , tCritVal      = this.tCrit();
 
     // Compute our z matrix (transposed; same thing as Z but using data from the table with the given label)
     let z_T = null;
 
-    // Fit
-
-    // z_T is identical to Z for the fit data set
-    z_T = Z;
+    // Fit data set
+    z_T = Z;  // z_T is identical to Z for the fit data set
 
     // Calculate Q for each entry (z_T_i * core * z_T_i.T)
     for (i = 0; i < num_rows; i++) {
@@ -766,12 +752,12 @@ class Model extends CacheMixin(Observable) {
       se_pred = Math.sqrt(mse * (1 + Q));
 
       // Update prediction for this entry
-      prediction.set(i, 0, tCrit * se_pred);
+      prediction.set(i, 0, tCritVal * se_pred);
     }
 
     offset = num_rows;
 
-    // Cross
+    // Cross data set
     if (model[_data][CROSS_LABEL] != null) {
       num_rows_ = model[_data][CROSS_LABEL].shape[0];
       z_T = new Matrix(num_rows_, this.terms.length, null);
@@ -795,7 +781,7 @@ class Model extends CacheMixin(Observable) {
           se_pred = Math.sqrt(mse * (1 + Q));
 
           // Update prediction for this entry
-          prediction.set(i + offset, 0, tCrit * se_pred);
+          prediction.set(i + offset, 0, tCritVal * se_pred);
         }} catch (e) {
         console.log("Something unexpected happened in cross PI:", e);
       }
@@ -803,7 +789,7 @@ class Model extends CacheMixin(Observable) {
       offset += num_rows_;
     }
 
-    // Valid
+    // Valid data set
     if (model[_data][VALIDATION_LABEL] != null) {
       num_rows_ = model[_data][VALIDATION_LABEL].shape[0];
       z_T = new Matrix(num_rows_, this.terms.length, null);
@@ -827,7 +813,7 @@ class Model extends CacheMixin(Observable) {
           se_pred = Math.sqrt(mse * (1 + Q));
 
           // Update prediction for this entry
-          prediction.set(i + offset, 0, tCrit * se_pred);
+          prediction.set(i + offset, 0, tCritVal * se_pred);
         }} catch (e) {
         console.log("Something unexpected happened in validation PI:", e);
        }
@@ -863,8 +849,7 @@ class Model extends CacheMixin(Observable) {
     let dependent_col = model[_data][label].col(model[_dependent]);
 
     let sensitivity = this.computeSensitivity(index, label)['sensitivity'];
-    // Convert to matrix
-    sensitivity = new Matrix(num_rows, 1, sensitivity);
+    sensitivity = new Matrix(num_rows, 1, sensitivity);  // Convert to matrix
 
     // Compute Standard Deviation of independent variable
     let mean_x = statistics.compute('mean', {X: current_col});
