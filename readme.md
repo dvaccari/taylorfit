@@ -40,7 +40,7 @@ browser capabilities that emulate native execution.
     - Run `npm start` to start the production server
 7. Run `npm run test` to run the test suite
 
-## Export to gh-pages
+## Export to gh-pages (the GitHub Pages site)
 
 1. Run `npm run build`
 2. Copy the build directory (`cp -r build/ ../build/`)
