@@ -6,8 +6,6 @@ VALIDATION_LABEL = require('../../engine/labels.json').VALIDATION_LABEL
 
 SILENT_MESSAGE_TYPES = [ "progress" ]
 
-#EngineWorker = require "../../engine/worker/engine-worker"
-
 class ME
 
   constructor: ( ) ->
@@ -80,7 +78,7 @@ module.exports = new class WorkerAdapter extends ME
     @post "addTerm", x
   removeTerm: ( x ) ->
     @post "removeTerm", x
-  
+
   transformDelete: ( x ) ->
     if x
       @post("transformData", {

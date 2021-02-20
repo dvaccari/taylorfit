@@ -1,4 +1,3 @@
-
 require "./index.styl"
 
 SORT =
@@ -22,7 +21,7 @@ ko.components.register "tf-candidates",
         @result.maxWidth 65 + document.querySelector(
           ".candidate-wrapper > .candidates").clientWidth
 
-	# Can safely be delayed
+	  # Can safely be delayed
     if performance.navigation.type != performance.navigation.TYPE_RELOAD
       setTimeout(global.send_incoming_stats, 1000)
 

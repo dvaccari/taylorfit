@@ -1,7 +1,6 @@
 const csv = require('fast-csv');
 const Matrix = require('./matrix');
 
-
 module.exports = (path, removeHeader, callback) => {
   var data = [];
 

@@ -1,11 +1,9 @@
-
 require "./index.styl"
 c3 = require "c3"
 Model = require "../Model"
 
 mean = (values) ->
-  sum = 0
-  i = 0
+  [sum, i] = [0, 0]
   while i < values.length
     sum += values[i]
     i++
@@ -13,21 +11,18 @@ mean = (values) ->
   return sum
 
 variance = (values, mu) ->
-  sum = 0
-  i = 0
+  [sum, i] = [0, 0]
   while i < values.length
     sum += (values[i] - mu) * (values[i] - mu)
     i++
   return sum /= values.length
 
 calculateAutoCorrelation = (values, k) ->
-  mu = mean(values)
-  
+  [sum, i, mu] = [0, 0, mean(values)]
+
   normal_values = values.slice(0,values.length - k)
   skipped_values = values.slice(k)
 
-  sum = 0
-  i = 0
   while i < normal_values.length
     sum += (normal_values[i] - mu) * (skipped_values[i] - mu)
     i++
@@ -36,9 +31,7 @@ calculateAutoCorrelation = (values, k) ->
   return sum
 
 calculateStandardError = (acf, numValues) ->
-  i = 0
-  errors = []
-  sum = 0
+  [sum, i, errors] = [0, 0, []]
   while i < acf.length
     sum += acf[i] * acf[i]
     console.log('Sum: ', sum)
@@ -48,7 +41,7 @@ calculateStandardError = (acf, numValues) ->
   console.log(errors)
   return errors
 
-  
+
 
 ko.components.register "tf-autocorrelation",
   template: do require "./index.pug"
@@ -57,13 +50,13 @@ ko.components.register "tf-autocorrelation",
     unless ko.isObservable params.model
       throw new TypeError "components/options:
       expects [model] to be observable"
-    
+
     model = params.model()
     @column_index = model.show_autocorrelation
 
     @active = ko.computed ( ) => @column_index() != undefined
-    
-    @column_name = ko.computed ( ) => 
+
+    @column_name = ko.computed ( ) =>
       if !@active()
         return undefined
       index = @column_index()
@@ -76,8 +69,8 @@ ko.components.register "tf-autocorrelation",
           return "Importance Ratio " + model.importanceRatioColumns()[index].name
         return @column_index()
       return model.columns()[@column_index()].name
-    
-    @values = ko.computed ( ) => 
+
+    @values = ko.computed ( ) =>
       if !@active()
         return undefined
       index = @column_index()
@@ -114,14 +107,12 @@ ko.components.register "tf-autocorrelation",
 
       buckets = Array(@bucket_size()).fill(0)
 
-      i = 0
-      k = @bucket_size()
+      [i, k, z_score] = [0, @bucket_size(), 3]
       while i < k
         console.log('Calculating Autocorrelation in Bucket ', i)
         buckets[i] = calculateAutoCorrelation(filtered, i+1)
         console.log('Autocorrelation Value: ', buckets[i])
         i++
-      z_score = 3
 
       errors = calculateStandardError(buckets, filtered.length)
       errors = errors.map((value) => value * z_score)
@@ -159,7 +150,7 @@ ko.components.register "tf-autocorrelation",
           show: false
       return chart.element.innerHTML
 
-    @download = ( ) -> 
+    @download = ( ) ->
       if !@active()
         return undefined
       svg_element = chart.element.querySelector "svg"
@@ -172,8 +163,8 @@ ko.components.register "tf-autocorrelation",
 
       svg_element.style.padding = "10px"
       box_size = svg_element.getBBox()
-      svg_element.style.height = box_size.height 
-      svg_element.style.width = box_size.width 
+      svg_element.style.height = box_size.height
+      svg_element.style.width = box_size.width
 
       chart_line = svg_element.querySelectorAll ".c3-chart-line"
       chart_line[1].style.opacity = 1
@@ -195,12 +186,12 @@ ko.components.register "tf-autocorrelation",
       x_and_y.concat Array.from node_list2
       x_and_y.forEach (e) ->
         e.style.fill = "none"
-        e.style.stroke = "black" 
+        e.style.stroke = "black"
 
       scale = Array.from node_list3
       scale.forEach (e) ->
         e.style.fill = "none"
-        e.style.stroke = "black" 
+        e.style.stroke = "black"
 
       svg_element.style.backgroundColor = "white"
 
