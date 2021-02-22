@@ -34,6 +34,20 @@ const _cand_workers   = Symbol('candWorkers');
 const INTERCEPT       = [[0, 0, 0]];
 const N_CANDIDATE_WORKERS     = 8;
 
+var _y = 0
+    , _ZT            = 0
+    , _pseudoInverse = 0
+    , _BHat          = 0
+    , _yHat          = 0
+    , _nd            = 0
+    , _np            = 0
+    , _sse           = 0
+    , _mse           = 0
+    , _tCritVal      = 0
+    , _qFit = []
+    , _qCross = []
+    , _qValid = [];
+
 // The following is taken from the Google code archive https://code.google.com/archive/p/statistics-distributions-js/
 
 function tdistr ($n, $p) {
@@ -602,6 +616,81 @@ class Model extends CacheMixin(Observable) {
     , mse           = sse / (nd - np)
     , tCritVal      = this.tCrit();
 
+    // Avoid recalculating
+    // TODO: Check for reload, fix equality check
+    if(false) { // _y === y && _ZT === ZT && _pseudoInverse === pseudoInverse && _BHat === BHat && _yHat === yHat && _nd === nd && _np === np && _sse === sse && _mse === mse && _tCritVal === tCritVal) {
+      console.log("computeConfidence: Speedup");
+        // Fit data set
+        // Calculate Q for each entry (z_T_i * core * z_T_i.T)
+      for (i = 0; i < num_rows; i++) {
+        Q = _qFit[i];
+        se_fit = Math.sqrt(mse * Q);
+
+        // Update confidence for this entry
+        confidence.set(i, 0, tCritVal * se_fit);
+      }
+
+      offset = num_rows;
+
+
+      // Cross data set
+      if (model[_data][CROSS_LABEL] != null) {
+        num_rows_ = model[_data][CROSS_LABEL].shape[0];
+
+        try {
+          // Calculate Q for each entry (z_T_i * core * z_T_i.T)
+          for (i = 0; i < num_rows_; i++) {
+            Q = _qCross[i];
+            se_fit = Math.sqrt(mse * Q);
+
+            // Update confidence for this entry
+            confidence.set(i + offset, 0, tCritVal * se_fit);
+          }} catch (e) {
+          console.log("Something unexpected happened in cross CI:", e);
+        }
+
+        offset += num_rows_;
+      }
+
+
+      // Valid data set
+      if (model[_data][VALIDATION_LABEL] != null) {
+        num_rows_ = model[_data][VALIDATION_LABEL].shape[0];
+
+        try {
+          // Calculate Q for each entry (z_T_i * core * z_T_i.T)
+          for (i = 0; i < num_rows_; i++) {
+            Q = _qValid[i];
+            se_fit = Math.sqrt(mse * Q);
+
+            // Update confidence for this entry
+            confidence.set(i + offset, 0, tCritVal * se_fit);
+          }} catch (e) {
+          console.log("Something unexpected happened in validation CI:", e);
+        }
+      }
+
+      return {index: index, confidence: confidence.data};
+
+    }
+    else {
+      console.log("computeConfidence: Slow");
+
+      _y = y;
+      _ZT = ZT;
+      _pseudoInverse = pseudoInverse;
+      _BHat = BHat;
+      _yHat = yHat;
+      _nd = nd;
+      _np = np;
+      _sse = sse;
+      _mse = mse;
+      _tCritVal = tCritVal;
+      _qFit = [];
+      _qCross = [];
+      _qValid = [];
+    }
+    
     // Compute our z matrix (transposed; same thing as Z but using data from the table with the given label)
     let z_T = null;
 
@@ -612,6 +701,7 @@ class Model extends CacheMixin(Observable) {
     for (i = 0; i < num_rows; i++) {
       z_T_i = z_T.row(i, null);
       Q = z_T_i.dot(core).dot(z_T_i.T).get(0, 0);
+      _qFit.push(Q);
       se_fit = Math.sqrt(mse * Q);
 
       // Update confidence for this entry
@@ -641,6 +731,8 @@ class Model extends CacheMixin(Observable) {
         for (i = 0; i < num_rows_; i++) {
           z_T_i = z_T.row(i, null);
           Q = z_T_i.dot(core).dot(z_T_i.T).get(0, 0);
+          _qCross.push(Q);
+
           se_fit = Math.sqrt(mse * Q);
 
           // Update confidence for this entry
@@ -673,6 +765,8 @@ class Model extends CacheMixin(Observable) {
         for (i = 0; i < num_rows_; i++) {
           z_T_i = z_T.row(i, null);
           Q = z_T_i.dot(core).dot(z_T_i.T).get(0, 0);
+          _qValid.push(Q);
+
           se_fit = Math.sqrt(mse * Q);
 
           // Update confidence for this entry
@@ -738,6 +832,81 @@ class Model extends CacheMixin(Observable) {
     , sse           = y.sub(yHat).dotPow(2).sum()
     , mse           = sse / (nd - np)
     , tCritVal      = this.tCrit();
+
+    // Avoid recalculating
+    // TODO: Check for reload, fix equality check
+    if(false) { //_y === y && _ZT === ZT && _pseudoInverse === pseudoInverse && _BHat === BHat && _yHat === yHat && _nd === nd && _np === np && _sse === sse && _mse === mse && _tCritVal === tCritVal) {
+      console.log("computePred: Speedup");
+        // Fit data set
+        // Calculate Q for each entry (z_T_i * core * z_T_i.T)
+      for (i = 0; i < num_rows; i++) {
+        Q = _qFit[i];
+        se_fit = Math.sqrt(mse * (1+Q));
+
+        // Update prediction for this entry
+        prediction.set(i, 0, tCritVal * se_fit);
+      }
+
+      offset = num_rows;
+
+
+      // Cross data set
+      if (model[_data][CROSS_LABEL] != null) {
+        num_rows_ = model[_data][CROSS_LABEL].shape[0];
+
+        try {
+          // Calculate Q for each entry (z_T_i * core * z_T_i.T)
+          for (i = 0; i < num_rows_; i++) {
+            Q = _qCross[i];
+            se_fit = Math.sqrt(mse * (1+Q));
+
+            // Update prediction for this entry
+            prediction.set(i + offset, 0, tCritVal * se_fit);
+          }} catch (e) {
+          console.log("Something unexpected happened in cross CI:", e);
+        }
+
+        offset += num_rows_;
+      }
+
+
+      // Valid data set
+      if (model[_data][VALIDATION_LABEL] != null) {
+        num_rows_ = model[_data][VALIDATION_LABEL].shape[0];
+
+        try {
+          // Calculate Q for each entry (z_T_i * core * z_T_i.T)
+          for (i = 0; i < num_rows_; i++) {
+            Q = _qValid[i];
+            se_fit = Math.sqrt(mse * (1+Q));
+
+            // Update prediction for this entry
+            prediction.set(i + offset, 0, tCritVal * se_fit);
+          }} catch (e) {
+          console.log("Something unexpected happened in validation CI:", e);
+        }
+      }
+
+      return {index: index, prediction: prediction.data};
+
+    }
+    else {
+      console.log("computePred: Slow");
+
+      _y = y;
+      _ZT = ZT;
+      _pseudoInverse = pseudoInverse;
+      _BHat = BHat;
+      _yHat = yHat;
+      _nd = nd;
+      _np = np;
+      _sse = sse;
+      _mse = mse;
+      _tCritVal = tCritVal;
+      _qFit = [];
+      _qCross = [];
+      _qValid = [];
+    }
 
     // Compute our z matrix (transposed; same thing as Z but using data from the table with the given label)
     let z_T = null;
