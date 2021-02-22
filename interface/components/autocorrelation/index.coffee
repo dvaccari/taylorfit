@@ -34,14 +34,9 @@ calculateStandardError = (acf, numValues) ->
   [sum, i, errors] = [0, 0, []]
   while i < acf.length
     sum += acf[i] * acf[i]
-    console.log('Sum: ', sum)
     errors[i] = Math.sqrt((1 + 2 * sum) / numValues)
-    console.log(errors[i])
     i++
-  console.log(errors)
   return errors
-
-
 
 ko.components.register "tf-autocorrelation",
   template: do require "./index.pug"
@@ -109,16 +104,12 @@ ko.components.register "tf-autocorrelation",
 
       [i, k, z_score] = [0, @bucket_size(), 3]
       while i < k
-        console.log('Calculating Autocorrelation in Bucket ', i)
         buckets[i] = calculateAutoCorrelation(filtered, i+1)
-        console.log('Autocorrelation Value: ', buckets[i])
         i++
 
       errors = calculateStandardError(buckets, filtered.length)
       errors = errors.map((value) => value * z_score)
       negativeErrors = errors.map((value) => value * -1)
-
-      console.log(errors)
 
       labels = Array(@bucket_size()).fill(0).map((x, index) => index + 1)
       # global varible 'chart' can be accessed in download function
@@ -225,10 +216,6 @@ ko.components.register "tf-autocorrelation",
         document.body.removeChild a_element
 
       return undefined
-
-    @column_index.subscribe ( next ) =>
-      #if next then adapter.unsubscribeToChanges()
-      #else adapter.subscribeToChanges()
 
     @inc = ( ) -> @bucket_size @bucket_size() + 1
     @dec = ( ) -> @bucket_size ((@bucket_size() - 1) || 1)

@@ -1,5 +1,3 @@
-
-
 require "./index.styl"
 
 ko.components.register "tf-counter",
@@ -37,7 +35,6 @@ ko.components.register "tf-counter",
     ko.computed ( ) =>
       @upperlimit value() is max()
 
-
     @increment = ( ) ->
       unless @upperlimit()
         value value() + 1
@@ -55,4 +52,3 @@ ko.components.register "tf-counter",
           @lowerlimit true
 
     return this
-

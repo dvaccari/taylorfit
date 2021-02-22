@@ -1,4 +1,3 @@
-
 require "./index.styl"
 
 ko.components.register "tf-checkbox",
