@@ -83,7 +83,6 @@ ko.components.register "tf-grid",
         model.show_cumulative_distribution("ImportanceRatio_"+index.toString())
         model.data_plotted(@table)
 
-
     @autocorrelation = ( index ) ->
       model.show_autocorrelation(index)
       model.data_plotted(@table)
@@ -155,12 +154,11 @@ ko.components.register "tf-grid",
         model.delete_sensitivity( index )
 
     @hasSensitivity = ( index ) ->
-      found = false
       model.sensitivityColumns().forEach( (column) ->
         if column.index == index
-          found = true
+          return true
       )
-      return found
+      return false
 
     @confidence = ( index ) ->
       model.show_confidence( index )
@@ -176,12 +174,11 @@ ko.components.register "tf-grid",
         model.delete_confidence( index )
 
     @hasConfidence = ( index ) ->
-      found = false
       model.confidenceColumns().forEach( (column) ->
         if column.index == index
-          found = true
+          return true
       )
-      return found
+      return false
 
     @prediction = ( index ) ->
       model.show_prediction( index )
@@ -197,12 +194,11 @@ ko.components.register "tf-grid",
         model.delete_prediction( index )
 
     @hasPrediction = ( index ) ->
-      found = false
       model.predictionColumns().forEach( (column) ->
         if column.index == index
-          found = true
+          return true
       )
-      return found
+      return false
 
     @importanceRatio = ( index ) ->
       model.show_importanceRatio( index )
@@ -218,12 +214,11 @@ ko.components.register "tf-grid",
         model.delete_importanceRatio( index )
 
     @hasImportanceRatio = ( index ) ->
-      found = false
       model.importanceRatioColumns().forEach( (column) ->
         if column.index == index
-          found = true
+          return true
       )
-      return found
+      return false
 
     # Is hidden if ignored or has transformed column
     @isHidden = ( index ) ->
@@ -671,6 +666,5 @@ ko.components.register "tf-grid",
       else adapter.subscribeToChanges()
 
     @show_partition = ( ) =>
-      console.log "This message"
+      console.log "show_partition"
     return this
-

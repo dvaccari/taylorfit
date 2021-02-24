@@ -1,4 +1,3 @@
-
 require "./index.styl"
 Model = require "../Model"
 exporter = require "./exporter"
@@ -10,7 +9,7 @@ ko.components.register "tf-export-code",
     unless ko.isObservable params.model
       throw new TypeError "components/options:
       expects [model] to be observable"
-    
+
     model = params.model()
 
     show_export_code = model.show_export_code

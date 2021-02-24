@@ -1,25 +1,23 @@
-
-
 require "./index.styl"
 
 ko.components.register "tf-dropdown",
   template: do require "./index.pug"
   viewModel: createViewModel: ( params, { element, templateNodes } ) ->
-    # -- params
+    # Params
     if params.align
       element.className += " align-#{params.align}"
 
-    # -- arrow
+    # Arrow
     arrow = element.children[0]
 
-    # -- content
+    # Content
     element.appendChild content = document.createElement "div"
     content.className = "dropdown-content"
     content.setAttribute "data-bind", "with:$parents[#{params.shallow || 0}]"
     content.style.display = "none"
     content.appendChild node for node in templateNodes
 
-    # -- event management
+    # Event management
     arrow.onclick = ( event ) ->
       if content.style.display is "none"
         content.style.display = "block"

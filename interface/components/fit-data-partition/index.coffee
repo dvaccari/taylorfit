@@ -26,7 +26,7 @@ ko.components.register "tf-fit-data-partition",
       num >= 0 &&
       num <= 100 &&
       !isNaN(num)
-    
+
     @change_fit_partition = ( ) ->
       fit_partition = Number(@fit_p())
       fit_split_invalid = !check_split_valid(fit_partition)
@@ -55,7 +55,7 @@ ko.components.register "tf-fit-data-partition",
             @fit_row_start(start_row)
           end_row = if data_rows <= start_row + num_rows then data_rows else start_row + num_rows
           @fit_row_end(end_row)
-    
+
     @change_fit_start_row = ( ) ->
       fit_row_start = Number(@fit_row_start())
       fit_row_end = Number(@fit_row_end())
@@ -89,15 +89,13 @@ ko.components.register "tf-fit-data-partition",
         partition_percentage = Math.round((fit_row_end - fit_row_start + 1) / data_rows * 100)
         @fit_p(partition_percentage)
         @error_msg(undefined)
-    
+
     check_in_range = (num, start, end) ->
-      # The other partition is not partitioned
-      if (start == 0 && end == 0)
+      if (start == 0 && end == 0)  # The other partition is not partitioned
         false
       else
         num >= start && num <= end
 
-    
     @import_fit_dataset = ( ) ->
       fit_p = Number(@fit_p()) || 0
       fit_row_start = Number(@fit_row_start()) || 0
@@ -132,7 +130,7 @@ ko.components.register "tf-fit-data-partition",
       )
       window.location.reload()
       return true
-    
+
     @close_window = ( ) ->
       @show_partition(false)
       window.location.reload()

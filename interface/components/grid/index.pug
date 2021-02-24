@@ -236,17 +236,7 @@ table.grid
           span.mark(data-bind="click:function(){deleteImportanceRatio($index(),'importanceRatio')}")
             | Hide Importance Ratio
       // /ko
-  //- div.toggle Toggle Fundamental Statistics
-  //- tf-dropdown(params="")
-  //-   // ko if: !hasMean()
-  //-   span.mark(data-bind="click:function(){flipMean()}")
-  //-     | Show Mean
-  //-   // /ko
-  //-   // ko if: hasMean()
-  //-   span.mark(data-bind="click:function(){flipMean()}")
-  //-     | Hide Mean
-  //-   span.mark(data-bind="text:toggleMean")
-  //-   // /ko
+
   tbody
     // ko if: hasMean()
     tr.stat

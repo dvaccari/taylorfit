@@ -54,9 +54,7 @@ ko.components.register "tf-graph",
           position: "inset"
         grid:
           y:
-            lines: [
-              value: 0
-            ]
+            lines: [ value: 0 ]
         tooltip:
           contents: ( [ d ] ) ->
             return "(#{ko.formatters.float d.x},
@@ -68,8 +66,8 @@ ko.components.register "tf-graph",
 
       download_chart = () ->
         svg_element = chart.element.querySelector "svg"
-        original_height = svg_element.getAttribute "height" 
-        original_width = svg_element.getAttribute "width" 
+        original_height = svg_element.getAttribute "height"
+        original_width = svg_element.getAttribute "width"
 
         # get real height/width of a overflow
         svg_element.removeAttribute "height"
@@ -82,7 +80,7 @@ ko.components.register "tf-graph",
 
         legend_background = svg_element.querySelector ".c3-legend-background"
         legend_background.style.display = "none"
-        
+
         ygrid_line = svg_element.querySelector ".c3-ygrid-line"
         ygrid_line.style.stroke = "black"
 
@@ -95,7 +93,7 @@ ko.components.register "tf-graph",
           e.style.fill = "none"
           e.style.stroke = "black"
         svg_element.style.backgroundColor = "white"
-        
+
         tick = svg_element.querySelectorAll ".tick"
         num_arr = Array(tick.length).fill(0).map((x, y) => y)
 
@@ -111,7 +109,7 @@ ko.components.register "tf-graph",
         text[0].setAttribute "y", original_y + 3
 
         temp_height = svg_element.style.height
-        if temp_height.substring(0,temp_height.length-2) > 370 
+        if temp_height.substring(0,temp_height.length-2) > 370
           svg_element.style.height = 368
 
         if fit_visible == false
@@ -123,7 +121,7 @@ ko.components.register "tf-graph",
 
         xml = new XMLSerializer().serializeToString svg_element
         data_url = "data:image/svg+xml;base64," + btoa xml
-        
+
         # Reset to original values
         svg_element.style.padding = null
         text[0].setAttribute "y", original_y
@@ -142,7 +140,7 @@ ko.components.register "tf-graph",
 
         img.onload = () ->
           canvas_element = document.createElement "canvas"
-          canvas_element.width = svg_element.scrollWidth 
+          canvas_element.width = svg_element.scrollWidth
           canvas_element.height = svg_element.scrollHeight
           ctx = canvas_element.getContext "2d"
           ctx.drawImage img, 0, 0
@@ -166,15 +164,15 @@ ko.components.register "tf-graph",
       fit_visible = true
       cross_visible = true
       validation_visible = true
-      
+
       window.onload = () ->
         setTimeout ( ->
           svg_element = chart.element.querySelector "svg"
           @fit_legend = svg_element.querySelector ".c3-legend-item-Fit-Data"
-          @cross_legend = svg_element.querySelector ".c3-legend-item-Cross-Data" 
-          @validation_legend = svg_element.querySelector ".c3-legend-item-Validation-Data" 
-          
-          fit_legend_VS = () -> 
+          @cross_legend = svg_element.querySelector ".c3-legend-item-Cross-Data"
+          @validation_legend = svg_element.querySelector ".c3-legend-item-Validation-Data"
+
+          fit_legend_VS = () ->
             if fit_visible == true
               fit_visible = false
             else
@@ -183,7 +181,7 @@ ko.components.register "tf-graph",
           if fit_legend
             fit_legend.onclick = fit_legend_VS
 
-          cross_legend_VS = () -> 
+          cross_legend_VS = () ->
             if cross_visible == true
               cross_visible = false
             else
@@ -192,7 +190,7 @@ ko.components.register "tf-graph",
           if cross_legend
             cross_legend.onclick = cross_legend_VS
 
-          validation_legend_VS = () -> 
+          validation_legend_VS = () ->
             if validation_visible == true
               validation_visible = false
             else
@@ -201,5 +199,5 @@ ko.components.register "tf-graph",
           if validation_legend
             validation_legend.onclick = validation_legend_VS
           ), 1000
-          
+
       return { }
