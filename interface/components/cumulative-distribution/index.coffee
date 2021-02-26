@@ -23,12 +23,12 @@ ko.components.register "tf-cumulative-distribution",
         if index.indexOf("Sensitivity") != -1
           index = index.split("_")[1]
           return "Sensitivity " + model.sensitivityColumns()[index].name
-        if index.indexOf("Confidence") != -1
-          index = index.split("_")[1]
-          return "Confidence " + model.confidenceColumns()[index].name
-        if index.indexOf("Prediction") != -1
-          index = index.split("_")[1]
-          return "Prediction " + model.predictionColumns()[index].name
+        if index.indexOf("C.I.") != -1
+          index = 0
+          return "C.I."
+        if index.indexOf("P.I.") != -1
+          index = 0
+          return "P.I."
         if index.indexOf("ImportanceRatio") != -1
           index = index.split("_")[1]
           return "Importance Ratio " + model.importanceRatioColumns()[index].name
@@ -50,14 +50,14 @@ ko.components.register "tf-cumulative-distribution",
           # format is: Sensitivity_index
           index = index.split("_")[1]
           return Object.values(model.sensitivityData()[index])
-        if typeof index == "string" && index.indexOf("Confidence") != -1
-          # format is: Confidence_index
-          index = index.split("_")[1]
-          return Object.values(model.confidenceData()[index])
-        if typeof index == "string" && index.indexOf("Prediction") != -1
-          # format is: Prediction_index
-          index = index.split("_")[1]
-          return Object.values(model.predictionData()[index])
+        if typeof index == "string" && index.indexOf("C.I.") != -1
+          # format is: C.I.
+          index = 0
+          return Object.values(model.confidenceData()[0])
+        if typeof index == "string" && index.indexOf("P.I.") != -1
+          # format is: P.I.
+          index = 0
+          return Object.values(model.predictionData()[0])
         if typeof index == "string" && index.indexOf("ImportanceRatio") != -1
           # format is: ImportanceRatio_index
           index = index.split("_")[1]

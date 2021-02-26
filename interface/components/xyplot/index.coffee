@@ -15,7 +15,7 @@ ko.components.register "tf-xyplot",
 
     @active = ko.computed ( ) => @column_indexes() != undefined
 
-    @columns = ko.observable ["Index"].concat(model.columns().map((x) => x.name)).concat(["Dependent", "Predicted", "Residual"])
+   # @columns = ko.observable ["Index"].concat(model.columns().map((x) => x.name)).concat(["Dependent", "Predicted", "Residual"])
 
     @column_names = ko.computed ( ) =>
       if !@active()
@@ -25,6 +25,13 @@ ko.components.register "tf-xyplot",
           if idx.indexOf("Sensitivity") != -1  # Special Case for Sensitivity
             idx = idx.split("_")[1]
             return "Sensitivity " + model.sensitivityColumns()[idx].name
+          if idx.indexOf("C.I.") != -1  # Speical Case for C.I.
+            console.log("OVER HERE BUDDY")
+            idx = 0
+            return "C.I."
+          if idx.indexOf("P.I.") != -1  # Speical Case for P.I.
+            idx = 0
+            return "P.I."
           if idx.indexOf("ImportanceRatio") != -1  # Special Case for IR
             idx = idx.split("_")[1]
             return "Importance Ratio " + model.importanceRatioColumns()[idx].name
@@ -48,6 +55,14 @@ ko.components.register "tf-xyplot",
         if column_names[index].indexOf("Sensitivity") != -1
           idx = idx.split("_")[1]
           return Object.values(model.sensitivityData()[idx])
+        if column_names[index].indexOf("C.I.") != -1
+          # format is: C.I.
+          idx = 0
+          return Object.values(model.confidenceData()[0])
+        if column_names[index].indexOf("P.I.") != -1
+          # format is: P.I.
+          idx = 0
+          return Object.values(model.predictionData()[0])
         if column_names[index].indexOf("Importance Ratio") != -1
           idx = idx.split("_")[1]
           return Object.values(model.importanceRatioData()[idx])

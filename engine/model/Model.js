@@ -820,7 +820,7 @@ class Model extends CacheMixin(Observable) {
       total_rows += model[_data][VALIDATION_LABEL].shape[0];
 
     let Z = new Matrix(num_rows, this.terms.length, null);
-    let prediction = new Matrix(total_rows*5, 1, new Array(total_rows*5).fill(0));
+    let prediction = new Matrix(total_rows, 1, new Array(total_rows).fill(0));
 
     // Build up the Z matrix (forms the core matrix)
     let i = 0;

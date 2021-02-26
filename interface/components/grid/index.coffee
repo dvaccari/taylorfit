@@ -56,10 +56,10 @@ ko.components.register "tf-grid",
         model.show_histogram("Sensitivity_"+index.toString())
         model.data_plotted(@table)
       if statistic == "confidence"
-        model.show_histogram("Confidence Interval")
+        model.show_histogram("C.I.")
         model.data_plotted(@table)
       if statistic == "prediction"
-        model.show_histogram("Prediction Interval")
+        model.show_histogram("P.I.")
         model.data_plotted(@table)
       if statistic == "importanceRatio"
         model.show_histogram("ImportanceRatio_"+index.toString())
@@ -74,10 +74,10 @@ ko.components.register "tf-grid",
         model.show_cumulative_distribution("Sensitivity_"+index.toString())
         model.data_plotted(@table)
       if statistic == "confidence"
-        model.show_cumulative_distribution("Confidence_"+index.toString())
+        model.show_cumulative_distribution("C.I.")
         model.data_plotted(@table)
       if statistic == "prediction"
-        model.show_cumulative_distribution("Prediction_"+index.toString())
+        model.show_cumulative_distribution("P.I.")
         model.data_plotted(@table)
       if statistic == "importanceRatio"
         model.show_cumulative_distribution("ImportanceRatio_"+index.toString())
@@ -92,10 +92,10 @@ ko.components.register "tf-grid",
         model.show_autocorrelation("Sensitivity_"+index.toString())
         model.data_plotted(@table)
       if statistic == "confidence"
-        model.show_autocorrelation("Confidence Interval")
+        model.show_autocorrelation("C.I.")
         model.data_plotted(@table)
       if statistic == "prediction"
-        model.show_autocorrelation("Prediction Interval")
+        model.show_autocorrelation("P.I.")
         model.data_plotted(@table)
       if statistic == "importanceRatio"
         model.show_autocorrelation("ImportanceRatio_"+index.toString())
@@ -110,10 +110,10 @@ ko.components.register "tf-grid",
         model.show_xyplot(["Sensitivity_"+index.toString(), "Index"])
         model.data_plotted(@table)
       if statistic == "confidence"
-        model.show_xyplot(["Confidence Interval", "Index"])
+        model.show_xyplot(["C.I.", "Index"])
         model.data_plotted(@table)
       if statistic == "prediction"
-        model.show_xyplot(["Prediction Interval", "Index"])
+        model.show_xyplot(["P.I.", "Index"])
         model.data_plotted(@table)
       if statistic == "importanceRatio"
         model.show_xyplot(["ImportanceRatio_"+index.toString(), "Index"])
@@ -128,10 +128,10 @@ ko.components.register "tf-grid",
         model.show_qqplot("Sensitivity_"+index.toString())
         model.data_plotted(@table)
       if statistic == "confidence"
-        model.show_qqplot("Confidence Interval")
+        model.show_qqplot("C.I.")
         model.data_plotted(@table)
       if statistic == "prediction"
-        model.show_qqplot("Prediction Interval")
+        model.show_qqplot("P.I.")
         model.data_plotted(@table)
       if statistic == "importanceRatio"
         model.show_qqplot("ImportanceRatio_"+index.toString())
