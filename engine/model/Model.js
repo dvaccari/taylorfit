@@ -588,8 +588,15 @@ class Model extends CacheMixin(Observable) {
 
     let model = this; // to use within loops below
     let num_rows = model[_data][FIT_LABEL].shape[0];
+    let total_rows = num_rows;
+
+    if (model[_data][CROSS_LABEL] != null)
+      total_rows += model[_data][CROSS_LABEL].shape[0];
+    if (model[_data][VALIDATION_LABEL] != null)
+      total_rows += model[_data][VALIDATION_LABEL].shape[0];
+
     let Z = new Matrix(num_rows, this.terms.length, null);
-    let confidence = new Matrix(num_rows*5, 1, new Array(num_rows*5).fill(0));
+    let confidence = new Matrix(total_rows, 1, new Array(total_rows).fill(0));
 
     // Build up the Z matrix (forms the core matrix)
     let i = 0;
@@ -690,7 +697,7 @@ class Model extends CacheMixin(Observable) {
       _qCross = [];
       _qValid = [];
     }
-    
+
     // Compute our z matrix (transposed; same thing as Z but using data from the table with the given label)
     let z_T = null;
 
@@ -805,8 +812,15 @@ class Model extends CacheMixin(Observable) {
 
     let model = this; // to use within loops below
     let num_rows = model[_data][FIT_LABEL].shape[0];
+    let total_rows = num_rows;
+
+    if (model[_data][CROSS_LABEL] != null)
+      total_rows += model[_data][CROSS_LABEL].shape[0];
+    if (model[_data][VALIDATION_LABEL] != null)
+      total_rows += model[_data][VALIDATION_LABEL].shape[0];
+
     let Z = new Matrix(num_rows, this.terms.length, null);
-    let prediction = new Matrix(num_rows*5, 1, new Array(num_rows*5).fill(0));
+    let prediction = new Matrix(total_rows*5, 1, new Array(total_rows*5).fill(0));
 
     // Build up the Z matrix (forms the core matrix)
     let i = 0;
