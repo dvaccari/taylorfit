@@ -1,4 +1,3 @@
-
 require "./index.styl"
 Model = require "../Model"
 
@@ -26,7 +25,6 @@ read_csv = ( file ) ->
           name = file.name
           accept { name, rows, cols }
 
-
 read_model = ( file ) ->
   new Promise ( accept, reject ) ->
     reader = new FileReader
@@ -52,12 +50,11 @@ ko.components.register "tf-replace",
 
     @id = "input-#{@table}-dataset"
 
-    # --- for loading just dataset
+    # For loading just dataset
     @dataset = ko.observable null
     @show_partition = ko.observable undefined
     @show_fit_partition = ko.observable undefined
     @show_cross_partition = ko.observable undefined
-    #@show_validate_partition = ko.observable undefined
     @temp_model = ko.observable undefined
     @dataset.subscribe ( next ) =>
       # Importing CSV file
@@ -67,10 +64,6 @@ ko.components.register "tf-replace",
         if @init # Importing data
           @temp_model(model)
           @show_partition(true)
-          # params.model new Model
-          #   "data_#{@table}": model.rows
-          #   name: model.name
-          #   columns: model.cols
         else if ( @table == 'fit')
           @temp_model(model)
           @show_fit_partition(true)
@@ -99,7 +92,7 @@ ko.components.register "tf-replace",
       else
        m["data_fit"] data_fit
        m["name_fit"] = model.name
-    
+
     @import_cross_partition = (
       cross_row_start,
       cross_row_end,
@@ -115,8 +108,8 @@ ko.components.register "tf-replace",
       else
        m["data_cross"] data_cross
        m["name_cross"] = model.name
-    
-     # --- Use from data partition modal
+
+     # Use from data partition modal
     @import_partition = (
       fit_row_start,
       fit_row_end,
@@ -146,8 +139,7 @@ ko.components.register "tf-replace",
         columns: model.cols
       @show_partition(false)
 
-
-    # --- for loading entire model
+    # For loading entire model
     if @init
       @model = ko.observable null
       @model.subscribe ( next ) ->

@@ -1,20 +1,18 @@
-
-# --- include core libraries
+# Include core libraries
 require "core-js"
 require "../engine/worker/subworkers.js"
 
-# --- choose correct adapter
+# Choose correct adapter
 # TODO: make selection based on build model
 global.adapter = require "./adapter/worker"
 
-# --- setup knockout
+# Setup knockout
 global.ko = require "./ko-adapter"
 
-# --- setup lodash
+# Setup lodash
 global._ = require "lodash"
 
-# --- request statistics
-
+# Request statistics
 global.allstats = ko.observableArray [ ]
 
 global.send_incoming_stats = () ->
@@ -37,7 +35,7 @@ global.send_incoming_stats = () ->
 if performance.navigation.type == performance.navigation.TYPE_RELOAD
   send_incoming_stats()
 
-# --- include components
+# Include components
 require "./components"
 
 document.body.appendChild \

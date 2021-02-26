@@ -50,12 +50,7 @@ ko.components.register "tf-settings",
       @currAlpha = r;
     )
 
-    # @rows = model.data_fit();
     @active = model.show_settings
-
-    #model = model.show_settings(true)
-
-
     @exponents = model.exponents
     @multiplicands = model.multiplicands
     @lags = model.lags
@@ -67,7 +62,6 @@ ko.components.register "tf-settings",
       setTimeout =>
         psig = ko.unwrap @psig
         adapter.sendPsig(psig)
-        console.debug "PSIG sending"
       , 0
 
     @multiplicands_max = ko.observable 0
@@ -114,7 +108,6 @@ ko.components.register "tf-settings",
         i++
       @num_terms accum
 
-
     ko.computed ( ) =>
       active = 0
       zero = false
@@ -132,17 +125,11 @@ ko.components.register "tf-settings",
       unless @multiplicands.peek() <= @multiplicands_max()
         @multiplicands @multiplicands_max()
 
-
     @timeseries.subscribe ( next ) =>
       @lags { 0: true } unless next
 
-
     @active.subscribe (next) ->
-      #if unchange then adapter.unsubscribeToChanges()
-      #if next then adapter.unsubscribeToChanges()
-      #adapter.unsubscribeToChanges()
       adapter.unsubscribeToChanges();
-
 
     @recalculate = ( ) ->
       #if ko.computed(true) then adapter.subscribeToChanges()
@@ -158,12 +145,6 @@ ko.components.register "tf-settings",
         adapter.unsubscribeToChanges();
       #else
        # adapter.unsubscribeToChanges();
-
-
-
-
-
-
 
     @download_model = ( ) ->
       model = params.model()
@@ -221,7 +202,6 @@ ko.components.register "tf-settings",
         model.multiplicands(currNumMultiplicands + 1);
         @performAddCycle();
       else
-        # @updateExponents();
         @clicked = false;
 
     @removeLargestPAboveAlpha = () ->
@@ -285,7 +265,7 @@ ko.components.register "tf-settings",
       if condition == true
         @removeLargestPAboveAlpha()
       else
-        #update mult and exp then maybe when those are done have @clicked be false in those functions
+        # Update mult and exp then maybe when those are done have @clicked be false in those functions
         @updateMultiplicands();
         @runRemove = false;
       adapter.subscribeToChanges();
@@ -311,11 +291,6 @@ ko.components.register "tf-settings",
             if JSON.stringify(@currCandidates) != JSON.stringify(candidateRes)
               @currCandidates = candidateRes;
               @runAddRemoveCycle();
-              # @crossResult.subscribe( (crossRes) =>
-              # if JSON.stringify(@currCross) != JSON.stringify(crossRes)
-                  # @currCross = crossRes;
-                  # @runAddRemoveCycle();
-              # )
           )
       else
         @currModel = r;
@@ -344,6 +319,5 @@ ko.components.register "tf-settings",
       # console.log(params.model().psig());
 
       # Also see something for setMultiplicands and setExponents
-
 
     return this

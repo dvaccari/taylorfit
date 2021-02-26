@@ -1,4 +1,3 @@
-
 require "./index.styl"
 
 ko.components.register "tf-multiselect",
@@ -69,4 +68,3 @@ ko.components.register "tf-multiselect",
       @focus false
 
     return this
-

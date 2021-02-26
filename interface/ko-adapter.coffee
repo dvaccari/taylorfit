@@ -1,4 +1,3 @@
-
 module.exports = ko = require "knockout"
 
 ko.isObservableArray ?= ( value ) ->
@@ -16,7 +15,7 @@ iteration_binding = ( name, transform ) ->
       return controlsDescendantBindings: true
 
 iteration_binding "iter", ( obj ) ->
-  # object should have from, to, by
+  # Object should have from, to, by
   _from = ko.unwrap obj.from or 0
   _to = ko.unwrap obj.to
   _by = ko.unwrap obj.by or 1
@@ -53,7 +52,7 @@ ko.formatters =
     else
       value = value.toExponential precision - 1
 
-    # catch too-small numbers
+    # Catch too-small numbers
     if 0 is Number value
       value = (0).toPrecision precision
 

@@ -1,4 +1,3 @@
-
 require "./index.styl"
 c3 = require "c3"
 Model = require "../Model"
@@ -31,13 +30,13 @@ ko.components.register "tf-qqplot",
     unless ko.isObservable params.model
       throw new TypeError "components/options:
       expects [model] to be observable"
-    
+
     model = params.model()
     @column_index = model.show_qqplot
 
     @active = ko.computed ( ) => @column_index() != undefined
-    
-    @column_name = ko.computed ( ) => 
+
+    @column_name = ko.computed ( ) =>
       if !@active()
         return undefined
       index = @column_index()
@@ -50,8 +49,8 @@ ko.components.register "tf-qqplot",
           return "Importance Ratio " + model.importanceRatioColumns()[index].name
         return index
       return model.columns()[index].name
-    
-    @values = ko.computed ( ) => 
+
+    @values = ko.computed ( ) =>
       if !@active()
         return undefined
       index = @column_index()
@@ -97,25 +96,25 @@ ko.components.register "tf-qqplot",
       rank = [1..sorted.length]
       # Perform the quantile calculation over the data set points
       quantile = rank.map((i) -> return (i - 0.5) / sorted.length)
-      
-      # The following functions for converting Z score to Percentile and converting Percentile to Z score were adapted by John Walker from C implementations written by Gary Perlman of Wang Institute, Tyngsboro, MA 01879. 
+
+      # The following functions for converting Z score to Percentile and converting Percentile to Z score were adapted by John Walker from C implementations written by Gary Perlman of Wang Institute, Tyngsboro, MA 01879.
       Z_MAX = 6
       # Convert z-score to probability
       poz = (z) ->
         if z == 0.0
           x = 0.0
-        else 
+        else
           y = 0.5 * Math.abs(z);
-          if (y > (Z_MAX * 0.5)) 
+          if (y > (Z_MAX * 0.5))
             x = 1.0;
-          else if (y < 1.0) 
+          else if (y < 1.0)
             w = y * y
             x = ((((((((0.000124818987 * w -
                   0.001075204047) * w + 0.005198775019) * w -
                   0.019198292004) * w + 0.059054035642) * w -
                   0.151968751364) * w + 0.319152932694) * w -
                   0.531923007300) * w + 0.797884560593) * y * 2.0
-          else 
+          else
             y -= 2.0;
             x = (((((((((((((-0.000045255659 * y +
                   0.000152529290) * y - 0.000019538132) * y -
@@ -138,7 +137,7 @@ ko.components.register "tf-qqplot",
           p = 1.0;
         while (maxz - minz) > Z_EPSILON
           pval = poz(zval)
-          if pval > p 
+          if pval > p
               maxz = zval;
           else
               minz = zval;
@@ -204,7 +203,7 @@ ko.components.register "tf-qqplot",
             lines: [
                 value: 0
             ]
-      
+
       svg_element = chart.element.querySelector "svg"
       xgrid_line = svg_element.querySelector ".c3-xgrid-line"
       vertical_line = xgrid_line.getElementsByTagName("line")[0]
@@ -217,8 +216,7 @@ ko.components.register "tf-qqplot",
 
       return chart.element.innerHTML
 
-
-    @download = ( ) -> 
+    @download = ( ) ->
       if !@active()
         return undefined
       svg_element = chart.element.querySelector "svg"
@@ -230,8 +228,8 @@ ko.components.register "tf-qqplot",
       svg_element.style.overflow = "visible"
       svg_element.style.padding = "10px"
       box_size = svg_element.getBBox()
-      svg_element.style.height = box_size.height 
-      svg_element.style.width = box_size.width 
+      svg_element.style.height = box_size.height
+      svg_element.style.width = box_size.width
 
       chart_line = svg_element.querySelector ".c3-chart-line"
       chart_line.style.opacity = 1
@@ -245,13 +243,13 @@ ko.components.register "tf-qqplot",
       x_and_y.concat Array.from node_list2
       x_and_y.forEach (e) ->
         e.style.fill = "none"
-        e.style.stroke = "black" 
+        e.style.stroke = "black"
 
       scale = Array.from node_list3
       scale.forEach (e) ->
         e.style.fill = "none"
-        e.style.stroke = "black" 
-      
+        e.style.stroke = "black"
+
       path = Array.from node_list4
       path.forEach (e) ->
         e.style.fill = "none"
@@ -270,7 +268,7 @@ ko.components.register "tf-qqplot",
 
       original_y = text[0].getAttribute "y"
       text[0].setAttribute "y", original_y + 3
-      
+
       xml = new XMLSerializer().serializeToString svg_element
       data_url = "data:image/svg+xml;base64," + btoa xml
 
@@ -302,11 +300,5 @@ ko.components.register "tf-qqplot",
         document.body.removeChild a_element
 
       return undefined
-
-
-
-    @column_index.subscribe ( next ) =>
-      #if next then adapter.unsubscribeToChanges()
-      #else adapter.subscribeToChanges()
 
     return this

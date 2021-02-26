@@ -16,7 +16,6 @@ IGNORE = ( v ) -> undefined
 DATA = ( type ) -> ( v ) ->
   o = ko.observable()
   o.subscribe ( next ) ->
-    # return unless next?.length
     adapter.setData next, type
   o v
   return o
@@ -98,10 +97,8 @@ CTRL =
     [ undefined   , DATA("validation")                , UNWRAP ]
   data_plotted:
     [ "fit"       , WRAP_O                            , IGNORE ]
-
   candidates:
     [ [ ]         , WRAP_A                            , IGNORE ]
-
   result_fit:
     [ undefined   , WRAP_O                            , UNWRAP ]
   result_cross:
@@ -111,14 +108,12 @@ CTRL =
 
   psig:
     [ 0.05        , WRAP_O                            , UNWRAP ]
-
   dependent:
     [ 0           , SEND("setDependent", Number)      , UNWRAP ]
   hiddenColumns:
     [ {}            , WRAP_O                          , UNWRAP ]
   multiplicands:
     [ 1           , SEND("setMultiplicands", Number)  , UNWRAP ]
-
   exponents:
     [ 1: true     , SEND("setExponents", object2array), UNWRAP_O ]
   timeseries:
@@ -208,7 +203,7 @@ module.exports = class Model
 
     mapper = ( terms, fn ) =>
       cols = ko.unwrap @columns
-      # filter out terms that couldn't get a coefficient calculated
+      # Filter out terms that couldn't get a coefficient calculated
       terms.filter((t) => t.coeff).map (t) =>
         return t if t.selected?
         result =
@@ -430,7 +425,7 @@ module.exports = class Model
         @confidenceData(confidenceData)
       , 100
       adapter.subscribeToChanges()
-    
+
     adapter.on "model:getPrediction", (data) =>
       setTimeout =>
         columns = ko.unwrap @columns

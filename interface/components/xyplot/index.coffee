@@ -1,4 +1,3 @@
-
 require "./index.styl"
 c3 = require "c3"
 Model = require "../Model"
@@ -23,11 +22,10 @@ ko.components.register "tf-xyplot",
         return [undefined, undefined]
       return @column_indexes().map((idx) =>
         if typeof idx == "string"
-          # Special Case for Sensitivity
-          if idx.indexOf("Sensitivity") != -1
+          if idx.indexOf("Sensitivity") != -1  # Special Case for Sensitivity
             idx = idx.split("_")[1]
             return "Sensitivity " + model.sensitivityColumns()[idx].name
-          if idx.indexOf("ImportanceRatio") != -1
+          if idx.indexOf("ImportanceRatio") != -1  # Special Case for IR
             idx = idx.split("_")[1]
             return "Importance Ratio " + model.importanceRatioColumns()[idx].name
           return idx
@@ -63,13 +61,13 @@ ko.components.register "tf-xyplot",
       unless @active()
         return ""
 
-      # global varible 'chart' can be accessed in download function
+      # Global variable 'chart' can be accessed in download function
       x = 0;
       while x < Object.keys(@values()[0]).length
         if @values()[0][x] == undefined or @values()[0][x] == null
           @values()[0][x] = 0;
         x += 1
-      #@values()[0][2] = 0;
+
       global.chart = c3.generate
         bindto: "#xyplot"
         data:
@@ -137,7 +135,7 @@ ko.components.register "tf-xyplot",
 
       svg_element.style.backgroundColor = "white"
       tick = svg_element.querySelectorAll ".tick"
-      # the number of tick texts in a plot depends on the content of the plot
+      # The number of tick texts in a plot depends on the content of the plot
       num_arr = Array(tick.length).fill(0).map((x, y) => y)
       # tick[19], tick[13], tick[12], tick[3], tick[10] are more likely be the SVG element on the top position of y axis
       # put 19, 13, 12, 3, 10 to the beginning of the array (get these values by doing lots of testing)
@@ -151,16 +149,15 @@ ko.components.register "tf-xyplot",
       num_arr[10]=4
 
       for num in num_arr
-        # use transform property to check if the SVG element is on the top position of y axis
+        # Use transform property to check if the SVG element is on the top position of y axis
         transform_y_val = (getComputedStyle(tick[num]).getPropertyValue('transform').replace(/^matrix(3d)?\((.*)\)$/,'$2').split(/, /)[5])*1
         if transform_y_val == 1
           text = tick[num].getElementsByTagName("text")
-          # stop the loop once the SVG element on the top position of y axis is found
+          # Stop the loop once the SVG element on the top position of y axis is found
           break
 
       original_y = text[0].getAttribute "y"
       text[0].setAttribute "y", original_y+3
-
 
       xml = new XMLSerializer().serializeToString svg_element
       data_url = "data:image/svg+xml;base64," + btoa xml
@@ -171,7 +168,6 @@ ko.components.register "tf-xyplot",
       svg_element.setAttribute "height", original_height
       svg_element.setAttribute "width", original_width
       svg_element.style.backgroundColor = null
-
 
       img = new Image()
       img.src = data_url
@@ -194,15 +190,5 @@ ko.components.register "tf-xyplot",
         document.body.removeChild a_element
 
       return undefined
-
-
-
-
-    @column_indexes.subscribe ( next ) =>
-      #if next then adapter.unsubscribeToChanges()
-      #else adapter.subscribeToChanges()
-
-    # @inc = ( ) -> @bucket_size @bucket_size() + 1
-    # @dec = ( ) -> @bucket_size ((@bucket_size() - 1) || 1)
 
     return this

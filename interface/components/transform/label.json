@@ -1,9 +1,8 @@
 {
-  "LOG" : "log",
-  "K_ORDER_DIFFERENCE" : "K-Order_difference",
-  "STANDARDIZE" : "Standardize",
-  "RESCALE" : "Scale_by_RMS",
-
+  "LOG": "log",
+  "K_ORDER_DIFFERENCE": "K-Order_difference",
+  "STANDARDIZE": "Standardize",
+  "RESCALE": "Scale_by_RMS",
   "Transform": {
     "delete": 0,
     "log": 1,

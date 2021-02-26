@@ -1,4 +1,3 @@
-
 d3 = require "d3"
 
 module.exports = ( g, scaleX, scaleY, next ) ->
