@@ -56,10 +56,10 @@ ko.components.register "tf-grid",
         model.show_histogram("Sensitivity_"+index.toString())
         model.data_plotted(@table)
       if statistic == "confidence"
-        model.show_histogram("Confidence_"+index.toString())
+        model.show_histogram("Confidence Interval")
         model.data_plotted(@table)
       if statistic == "prediction"
-        model.show_histogram("Prediction_"+index.toString())
+        model.show_histogram("Prediction Interval")
         model.data_plotted(@table)
       if statistic == "importanceRatio"
         model.show_histogram("ImportanceRatio_"+index.toString())
@@ -92,10 +92,10 @@ ko.components.register "tf-grid",
         model.show_autocorrelation("Sensitivity_"+index.toString())
         model.data_plotted(@table)
       if statistic == "confidence"
-        model.show_autocorrelation("Confidence_"+index.toString())
+        model.show_autocorrelation("Confidence Interval")
         model.data_plotted(@table)
       if statistic == "prediction"
-        model.show_autocorrelation("Prediction_"+index.toString())
+        model.show_autocorrelation("Prediction Interval")
         model.data_plotted(@table)
       if statistic == "importanceRatio"
         model.show_autocorrelation("ImportanceRatio_"+index.toString())
@@ -110,10 +110,10 @@ ko.components.register "tf-grid",
         model.show_xyplot(["Sensitivity_"+index.toString(), "Index"])
         model.data_plotted(@table)
       if statistic == "confidence"
-        model.show_xyplot(["Confidence_"+index.toString(), "Index"])
+        model.show_xyplot(["Confidence Interval", "Index"])
         model.data_plotted(@table)
       if statistic == "prediction"
-        model.show_xyplot(["Prediction_"+index.toString(), "Index"])
+        model.show_xyplot(["Prediction Interval", "Index"])
         model.data_plotted(@table)
       if statistic == "importanceRatio"
         model.show_xyplot(["ImportanceRatio_"+index.toString(), "Index"])
@@ -128,10 +128,10 @@ ko.components.register "tf-grid",
         model.show_qqplot("Sensitivity_"+index.toString())
         model.data_plotted(@table)
       if statistic == "confidence"
-        model.show_qqplot("Confidence_"+index.toString())
+        model.show_qqplot("Confidence Interval")
         model.data_plotted(@table)
       if statistic == "prediction"
-        model.show_qqplot("Prediction_"+index.toString())
+        model.show_qqplot("Prediction Interval")
         model.data_plotted(@table)
       if statistic == "importanceRatio"
         model.show_qqplot("ImportanceRatio_"+index.toString())
