@@ -1,10 +1,9 @@
-/*global describe, it, before*/
+/* global describe, it, before */
 
-const chai    = require('chai')
-    , expect  = chai.expect
-    , should  = chai.should;
+const chai = require('chai')
+  , expect = chai.expect;
 
-const combos  = require('../../engine/model/combos');
+const combos = require('../../engine/model/combos');
 
 describe('combos', () => {
 
@@ -18,11 +17,9 @@ describe('combos', () => {
         [1, 3],
         [2, 3]
       ]);
-      // FIXME: Upon upgrading to chai v4.0+, change these to
-      //        .to.not.deep.include(pair)
-      expect(cs).to.not.include.deep.members([[1, 1]]);
-      expect(cs).to.not.include.deep.members([[2, 2]]);
-      expect(cs).to.not.include.deep.members([[3, 3]]);
+      expect(cs).to.not.deep.include([[1, 1]]);
+      expect(cs).to.not.deep.include([[2, 2]]);
+      expect(cs).to.not.deep.include([[3, 3]]);
     });
 
     it('should return all combos w/ replacement when flag is set', () => {
@@ -36,11 +33,9 @@ describe('combos', () => {
         [2, 3],
         [3, 3]
       ]);
-      // FIXME: Upon upgrading to chai v4.0+, change these to
-      //        .to.not.deep.include(pair)
-      expect(cs).to.not.include.deep.members([[2, 1]]);
-      expect(cs).to.not.include.deep.members([[3, 1]]);
-      expect(cs).to.not.include.deep.members([[3, 2]]);
+      expect(cs).to.not.deep.include([[2, 1]]);
+      expect(cs).to.not.deep.include([[3, 1]]);
+      expect(cs).to.not.deep.include([[3, 2]]);
     });
 
     it('should return [] when k <= 0', () => {
@@ -155,4 +150,3 @@ describe('combos', () => {
   });
 
 });
-

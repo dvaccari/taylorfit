@@ -1,11 +1,10 @@
-/*global describe, it, before*/
+/* global describe, it, before */
 
-const chai    = require('chai')
-    , expect  = chai.expect
-    , should  = chai.should;
+const chai = require('chai')
+  , expect = chai.expect;
 
-const Matrix  = require('../../engine/matrix')
-    , dataset = require('./testdata/test.data.json');
+const Matrix = require('../../engine/matrix')
+  , dataset = require('./testdata/test.data.json');
 
 describe('Matrix', () => {
 
@@ -84,18 +83,15 @@ describe('Matrix', () => {
       expect(a.dot(b).data).to.eql(Float64Array.from([8, 5, 20, 13]));
       expect(a.dot(b).shape).to.eql([2, 2]);
 
-      a = new Matrix([[1, 2, 3],
-                      [1, 2, 3]]);
-      b = new Matrix([[1, 2],
-                      [1, 2],
-                      [1, 2]]);
+      a = new Matrix([[1, 2, 3], [1, 2, 3]]);
+      b = new Matrix([[1, 2], [1, 2], [1, 2]]);
       expect(a.dot(b).data).to.eql(Float64Array.from([6, 12, 6, 12]));
       expect(a.dot(b).shape).to.eql([2, 2]);
     });
 
     it('throws if the matrices cannot be multiplied', () => {
       var a = new Matrix([[1, 2, 3],
-                          [4, 5, 6]]);
+      [4, 5, 6]]);
       expect(() => a.dot(a)).to.throw();
     });
 
@@ -104,12 +100,10 @@ describe('Matrix', () => {
   describe('inv()', () => {
 
     it('finds the inverse of a non-singular matrix', () => {
-      var a = new Matrix([[ 1, -1, 1],
-                          [ 0, -2, 1],
-                          [-2, -3, 0]]);
-      expect(a.inv().data).to.eql(Float64Array.from([ 3, -3,  1,
-                                                     -2,  2, -1,
-                                                     -4,  5, -2]));
+      var a = new Matrix([[1, -1, 1], [0, -2, 1], [-2, -3, 0]]);
+      expect(a.inv().data).to.eql(Float64Array.from([3, -3, 1,
+        -2, 2, -1,
+        -4, 5, -2]));
       expect(a.inv().shape).to.eql([3, 3]);
     });
 
@@ -202,7 +196,7 @@ describe('Matrix', () => {
 
     it('does negative exponents too!', () => {
       var a = new Matrix([[1, 2], [3, 4]]);
-      expect(a.dotPow(-1).data).to.eql(Float64Array.from([1, 1/2, 1/3, 1/4]));
+      expect(a.dotPow(-1).data).to.eql(Float64Array.from([1, 1 / 2, 1 / 3, 1 / 4]));
     });
 
   });
@@ -242,15 +236,15 @@ describe('Matrix', () => {
   // dotDivide doesn't get tested because it's basically the same as dotMultiply
 
   // TODO
-  describe('col()', () => {});
-  describe('row()', () => {});
-  describe('subset()', () => {});
-  describe('diag()', () => {});
-  describe('sum()', () => {});
-  describe('get T()', () => {});
+  describe('col()', () => { });
+  describe('row()', () => { });
+  describe('subset()', () => { });
+  describe('diag()', () => { });
+  describe('sum()', () => { });
+  describe('get T()', () => { });
 
-  describe('static random()', () => {});
-  describe('static eye()', () => {});
-  describe('static from()', () => {});
+  describe('static random()', () => { });
+  describe('static eye()', () => { });
+  describe('static from()', () => { });
 
 });
