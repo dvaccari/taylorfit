@@ -164,14 +164,6 @@ table.grid
       // ko foreach: confidenceColumns
       th
         span C.I.&nbsp;
-        // ko if:name
-        span(data-bind="text:name")
-        // /ko
-        // ko ifnot:name
-        span.placeholder
-          span X
-          sub(data-bind="text:index")
-        // /ko
         tf-dropdown(params="shallow:1,align:'right'")
           span.mark(data-bind="click:function(){histogram_statistic($index(), 'confidence')}")
             | Histogram
@@ -189,14 +181,6 @@ table.grid
       // ko foreach: predictionColumns
       th
         span P.I.&nbsp;
-        // ko if:name
-        span(data-bind="text:name")
-        // /ko
-        // ko ifnot:name
-        span.placeholder
-          span X
-          sub(data-bind="text:index")
-        // /ko
         tf-dropdown(params="shallow:1,align:'right'")
           span.mark(data-bind="click:function(){histogram_statistic($index(), 'prediction')}")
             | Histogram
