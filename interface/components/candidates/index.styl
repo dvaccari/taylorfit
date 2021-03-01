@@ -2,7 +2,9 @@ tf-candidates
   position relative
   display block
   size 100%
-  overflow auto
+  overflow-y auto
+  overflow-x hidden
+  margin-right 16px
 
   .wrapper
     right 10px
@@ -18,12 +20,14 @@ tf-candidates
     padding 5px
     background #fff7ed
     margin-left 20px
+    margin-right 20px
 
   tf-pager
     display none
   header
     display inline-block
     margin-left 16px
+    margin-right 16px
     margin-bottom 10px
     float right
 
@@ -42,6 +46,7 @@ tf-candidates
     height 100%
     overflow hidden
     clear both
+    margin-right 16px
 
     &:before
       content ""
