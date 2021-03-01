@@ -260,6 +260,14 @@ ko.components.register "tf-settings",
       )
       return returnVal;
 
+    @performAddCycle = ( ) ->
+      condition = @checkIfCandidateToBeAdded();
+      if condition == true
+        @addSmallestPBelowAlpha();
+      else
+        @runRemove = true;
+      adapter.subscribeToChanges();
+
     @performRemoveCycle = ( ) ->
       condition = @checkIfTermAboveAlpha();
       if condition == true
@@ -268,14 +276,6 @@ ko.components.register "tf-settings",
         # Update mult and exp then maybe when those are done have @clicked be false in those functions
         @updateMultiplicands();
         @runRemove = false;
-      adapter.subscribeToChanges();
-
-    @performAddCycle = ( ) ->
-      condition = @checkIfCandidateToBeAdded();
-      if condition == true
-        @addSmallestPBelowAlpha();
-      else
-        @runRemove = true;
       adapter.subscribeToChanges();
 
     @runAddRemoveCycle = ( ) ->
@@ -298,7 +298,7 @@ ko.components.register "tf-settings",
 
     @autofit = ( ) ->
       @clicked = true;
-      @performAddCycle();
+      @runAddRemoveCycle();
       # params.model().candidates() represents the potential pool of choices to add to the model from the right panel
       # Can get p(t) and adjR2 with .stats.pt or .stats.adjRsq
       # console.log(params.model().candidates());
