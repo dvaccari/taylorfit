@@ -32,14 +32,14 @@ ko.components.register "tf-grid",
     @toggle     = true;
     @toggleMean = true;
 
-    @sensitivityColumns  = model.sensitivityColumns
-    @sensitivityData   = model.sensitivityData
-    @confidenceColumns  = model.confidenceColumns
-    @confidenceData   = model.confidenceData
-    @predictionColumns  = model.predictionColumns
-    @predictionData   = model.predictionData
-    @importanceRatioColumns  = model.importanceRatioColumns
-    @importanceRatioData   = model.importanceRatioData
+    @sensitivityColumns     = model.sensitivityColumns
+    @sensitivityData        = model.sensitivityData
+    @confidenceColumns      = model.confidenceColumns
+    @confidenceData         = model.confidenceData
+    @predictionColumns      = model.predictionColumns
+    @predictionData         = model.predictionData
+    @importanceRatioColumns = model.importanceRatioColumns
+    @importanceRatioData    = model.importanceRatioData
 
     @clear = ( ) =>
       try @rows null
@@ -110,10 +110,10 @@ ko.components.register "tf-grid",
         model.show_xyplot(["Sensitivity_"+index.toString(), "Index"])
         model.data_plotted(@table)
       if statistic == "confidence"
-        model.show_xyplot(["C.I.", "Index"])
+        model.show_xyplot(["C.I._"+index.toString(), "Index"])
         model.data_plotted(@table)
       if statistic == "prediction"
-        model.show_xyplot(["P.I.", "Index"])
+        model.show_xyplot(["P.I."+index.toString(), "Index"])
         model.data_plotted(@table)
       if statistic == "importanceRatio"
         model.show_xyplot(["ImportanceRatio_"+index.toString(), "Index"])
