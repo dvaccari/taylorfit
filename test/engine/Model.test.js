@@ -1,17 +1,16 @@
-/*global describe, it, before*/
+/* global describe, it, before */
 
-const chai    = require('chai')
-    , expect  = chai.expect;
+const chai = require('chai')
+  , expect = chai.expect;
 
 chai.use(require('chai-as-promised'));
 chai.should();
 
-const Matrix  = require('../../engine/matrix')
-    , Term    = require('../../engine/model/Term')
-    , combos  = require('../../engine/model/combos')
-    , utils   = require('../../engine/utils')
-    , Model   = require('../../engine/model')
-    , dataset = require('./testdata/test.data.json');
+const Matrix = require('../../engine/matrix')
+  , Term = require('../../engine/model/Term')
+  , utils = require('../../engine/utils')
+  , Model = require('../../engine/model')
+  , dataset = require('./testdata/test.data.json');
 
 let valuesOf = (arr) => arr.map((elem) => elem.valueOf());
 let candTerms = (cands) => cands.map((c) => c.term.valueOf());
@@ -50,8 +49,8 @@ describe('Model', () => {
 
       m.addTerm([[0, 1, 0], [1, 1, 0]]);
       expect(valuesOf(m.terms)).to.eql([[[0, 1, 0]],
-                                        [[1, 1, 0]],
-                                        [[0, 1, 0], [1, 1, 0]]]);
+      [[1, 1, 0]],
+      [[0, 1, 0], [1, 1, 0]]]);
     });
 
     it('accepts a term without an explicit lag (assumes 0)', () => {
@@ -87,9 +86,9 @@ describe('Model', () => {
 
     it('removes an existing term', () => {
       var m = new Model()
-            .setData(data)
-            .setExponents([1, 2])
-            .setMultiplicands(2);
+        .setData(data)
+        .setExponents([1, 2])
+        .setMultiplicands(2);
 
       m.addTerm([[0, 1]]);
       expect(valuesOf(m.terms)).to.eql([[[0, 1, 0]]]);
@@ -300,24 +299,24 @@ describe('Model', () => {
       let m2 = new Model().setData(data).setExponents([1, 2]);
       let m3 = new Model().setData(data).setExponents([1]).setMultiplicands(2);
       let m4 = new Model().setData(data).setExponents([1]).setMultiplicands(1)
-            .setLags([1]);
+        .setLags([1]);
 
       return Promise.all([
         m1.getCandidates().then(candTerms)
           .should.eventually.eql([[[0, 0, 0]], [[1, 1, 0]], [[2, 1, 0]]]),
         m2.getCandidates().then(candTerms)
           .should.eventually.eql([[[0, 0, 0]],
-                                  [[1, 1, 0]], [[1, 2, 0]],
-                                  [[2, 1, 0]], [[2, 2, 0]]]),
+          [[1, 1, 0]], [[1, 2, 0]],
+          [[2, 1, 0]], [[2, 2, 0]]]),
         m3.getCandidates().then(candTerms)
           .should.eventually.eql([[[0, 0, 0]],
-                                  [[1, 1, 0]], [[2, 1, 0]],
-                                  [[1, 1, 0], [2, 1, 0]]]),
+          [[1, 1, 0]], [[2, 1, 0]],
+          [[1, 1, 0], [2, 1, 0]]]),
         m4.getCandidates().then(candTerms)
           .should.eventually.eql([[[0, 0, 0]],
-                                  [[0, 1, 1]], [[1, 1, 0]],
-                                  [[1, 1, 1]], [[2, 1, 0]],
-                                  [[2, 1, 1]]])
+          [[0, 1, 1]], [[1, 1, 0]],
+          [[1, 1, 1]], [[2, 1, 0]],
+          [[2, 1, 1]]])
       ]);
     });
 
@@ -394,5 +393,4 @@ describe('Model', () => {
     });
 
   });
-
 });
