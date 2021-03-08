@@ -1,14 +1,13 @@
-/*global describe, it, before, beforeEach*/
+/* global describe, it, before, beforeEach */
 
-const chai    = require('chai')
-    , expect  = chai.expect
-    , should  = chai.should;
+const chai = require('chai')
+  , expect = chai.expect;
 
-const Matrix  = require('../../engine/matrix')
-    , Model   = require('../../engine/model')
-    , Term    = require('../../engine/model/Term')
-    , utils   = require('../../engine/utils')
-    , dataset = require('./testdata/test.data.json');
+const Matrix = require('../../engine/matrix')
+  , Model = require('../../engine/model')
+  , Term = require('../../engine/model/Term')
+  , utils = require('../../engine/utils')
+  , dataset = require('./testdata/test.data.json');
 
 describe('Term', () => {
 

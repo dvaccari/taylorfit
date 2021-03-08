@@ -15,7 +15,7 @@ ko.components.register "tf-xyplot",
 
     @active = ko.computed ( ) => @column_indexes() != undefined
 
-   # @columns = ko.observable ["Index"].concat(model.columns().map((x) => x.name)).concat(["Dependent", "Predicted", "Residual"])
+    @columns = ko.observable ["Index"].concat(model.columns().map((x) => x.name)).concat(["Dependent", "Predicted", "Residual"])
 
     @column_names = ko.computed ( ) =>
       if !@active()
@@ -26,7 +26,6 @@ ko.components.register "tf-xyplot",
             idx = idx.split("_")[1]
             return "Sensitivity " + model.sensitivityColumns()[idx].name
           if idx.indexOf("C.I.") != -1  # Speical Case for C.I.
-            console.log("OVER HERE BUDDY")
             idx = 0
             return "C.I."
           if idx.indexOf("P.I.") != -1  # Speical Case for P.I.

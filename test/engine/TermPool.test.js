@@ -1,15 +1,13 @@
-/*global describe, it, before*/
+/* global describe, it, before */
 
-const chai      = require('chai')
-    , expect    = chai.expect
-    , should    = chai.should;
+const chai = require('chai')
+  , expect = chai.expect;
 
-const Matrix    = require('../../engine/matrix')
-    , Model     = require('../../engine/model')
-    , TermPool  = require('../../engine/model/TermPool')
-    , Term      = require('../../engine/model/Term')
-    , utils     = require('../../engine/utils')
-    , dataset   = require('./testdata/test.data.json');
+const Matrix = require('../../engine/matrix')
+  , Model = require('../../engine/model')
+  , TermPool = require('../../engine/model/TermPool')
+  , Term = require('../../engine/model/Term')
+  , dataset = require('./testdata/test.data.json');
 
 describe('TermPool', () => {
 
@@ -53,7 +51,5 @@ describe('TermPool', () => {
       expect(tp.get([[1, 2, 0]])).not.to.equal(term);
       expect(tp.get([[1, 2]])).not.to.equal(term);
     });
-
   });
-
 });

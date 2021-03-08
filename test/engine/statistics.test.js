@@ -1,18 +1,15 @@
+/* global describe, it, before */
 
-/*global describe, it, before*/
+const chai = require('chai')
+  , expect = chai.expect
+  , csv = require('fast-csv');
 
-const chai        = require('chai')
-    , expect      = chai.expect
-    , should      = chai.should
-    , csv         = require('fast-csv');
+const Matrix = require('../../engine/matrix')
+  , lstsq = require('../../engine/regression').lstsq
+  , statistics = require('../../engine/statistics');
 
-const Matrix      = require('../../engine/matrix')
-    , lstsq       = require('../../engine/regression').lstsq
-    , statistics  = require('../../engine/statistics')
-    , metadata    = require('../../engine/statistics/metadata.json');
-
-const rootdir     = '/../../';
-const retail      = require('./testdata/retail.data.json');
+const rootdir = '/../../';
+const retail = require('./testdata/retail.data.json');
 
 describe('statistics', () => {
 
@@ -39,21 +36,18 @@ describe('statistics', () => {
     it(`computes ${stat} reasonably well`, () => {
       let predicted = statistics(lstsq(retail.X, retail.y))[stat];
 
-      if (Array.isArray(retail.stats[stat])) {
+      if (Array.isArray(retail.stats[stat]))
         for (let i in predicted.data) {
           expect(predicted.data[i]).to.be.approximately(
             retail.stats[stat][i],
             1e-6
           );
         }
-      } else {
+      else
         expect(predicted).to.be.approximately(
           retail.stats[stat].val,
           retail.stats[stat].var
         );
-      }
     });
-
   }
-
 });
