@@ -3,12 +3,13 @@
   table.terms
     thead
       tr
-        th(colspan="3" title="Each row in this Table is a single term in the current model.") Current Model
+        th(colspan="4" title="Each row in this Table is a single term in the current model.") Current Model
       tr
         th(title="This column shows the coefficient and multiplicands (product of independent variables) for each term in the current model.") Term
         // ko foreach: allstats().filter((x) => x.candidate)
         th(data-bind="text: name, attr: { title:description }")
         // /ko
+        //th(title="This column shows the Importance Ratio TODO") IR
     tbody
       // ko foreach: result_fit().terms
       tr
@@ -43,7 +44,15 @@
         }")
           span.value(data-bind="num:$value")
         // /ko
+        //TODO implement IR values of y  with respect to xi: (sensitivity * (standard error of xi(all))/(standard error of y (current)))
+        // Sensitivity (if not accessible for above) of y with respect to xi: partial derivative of y(predicted vallues of row)/xi
+        //td.stat()
+        //span.value(data-bind="num:(coeff)")
+
       // /ko
+
+
+
   a.button(data-bind="click:function(){model().show_export_code(true)}" title="Generate code for the current model that can be used in programs in Excel, C++, Matlab, Python, or JavaScript.") Export to Code
 
 .table-wrapper
