@@ -491,7 +491,6 @@ ko.components.register "tf-grid",
       confidenc = @confidenceData()
       predict = @predictionData()
       importance = @importanceRatioData()
-      offset = @getRowOffset()
       while k < rowLength
         if !min.length
           min = rows[k].slice(0)
@@ -535,16 +534,16 @@ ko.components.register "tf-grid",
             i++
           )
           confidenc.forEach( (col) ->
-            iter = offset
-            while iter < offset + rows.length
+            iter = 1
+            while iter < col.length
               if col[iter] < min[i]
                 min[i] = col[iter]
               iter++
             i++
           )
           predict.forEach( (col) ->
-            iter = offset
-            while iter < offset + rows.length
+            iter = 1
+            while iter < col.length
               if col[iter] < min[i]
                 min[i] = col[iter]
               iter++
@@ -571,7 +570,6 @@ ko.components.register "tf-grid",
       confidenc = @confidenceData()
       predict = @predictionData()
       importance = @importanceRatioData()
-      offset = @getRowOffset()
       while k < rowLength
         if !max.length
           max = rows[k].slice(0)
@@ -615,16 +613,16 @@ ko.components.register "tf-grid",
             i++
           )
           confidenc.forEach( (col) ->
-            iter = offset
-            while iter < offset + rows.length
+            iter = 1
+            while iter < col.length
               if col[iter] > max[i]
                 max[i] = col[iter]
               iter++
             i++
           )
           predict.forEach( (col) ->
-            iter = offset
-            while iter < offset + rows.length
+            iter = 1
+            while iter < col.length
               if col[iter] > max[i]
                 max[i] = col[iter]
               iter++
