@@ -43,7 +43,9 @@
 
   { "id": "t", "displayName": "t", "sort": "|<|", "candidateOnly": true, "default": true, "description": "The t-statistic used to determine how significant this term is. A value above about 2.0 is usually considered significant." },
   { "id": "pt", "displayName": "p(t)", "sort": ">", "candidateOnly": true, "default": true, "description": "The probability that this term occurs by chance. Cell is colored green if p(t) > alpha (default alpha = 0.05)." },
-  { "id": "IR", "displayname": "IR", "sort": ">", "candidateOnly": true, "default": true, "description": "The Importance Ratio TODO"},
+
+
+  { "id": "IR", "displayname": "IR", "currentModelOnly": true, "description": "The Importance Ratio TODO"},
 
 
   { "id": "stdev", "show": false },

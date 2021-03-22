@@ -23,7 +23,7 @@ global.send_incoming_stats = () ->
           id: stat.id
           name: stat.displayName or stat.id
           global: stat.globalOnly or false
-          candidate: stat.candidateOnly or false
+          candidate: stat.candidateOnly or stat.currentModelOnly or false
           sort: stat.sort or ">"  # Uses specified sort value unless unspecified
           default: stat.default
           selected: ko.observable stat.default is true
