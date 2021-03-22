@@ -77,7 +77,6 @@ class Term extends CacheMixin() {
       let stats = statistics(regression);
       let t = stats.t.get(0, stats.t.shape[0] - 1);
       let pt = stats.pt.get(0, stats.pt.shape[0] - 1);
-      let ir = stats.ir.get(0, stats.ir.shape[0]-1);
 
       Object.assign(regression, {
         X: this.X(CROSS_LABEL),
@@ -89,7 +88,6 @@ class Term extends CacheMixin() {
       stats.coeff = stats.weights.get(0, stats.weights.shape[0] - 1);
       stats.t = t;
       stats.pt = pt;
-      stats.ir = ir;
       delete stats.weights;
 
       return stats;
