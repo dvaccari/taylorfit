@@ -42,7 +42,7 @@ ko.components.register "tf-xyplot",
       if !@active()
         return undefined
       column_names = @column_names()
-      @column_indexes().map((idx, index) =>
+      @column_indexes().map((idx, index, table) =>
         if column_names[index] == "Index"
           return Object.keys(model["extra_#{model.data_plotted()}"]()).map(parseFloat)
         if column_names[index] == "Dependent"
@@ -57,11 +57,33 @@ ko.components.register "tf-xyplot",
         if column_names[index].indexOf("C.I.") != -1
           # format is: C.I.
           idx = 0
-          return Object.values(model.confidenceData()[0])
+          if @column_indexes()[2] == 'fit'
+            console.log("FIT")
+            return Object.values(model.confidenceData()[0].slice(0, model["data_fit"]().length))
+          else if @column_indexes()[2] == 'cross'
+            console.log("CROSS")
+            return Object.values(model.confidenceData()[0].slice(model["data_fit"]().length, model["data_fit"]().length + model["data_cross"]().length))
+          else
+            console.log("VALID")
+            offset = model["data_fit"]().length
+            if model["data_cross"]() != undefined
+              offset += model["data_cross"]().length
+            return Object.values(model.confidenceData()[0].slice(offset))
         if column_names[index].indexOf("P.I.") != -1
           # format is: P.I.
           idx = 0
-          return Object.values(model.predictionData()[0])
+          if @column_indexes()[2] == 'fit'
+            console.log("FIT")
+            return Object.values(model.predictionData()[0].slice(0, model["data_fit"]().length))
+          else if @column_indexes()[2] == 'cross'
+            console.log("CROSS")
+            return Object.values(model.predictionData()[0].slice(model["data_fit"]().length, model["data_fit"]().length + model["data_cross"]().length))
+          else
+            console.log("VALID")
+            offset = model["data_fit"]().length
+            if model["data_cross"]() != undefined
+              offset += model["data_cross"]().length
+            return Object.values(model.predictionData()[0].slice(offset))
         if column_names[index].indexOf("Importance Ratio") != -1
           idx = idx.split("_")[1]
           return Object.values(model.importanceRatioData()[idx])

@@ -110,10 +110,10 @@ ko.components.register "tf-grid",
         model.show_xyplot(["Sensitivity_"+index.toString(), "Index"])
         model.data_plotted(@table)
       if statistic == "confidence"
-        model.show_xyplot(["C.I._"+index.toString(), "Index"])
+        model.show_xyplot(["C.I._"+index.toString(), "Index", @table])
         model.data_plotted(@table)
       if statistic == "prediction"
-        model.show_xyplot(["P.I."+index.toString(), "Index"])
+        model.show_xyplot(["P.I."+index.toString(), "Index", @table])
         model.data_plotted(@table)
       if statistic == "importanceRatio"
         model.show_xyplot(["ImportanceRatio_"+index.toString(), "Index"])
