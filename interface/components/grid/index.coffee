@@ -48,66 +48,66 @@ ko.components.register "tf-grid",
       return undefined
 
     @histogram = ( index ) ->
-      model.show_histogram(index)
+      model.show_histogram([index, @table])
       model.data_plotted(@table)
 
     @histogram_statistic = ( index, statistic ) ->
       if statistic == "sensitivity"
-        model.show_histogram("Sensitivity_"+index.toString())
+        model.show_histogram(["Sensitivity_"+index.toString(), @table])
         model.data_plotted(@table)
       if statistic == "confidence"
-        model.show_histogram("C.I.")
+        model.show_histogram(["C.I.", @table])
         model.data_plotted(@table)
       if statistic == "prediction"
-        model.show_histogram("P.I.")
+        model.show_histogram(["P.I.", @table])
         model.data_plotted(@table)
       if statistic == "importanceRatio"
-        model.show_histogram("ImportanceRatio_"+index.toString())
+        model.show_histogram(["ImportanceRatio_"+index.toString(), @table])
         model.data_plotted(@table)
 
     @cumulative_distribution = ( index ) ->
-      model.show_cumulative_distribution(index)
+      model.show_cumulative_distribution([index, @table])
       model.data_plotted(@table)
 
     @cumulative_distribution_statistic = ( index, statistic ) ->
       if statistic == "sensitivity"
-        model.show_cumulative_distribution("Sensitivity_"+index.toString())
+        model.show_cumulative_distribution(["Sensitivity_"+index.toString(), @table])
         model.data_plotted(@table)
       if statistic == "confidence"
-        model.show_cumulative_distribution("C.I.")
+        model.show_cumulative_distribution(["C.I.", @table])
         model.data_plotted(@table)
       if statistic == "prediction"
-        model.show_cumulative_distribution("P.I.")
+        model.show_cumulative_distribution(["P.I.", @table])
         model.data_plotted(@table)
       if statistic == "importanceRatio"
-        model.show_cumulative_distribution("ImportanceRatio_"+index.toString())
+        model.show_cumulative_distribution(["ImportanceRatio_"+index.toString(), @table])
         model.data_plotted(@table)
 
     @autocorrelation = ( index ) ->
-      model.show_autocorrelation(index)
+      model.show_autocorrelation([index, @table])
       model.data_plotted(@table)
 
     @autocorrelation_statistic = ( index, statistic ) ->
       if statistic == "sensitivity"
-        model.show_autocorrelation("Sensitivity_"+index.toString())
+        model.show_autocorrelation(["Sensitivity_"+index.toString(), @table])
         model.data_plotted(@table)
       if statistic == "confidence"
-        model.show_autocorrelation("C.I.")
+        model.show_autocorrelation(["C.I.", @table])
         model.data_plotted(@table)
       if statistic == "prediction"
-        model.show_autocorrelation("P.I.")
+        model.show_autocorrelation(["P.I.", @table])
         model.data_plotted(@table)
       if statistic == "importanceRatio"
-        model.show_autocorrelation("ImportanceRatio_"+index.toString())
+        model.show_autocorrelation(["ImportanceRatio_"+index.toString(), @table])
         model.data_plotted(@table)
 
     @xyplot = ( index ) ->
-      model.show_xyplot([index, "Index"])
+      model.show_xyplot([index, "Index", @table])
       model.data_plotted(@table)
 
     @xyplot_statistic = ( index, statistic ) ->
       if statistic == "sensitivity"
-        model.show_xyplot(["Sensitivity_"+index.toString(), "Index"])
+        model.show_xyplot(["Sensitivity_"+index.toString(), "Index", @table])
         model.data_plotted(@table)
       if statistic == "confidence"
         model.show_xyplot(["C.I._"+index.toString(), "Index", @table])
@@ -116,25 +116,25 @@ ko.components.register "tf-grid",
         model.show_xyplot(["P.I."+index.toString(), "Index", @table])
         model.data_plotted(@table)
       if statistic == "importanceRatio"
-        model.show_xyplot(["ImportanceRatio_"+index.toString(), "Index"])
+        model.show_xyplot(["ImportanceRatio_"+index.toString(), "Index", @table])
         model.data_plotted(@table)
 
     @qqplot = ( index ) ->
-      model.show_qqplot(index)
+      model.show_qqplot([index, @table])
       model.data_plotted(@table)
 
     @qqplot_statistic = ( index, statistic ) ->
       if statistic == "sensitivity"
-        model.show_qqplot("Sensitivity_"+index.toString())
+        model.show_qqplot(["Sensitivity_"+index.toString(), @table])
         model.data_plotted(@table)
       if statistic == "confidence"
-        model.show_qqplot("C.I.")
+        model.show_qqplot(["C.I.", @table])
         model.data_plotted(@table)
       if statistic == "prediction"
-        model.show_qqplot("P.I.")
+        model.show_qqplot(["P.I.", @table])
         model.data_plotted(@table)
       if statistic == "importanceRatio"
-        model.show_qqplot("ImportanceRatio_"+index.toString())
+        model.show_qqplot(["ImportanceRatio_"+index.toString(), @table])
         model.data_plotted(@table)
 
     @istimeseries = () ->

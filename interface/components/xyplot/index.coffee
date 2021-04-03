@@ -43,51 +43,43 @@ ko.components.register "tf-xyplot",
         return undefined
       column_names = @column_names()
       @column_indexes().map((idx, index, table) =>
+        offset_start = 0
+        offset_end = 0
+        if @column_indexes()[2] == 'fit'
+          offset_start = 0
+          offset_end = model["data_fit"]().length
+        else if @column_indexes()[2] == 'cross'
+          offset_start = model["data_fit"]().length
+          offset_end = offset_start + model["data_cross"]().length
+        else
+          offset_start = model["data_fit"]().length
+          if model["data_cross"]() != undefined
+            offset_start += model["data_cross"]().length
+          offset_end = offset_start + model["data_validation"]().length
+
         if column_names[index] == "Index"
-          return Object.keys(model["extra_#{model.data_plotted()}"]()).map(parseFloat)
+          return Object.keys(model["extra_#{@column_indexes()[2]}"]()).map(parseFloat)
         if column_names[index] == "Dependent"
-          return model["extra_#{model.data_plotted()}"]().map((row) => row[0])
+          return model["extra_#{@column_indexes()[2]}"]().map((row) => row[0])
         if column_names[index] == "Predicted"
-          return model["extra_#{model.data_plotted()}"]().map((row) => row[1])
+          return model["extra_#{@column_indexes()[2]}"]().map((row) => row[1])
         if column_names[index] == "Residual"
-          return model["extra_#{model.data_plotted()}"]().map((row) => row[2])
+          return model["extra_#{@column_indexes()[2]}"]().map((row) => row[2])
         if column_names[index].indexOf("Sensitivity") != -1
           idx = idx.split("_")[1]
           return Object.values(model.sensitivityData()[idx])
         if column_names[index].indexOf("C.I.") != -1
           # format is: C.I.
           idx = 0
-          if @column_indexes()[2] == 'fit'
-            console.log("FIT")
-            return Object.values(model.confidenceData()[0].slice(0, model["data_fit"]().length))
-          else if @column_indexes()[2] == 'cross'
-            console.log("CROSS")
-            return Object.values(model.confidenceData()[0].slice(model["data_fit"]().length, model["data_fit"]().length + model["data_cross"]().length))
-          else
-            console.log("VALID")
-            offset = model["data_fit"]().length
-            if model["data_cross"]() != undefined
-              offset += model["data_cross"]().length
-            return Object.values(model.confidenceData()[0].slice(offset))
+          return Object.values(model.confidenceData()[0].slice(offset_start, offset_end))
         if column_names[index].indexOf("P.I.") != -1
           # format is: P.I.
           idx = 0
-          if @column_indexes()[2] == 'fit'
-            console.log("FIT")
-            return Object.values(model.predictionData()[0].slice(0, model["data_fit"]().length))
-          else if @column_indexes()[2] == 'cross'
-            console.log("CROSS")
-            return Object.values(model.predictionData()[0].slice(model["data_fit"]().length, model["data_fit"]().length + model["data_cross"]().length))
-          else
-            console.log("VALID")
-            offset = model["data_fit"]().length
-            if model["data_cross"]() != undefined
-              offset += model["data_cross"]().length
-            return Object.values(model.predictionData()[0].slice(offset))
+          return Object.values(model.predictionData()[0].slice(offset_start, offset_end))
         if column_names[index].indexOf("Importance Ratio") != -1
           idx = idx.split("_")[1]
           return Object.values(model.importanceRatioData()[idx])
-        return model["data_#{model.data_plotted()}"]().map((row) => row[idx - 1])
+        return model["data_#{@column_indexes()[2]}"]().map((row) => row[idx - 1])
       )
 
     @close = ( ) ->

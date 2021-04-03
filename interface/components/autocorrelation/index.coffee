@@ -54,7 +54,7 @@ ko.components.register "tf-autocorrelation",
     @column_name = ko.computed ( ) =>
       if !@active()
         return undefined
-      index = @column_index()
+      index = @column_index()[0]
       if typeof index == "string"
         if index.indexOf("Sensitivity") != -1
           index = index.split("_")[1]
@@ -69,12 +69,28 @@ ko.components.register "tf-autocorrelation",
           index = index.split("_")[1]
           return "Importance Ratio " + model.importanceRatioColumns()[index].name
         return @column_index()
-      return model.columns()[@column_index()].name
+      return model.columns()[index].name
 
     @values = ko.computed ( ) =>
       if !@active()
         return undefined
-      index = @column_index()
+
+      table = @column_index()[1]
+      offset_start = 0
+      offset_end = 0
+      if @table == 'fit'
+        offset_start = 0
+        offset_end = model["data_fit"]().length
+      else if @table == 'cross'
+        offset_start = model["data_fit"]().length
+        offset_end = offset_start + model["data_cross"]().length
+      else
+        offset_start = model["data_fit"]().length
+        if model["data_cross"]() != undefined
+          offset_start += model["data_cross"]().length
+        offset_end = offset_start + model["data_validation"]().length
+
+      index = @column_index()[0]
       if typeof index == "string"
         if index == "Dependent"
           index = 0
@@ -89,17 +105,17 @@ ko.components.register "tf-autocorrelation",
         if typeof index == "string" && index.indexOf("C.I.") != -1
           # format is: C.I.
           index = 0
-          return Object.values(model.confidenceData()[0])
+          return Object.values(model.confidenceData()[0].slice(offset_start, offset_end))
         if typeof index == "string" && index.indexOf("P.I.") != -1
           # format is: P.I.
           index = 0
-          return Object.values(model.predictionData()[0])
+          return Object.values(model.predictionData()[0].slice(offset_start, offset_end))
         if typeof index == "string" && index.indexOf("ImportanceRatio") != -1
           # format is: ImportanceRatio_index
           index = index.split("_")[1]
           return Object.values(model.importanceRatioData()[index])
-        return model["extra_#{model.data_plotted()}"]().map((row) => row[index])
-      return model["data_#{model.data_plotted()}"]().map((row) => row[index])
+        return model["extra_#{table}"]().map((row) => row[index])
+      return model["data_#{table}"]().map((row) => row[index])
 
     @close = ( ) ->
       model.show_autocorrelation undefined
