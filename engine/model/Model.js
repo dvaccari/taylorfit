@@ -587,9 +587,16 @@ class Model extends CacheMixin(Observable) {
       return this;
 
     let model = this; // to use within loops below
-    let lags = Math.max(...model[_lags]); // Used for adjusting with respect to time-series
+
+    // Need to check every term for how many lags it has and select the max
+    let lags = 0; // Used for adjusting with respect to time-series
+    this.terms.forEach(function (t) {
+      lags = Math.max(t.lag, lags);
+    });
+
     let num_rows = model[_data][FIT_LABEL].shape[0] - lags;
     let total_rows = num_rows + lags;
+
 
     if (model[_data][CROSS_LABEL] != null)
       total_rows += model[_data][CROSS_LABEL].shape[0];
@@ -831,7 +838,13 @@ class Model extends CacheMixin(Observable) {
       return this;
 
     let model = this; // to use within loops below
-    let lags = Math.max(...model[_lags]); // Used for adjusting with respect to time-series
+
+    // Need to check every term for how many lags it has and select the max
+    let lags = 0; // Used for adjusting with respect to time-series
+    this.terms.forEach(function (t) {
+      lags = Math.max(t.lag, lags);
+    });
+
     let num_rows = model[_data][FIT_LABEL].shape[0] - lags;
     let total_rows = num_rows + lags;
 
