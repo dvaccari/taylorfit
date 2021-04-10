@@ -587,8 +587,9 @@ class Model extends CacheMixin(Observable) {
       return this;
 
     let model = this; // to use within loops below
-    let num_rows = model[_data][FIT_LABEL].shape[0];
-    let total_rows = num_rows;
+    let lags = Math.max(...model[_lags]); // Used for adjusting with respect to time-series
+    let num_rows = model[_data][FIT_LABEL].shape[0] - lags;
+    let total_rows = num_rows + lags;
 
     if (model[_data][CROSS_LABEL] != null)
       total_rows += model[_data][CROSS_LABEL].shape[0];
@@ -603,15 +604,21 @@ class Model extends CacheMixin(Observable) {
     this.terms.forEach(function (t) {
       let d = t.col();  // Get term data
 
-      for (j = 0; j < d.shape[0]; j++)
-        Z.set(j, i, d.get(j, 0));
+      // Properly ignore lag rows
+      for (j = 0; j < d.shape[0] - lags; j++)
+        Z.set(j, i, d.get(j + lags, 0));
 
       i += 1;
     });
 
+    // Must construct new y matrix ignoring lag rows
+    let y = new Matrix(this.y(label).shape[0] - lags, this.y(label).shape[1], new Array(this.y(label).shape[0] - lags).fill(0));
+
+    for (i = 0; i < y.shape[0]; i++)
+      y.set(i, 0, this.y(label).get(i + lags, 0));
+
     // This seems to be the easiest way to recompute MSE and tCrit
-    let y = this.y(label)
-      , ZT = Z.T
+    let ZT = Z.T
       , core = ZT.dot(Z).inv()  // The core matrix
       , BHat = core.dot(ZT).dot(y)
       , yHat = Z.dot(BHat)
@@ -622,6 +629,7 @@ class Model extends CacheMixin(Observable) {
 
     // Avoid recalculating
     // TODO: Check for reload, fix equality check
+    // TODO: This code is out of date with some changes made to CI calculation
     if (false) { // _y === y && _ZT === ZT && _pseudoInverse === pseudoInverse && _BHat === BHat && _yHat === yHat && _nd === nd && _np === np && _sse === sse && _mse === mse && _tCritVal === tCritVal) {
       console.log("computeConfidence: Speedup");
       // Fit data set
@@ -678,8 +686,7 @@ class Model extends CacheMixin(Observable) {
 
       return { index: index, confidence: confidence.data };
 
-    }
-    else {
+    } else {
       console.log("computeConfidence: Slow");
 
       _y = y;
@@ -703,6 +710,10 @@ class Model extends CacheMixin(Observable) {
     // Fit data set
     z_T = Z; // z_T is identical to Z for the fit data set
 
+    // Make all rows used by lags set to NaN
+    for (i = 0; i < lags; i++)
+      confidence.set(i, 0, NaN);
+
     // Calculate Q for each entry (z_T_i * core * z_T_i.T)
     for (i = 0; i < num_rows; i++) {
       z_T_i = z_T.row(i, null);
@@ -711,14 +722,14 @@ class Model extends CacheMixin(Observable) {
       se_fit = Math.sqrt(mse * Q);
 
       // Update confidence for this entry
-      confidence.set(i, 0, tCritVal * se_fit);
+      confidence.set(i + lags, 0, tCritVal * se_fit);
     }
 
-    offset = num_rows;
+    offset = num_rows + lags;
 
     // Cross data set
     if (model[_data][CROSS_LABEL] != null) {
-      num_rows_ = model[_data][CROSS_LABEL].shape[0];
+      num_rows_ = model[_data][CROSS_LABEL].shape[0] - lags;
       z_T = new Matrix(num_rows_, this.terms.length, null);
 
       // Build up z
@@ -726,11 +737,15 @@ class Model extends CacheMixin(Observable) {
       this.terms.forEach(function (t) {
         let d = t.col(CROSS_LABEL);  // Get term data
 
-        for (j = 0; j < d.shape[0]; j++)
-          z_T.set(j, i, d.get(j, 0));
+        for (j = 0; j < d.shape[0] - lags; j++)
+          z_T.set(j, i, d.get(j + lags, 0));
 
         i += 1;
       });
+
+      // Make all rows used by lags set to NaN
+      for (i = 0; i < lags; i++)
+        confidence.set(i + offset, 0, NaN);
 
       try {
         // Calculate Q for each entry (z_T_i * core * z_T_i.T)
@@ -742,18 +757,18 @@ class Model extends CacheMixin(Observable) {
           se_fit = Math.sqrt(mse * Q);
 
           // Update confidence for this entry
-          confidence.set(i + offset, 0, tCritVal * se_fit);
+          confidence.set(i + offset + lags, 0, tCritVal * se_fit);
         }
       } catch (e) {
         console.log("Something unexpected happened in cross CI:", e);
       }
 
-      offset += num_rows_;
+      offset += num_rows_ + lags;
     }
 
     // Valid data set
     if (model[_data][VALIDATION_LABEL] != null) {
-      num_rows_ = model[_data][VALIDATION_LABEL].shape[0];
+      num_rows_ = model[_data][VALIDATION_LABEL].shape[0] - lags;
       z_T = new Matrix(num_rows_, this.terms.length, null);
 
       // Build up z
@@ -761,11 +776,15 @@ class Model extends CacheMixin(Observable) {
       this.terms.forEach(function (t) {
         let d = t.col(VALIDATION_LABEL);  // Get term data
 
-        for (j = 0; j < d.shape[0]; j++)
-          z_T.set(j, i, d.get(j, 0));
+        for (j = 0; j < d.shape[0] - lags; j++)
+          z_T.set(j, i, d.get(j + lags, 0));
 
         i += 1;
       });
+
+      // Make all rows used by lags set to NaN
+      for (i = 0; i < lags; i++)
+        confidence.set(i + offset, 0, NaN);
 
       try {
         // Calculate Q for each entry (z_T_i * core * z_T_i.T)
@@ -777,7 +796,7 @@ class Model extends CacheMixin(Observable) {
           se_fit = Math.sqrt(mse * Q);
 
           // Update confidence for this entry
-          confidence.set(i + offset, 0, tCritVal * se_fit);
+          confidence.set(i + offset + lags, 0, tCritVal * se_fit);
         }
       } catch (e) {
         console.log("Something unexpected happened in validation CI:", e);
@@ -812,8 +831,9 @@ class Model extends CacheMixin(Observable) {
       return this;
 
     let model = this; // to use within loops below
-    let num_rows = model[_data][FIT_LABEL].shape[0];
-    let total_rows = num_rows;
+    let lags = Math.max(...model[_lags]); // Used for adjusting with respect to time-series
+    let num_rows = model[_data][FIT_LABEL].shape[0] - lags;
+    let total_rows = num_rows + lags;
 
     if (model[_data][CROSS_LABEL] != null)
       total_rows += model[_data][CROSS_LABEL].shape[0];
@@ -828,15 +848,21 @@ class Model extends CacheMixin(Observable) {
     this.terms.forEach(function (t) {
       let d = t.col();  // Get term data
 
-      for (j = 0; j < d.shape[0]; j++)
-        Z.set(j, i, d.get(j, 0));
+      // Properly ignore lag rows
+      for (j = 0; j < d.shape[0] - lags; j++)
+        Z.set(j, i, d.get(j + lags, 0));
 
       i += 1;
     });
 
+    // Must construct new y matrix ignoring lag rows
+    let y = new Matrix(this.y(label).shape[0] - lags, this.y(label).shape[1], new Array(this.y(label).shape[0] - lags).fill(0));
+
+    for (i = 0; i < y.shape[0]; i++)
+      y.set(i, 0, this.y(label).get(i + lags, 0));
+
     // This seems to be the easiest way to recompute MSE and tCrit
-    let y = this.y(label)
-      , ZT = Z.T
+    let ZT = Z.T
       , core = ZT.dot(Z).inv()  // The core matrix
       , BHat = core.dot(ZT).dot(y)
       , yHat = Z.dot(BHat)
@@ -847,6 +873,7 @@ class Model extends CacheMixin(Observable) {
 
     // Avoid recalculating
     // TODO: Check for reload, fix equality check
+    // TODO: This code is out of date with some changes made to PI calculation
     if (false) { //_y === y && _ZT === ZT && _pseudoInverse === pseudoInverse && _BHat === BHat && _yHat === yHat && _nd === nd && _np === np && _sse === sse && _mse === mse && _tCritVal === tCritVal) {
       console.log("computePred: Speedup");
       // Fit data set
@@ -903,8 +930,7 @@ class Model extends CacheMixin(Observable) {
 
       return { index: index, prediction: prediction.data };
 
-    }
-    else {
+    } else {
       console.log("computePred: Slow");
 
       _y = y;
@@ -928,6 +954,10 @@ class Model extends CacheMixin(Observable) {
     // Fit data set
     z_T = Z;  // z_T is identical to Z for the fit data set
 
+    // Make all rows used by lags set to NaN
+    for (i = 0; i < lags; i++)
+      prediction.set(i, 0, NaN);
+
     // Calculate Q for each entry (z_T_i * core * z_T_i.T)
     for (i = 0; i < num_rows; i++) {
       z_T_i = z_T.row(i, null);
@@ -935,14 +965,14 @@ class Model extends CacheMixin(Observable) {
       se_pred = Math.sqrt(mse * (1 + Q));
 
       // Update prediction for this entry
-      prediction.set(i, 0, tCritVal * se_pred);
+      prediction.set(i + lags, 0, tCritVal * se_pred);
     }
 
-    offset = num_rows;
+    offset = num_rows + lags;
 
     // Cross data set
     if (model[_data][CROSS_LABEL] != null) {
-      num_rows_ = model[_data][CROSS_LABEL].shape[0];
+      num_rows_ = model[_data][CROSS_LABEL].shape[0] - lags;
       z_T = new Matrix(num_rows_, this.terms.length, null);
 
       // Build up z
@@ -950,11 +980,15 @@ class Model extends CacheMixin(Observable) {
       this.terms.forEach(function (t) {
         let d = t.col(CROSS_LABEL);  // Get term data
 
-        for (j = 0; j < d.shape[0]; j++)
-          z_T.set(j, i, d.get(j, 0));
+        for (j = 0; j < d.shape[0] - lags; j++)
+          z_T.set(j, i, d.get(j + lags, 0));
 
         i += 1;
       });
+
+      // Make all rows used by lags set to NaN
+      for (i = 0; i < lags; i++)
+        prediction.set(i + offset, 0, NaN);
 
       try {
         // Calculate Q for each entry (z_T_i * core * z_T_i.T)
@@ -964,18 +998,18 @@ class Model extends CacheMixin(Observable) {
           se_pred = Math.sqrt(mse * (1 + Q));
 
           // Update prediction for this entry
-          prediction.set(i + offset, 0, tCritVal * se_pred);
+          prediction.set(i + offset + lags, 0, tCritVal * se_pred);
         }
       } catch (e) {
         console.log("Something unexpected happened in cross PI:", e);
       }
 
-      offset += num_rows_;
+      offset += num_rows_ + lags;
     }
 
     // Valid data set
     if (model[_data][VALIDATION_LABEL] != null) {
-      num_rows_ = model[_data][VALIDATION_LABEL].shape[0];
+      num_rows_ = model[_data][VALIDATION_LABEL].shape[0] - lags;
       z_T = new Matrix(num_rows_, this.terms.length, null);
 
       // Build up z
@@ -983,11 +1017,15 @@ class Model extends CacheMixin(Observable) {
       this.terms.forEach(function (t) {
         let d = t.col(VALIDATION_LABEL);  // Get term data
 
-        for (j = 0; j < d.shape[0]; j++)
-          z_T.set(j, i, d.get(j, 0));
+        for (j = 0; j < d.shape[0] - lags; j++)
+          z_T.set(j, i, d.get(j + lags, 0));
 
         i += 1;
       });
+
+      // Make all rows used by lags set to NaN
+      for (i = 0; i < lags; i++)
+        prediction.set(i + offset, 0, NaN);
 
       try {
         // Calculate Q for each entry (z_T_i * core * z_T_i.T)
@@ -997,7 +1035,7 @@ class Model extends CacheMixin(Observable) {
           se_pred = Math.sqrt(mse * (1 + Q));
 
           // Update prediction for this entry
-          prediction.set(i + offset, 0, tCritVal * se_pred);
+          prediction.set(i + offset + lags, 0, tCritVal * se_pred);
         }
       } catch (e) {
         console.log("Something unexpected happened in validation PI:", e);
