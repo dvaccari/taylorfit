@@ -329,8 +329,11 @@ ko.components.register "tf-grid",
       totals = []
       k = 0
       while k < @getColData().length
-        totals.push(math.mean(@getColData()[k]))
-        k++
+        try
+          totals.push(math.mean((x for x in @getColData()[k] when !isNaN(x))))
+          k++
+        catch e
+          k++
       return totals;
     @flipMean = ( ) ->
       @toggleMean = !@toggleMean
@@ -474,10 +477,9 @@ ko.components.register "tf-grid",
       if @extra()
         @colData = @getColData();
       result = []
-      means = @mean();
-      i = 0;
       @colData.forEach( (col) ->
-        result.push(math.std(col));
+        try
+          result.push(math.std((x for x in col when !isNaN(x))));
       )
       return result;
 
