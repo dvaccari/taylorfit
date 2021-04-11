@@ -353,7 +353,8 @@ class Model extends CacheMixin(Observable) {
       coeff: stats.weights.get(i, 0),
       stats: {
         t: stats.t.get(i, 0),
-        pt: stats.pt.get(i, 0)
+        pt: stats.pt.get(i, 0),
+	ir: stats.ir.get(i, 0)
       }
     }));
 

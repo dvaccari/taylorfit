@@ -80,17 +80,8 @@ module.exports = [
       pt.data.set(pt.data.map((t) => Math.max(0, dist.pt(t, nd - np))));
       return pt;
     }),
-  //TODO
-  Statistic('IR',['X'],
-  ({X}) => {
-    //sensitivity
-    let SensXY =3;
-    //standard errors
-    let SE_X =1;
-    let SE_Y =2;
-    let IR = SensXY*SE_X/SE_Y;
-    return IR;
-  }),
+  //TODOIR: Figure out the actual way this works, and put in a definition
+  Statistic('ir',['pt'], ({pt}) => pt),
 
 
   Statistic('pF', ['F', 'np', 'nd'],

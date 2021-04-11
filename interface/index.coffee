@@ -18,7 +18,7 @@ global.allstats = ko.observableArray [ ]
 global.send_incoming_stats = () ->
   adapter.on "statisticsMetadata", ( data ) ->
     for stat in data
-      if stat.show != false
+      if stat.show != false && allstats().find((element) => element.id == stat.id) == undefined
         allstats.push
           id: stat.id
           name: stat.displayName or stat.id
