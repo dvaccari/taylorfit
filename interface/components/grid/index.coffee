@@ -420,7 +420,7 @@ ko.components.register "tf-grid",
         @colData = @getColData();
       result = [];
       @colData.forEach( (col) ->
-        col = col.sort( (a, b) ->
+        col = (x for x in col when !isNaN(x)).sort( (a, b) ->
           return a - b;
         );
         middle = Math.floor((col.length - 1) / 2);
@@ -438,7 +438,7 @@ ko.components.register "tf-grid",
         @colData = @getColData();
       result = [];
       @colData.forEach( (col) ->
-        col = col.sort( (a, b) ->
+        col = (x for x in col when !isNaN(x)).sort( (a, b) ->
           return a - b;
         );
         pos = ((col.length) - 1) * .25;
@@ -458,7 +458,7 @@ ko.components.register "tf-grid",
         @colData = @getColData();
       result = [];
       @colData.forEach( (col) ->
-        col = col.sort( (a, b) ->
+        col = (x for x in col when !isNaN(x)).sort( (a, b) ->
           return a - b;
         );
         pos = ((col.length) - 1) * .75;
@@ -531,7 +531,7 @@ ko.components.register "tf-grid",
           sensitive.forEach( (col) ->
             iter = 1
             while iter < col.length
-              if col[iter] < min[i]
+              if !isNaN(col[iter]) && col[iter] < min[i]
                 min[i] = col[iter]
               iter++
             i++
@@ -650,9 +650,9 @@ ko.components.register "tf-grid",
         @colData = @getColData();
       result = []
       @colData.forEach( (col) ->
-        squares = col.map((val) => (val*val));
+        squares = (x for x in col when !isNaN(x)).map((val) => (val*val));
         sum = squares.reduce((acum, val) => (acum + val));
-        mean = sum/col.length;
+        mean = sum/(x for x in col when !isNaN(x)).length;
         result.push(Math.sqrt(mean));
       )
       return result;
