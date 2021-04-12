@@ -499,19 +499,35 @@ ko.components.register "tf-grid",
           min = rows[k].slice(0)
           if extra
             extra[k].forEach( (dataPoint) ->
-              min.push(dataPoint)
+              # Prevents NaNs from propagating
+              if (isNaN(dataPoint))
+                min.push(Number.MAX_VALUE)
+              else
+                min.push(dataPoint)
             )
           sensitive.forEach( (col) ->
-            min.push(col[0])
+            if (isNaN(col))
+              min.push(Number.MAX_VALUE)
+            else
+              min.push(col[0])
           )
           confidenc.forEach( (col) ->
-            min.push(col[0])
+            if (isNaN(col))
+              min.push(Number.MAX_VALUE)
+            else
+              min.push(col[0])
           )
           predict.forEach( (col) ->
-            min.push(col[0])
+            if (isNaN(col))
+              min.push(Number.MAX_VALUE)
+            else
+              min.push(col[0])
           )
           importance.forEach( (col) ->
-            min.push(col[0]);
+            if (isNaN(col))
+              min.push(Number.MAX_VALUE)
+            else
+              min.push(col[0])
           )
         else
           i = 0
@@ -579,19 +595,35 @@ ko.components.register "tf-grid",
           max = rows[k].slice(0)
           if extra
             extra[k].forEach( (dataPoint) ->
-              max.push(dataPoint)
+              # Prevents NaNs from propagating
+              if (isNaN(dataPoint))
+                max.push(Number.MIN_VALUE)
+              else
+                max.push(dataPoint)
             )
           sensitive.forEach( (col) ->
-            max.push(col[0])
+            if (isNaN(col))
+              max.push(Number.MIN_VALUE)
+            else
+              max.push(col[0])
           )
           confidenc.forEach( (col) ->
-            max.push(col[0])
+            if (isNaN(col))
+              max.push(Number.MIN_VALUE)
+            else
+              max.push(col[0])
           )
           predict.forEach( (col) ->
-            max.push(col[0])
+            if (isNaN(col))
+              max.push(Number.MIN_VALUE)
+            else
+              max.push(col[0])
           )
           importance.forEach( (col) ->
-            max.push(col[0]);
+            if (isNaN(col))
+              max.push(Number.MIN_VALUE)
+            else
+              max.push(col[0]);
           )
         else
           i = 0
