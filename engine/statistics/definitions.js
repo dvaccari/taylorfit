@@ -82,7 +82,13 @@ module.exports = [
     }),
   //TODOIR: Figure out the actual way this works, and put in a definition
   Statistic('ir',['pt'], ({pt}) => pt),
-
+  ////sensitivity of y with respect to xi  * standard error of xi / standard error of y
+  //Statistic('ir',['X','y'],({X,y}) => {
+  //let sens = partial derivative of y over xi;
+  //let se_X = standard error of model coefficient xi;
+  //let se_Y = standard error of y;
+  //return sensY*(se_X/se_Y);
+  //}),
 
   Statistic('pF', ['F', 'np', 'nd'],
     ({ F, np, nd }) => Math.max(dist.pf(Math.abs(F), np, nd - np) - 1e-15, 0)),
