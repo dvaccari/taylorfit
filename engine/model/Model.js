@@ -348,13 +348,16 @@ class Model extends CacheMixin(Observable) {
     }
 
     let predicted = Array.from(stats.yHat.data);
+
     let terms = this[_terms].map((term, i) => ({
       term: term.valueOf(),
       coeff: stats.weights.get(i, 0),
       stats: {
         t: stats.t.get(i, 0),
         pt: stats.pt.get(i, 0),
-	ir: stats.ir.get(i, 0)
+        ir: stats.ir.get(i, 0)
+        //TODOIR: IR calculation needs to be finished here, delete the line on top of this when done
+	      //ir: stats.weights.get(i, 0) * stats.ir.get(i, 0)
       }
     }));
 
