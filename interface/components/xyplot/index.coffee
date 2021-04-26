@@ -45,10 +45,10 @@ ko.components.register "tf-xyplot",
       @column_indexes().map((idx, index, table) =>
         offset_start = 0
         offset_end = 0
-        if @column_indexes()[2] == 'fit'
+        if model.data_plotted() == 'fit'
           offset_start = 0
           offset_end = model["data_fit"]().length
-        else if @column_indexes()[2] == 'cross'
+        else if model.data_plotted() == 'cross'
           offset_start = model["data_fit"]().length
           offset_end = offset_start + model["data_cross"]().length
         else
@@ -58,13 +58,14 @@ ko.components.register "tf-xyplot",
           offset_end = offset_start + model["data_validation"]().length
 
         if column_names[index] == "Index"
-          return Object.keys(model["extra_#{@column_indexes()[2]}"]()).map(parseFloat)
+          console.log("Hello!", "Data plotted:", model.data_plotted(), "column", @column_indexes())
+          return Object.keys(model["extra_#{model.data_plotted()}"]()).map(parseFloat)
         if column_names[index] == "Dependent"
-          return model["extra_#{@column_indexes()[2]}"]().map((row) => row[0])
+          return model["extra_#{model.data_plotted()}"]().map((row) => row[0])
         if column_names[index] == "Predicted"
-          return model["extra_#{@column_indexes()[2]}"]().map((row) => row[1])
+          return model["extra_#{model.data_plotted()}"]().map((row) => row[1])
         if column_names[index] == "Residual"
-          return model["extra_#{@column_indexes()[2]}"]().map((row) => row[2])
+          return model["extra_#{model.data_plotted()}"]().map((row) => row[2])
         if column_names[index].indexOf("Sensitivity") != -1
           idx = idx.split("_")[1]
           return Object.values(model.sensitivityData()[idx])
@@ -79,7 +80,7 @@ ko.components.register "tf-xyplot",
         if column_names[index].indexOf("Importance Ratio") != -1
           idx = idx.split("_")[1]
           return Object.values(model.importanceRatioData()[idx])
-        return model["data_#{@column_indexes()[2]}"]().map((row) => row[idx - 1])
+        return model["data_#{model.data_plotted()}"]().map((row) => row[idx - 1])
       )
 
     @close = ( ) ->
