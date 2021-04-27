@@ -48,93 +48,93 @@ ko.components.register "tf-grid",
       return undefined
 
     @histogram = ( index ) ->
-      model.show_histogram(index)
+      model.show_histogram([index, @table])
       model.data_plotted(@table)
 
     @histogram_statistic = ( index, statistic ) ->
       if statistic == "sensitivity"
-        model.show_histogram("Sensitivity_"+index.toString())
+        model.show_histogram(["Sensitivity_"+index.toString(), @table])
         model.data_plotted(@table)
       if statistic == "confidence"
-        model.show_histogram("C.I.")
+        model.show_histogram(["C.I.", @table])
         model.data_plotted(@table)
       if statistic == "prediction"
-        model.show_histogram("P.I.")
+        model.show_histogram(["P.I.", @table])
         model.data_plotted(@table)
       if statistic == "importanceRatio"
-        model.show_histogram("ImportanceRatio_"+index.toString())
+        model.show_histogram(["ImportanceRatio_"+index.toString(), @table])
         model.data_plotted(@table)
 
     @cumulative_distribution = ( index ) ->
-      model.show_cumulative_distribution(index)
+      model.show_cumulative_distribution([index, @table])
       model.data_plotted(@table)
 
     @cumulative_distribution_statistic = ( index, statistic ) ->
       if statistic == "sensitivity"
-        model.show_cumulative_distribution("Sensitivity_"+index.toString())
+        model.show_cumulative_distribution(["Sensitivity_"+index.toString(), @table])
         model.data_plotted(@table)
       if statistic == "confidence"
-        model.show_cumulative_distribution("C.I.")
+        model.show_cumulative_distribution(["C.I.", @table])
         model.data_plotted(@table)
       if statistic == "prediction"
-        model.show_cumulative_distribution("P.I.")
+        model.show_cumulative_distribution(["P.I.", @table])
         model.data_plotted(@table)
       if statistic == "importanceRatio"
-        model.show_cumulative_distribution("ImportanceRatio_"+index.toString())
+        model.show_cumulative_distribution(["ImportanceRatio_"+index.toString(), @table])
         model.data_plotted(@table)
 
     @autocorrelation = ( index ) ->
-      model.show_autocorrelation(index)
+      model.show_autocorrelation([index, @table])
       model.data_plotted(@table)
 
     @autocorrelation_statistic = ( index, statistic ) ->
       if statistic == "sensitivity"
-        model.show_autocorrelation("Sensitivity_"+index.toString())
+        model.show_autocorrelation(["Sensitivity_"+index.toString(), @table])
         model.data_plotted(@table)
       if statistic == "confidence"
-        model.show_autocorrelation("C.I.")
+        model.show_autocorrelation(["C.I.", @table])
         model.data_plotted(@table)
       if statistic == "prediction"
-        model.show_autocorrelation("P.I.")
+        model.show_autocorrelation(["P.I.", @table])
         model.data_plotted(@table)
       if statistic == "importanceRatio"
-        model.show_autocorrelation("ImportanceRatio_"+index.toString())
+        model.show_autocorrelation(["ImportanceRatio_"+index.toString(), @table])
         model.data_plotted(@table)
 
     @xyplot = ( index ) ->
-      model.show_xyplot([index, "Index"])
+      model.show_xyplot([index, "Index", @table])
       model.data_plotted(@table)
 
     @xyplot_statistic = ( index, statistic ) ->
       if statistic == "sensitivity"
-        model.show_xyplot(["Sensitivity_"+index.toString(), "Index"])
+        model.show_xyplot(["Sensitivity_"+index.toString(), "Index", @table])
         model.data_plotted(@table)
       if statistic == "confidence"
-        model.show_xyplot(["C.I._"+index.toString(), "Index"])
+        model.show_xyplot(["C.I._"+index.toString(), "Index", @table])
         model.data_plotted(@table)
       if statistic == "prediction"
-        model.show_xyplot(["P.I."+index.toString(), "Index"])
+        model.show_xyplot(["P.I."+index.toString(), "Index", @table])
         model.data_plotted(@table)
       if statistic == "importanceRatio"
-        model.show_xyplot(["ImportanceRatio_"+index.toString(), "Index"])
+        model.show_xyplot(["ImportanceRatio_"+index.toString(), "Index", @table])
         model.data_plotted(@table)
 
     @qqplot = ( index ) ->
-      model.show_qqplot(index)
+      model.show_qqplot([index, @table])
       model.data_plotted(@table)
 
     @qqplot_statistic = ( index, statistic ) ->
       if statistic == "sensitivity"
-        model.show_qqplot("Sensitivity_"+index.toString())
+        model.show_qqplot(["Sensitivity_"+index.toString(), @table])
         model.data_plotted(@table)
       if statistic == "confidence"
-        model.show_qqplot("C.I.")
+        model.show_qqplot(["C.I.", @table])
         model.data_plotted(@table)
       if statistic == "prediction"
-        model.show_qqplot("P.I.")
+        model.show_qqplot(["P.I.", @table])
         model.data_plotted(@table)
       if statistic == "importanceRatio"
-        model.show_qqplot("ImportanceRatio_"+index.toString())
+        model.show_qqplot(["ImportanceRatio_"+index.toString(), @table])
         model.data_plotted(@table)
 
     @istimeseries = () ->
@@ -329,8 +329,11 @@ ko.components.register "tf-grid",
       totals = []
       k = 0
       while k < @getColData().length
-        totals.push(math.mean(@getColData()[k]))
-        k++
+        try
+          totals.push(math.mean((x for x in @getColData()[k] when !isNaN(x))))
+          k++
+        catch e
+          k++
       return totals;
     @flipMean = ( ) ->
       @toggleMean = !@toggleMean
@@ -417,7 +420,7 @@ ko.components.register "tf-grid",
         @colData = @getColData();
       result = [];
       @colData.forEach( (col) ->
-        col = col.sort( (a, b) ->
+        col = (x for x in col when !isNaN(x)).sort( (a, b) ->
           return a - b;
         );
         middle = Math.floor((col.length - 1) / 2);
@@ -435,7 +438,7 @@ ko.components.register "tf-grid",
         @colData = @getColData();
       result = [];
       @colData.forEach( (col) ->
-        col = col.sort( (a, b) ->
+        col = (x for x in col when !isNaN(x)).sort( (a, b) ->
           return a - b;
         );
         pos = ((col.length) - 1) * .25;
@@ -455,7 +458,7 @@ ko.components.register "tf-grid",
         @colData = @getColData();
       result = [];
       @colData.forEach( (col) ->
-        col = col.sort( (a, b) ->
+        col = (x for x in col when !isNaN(x)).sort( (a, b) ->
           return a - b;
         );
         pos = ((col.length) - 1) * .75;
@@ -474,10 +477,9 @@ ko.components.register "tf-grid",
       if @extra()
         @colData = @getColData();
       result = []
-      means = @mean();
-      i = 0;
       @colData.forEach( (col) ->
-        result.push(math.std(col));
+        try
+          result.push(math.std((x for x in col when !isNaN(x))));
       )
       return result;
 
@@ -491,24 +493,41 @@ ko.components.register "tf-grid",
       confidenc = @confidenceData()
       predict = @predictionData()
       importance = @importanceRatioData()
+      offset = @getRowOffset()
       while k < rowLength
         if !min.length
           min = rows[k].slice(0)
           if extra
             extra[k].forEach( (dataPoint) ->
-              min.push(dataPoint)
+              # Prevents NaNs from propagating
+              if (isNaN(dataPoint))
+                min.push(Number.MAX_VALUE)
+              else
+                min.push(dataPoint)
             )
           sensitive.forEach( (col) ->
-            min.push(col[0])
+            if (isNaN(col))
+              min.push(Number.MAX_VALUE)
+            else
+              min.push(col[0])
           )
           confidenc.forEach( (col) ->
-            min.push(col[0])
+            if (isNaN(col))
+              min.push(Number.MAX_VALUE)
+            else
+              min.push(col[0])
           )
           predict.forEach( (col) ->
-            min.push(col[0])
+            if (isNaN(col))
+              min.push(Number.MAX_VALUE)
+            else
+              min.push(col[0])
           )
           importance.forEach( (col) ->
-            min.push(col[0]);
+            if (isNaN(col))
+              min.push(Number.MAX_VALUE)
+            else
+              min.push(col[0])
           )
         else
           i = 0
@@ -528,22 +547,22 @@ ko.components.register "tf-grid",
           sensitive.forEach( (col) ->
             iter = 1
             while iter < col.length
-              if col[iter] < min[i]
+              if !isNaN(col[iter]) && col[iter] < min[i]
                 min[i] = col[iter]
               iter++
             i++
           )
           confidenc.forEach( (col) ->
-            iter = 1
-            while iter < col.length
+            iter = offset
+            while iter < offset + rows.length
               if col[iter] < min[i]
                 min[i] = col[iter]
               iter++
             i++
           )
           predict.forEach( (col) ->
-            iter = 1
-            while iter < col.length
+            iter = offset
+            while iter < offset + rows.length
               if col[iter] < min[i]
                 min[i] = col[iter]
               iter++
@@ -570,24 +589,41 @@ ko.components.register "tf-grid",
       confidenc = @confidenceData()
       predict = @predictionData()
       importance = @importanceRatioData()
+      offset = @getRowOffset()
       while k < rowLength
         if !max.length
           max = rows[k].slice(0)
           if extra
             extra[k].forEach( (dataPoint) ->
-              max.push(dataPoint)
+              # Prevents NaNs from propagating
+              if (isNaN(dataPoint))
+                max.push(Number.MIN_VALUE)
+              else
+                max.push(dataPoint)
             )
           sensitive.forEach( (col) ->
-            max.push(col[0])
+            if (isNaN(col))
+              max.push(Number.MIN_VALUE)
+            else
+              max.push(col[0])
           )
           confidenc.forEach( (col) ->
-            max.push(col[0])
+            if (isNaN(col))
+              max.push(Number.MIN_VALUE)
+            else
+              max.push(col[0])
           )
           predict.forEach( (col) ->
-            max.push(col[0])
+            if (isNaN(col))
+              max.push(Number.MIN_VALUE)
+            else
+              max.push(col[0])
           )
           importance.forEach( (col) ->
-            max.push(col[0]);
+            if (isNaN(col))
+              max.push(Number.MIN_VALUE)
+            else
+              max.push(col[0]);
           )
         else
           i = 0
@@ -613,16 +649,16 @@ ko.components.register "tf-grid",
             i++
           )
           confidenc.forEach( (col) ->
-            iter = 1
-            while iter < col.length
+            iter = offset
+            while iter < offset + rows.length
               if col[iter] > max[i]
                 max[i] = col[iter]
               iter++
             i++
           )
           predict.forEach( (col) ->
-            iter = 1
-            while iter < col.length
+            iter = offset
+            while iter < offset + rows.length
               if col[iter] > max[i]
                 max[i] = col[iter]
               iter++
@@ -646,9 +682,9 @@ ko.components.register "tf-grid",
         @colData = @getColData();
       result = []
       @colData.forEach( (col) ->
-        squares = col.map((val) => (val*val));
+        squares = (x for x in col when !isNaN(x)).map((val) => (val*val));
         sum = squares.reduce((acum, val) => (acum + val));
-        mean = sum/col.length;
+        mean = sum/(x for x in col when !isNaN(x)).length;
         result.push(Math.sqrt(mean));
       )
       return result;

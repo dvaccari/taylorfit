@@ -188,7 +188,8 @@ module.exports = class Model
           data = @["data_#{type}"]()
           res = @["result_#{type}"]()
           if res
-            pred = (NaN for i in [0...res.lag]).concat res.predicted
+            lags = data.length - res.predicted.length
+            pred = (NaN for i in [0...lags]).concat res.predicted
 
           if (not data) or (not pred) then return undefined
 

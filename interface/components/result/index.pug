@@ -9,7 +9,6 @@
         // ko foreach: allstats().filter((x) => x.candidate)
         th(data-bind="text: name, attr: { title:description }")
         // /ko
-        //th(title="This column shows the Importance Ratio TODO") IR
     tbody
       // ko foreach: result_fit().terms
       tr
@@ -44,19 +43,17 @@
         }")
           span.value(data-bind="num:$value")
         // /ko
+
         //TODO implement IR values of y  with respect to xi: (sensitivity * (standard error of xi(all))/(standard error of y (current)))
         // Sensitivity (if not accessible for above) of y with respect to xi: partial derivative of y(predicted vallues of row)/xi
       // /ko
-
-
-
   a.button(data-bind="click:function(){model().show_export_code(true)}" title="Generate code for the current model that can be used in programs in Excel, C++, Matlab, Python, or JavaScript.") Export to Code
 
 .table-wrapper
   table.stats
     thead
       tr
-        th(colspan="4" title="This Table shows global statistics for the current model as applied to either the FIT, CROSS, or VALIDATE data sets") Goodness of Fit Statistics
+        th(colspan="3" title="This Table shows global statistics for the current model as applied to either the FIT, CROSS, or VALIDATE data sets") Goodness of Fit Statistics
       tr
         th Stat
         th(title="The FIT dataset is used to compute the coefficients of the terms in both the “Current Model” table and the “Candidate Terms” Table.") Fit

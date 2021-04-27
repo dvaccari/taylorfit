@@ -42,8 +42,23 @@ ko.components.register "tf-xyplot",
       if !@active()
         return undefined
       column_names = @column_names()
-      @column_indexes().map((idx, index) =>
+      @column_indexes().map((idx, index, table) =>
+        offset_start = 0
+        offset_end = 0
+        if model.data_plotted() == 'fit'
+          offset_start = 0
+          offset_end = model["data_fit"]().length
+        else if model.data_plotted() == 'cross'
+          offset_start = model["data_fit"]().length
+          offset_end = offset_start + model["data_cross"]().length
+        else
+          offset_start = model["data_fit"]().length
+          if model["data_cross"]() != undefined
+            offset_start += model["data_cross"]().length
+          offset_end = offset_start + model["data_validation"]().length
+
         if column_names[index] == "Index"
+          console.log("Hello!", "Data plotted:", model.data_plotted(), "column", @column_indexes())
           return Object.keys(model["extra_#{model.data_plotted()}"]()).map(parseFloat)
         if column_names[index] == "Dependent"
           return model["extra_#{model.data_plotted()}"]().map((row) => row[0])
@@ -57,11 +72,11 @@ ko.components.register "tf-xyplot",
         if column_names[index].indexOf("C.I.") != -1
           # format is: C.I.
           idx = 0
-          return Object.values(model.confidenceData()[0])
+          return Object.values(model.confidenceData()[0].slice(offset_start, offset_end))
         if column_names[index].indexOf("P.I.") != -1
           # format is: P.I.
           idx = 0
-          return Object.values(model.predictionData()[0])
+          return Object.values(model.predictionData()[0].slice(offset_start, offset_end))
         if column_names[index].indexOf("Importance Ratio") != -1
           idx = idx.split("_")[1]
           return Object.values(model.importanceRatioData()[idx])

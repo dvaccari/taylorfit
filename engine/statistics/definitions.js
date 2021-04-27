@@ -85,7 +85,6 @@ module.exports = [
       pt.data.set(pt.data.map((t) => Math.max(0, dist.pt(t, nd - np))));
       return pt;
     }),
-
   //Necessary to calculate stdy, the mean of y
   Statistic('meany', ['y'], ({y}) => {
     return y.data.reduce((total, c) => total += c, 0) / y.data.length
