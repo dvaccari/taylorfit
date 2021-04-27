@@ -43,6 +43,9 @@
         }")
           span.value(data-bind="num:$value")
         // /ko
+
+        //TODO implement IR values of y  with respect to xi: (sensitivity * (standard error of xi(all))/(standard error of y (current)))
+        // Sensitivity (if not accessible for above) of y with respect to xi: partial derivative of y(predicted vallues of row)/xi
       // /ko
   a.button(data-bind="click:function(){model().show_export_code(true)}" title="Generate code for the current model that can be used in programs in Excel, C++, Matlab, Python, or JavaScript.") Export to Code
 

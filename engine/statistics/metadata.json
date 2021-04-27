@@ -41,8 +41,14 @@
   { "id": "seXKURT", "displayName": "s.e. XKURT", "sort": "<", "description": "Estimated standard error of the kurtosis. If |ExKurt|> 2*s.e.ExKurt, there is evidence that residual errors are not normally distributed." },
 
 
+  { "id": "meany", "show": false},
+  { "id": "stdy", "show": false},
+  { "id": "adj_mean", "show": false},
+  { "id": "adj_std", "show": false},
+  
   { "id": "t", "displayName": "t", "sort": "|<|", "candidateOnly": true, "default": true, "description": "The t-statistic used to determine how significant this term is. A value above about 2.0 is usually considered significant." },
   { "id": "pt", "displayName": "p(t)", "sort": ">", "candidateOnly": true, "default": true, "description": "The probability that this term occurs by chance. Cell is colored green if p(t) > alpha (default alpha = 0.05)." },
+  { "id": "ir", "displayName": "IR", "currentModelOnly": true, "description": "The Importance Ratio TODO"},
 
   { "id": "stdev", "show": false },
   { "id": "mean", "show": false },
