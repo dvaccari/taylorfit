@@ -1,7 +1,5 @@
 /*!   export candidateOnly [provided] [unused] [could be renamed] */
 
-/*!   export currentModelOnly [provided] [unused] [could be renamed] */
-
 /*!   export default [provided] [unused] [could be renamed] */
 
 /*!   export delete [provided] [unused] [could be renamed] */
@@ -86,17 +84,11 @@
 
 /*! ./utils */
 
-/*! CommonJS bailout: exports is used directly at 425:50-57 */
-
-/*! CommonJS bailout: exports is used directly at 425:82-89 */
-
 /*! CommonJS bailout: module.exports is used directly at 105:0-14 */
 
 /*! CommonJS bailout: module.exports is used directly at 112:0-14 */
 
-/*! CommonJS bailout: module.exports is used directly at 1213:0-14 */
-
-/*! CommonJS bailout: module.exports is used directly at 12:0-14 */
+/*! CommonJS bailout: module.exports is used directly at 1260:0-14 */
 
 /*! CommonJS bailout: module.exports is used directly at 155:0-14 */
 
@@ -116,9 +108,9 @@
 
 /*! CommonJS bailout: module.exports is used directly at 879:0-14 */
 
-/*! CommonJS bailout: module.exports.range(...) prevents optimization as module.exports is passed as call context at 50:11-31 */
+/*! CommonJS bailout: module.exports is used directly at 9:0-14 */
 
-/*! CommonJS bailout: this is used directly at 17161:7-11 */
+/*! CommonJS bailout: module.exports.range(...) prevents optimization as module.exports is passed as call context at 50:11-31 */
 
 /*! ModuleConcatenation bailout: Module is not an ECMAScript module */
 
@@ -199,16 +191,6 @@
 /*! export 40 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
 
 /*! export 41 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
-
-/*! export 42 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
-
-/*! export 43 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
-
-/*! export 44 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
-
-/*! export 45 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
-
-/*! export 46 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
 
 /*! export 5 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
 
@@ -294,8 +276,6 @@
 
 /*! exports [maybe provided (runtime-defined)] [maybe used in engine-worker (runtime-defined)] -> ./engine/observable/Observable.js */
 
-/*! lodash */
-
 /*! other exports [not provided] [maybe used in candidate-worker, engine-worker (runtime-defined)] */
 
 /*! other exports [not provided] [maybe used in engine-worker (runtime-defined)] */
@@ -307,8 +287,6 @@
 /*! other exports [not provided] [maybe used in engine-worker, interface (runtime-defined)] */
 
 /*! runtime requirements:  */
-
-/*! runtime requirements: __webpack_exports__, module.loaded, module.id, module, __webpack_require__.nmd, top-level-this-exports, __webpack_require__, __webpack_require__.* */
 
 /*! runtime requirements: __webpack_require__ */
 
@@ -388,10 +366,6 @@
   !*** ./engine/statistics/topsort.js ***!
   \**************************************/
 
-/*!***************************************!*\
-  !*** ./node_modules/lodash/lodash.js ***!
-  \***************************************/
-
 /*!****************************************!*\
   !*** ./engine/statistics/Statistic.js ***!
   \****************************************/
@@ -427,12 +401,3 @@
 /*!***************************************************!*\
   !*** ./interface/components/transform/label.json ***!
   \***************************************************/
-
-/**
- * @license
- * Lodash <https://lodash.com/>
- * Copyright OpenJS Foundation and other contributors <https://openjsf.org/>
- * Released under MIT license <https://lodash.com/license>
- * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
- * Copyright Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- */

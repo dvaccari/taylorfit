@@ -1,7 +1,5 @@
 /*!   export candidateOnly [provided] [unused] [could be renamed] */
 
-/*!   export currentModelOnly [provided] [unused] [could be renamed] */
-
 /*!   export default [provided] [unused] [could be renamed] */
 
 /*!   export description [provided] [unused] [could be renamed] */
@@ -48,12 +46,6 @@
 
 /*! ./topsort */
 
-/*! CommonJS bailout: exports is used directly at 425:50-57 */
-
-/*! CommonJS bailout: exports is used directly at 425:82-89 */
-
-/*! CommonJS bailout: module.exports is used directly at 12:0-14 */
-
 /*! CommonJS bailout: module.exports is used directly at 15:0-14 */
 
 /*! CommonJS bailout: module.exports is used directly at 303:0-14 */
@@ -64,9 +56,9 @@
 
 /*! CommonJS bailout: module.exports is used directly at 879:0-14 */
 
-/*! CommonJS bailout: module.exports.range(...) prevents optimization as module.exports is passed as call context at 50:11-31 */
+/*! CommonJS bailout: module.exports is used directly at 9:0-14 */
 
-/*! CommonJS bailout: this is used directly at 17161:7-11 */
+/*! CommonJS bailout: module.exports.range(...) prevents optimization as module.exports is passed as call context at 50:11-31 */
 
 /*! ModuleConcatenation bailout: Module is not an ECMAScript module */
 
@@ -148,16 +140,6 @@
 
 /*! export 41 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
 
-/*! export 42 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
-
-/*! export 43 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
-
-/*! export 44 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
-
-/*! export 45 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
-
-/*! export 46 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
-
 /*! export 5 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
 
 /*! export 6 [provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] [usage prevents renaming] */
@@ -206,8 +188,6 @@
 
 /*! exports [maybe provided (runtime-defined)] [maybe used in candidate-worker, engine-worker (runtime-defined)] -> ./engine/matrix/Matrix.js */
 
-/*! lodash */
-
 /*! other exports [not provided] [maybe used in candidate-worker, engine-worker (runtime-defined)] */
 
 /*! other exports [not provided] [maybe used in engine-worker, candidate-worker (runtime-defined)] */
@@ -215,8 +195,6 @@
 /*! other exports [not provided] [maybe used in engine-worker, candidate-worker, interface (runtime-defined)] */
 
 /*! runtime requirements:  */
-
-/*! runtime requirements: __webpack_exports__, module.loaded, module.id, module, __webpack_require__.nmd, top-level-this-exports, __webpack_require__, __webpack_require__.* */
 
 /*! runtime requirements: __webpack_require__ */
 
@@ -258,10 +236,6 @@
   !*** ./engine/statistics/topsort.js ***!
   \**************************************/
 
-/*!***************************************!*\
-  !*** ./node_modules/lodash/lodash.js ***!
-  \***************************************/
-
 /*!****************************************!*\
   !*** ./engine/statistics/Statistic.js ***!
   \****************************************/
@@ -285,12 +259,3 @@
 /*!*************************************************!*\
   !*** ./engine/statistics/distributions-socr.js ***!
   \*************************************************/
-
-/**
- * @license
- * Lodash <https://lodash.com/>
- * Copyright OpenJS Foundation and other contributors <https://openjsf.org/>
- * Released under MIT license <https://lodash.com/license>
- * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
- * Copyright Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
- */
