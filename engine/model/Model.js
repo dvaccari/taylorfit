@@ -147,6 +147,16 @@ function log10($n) {
 
 // End of Google code archive functions
 
+//IR helper function, calculates the model coefficient standard deviation
+//This function pulls a specific row of data out of the stupid X data that already exists in the code
+function get_modelcoef_std(xData, index, np){
+  let temp = xData.filter((val, i) => i % np == index)
+  let mean = temp.reduce((total, c) => total += c, 0) / temp.length;
+  let diff = temp.map((d) => Math.pow(d - mean, 2));
+  let diff_total = diff.reduce((total, c) => total += c, 0);
+  return Math.sqrt(diff_total / temp.length);
+}
+
 class Model extends CacheMixin(Observable) {
 
   constructor() {
@@ -348,12 +358,14 @@ class Model extends CacheMixin(Observable) {
     }
 
     let predicted = Array.from(stats.yHat.data);
+
     let terms = this[_terms].map((term, i) => ({
       term: term.valueOf(),
       coeff: stats.weights.get(i, 0),
       stats: {
         t: stats.t.get(i, 0),
-        pt: stats.pt.get(i, 0)
+        pt: stats.pt.get(i, 0),
+        ir: stats.weights.get(i,0) * get_modelcoef_std(stats.X.data, i, stats.np) / stats.stdy
       }
     }));
 

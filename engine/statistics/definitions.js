@@ -1,11 +1,16 @@
 const Statistic = require('./Statistic');
 const Matrix = require('../matrix');
 const dist = require('./distributions-socr');
+const { mean } = require('lodash');
 
 // Functional definitions for statistics -- defines how they will be calculated
 // NOTE: Make sure each statistic has an entry in `metadata.json`
 module.exports = [
   // given
+  //X is actually a flattened 2d array, each column is the value for the data associated with each model term
+  //E.g. if youre 2nd term is acceleration * weight, then the X.data[2] = the first acceleration datapoint times the first weight datapoint
+  //Two get the second such data point, you would take X.data[2 + np]
+  //For all of these points, take X.data.reduce((val, i) = i % np == 2 )
   Statistic('X', [], ({ X }) => X),
   Statistic('y', [], ({ y }) => y),
   Statistic('BHat', [], ({ BHat }) => BHat),
@@ -80,6 +85,17 @@ module.exports = [
       pt.data.set(pt.data.map((t) => Math.max(0, dist.pt(t, nd - np))));
       return pt;
     }),
+  //Necessary to calculate stdy, the mean of y
+  Statistic('meany', ['y'], ({y}) => {
+    return y.data.reduce((total, c) => total += c, 0) / y.data.length
+  }),
+
+  //Necessary to calculate IR, the standard error of y
+  Statistic('stdy',['y', 'meany'], ({y, meany}) =>{
+    let diff = y.data.map((d) => Math.pow(d - meany, 2))
+    let diff_total = diff.reduce((total, c) => total += c, 0)
+    return Math.sqrt(diff_total / y.data.length)
+  }),
 
   Statistic('pF', ['F', 'np', 'nd'],
     ({ F, np, nd }) => Math.max(dist.pf(Math.abs(F), np, nd - np) - 1e-15, 0)),
