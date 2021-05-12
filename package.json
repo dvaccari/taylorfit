@@ -51,7 +51,7 @@
     "fast-csv": "^2.3.0",
     "knockout": "^3.5.0",
     "lodash": "^4.17.19",
-    "mathjs": "^6.6.4",
+    "mathjs": "^7.5.1",
     "papaparse": "^5.2.0",
     "yarn": "^1.22.0"
   },
