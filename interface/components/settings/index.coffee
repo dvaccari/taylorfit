@@ -186,6 +186,7 @@ ko.components.register "tf-settings",
       # Clear the selected stats to the default
       allstats().forEach((stat) => stat.selected(stat.default))
 
+### 
     @updateExponents = () ->
       currExponents = model.exponents();
       if !('-1' in currExponents)
@@ -195,7 +196,8 @@ ko.components.register "tf-settings",
         performAddCycle();
       else
         @clicked = false;
-
+###   
+### 
     @updateMultiplicands = () ->
       currNumMultiplicands = model.multiplicands();
       if currNumMultiplicands < 3
@@ -203,6 +205,7 @@ ko.components.register "tf-settings",
         @performAddCycle();
       else
         @clicked = false;
+ ###
 
     @removeLargestPAboveAlpha = () ->
       termsInModel = @currModel.terms;
@@ -274,14 +277,16 @@ ko.components.register "tf-settings",
         @removeLargestPAboveAlpha()
       else
         # Update mult and exp then maybe when those are done have @clicked be false in those functions
-        @updateMultiplicands();
+        # @updateMultiplicands();
+        @clicked = false
         @runRemove = false;
       adapter.subscribeToChanges();
 
     @runAddRemoveCycle = ( ) ->
-      @performAddCycle();
-      if @runRemove
-        @performRemoveCycle();
+      if @clicked
+        @performAddCycle();
+        if @runRemove
+          @performRemoveCycle();
 
     @modelResult.subscribe( (r) =>
       if @clicked
@@ -298,6 +303,7 @@ ko.components.register "tf-settings",
 
     @autofit = ( ) ->
       @clicked = true;
+      @runRemove = false;
       @runAddRemoveCycle();
       # params.model().candidates() represents the potential pool of choices to add to the model from the right panel
       # Can get p(t) and adjR2 with .stats.pt or .stats.adjRsq

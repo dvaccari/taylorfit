@@ -4,7 +4,7 @@
   // /ko
   header
     span.title(title="This Table shows all terms not in the Current Model, along with their selected statistics.") Candidate Terms
-  tf-pager(params="source:source,result:result,current:current_page,pagesize:candidates().length" title="Choose page from this Table")
+  tf-pager(params="source:source,result:result,current:current_page" title="Choose page from this Table")
   .candidate-wrapper
     table.candidates(data-bind="if:candidates().length")
       thead
