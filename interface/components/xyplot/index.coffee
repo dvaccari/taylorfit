@@ -55,7 +55,8 @@ ko.components.register "tf-xyplot",
           offset_start = model["data_fit"]().length
           if model["data_cross"]() != undefined
             offset_start += model["data_cross"]().length
-          offset_end = offset_start + model["data_validation"]().length
+          if model["data_validation"]() != undefined
+            offset_end = offset_start + model["data_validation"]().length
 
         if column_names[index] == "Index"
           console.log("Hello!", "Data plotted:", model.data_plotted(), "column", @column_indexes())

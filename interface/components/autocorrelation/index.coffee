@@ -74,7 +74,6 @@ ko.components.register "tf-autocorrelation",
     @values = ko.computed ( ) =>
       if !@active()
         return undefined
-
       table = @column_index()[1]
       offset_start = 0
       offset_end = 0
@@ -88,8 +87,8 @@ ko.components.register "tf-autocorrelation",
         offset_start = model["data_fit"]().length
         if model["data_cross"]() != undefined
           offset_start += model["data_cross"]().length
-        offset_end = offset_start + model["data_validation"]().length
-
+        if model["data_validation"]() != undefined
+          offset_end = offset_start + model["data_validation"]().length
       index = @column_index()[0]
       if typeof index == "string"
         if index == "Dependent"
