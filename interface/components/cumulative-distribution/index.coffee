@@ -52,8 +52,13 @@ ko.components.register "tf-cumulative-distribution",
         offset_start = model["data_fit"]().length
         if model["data_cross"]() != undefined
           offset_start += model["data_cross"]().length
+        offset_end = offset_start
         if model["data_validation"]() != undefined
-          offset_end = offset_start + model["data_validation"]().length
+          offset_end += model["data_validation"]().length
+        # We've gotten into a situation where there's only 1 data table
+        # but this patch is easier than fixing the bug
+        if offset_start == offset_end
+          offset_start = 0
 
       index = @column_index()[0]
       if typeof index == "string"

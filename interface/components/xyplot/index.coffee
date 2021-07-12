@@ -59,7 +59,6 @@ ko.components.register "tf-xyplot",
             offset_end = offset_start + model["data_validation"]().length
 
         if column_names[index] == "Index"
-          console.log("Hello!", "Data plotted:", model.data_plotted(), "column", @column_indexes())
           return Object.keys(model["extra_#{model.data_plotted()}"]()).map(parseFloat)
         if column_names[index] == "Dependent"
           return model["extra_#{model.data_plotted()}"]().map((row) => row[0])
