@@ -4,16 +4,16 @@ a.save(data-bind="click:save" title="Create CSV file with all columns from this 
 // ko if:table == "fit"
 //div.button(data-bind="click:show_partition" title="replace data") replace data
 span.name(data-bind="text:model().name")
-tf-replace(params="model:model,table:'fit'")
+tf-replace(params="model:model,table:'fit'", title="Replace current data with new data. Ensure new data has same number of columns. Model coefficients will be updated, but terms will not change. This feature can be used to fit the current model to all data combined as final step in regression.")
 // /ko
 // ko if:table == "cross"
 span.name(data-bind="text:model().name_cross")
-tf-replace(params="model:model,table:'cross'")
+tf-replace(params="model:model,table:'cross'", title="Replace current data with new data. Ensure new data has same number of columns. Model coefficients will be updated, but terms will not change. This feature can be used to fit the current model to all data combined as final step in regression.")
 a.clear(data-bind="click:clear" title="Delete this Data Table (Cross or Validation Tables only)") Clear Data
 // /ko
 // ko if:table == "validation"
 span.name(data-bind="text:model().name_validation")
-//tf-replace(params="model:model,table:'validation'")
+tf-replace(params="model:model,table:'validation'", title="Replace current data with new data. Ensure new data has same number of columns. Model coefficients will be updated, but terms will not change. This feature can be used to fit the current model to all data combined as final step in regression.")
 a.clear(data-bind="click:clear" title="Delete this Data Table (Cross or Validation Tables only)") Clear Data
 // /ko
 table.grid
@@ -106,6 +106,22 @@ table.grid
             | QQ Plot
           span.mark(data-bind="click:function(){xyplot('Predicted')}")
             | XY Plot
+          // ko ifnot: hasConfidence(dependent())
+          span.mark(data-bind="click:function(){confidence(dependent())}")
+            | Show Confidence Interval
+          // /ko
+          // ko if: hasConfidence(dependent())
+          span.mark(data-bind="click:function(){deleteConfidence(dependent(),'column')}")
+            | Hide Confidence Interval
+          // /ko
+          // ko ifnot: hasPrediction(dependent())
+          span.mark(data-bind="click:function(){prediction(dependent())}")
+            | Show Prediction Interval
+          // /ko
+          // ko if: hasPrediction(dependent())
+          span.mark(data-bind="click:function(){deletePrediction(dependent(),'column')}")
+            | Hide Prediction Interval
+          // /ko
       th.err
         span Residual
         tf-dropdown(params="align:'right'")
@@ -122,7 +138,7 @@ table.grid
       // /ko
       // ko foreach: sensitivityColumns
       th
-        span Sensitivity&nbsp;
+        span Sens.&nbsp;
         // ko if:name
         span(data-bind="text:name")
         // /ko
@@ -145,9 +161,43 @@ table.grid
           span.mark(data-bind="click:function(){deleteSensitivity($index(),'sensitivity')}")
             | Hide Sensitivity
       // /ko
+      // ko foreach: confidenceColumns
+      th
+        span C.I.&nbsp;
+        tf-dropdown(params="shallow:1,align:'right'")
+          span.mark(data-bind="click:function(){histogram_statistic($index(), 'confidence')}")
+            | Histogram
+          span.mark(data-bind="click:function(){cumulative_distribution_statistic($index(), 'confidence')}")
+            | Cumulative Distribution
+          span.mark(data-bind="click:function(){autocorrelation_statistic($index(), 'confidence')}")
+            | Autocorrelation
+          span.mark(data-bind="click:function(){qqplot_statistic($index(), 'confidence')}")
+            | QQ Plot
+          span.mark(data-bind="click:function(){xyplot_statistic($index(), 'confidence')}")
+            | XY Plot
+          span.mark(data-bind="click:function(){deleteConfidence($index(),'confidence')}")
+            | Hide Confidence Interval
+      // /ko
+      // ko foreach: predictionColumns
+      th
+        span P.I.&nbsp;
+        tf-dropdown(params="shallow:1,align:'right'")
+          span.mark(data-bind="click:function(){histogram_statistic($index(), 'prediction')}")
+            | Histogram
+          span.mark(data-bind="click:function(){cumulative_distribution_statistic($index(), 'prediction')}")
+            | Cumulative Distribution
+          span.mark(data-bind="click:function(){autocorrelation_statistic($index(), 'prediction')}")
+            | Autocorrelation
+          span.mark(data-bind="click:function(){qqplot_statistic($index(), 'prediction')}")
+            | QQ Plot
+          span.mark(data-bind="click:function(){xyplot_statistic($index(), 'prediction')}")
+            | XY Plot
+          span.mark(data-bind="click:function(){deletePrediction($index(),'prediction')}")
+            | Hide Prediction Interval
+      // /ko
       // ko foreach: importanceRatioColumns
       th
-        span Importance Ratio &nbsp;
+        span I.R.&nbsp;
         // ko if:name
         span(data-bind="text:name")
         // /ko
@@ -170,17 +220,7 @@ table.grid
           span.mark(data-bind="click:function(){deleteImportanceRatio($index(),'importanceRatio')}")
             | Hide Importance Ratio
       // /ko
-  //- div.toggle Toggle Fundamental Statistics
-  //- tf-dropdown(params="")
-  //-   // ko if: !hasMean()
-  //-   span.mark(data-bind="click:function(){flipMean()}")
-  //-     | Show Mean
-  //-   // /ko
-  //-   // ko if: hasMean()
-  //-   span.mark(data-bind="click:function(){flipMean()}")
-  //-     | Hide Mean
-  //-   span.mark(data-bind="text:toggleMean")
-  //-   // /ko
+
   tbody
     // ko if: hasMean()
     tr.stat
@@ -226,7 +266,7 @@ table.grid
     // /ko
     //ko if: toggle
     tr.stat
-      td.static.stat(title="Minimum.") Min
+      td.static.stat(title="Minimum") Min
 
       // ko foreach: min()
       td.stat(data-bind="style:{background: $component.isHidden($index()) ? '#DCDCDC' : '#f2f2f2'}")
@@ -240,7 +280,7 @@ table.grid
     // /ko
     //ko if: toggle
     tr.stat
-      td.static.stat(title="First Quartile.") 25%
+      td.static.stat(title="First Quartile") 25%
 
       // ko foreach: firstQuartile()
       td.stat(data-bind="style:{background: $component.isHidden($index()) ? '#DCDCDC' : '#f2f2f2'}")
@@ -254,7 +294,7 @@ table.grid
     // /ko
     //ko if: toggle
     tr.stat
-      td.static.stat(title="Median.") Med
+      td.static.stat(title="Median") Med
 
       // ko foreach: med()
       td.stat(data-bind="style:{background: $component.isHidden($index()) ? '#DCDCDC' : '#f2f2f2'}")
@@ -268,7 +308,7 @@ table.grid
     // /ko
     //ko if: toggle
     tr.stat
-      td.static.stat(title="Third Quartile.") 75%
+      td.static.stat(title="Third Quartile") 75%
 
       // ko foreach: thirdQuartile()
       td.stat(data-bind="style:{background: $component.isHidden($index()) ? '#DCDCDC' : '#f2f2f2'}")
@@ -282,7 +322,7 @@ table.grid
     // /ko
     //ko if: toggle
     tr.stat
-      td.static.stat(title="Max.") Max
+      td.static.stat(title="Maximum") Max
 
       // ko foreach: max()
       td.stat(data-bind="style:{background: $component.isHidden($index()) ? '#DCDCDC' : '#f2f2f2'}")
@@ -326,6 +366,16 @@ table.grid
       // ko foreach:$parent.sensitivityData
       td
         span(data-bind="float:$data[$parent.index]")
+      // /ko
+      //- Display Confidence Statistic
+      // ko foreach:$parent.confidenceData
+      td
+        span(data-bind="float:$data[$parent.index + $component.getRowOffset()]")
+      // /ko
+      //- Display Prediction Statistic
+      // ko foreach:$parent.predictionData
+      td
+        span(data-bind="float:$data[$parent.index + $component.getRowOffset()]")
       // /ko
       //- Display Importance Ratio Statistic
       // ko foreach:$parent.importanceRatioData

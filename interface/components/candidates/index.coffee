@@ -1,4 +1,3 @@
-
 require "./index.styl"
 
 SORT =
@@ -22,9 +21,19 @@ ko.components.register "tf-candidates",
         @result.maxWidth 65 + document.querySelector(
           ".candidate-wrapper > .candidates").clientWidth
 
+	  # Can safely be delayed
+    if performance.navigation.type != performance.navigation.TYPE_RELOAD
+      setTimeout(global.send_incoming_stats, 1000)
+
     model = params.model() # now static
     hiddenColumns = model.hiddenColumns
     transform_columns = model.transform_columns
+
+    @sig_terms = ko.observable(false)
+    @toggleTerms = ->
+      @sig_terms(!@sig_terms())
+      console.log @sig_terms()
+
 
     @current_page = ko.observable(null)
 
@@ -47,7 +56,7 @@ ko.components.register "tf-candidates",
     # When hidden columns change in CTRL, subscribe and change visible candidates
     hiddenColumns.subscribe ( next ) =>
       @source(@candidates().sort(@sort()).filter((c) => !isHiddenColumn(c.term)))
-    
+
     transform_columns.subscribe ( next ) =>
       @source(@candidates().sort(@sort()).filter((c) -> !isHiddenColumn(c.term)))
 
@@ -94,6 +103,14 @@ ko.components.register "tf-candidates",
     @updateSensitivity = () ->
       for column in model.sensitivityColumns()
         model.update_sensitivity(column.index)
+
+    @updateConfidence = () ->
+      for column in model.confidenceColumns()
+        model.update_confidence(column.index);
+
+    @updatePrediction = () ->
+      for column in model.predictionColumns()
+        model.update_prediction(column.index);
 
     @updateImportanceRatio = () ->
       for column in model.importanceRatioColumns()

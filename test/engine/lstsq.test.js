@@ -1,15 +1,14 @@
-/*global describe, it, before*/
+/* global describe, it, before */
 
-const chai    = require('chai')
-    , expect  = chai.expect
-    , should  = chai.should
-    , csv     = require('fast-csv');
+const chai = require('chai')
+  , expect = chai.expect
+  , csv = require('fast-csv');
 
-const Matrix  = require('../../engine/matrix')
-    , lstsq   = require('../../engine/regression').lstsq;
+const Matrix = require('../../engine/matrix')
+  , lstsq = require('../../engine/regression').lstsq;
 
 const rootdir = '/../../';
-const retail  = require('./testdata/retail.data.json');
+const retail = require('./testdata/retail.data.json');
 
 describe('lstsq', () => {
 
@@ -36,9 +35,8 @@ describe('lstsq', () => {
       var coeffs = lstsq(retail.X, retail.y).weights.data
         , i;
 
-      for (i = 0; i < coeffs.length; i += 1) {
+      for (i = 0; i < coeffs.length; i += 1)
         expect(coeffs[i]).to.be.approximately(retail.stats.weights[i], 1e-10);
-      }
     });
 
   });

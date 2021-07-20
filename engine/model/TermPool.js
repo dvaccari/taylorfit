@@ -1,5 +1,4 @@
-
-const Term  = require('./Term');
+const Term = require('./Term');
 
 class TermPool {
 
@@ -26,4 +25,3 @@ class TermPool {
 }
 
 module.exports = TermPool;
-

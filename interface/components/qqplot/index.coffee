@@ -1,4 +1,3 @@
-
 require "./index.styl"
 c3 = require "c3"
 Model = require "../Model"
@@ -31,30 +30,60 @@ ko.components.register "tf-qqplot",
     unless ko.isObservable params.model
       throw new TypeError "components/options:
       expects [model] to be observable"
-    
+
     model = params.model()
     @column_index = model.show_qqplot
 
     @active = ko.computed ( ) => @column_index() != undefined
-    
-    @column_name = ko.computed ( ) => 
+
+    @column_name = ko.computed ( ) =>
       if !@active()
         return undefined
-      index = @column_index()
+
+      index = @column_index()[0]
       if typeof index == "string"
         if index.indexOf("Sensitivity") != -1
           index = index.split("_")[1]
           return "Sensitivity " + model.sensitivityColumns()[index].name
+        if index.indexOf("C.I.") != -1
+          index = 0
+          return "C.I."
+        if index.indexOf("P.I.") != -1
+          index = 0
+          return "P.I."
         if index.indexOf("ImportanceRatio") != -1
           index = index.split("_")[1]
           return "Importance Ratio " + model.importanceRatioColumns()[index].name
         return index
       return model.columns()[index].name
-    
-    @values = ko.computed ( ) => 
+
+    @values = ko.computed ( ) =>
       if !@active()
         return undefined
-      index = @column_index()
+
+      table = @column_index()[1]
+      offset_start = 0
+      offset_end = 0
+      if @table == 'fit'
+        offset_start = 0
+        offset_end = model["data_fit"]().length
+      else if @table == 'cross'
+        offset_start = model["data_fit"]().length
+        offset_end = offset_start + model["data_cross"]().length
+      else
+         offset_start = model["data_fit"]().length
+        if model["data_cross"]() != undefined
+          offset_start += model["data_cross"]().length
+        offset_end = offset_start
+        if model["data_validation"]() != undefined
+          offset_end += model["data_validation"]().length
+        # We've gotten into a situation where there's only 1 data table
+        # Due to a bug, this doesn't fall under the 'fit' category,
+        # but this patch is easier than fixing the bug
+        if offset_start == offset_end
+          offset_start = 0
+
+      index = @column_index()[0]
       if typeof index == "string"
         if index == "Dependent"
           index = 0
@@ -66,12 +95,20 @@ ko.components.register "tf-qqplot",
           # format is: Sensitivity_index
           index = index.split("_")[1]
           return Object.values(model.sensitivityData()[index])
+        if typeof index == "string" && index.indexOf("C.I.") != -1
+          # format is: C.I.
+          index = 0
+          return Object.values(model.confidenceData()[0].slice(offset_start, offset_end))
+        if typeof index == "string" && index.indexOf("P.I.") != -1
+          # format is: P.I.
+          index = 0
+          return Object.values(model.predictionData()[0].slice(offset_start, offset_end))
         if typeof index == "string" && index.indexOf("ImportanceRatio") != -1
           # format is: ImportanceRatio_index
           index = index.split("_")[1]
           return Object.values(model.importanceRatioData()[index])
-        return model["extra_#{model.data_plotted()}"]().map((row) => row[index])
-      return model["data_#{model.data_plotted()}"]().map((row) => row[index])
+        return model["extra_#{table}"]().map((row) => row[index])
+      return model["data_#{table}"]().map((row) => row[index])
 
     @close = ( ) ->
       model.show_qqplot undefined
@@ -97,25 +134,25 @@ ko.components.register "tf-qqplot",
       rank = [1..sorted.length]
       # Perform the quantile calculation over the data set points
       quantile = rank.map((i) -> return (i - 0.5) / sorted.length)
-      
-      # The following functions for converting Z score to Percentile and converting Percentile to Z score were adapted by John Walker from C implementations written by Gary Perlman of Wang Institute, Tyngsboro, MA 01879. 
+
+      # The following functions for converting Z score to Percentile and converting Percentile to Z score were adapted by John Walker from C implementations written by Gary Perlman of Wang Institute, Tyngsboro, MA 01879.
       Z_MAX = 6
       # Convert z-score to probability
       poz = (z) ->
         if z == 0.0
           x = 0.0
-        else 
+        else
           y = 0.5 * Math.abs(z);
-          if (y > (Z_MAX * 0.5)) 
+          if (y > (Z_MAX * 0.5))
             x = 1.0;
-          else if (y < 1.0) 
+          else if (y < 1.0)
             w = y * y
             x = ((((((((0.000124818987 * w -
                   0.001075204047) * w + 0.005198775019) * w -
                   0.019198292004) * w + 0.059054035642) * w -
                   0.151968751364) * w + 0.319152932694) * w -
                   0.531923007300) * w + 0.797884560593) * y * 2.0
-          else 
+          else
             y -= 2.0;
             x = (((((((((((((-0.000045255659 * y +
                   0.000152529290) * y - 0.000019538132) * y -
@@ -138,7 +175,7 @@ ko.components.register "tf-qqplot",
           p = 1.0;
         while (maxz - minz) > Z_EPSILON
           pval = poz(zval)
-          if pval > p 
+          if pval > p
               maxz = zval;
           else
               minz = zval;
@@ -204,7 +241,7 @@ ko.components.register "tf-qqplot",
             lines: [
                 value: 0
             ]
-      
+
       svg_element = chart.element.querySelector "svg"
       xgrid_line = svg_element.querySelector ".c3-xgrid-line"
       vertical_line = xgrid_line.getElementsByTagName("line")[0]
@@ -217,8 +254,7 @@ ko.components.register "tf-qqplot",
 
       return chart.element.innerHTML
 
-
-    @download = ( ) -> 
+    @download = ( ) ->
       if !@active()
         return undefined
       svg_element = chart.element.querySelector "svg"
@@ -230,8 +266,8 @@ ko.components.register "tf-qqplot",
       svg_element.style.overflow = "visible"
       svg_element.style.padding = "10px"
       box_size = svg_element.getBBox()
-      svg_element.style.height = box_size.height 
-      svg_element.style.width = box_size.width 
+      svg_element.style.height = box_size.height
+      svg_element.style.width = box_size.width
 
       chart_line = svg_element.querySelector ".c3-chart-line"
       chart_line.style.opacity = 1
@@ -245,13 +281,13 @@ ko.components.register "tf-qqplot",
       x_and_y.concat Array.from node_list2
       x_and_y.forEach (e) ->
         e.style.fill = "none"
-        e.style.stroke = "black" 
+        e.style.stroke = "black"
 
       scale = Array.from node_list3
       scale.forEach (e) ->
         e.style.fill = "none"
-        e.style.stroke = "black" 
-      
+        e.style.stroke = "black"
+
       path = Array.from node_list4
       path.forEach (e) ->
         e.style.fill = "none"
@@ -270,7 +306,7 @@ ko.components.register "tf-qqplot",
 
       original_y = text[0].getAttribute "y"
       text[0].setAttribute "y", original_y + 3
-      
+
       xml = new XMLSerializer().serializeToString svg_element
       data_url = "data:image/svg+xml;base64," + btoa xml
 
@@ -302,11 +338,5 @@ ko.components.register "tf-qqplot",
         document.body.removeChild a_element
 
       return undefined
-
-
-
-    @column_index.subscribe ( next ) =>
-      #if next then adapter.unsubscribeToChanges()
-      #else adapter.subscribeToChanges()
 
     return this

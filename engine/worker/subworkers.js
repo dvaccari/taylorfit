@@ -1,14 +1,14 @@
-(function(){
+(function () {
 
   /* Detect if we're in a worker or not */
   var isWorker = false;
   try {
     document;
-  } catch (e){
+  } catch (e) {
     isWorker = true;
   }
 
-  if (isWorker){
+  if (isWorker) {
     // Replace self.postMessage because webpack-dev-server doesn't recognize
     // workers
     let oldPostMessage = self.postMessage;
@@ -23,26 +23,26 @@
     // For some reason, nested workers on firefox sucks. So, just polyfill all
     // of the browsers to make this work
     if (true || !self.Worker /* we don't really need to check this */) {
-      self.Worker = function(path) {
+      self.Worker = function (path) {
         var that = this;
         this.id = Math.random().toString(36).substr(2, 5);
 
         this.eventListeners = {
           "message": []
         };
-        self.addEventListener("message", function(e){
-          if (e.data._from === that.id){
+        self.addEventListener("message", function (e) {
+          if (e.data._from === that.id) {
             var newEvent = new MessageEvent("message");
             newEvent.initMessageEvent("message", false, false, e.data.message, that, "", null, []);
             that.dispatchEvent(newEvent);
-            if (that.onmessage){
+            if (that.onmessage) {
               that.onmessage(newEvent);
             }
           }
         });
 
         var location = self.location.pathname;
-        var absPath = path;//location.substring(0, location.lastIndexOf('/')) + '/' + path;
+        var absPath = path;  //location.substring(0, location.lastIndexOf('/')) + '/' + path;
         self.postMessage({
           _subworker: true,
           cmd: 'newWorker',
@@ -53,7 +53,7 @@
       Worker.prototype = {
         onerror: null,
         onmessage: null,
-        postMessage: function(message){
+        postMessage: function (message) {
           self.postMessage({
             _subworker: true,
             id: this.id,
@@ -61,30 +61,27 @@
             message: message
           });
         },
-        terminate: function(){
+        terminate: function () {
           self.postMessage({
             _subworker: true,
             cmd: 'terminate',
             id: this.id
           });
         },
-        addEventListener: function(type, listener, useCapture){
-          if (this.eventListeners[type]){
+        addEventListener: function (type, listener, useCapture) {
+          if (this.eventListeners[type])
             this.eventListeners[type].push(listener);
-          }
         },
-        removeEventListener: function(type, listener, useCapture){
-          if(!(type in this.eventListeners)) return;
+        removeEventListener: function (type, listener, useCapture) {
+          if (!(type in this.eventListeners)) return;
           var index = this.eventListeners[type].indexOf(listener);
-          if (index !== -1){
+          if (index !== -1)
             this.eventListeners[type].splice(index, 1);
-          }
         },
-        dispatchEvent: function(event){
+        dispatchEvent: function (event) {
           var listeners = this.eventListeners[event.type];
-          for (var i = 0; i < listeners.length; i++) {
+          for (var i = 0; i < listeners.length; i++)
             listeners[i](event);
-          }
         }
       };
     }
@@ -92,9 +89,9 @@
 
   var allWorkers = {};
   var cmds = {
-    newWorker: function(event){
+    newWorker: function (event) {
       var worker = new Worker(event.data.path);
-      worker.addEventListener("message", function(e){
+      worker.addEventListener("message", function (e) {
         var envelope = {
           _from: event.data.id,
           message: e.data
@@ -103,29 +100,25 @@
       });
       allWorkers[event.data.id] = worker;
     },
-    terminate: function(event){
+    terminate: function (event) {
       allWorkers[event.data.id].terminate();
     },
-    passMessage: function(event){
+    passMessage: function (event) {
       allWorkers[event.data.id].postMessage(event.data.message);
     }
   };
-  var messageRecieved = function(event){
-    if (event.data._subworker){
+  var messageRecieved = function (event) {
+    if (event.data._subworker)
       cmds[event.data.cmd](event);
-    }
   };
-
 
   /* Hijack Worker */
   var oldWorker = window.Worker;
-  window.Worker = function(path){
-
+  window.Worker = function (path) {
     var blobIndex = path.indexOf('blob:');
 
-    if (blobIndex !== -1 && blobIndex !== 0 ) {
+    if (blobIndex !== -1 && blobIndex !== 0)
       path = path.substring(blobIndex);
-    }
 
     var newWorker = new oldWorker(path);
     newWorker.addEventListener("message", messageRecieved);

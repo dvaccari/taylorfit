@@ -1,5 +1,3 @@
-
-
 import numpy as np
 import time
 import sys
@@ -7,7 +5,6 @@ import sys
 N = int(sys.argv[1])
 T = int(sys.argv[2])
 CT= int(sys.argv[3])
-
 
 top = 20
 

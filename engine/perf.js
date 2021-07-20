@@ -1,6 +1,5 @@
-
-const utils     = require('./utils');
-const appStart  = Date.now();
+const utils = require('./utils');
+const appStart = Date.now();
 
 if (typeof performance === 'undefined') {
   let entries = [];
@@ -24,14 +23,13 @@ if (typeof performance === 'undefined') {
       i >= 0 &&
       entries[i].name !== startMark &&
       entries[i].type !== 'mark'
-    ) {
+    )
       i -= 1;
-    }
-    if (i >= 0) {
+
+    if (i >= 0)
       startMark = entries[i];
-    } else {
+    else
       startMark = { startTime: 0 };
-    }
 
     i = entries.length - 1;
 
@@ -39,14 +37,13 @@ if (typeof performance === 'undefined') {
       i >= 0 &&
       entries[i].name !== endMark &&
       entries[i].type !== 'mark'
-    ) {
+    )
       i -= 1;
-    }
-    if (i >= 0) {
+
+    if (i >= 0)
       endMark = entries[i];
-    } else {
+    else
       endMark = { startTime: timeNow };
-    }
 
     this.startTime = startMark.startTime;
     this.duration = endMark.startTime - startMark.startTime;
@@ -93,33 +90,31 @@ function getMeanDuration(name) {
 function log(name) {
   let logFn = console.log;
 
-  if (console.debug) {
+  if (console.debug)
     logFn = console.debug;
-  }
+
 
   logFn(`[Performance] ${name}: ${getMeanDuration(name)}ms (avg)`);
 }
 
-function report(name, nLatestRecords=0) {
+function report(name, nLatestRecords = 0) {
   let logFn = console.log;
 
-  if (console.debug) {
+  if (console.debug)
     logFn = console.debug;
-  }
+
 
   let measures = performance
-        .getEntriesByName(name + ':measure')
-        .slice(-nLatestRecords);
+    .getEntriesByName(name + ':measure')
+    .slice(-nLatestRecords);
   let padWidth = measures.reduce(
     (best, m) => Math.max(best, Math.floor(Math.log10(m.duration) + 1))
     , 0
   );
 
   logFn(`[Performance] ${name} (report)`);
-  measures.forEach((measure) => logFn(`  ${name}: ${
-    utils.formatNum(padWidth, 4, measure.duration, 0)
-  }ms`));
+  measures.forEach((measure) => logFn(`  ${name}: ${utils.formatNum(padWidth, 4, measure.duration, 0)
+    }ms`));
 }
 
 module.exports = { start, end, getMeanDuration, log, report };
-

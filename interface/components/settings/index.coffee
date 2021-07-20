@@ -22,11 +22,6 @@ ko.components.register "tf-settings",
       throw new TypeError "components/options:
       expects [model] to be observable"
 
-    # params.model.subscribe( (r) => 
-    #   console.log("\n\n\n\n\n\n\n\n\nTHIS IS A MODEL SUBSCRIPTION\n\n\n\n\n");
-    #   console.log(r);
-    # )
-
     model = params.model() # now static
 
     @modelResult = model.result_fit
@@ -55,18 +50,19 @@ ko.components.register "tf-settings",
       @currAlpha = r;
     )
 
-    # @rows = model.data_fit();
     @active = model.show_settings
-    
-    #model = model.show_settings(true)
-    
-
     @exponents = model.exponents
     @multiplicands = model.multiplicands
     @lags = model.lags
     @timeseries = model.timeseries
     @candidates = model.candidates
     @psig = model.psig
+
+    @psig.subscribe ( next ) =>
+      setTimeout =>
+        psig = ko.unwrap @psig
+        adapter.sendPsig(psig)
+      , 0
 
     @multiplicands_max = ko.observable 0
     @num_terms = ko.observable 0
@@ -112,7 +108,6 @@ ko.components.register "tf-settings",
         i++
       @num_terms accum
 
-
     ko.computed ( ) =>
       active = 0
       zero = false
@@ -130,17 +125,11 @@ ko.components.register "tf-settings",
       unless @multiplicands.peek() <= @multiplicands_max()
         @multiplicands @multiplicands_max()
 
-
     @timeseries.subscribe ( next ) =>
       @lags { 0: true } unless next
-      
 
     @active.subscribe (next) ->
-      #if unchange then adapter.unsubscribeToChanges()
-      #if next then adapter.unsubscribeToChanges()
-      #adapter.unsubscribeToChanges()
       adapter.unsubscribeToChanges();
-      
 
     @recalculate = ( ) ->
       #if ko.computed(true) then adapter.subscribeToChanges()
@@ -149,19 +138,13 @@ ko.components.register "tf-settings",
       #if adapter.addTerm then adapter.unsubscribeToChanges()
       #@active.subscribe(next)
       #else adapter.subscribeToChanges()
-      
+
       #condition = @checkIfCandidateToBeAdded();
       #if condition == true
         adapter.subscribeToChanges();
         adapter.unsubscribeToChanges();
-      #else 
+      #else
        # adapter.unsubscribeToChanges();
-
-      
-
-
-    
-
 
     @download_model = ( ) ->
       model = params.model()
@@ -181,6 +164,14 @@ ko.components.register "tf-settings",
       for column in model.sensitivityColumns()
         model.update_sensitivity(column.index)
 
+      # Update confidence columns
+      for column in model.confidenceColumns()
+        model.update_confidence(column.index)
+
+      # Update prediction columns
+      for column in model.predictionColumns()
+        model.update_prediction(column.index)
+
       # Update importance ratio columns
       for column in model.importanceRatioColumns()
         model.update_importanceRatio(column.index)
@@ -195,6 +186,7 @@ ko.components.register "tf-settings",
       # Clear the selected stats to the default
       allstats().forEach((stat) => stat.selected(stat.default))
 
+### 
     @updateExponents = () ->
       currExponents = model.exponents();
       if !('-1' in currExponents)
@@ -204,15 +196,16 @@ ko.components.register "tf-settings",
         performAddCycle();
       else
         @clicked = false;
-    
+###   
+### 
     @updateMultiplicands = () ->
       currNumMultiplicands = model.multiplicands();
       if currNumMultiplicands < 3
         model.multiplicands(currNumMultiplicands + 1);
         @performAddCycle();
       else
-        # @updateExponents();
         @clicked = false;
+ ###
 
     @removeLargestPAboveAlpha = () ->
       termsInModel = @currModel.terms;
@@ -231,17 +224,17 @@ ko.components.register "tf-settings",
           removedTerm.push(innerTerm);
         adapter.subscribeToChanges();
         adapter.removeTerm(removedTerm);
-      
+
     @checkIfTermAboveAlpha = ( ) ->
       termsInModel = @currModel.terms;
       alpha = @currAlpha;
       returnVal = false;
       termsInModel.forEach( (term) ->
-        if (term.stats.pt > alpha) 
+        if (term.stats.pt > alpha)
           returnVal = true;
       )
       return returnVal;
-      
+
     @addSmallestPBelowAlpha = () ->
       alpha = @currAlpha;
       crossRsq = @currCross.stats.Rsq;
@@ -259,7 +252,7 @@ ko.components.register "tf-settings",
           addedTerm.push(innerTerm);
         adapter.subscribeToChanges();
         adapter.addTerm(addedTerm);
-      
+
     @checkIfCandidateToBeAdded = () ->
       crossRsq = @currCross.stats.Rsq;
       alpha = @currAlpha;
@@ -270,16 +263,6 @@ ko.components.register "tf-settings",
       )
       return returnVal;
 
-    @performRemoveCycle = ( ) ->
-      condition = @checkIfTermAboveAlpha();
-      if condition == true
-        @removeLargestPAboveAlpha()
-      else
-        #update mult and exp then maybe when those are done have @clicked be false in those functions
-        @updateMultiplicands();
-        @runRemove = false;
-      adapter.subscribeToChanges();
-
     @performAddCycle = ( ) ->
       condition = @checkIfCandidateToBeAdded();
       if condition == true
@@ -288,10 +271,22 @@ ko.components.register "tf-settings",
         @runRemove = true;
       adapter.subscribeToChanges();
 
+    @performRemoveCycle = ( ) ->
+      condition = @checkIfTermAboveAlpha();
+      if condition == true
+        @removeLargestPAboveAlpha()
+      else
+        # Update mult and exp then maybe when those are done have @clicked be false in those functions
+        # @updateMultiplicands();
+        @clicked = false
+        @runRemove = false;
+      adapter.subscribeToChanges();
+
     @runAddRemoveCycle = ( ) ->
-      @performAddCycle();
-      if @runRemove
-        @performRemoveCycle();
+      if @clicked
+        @performAddCycle();
+        if @runRemove
+          @performRemoveCycle();
 
     @modelResult.subscribe( (r) =>
       if @clicked
@@ -301,11 +296,6 @@ ko.components.register "tf-settings",
             if JSON.stringify(@currCandidates) != JSON.stringify(candidateRes)
               @currCandidates = candidateRes;
               @runAddRemoveCycle();
-              # @crossResult.subscribe( (crossRes) =>
-              # if JSON.stringify(@currCross) != JSON.stringify(crossRes)
-                  # @currCross = crossRes;
-                  # @runAddRemoveCycle();
-              # )
           )
       else
         @currModel = r;
@@ -313,7 +303,8 @@ ko.components.register "tf-settings",
 
     @autofit = ( ) ->
       @clicked = true;
-      @performAddCycle();
+      @runRemove = false;
+      @runAddRemoveCycle();
       # params.model().candidates() represents the potential pool of choices to add to the model from the right panel
       # Can get p(t) and adjR2 with .stats.pt or .stats.adjRsq
       # console.log(params.model().candidates());
@@ -334,6 +325,5 @@ ko.components.register "tf-settings",
       # console.log(params.model().psig());
 
       # Also see something for setMultiplicands and setExponents
-
 
     return this

@@ -3,7 +3,7 @@
     header
   span.statlist
     header
-      //span.button.info(data-bind="click:autofit" title="Automatically generates a model.")
+      span.button.info(data-bind="click:autofit" title="Automatically generates a model.")
         | Autofit Model
       span.button.info(data-bind="click:recalculate" title="Calculate.")
         | Recalculate
@@ -18,7 +18,7 @@
     // /ko
   span
     header
-      span(title="Total possible number of candidate terms.") N<sub>Candidates</sub> 
+      span(title="Total possible number of candidate terms.") N<sub>Candidates</sub>
     span(data-bind="text:num_terms")
   tf-counter.multiplicands(params="name:'Max Multiplicands',value:multiplicands,max:multiplicands_max" title="The maximum number of independent variables (multiplicands) that are considered for each candidate term.")
   tf-multiselect.exponents(params="name:'Exponents',values:exponents,fixed:['1']" title="The set of possible exponents for consideration for candidate terms. May be any real number.")
@@ -30,7 +30,7 @@
   tf-counter(params="name:'Display Precision',value:ko.precision,min:1,max:9" title="Selects the number of digits of precision for display of coefficients, statistics, etc.")
   tf-input(params="name:'Alpha',value:psig,type:'decimal',decimals:4,min:0.000001,max:0.999999" title="The significance level for p(t) used to determine highlighting of cells as green (significant) or red (not significant)")
 
-  
+
   span.button.warning(data-bind="click:clear_model" title="Deletes all terms in the model leaving only an intercept term.")
     | Clear Model
   span.button.warning(data-bind="click:clear_project" title="Resets Settings, Model, and deletes Data Tables, and brings user back to the start page.")

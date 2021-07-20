@@ -1,5 +1,3 @@
-
-
 header
   span.title(data-bind="text:name")
 //- TODO: enforce min and max through keypress
@@ -10,4 +8,3 @@ input.custom(data-bind="textInput:input,event:{change:add,blur:hideinput},css:{i
 // ko foreach: Object.keys(values()).sort(function(a,b){return Number(b)<Number(a)})
 a.pill(data-bind="text:$data,css:{active:$parent.values()[$data]},event:{click:$parent.toggle,dblclick:$parent.delete}")
 // /ko
-

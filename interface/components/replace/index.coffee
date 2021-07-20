@@ -1,4 +1,3 @@
-
 require "./index.styl"
 Model = require "../Model"
 
@@ -26,7 +25,6 @@ read_csv = ( file ) ->
           name = file.name
           accept { name, rows, cols }
 
-
 read_model = ( file ) ->
   new Promise ( accept, reject ) ->
     reader = new FileReader
@@ -52,25 +50,20 @@ ko.components.register "tf-replace",
 
     @id = "input-#{@table}-dataset"
 
-    # --- for loading just dataset
+    # For loading just dataset
     @dataset = ko.observable null
     @show_partition = ko.observable undefined
     @show_fit_partition = ko.observable undefined
     @show_cross_partition = ko.observable undefined
-    #@show_validate_partition = ko.observable undefined
     @temp_model = ko.observable undefined
     @dataset.subscribe ( next ) =>
       # Importing CSV file
-      read_csv document.getElementById(@id).files[0]
+      await read_csv document.getElementById(@id).files[0]
       # Completed parsing CSV to build model
       .then ( model ) =>
         if @init # Importing data
           @temp_model(model)
           @show_partition(true)
-          # params.model new Model
-          #   "data_#{@table}": model.rows
-          #   name: model.name
-          #   columns: model.cols
         else if ( @table == 'fit')
           @temp_model(model)
           @show_fit_partition(true)
@@ -86,28 +79,37 @@ ko.components.register "tf-replace",
     @import_fit_partition = (
       fit_row_start,
       fit_row_end,
+      ncols,
     ) ->
       model = @temp_model()
       data_fit = if fit_row_start != 0
       then model.rows[fit_row_start - 1..fit_row_end - 1]
       else undefined
       m = params.model()
-      m["data_fit"] data_fit
-      m["name_fit"] = model.name
-    
+      # Checks if the number of columns matches
+      if(m["columns"]().length != ncols)
+       console.log("column mismatch")
+      else
+       m["data_fit"] data_fit
+       m["name_fit"] = model.name
+
     @import_cross_partition = (
       cross_row_start,
       cross_row_end,
+      ncols,
     ) ->
       model = @temp_model()
       data_cross = if cross_row_start != 0
       then model.rows[cross_row_start - 1..cross_row_end - 1]
       else undefined
       m = params.model()
-      m["data_cross"] data_cross
-      m["name_cross"] = model.name
-    
-     # --- Use from data partition modal
+      if(m["columns"]().length != ncols)
+       console.log("column mismatch")
+      else
+       m["data_cross"] data_cross
+       m["name_cross"] = model.name
+
+     # Use from data partition modal
     @import_partition = (
       fit_row_start,
       fit_row_end,
@@ -137,12 +139,11 @@ ko.components.register "tf-replace",
         columns: model.cols
       @show_partition(false)
 
-
-    # --- for loading entire model
+    # For loading entire model
     if @init
       @model = ko.observable null
       @model.subscribe ( next ) ->
-        read_model document.getElementById("input-model").files[0]
+        await read_model document.getElementById("input-model").files[0]
         .then ( model ) -> params.model new Model model
 
     return this

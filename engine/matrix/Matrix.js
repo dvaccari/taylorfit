@@ -1,4 +1,3 @@
-
 const utils = require('../utils');
 
 /**
@@ -7,8 +6,8 @@ const utils = require('../utils');
  * @private
  */
 const _data = Symbol('data');
-const _m    = Symbol('m');
-const _n    = Symbol('n');
+const _m = Symbol('m');
+const _n = Symbol('n');
 
 // Maximum number of decimal points to print
 const PRINT_DECIMALS = 5;
@@ -64,15 +63,13 @@ function subtractRowMultiple(m, inv, i, j) {
   for (l = 0; l < m[_m]; l += 1) {
     factor = m[_data][l * m[_n] + j];
 
-    if (l !== i) {
+    if (l !== i)
       for (k = 0; k < m[_n]; k += 1) {
         m[_data][l * m[_n] + k] -= m[_data][i * m[_n] + k] * factor;
         inv[_data][l * m[_n] + k] -= inv[_data][i * m[_n] + k] * factor;
       }
-    }
   }
 }
-
 
 /**
  * A speedy 2-dimensional matrix implementation.
@@ -93,49 +90,41 @@ class Matrix {
    * @param {Float64Array | number[][]} stuff Items to populate the matrix
    */
   constructor(m, n, stuff, skip_NaN = false) {
-    if (m instanceof Matrix) {
+    if (m instanceof Matrix)
       return m;
-    }
-    if (Array.isArray(m)) {
+
+    if (Array.isArray(m))
       return Matrix.from(m);
-    }
+
     if (stuff != null) {
       stuff = (stuff instanceof Float64Array)
-              ? stuff
-              : Float64Array.from(stuff);
-      if (stuff.length !== m * n) {
+        ? stuff
+        : Float64Array.from(stuff);
+      if (stuff.length !== m * n)
         throw new Error('Array does not match the specified dimensions');
-      }
-    } else {
+    } else
       stuff = new Float64Array(m * n);
-    }
 
     // Filter Out NaN Columns
     let valid_columns = new Array(n).fill(true);
     let valid_column_count = n;
-    
-    //i: Iterate over columns
-    for(let i = 0; i < n; i++){
-      // j: iterate over rows
-      for(let j = 0; j < m; j++){
-        if(!skip_NaN && isNaN(stuff[j*n + i])) {
+
+    for (let i = 0; i < n; i++) //i: Iterate over columns
+      for (let j = 0; j < m; j++) // j: iterate over rows
+        if (!skip_NaN && isNaN(stuff[j * n + i])) {
           valid_columns[i] = false;
           valid_column_count -= 1;
           break;
         }
-      }
-    }
 
     // If NaN Column Found, create new Float64 Array & Populate
-    if(valid_column_count != n){
+    if (valid_column_count != n) {
       let new_stuff = new Float64Array(valid_column_count * m);
       let iterator = 0;
-      for(let i = 0; i < m * n; i++){
+      for (let i = 0; i < m * n; i++) {
         let curr_col = i % n;
-        if(valid_columns[curr_col]){
+        if (valid_columns[curr_col])
           new_stuff[iterator++] = stuff[i];
-        }
-        
       }
       stuff = new_stuff;
       n = valid_column_count;
@@ -182,21 +171,19 @@ class Matrix {
     var sum = this.clone()
       , i;
 
-    if (typeof other === 'number') {
-      for (i = 0; i < sum[_data].length; i += 1) {
+    if (typeof other === 'number')
+      for (i = 0; i < sum[_data].length; i += 1)
         sum[_data][i] += other;
-      }
-    } else {
+    else {
       if (this[_m] !== other[_m] || this[_n] !== other[_n]) {
         throw new Error('Dimensions (' + this.shape +
-                        ') and (' + other.shape + ') do not match: ' +
-                        this[_n] + ' !== ' + other[_m] + ' && ' +
-                        this[_m] + ' !== ' + other[_m]);
+          ') and (' + other.shape + ') do not match: ' +
+          this[_n] + ' !== ' + other[_m] + ' && ' +
+          this[_m] + ' !== ' + other[_m]);
       }
 
-      for (i = 0; i < sum[_data].length; i += 1) {
+      for (i = 0; i < sum[_data].length; i += 1)
         sum[_data][i] += other[_data][i];
-      }
     }
     return sum;
   }
@@ -214,21 +201,19 @@ class Matrix {
     var sum = this.clone()
       , i;
 
-    if (typeof other === 'number') {
-      for (i = 0; i < sum[_data].length; i += 1) {
+    if (typeof other === 'number')
+      for (i = 0; i < sum[_data].length; i += 1)
         sum[_data][i] -= other;
-      }
-    } else {
+    else {
       if (this[_m] !== other[_m] || this[_n] !== other[_n]) {
         throw new Error('Dimensions (' + this.shape +
-                        ') and (' + other.shape + ') do not match: ' +
-                        this[_n] + ' !== ' + other[_m] + ' && ' +
-                        this[_m] + ' !== ' + other[_m]);
+          ') and (' + other.shape + ') do not match: ' +
+          this[_n] + ' !== ' + other[_m] + ' && ' +
+          this[_m] + ' !== ' + other[_m]);
       }
 
-      for (i = 0; i < sum[_data].length; i += 1) {
+      for (i = 0; i < sum[_data].length; i += 1)
         sum[_data][i] -= other[_data][i];
-      }
     }
     return sum;
   }
@@ -241,24 +226,23 @@ class Matrix {
    * @throws {Error} If dimensions do not match
    */
   dot(other) {
-    if (this[_n] !== other[_m]) {
+    if (this[_n] !== other[_m])
       throw new Error('Dimensions (' + this.shape +
-                      ') and (' + other.shape + ') do not match: ' +
-                      this[_n] + ' !== ' + other[_m]);
-    }
+        ') and (' + other.shape + ') do not match: ' +
+        this[_n] + ' !== ' + other[_m]);
 
     var product = new Matrix(this[_m], other[_n])
       , i, j, k, sum;
 
-    for (i = 0; i < this[_m]; i += 1) {
+    for (i = 0; i < this[_m]; i += 1)
       for (j = 0; j < other[_n]; j += 1) {
-        for (k = 0, sum = 0; k < this[_n]; k += 1) {
+        for (k = 0, sum = 0; k < this[_n]; k += 1)
           sum += this[_data][i * this[_n] + k] *
-                 other[_data][k * other[_n] + j];
-        }
+            other[_data][k * other[_n] + j];
+
         product[_data][i * other[_n] + j] = sum;
       }
-    }
+
     return product;
   }
 
@@ -269,9 +253,8 @@ class Matrix {
    * @throws {Error} If not a square matrix
    */
   inv() {
-    if (this[_m] !== this[_n]) {
+    if (this[_m] !== this[_n])
       throw new Error('Must be square');
-    }
 
     var self = this.clone()
       , inverse = Matrix.eye(this[_m], this[_n])
@@ -317,8 +300,8 @@ class Matrix {
   hstack(other) {
     if (this[_m] !== other[_m]) {
       throw new Error('Dimensions (' + this.shape +
-                      ') and (' + other.shape + ') do not match: ' +
-                      this[_m] + ' !== ' + other[_m]);
+        ') and (' + other.shape + ') do not match: ' +
+        this[_m] + ' !== ' + other[_m]);
     }
 
     var newM = this[_n] + other[_n]
@@ -326,12 +309,11 @@ class Matrix {
       , i, j;
 
     for (i = 0; i < this[_m]; i += 1) {
-      for (j = 0; j < this[_n]; j += 1) {
-        stacked[_data][i*newM + j] = this[_data][i*this[_n] + j];
-      }
-      for (j = 0; j < other[_n]; j += 1) {
-        stacked[_data][i*newM + this[_n]+j] = other[_data][i*other[_n] + j];
-      }
+      for (j = 0; j < this[_n]; j += 1)
+        stacked[_data][i * newM + j] = this[_data][i * this[_n] + j];
+
+      for (j = 0; j < other[_n]; j += 1)
+        stacked[_data][i * newM + this[_n] + j] = other[_data][i * other[_n] + j];
     }
     return stacked;
   }
@@ -346,8 +328,8 @@ class Matrix {
   vstack(other) {
     if (this[_n] !== other[_n]) {
       throw new Error('Dimensions (' + this.shape +
-                      ') and (' + other.shape + ') do not match: ' +
-                      this[_n] + ' !== ' + other[_n]);
+        ') and (' + other.shape + ') do not match: ' +
+        this[_n] + ' !== ' + other[_n]);
     }
 
     var stacked = new Matrix(this[_m] + other[_m], this[_n]);
@@ -369,9 +351,8 @@ class Matrix {
 
     for (i = 0; i < powd[_data].length; i += 1) {
       powd[_data][i] = Math.pow(powd[_data][i], exponent);
-      if (!Number.isFinite(powd[_data][i])) {
+      if (!Number.isFinite(powd[_data][i]))
         powd[_data][i] = MAX_SAFE_INTEGER;
-      }
     }
     return powd;
   }
@@ -388,15 +369,14 @@ class Matrix {
     var product = this.clone()
       , i;
 
-    if (typeof n === 'number') {
-      for (i = 0; i < product[_data].length; i += 1) {
+    if (typeof n === 'number')
+      for (i = 0; i < product[_data].length; i += 1)
         product[_data][i] = product[_data][i] * n;
-      }
-    } else if (n instanceof Matrix) {
-      for (i = 0; i < product[_data].length; i += 1) {
+
+    else if (n instanceof Matrix)
+      for (i = 0; i < product[_data].length; i += 1)
         product[_data][i] = product[_data][i] * n[_data][i];
-      }
-    }
+
     return product;
   }
 
@@ -412,15 +392,15 @@ class Matrix {
     var product = this.clone()
       , i, j;
 
-    if (typeof n === 'number') {
-      for (i = 0; i < product[_data].length; i += 1) {
+    if (typeof n === 'number')
+      for (i = 0; i < product[_data].length; i += 1)
         product[_data][i] = product[_data][i] / n;
-      }
-    } else if (n instanceof Matrix) {
+
+    else if (n instanceof Matrix) {
       for (i = 0, j = 0; i < product[_data].length; i += 1, j += 1) {
-        if (j >= n[_data].length) {
+        if (j >= n[_data].length)
           j = 0;
-        }
+
         product[_data][i] = product[_data][i] / n[_data][j];
       }
     }
@@ -431,9 +411,9 @@ class Matrix {
     var product = this.clone()
       , i;
 
-    for (i = 0; i < product[_data].length; i += 1) {
+    for (i = 0; i < product[_data].length; i += 1)
       product[_data][i] = Math.log10(product[_data][i]);
-    }
+
     return product;
   }
 
@@ -444,7 +424,7 @@ class Matrix {
       , append_matrix = new Matrix(rows, cols)
       , i, j;
 
-    for (i = 0; i < rows; i += 1) {
+    for (i = 0; i < rows; i += 1)
       for (j = 0; j < cols; j += 1) {
         var use_m = j - this[_n];
         var data_pt = use_m >= 0
@@ -452,7 +432,7 @@ class Matrix {
           : this[_data][i * this[_n] + j];
         append_matrix[_data][i * cols + j] = data_pt;
       }
-    }
+
     return append_matrix;
   }
 
@@ -471,9 +451,9 @@ class Matrix {
   toJSON() {
     let i, rows;
 
-    for (i = 1, rows = []; i <= this[_m]; i += 1) {
-      rows.push(Array.from(this[_data].slice((i-1)*this[_n], i*this[_n])));
-    }
+    for (i = 1, rows = []; i <= this[_m]; i += 1)
+      rows.push(Array.from(this[_data].slice((i - 1) * this[_n], i * this[_n])));
+
     return rows;
   }
 
@@ -482,15 +462,15 @@ class Matrix {
    *
    * @return {string} Representation of the matrix
    */
-  inspect(depth, options={ stylize: (x) => ''+x }) {
+  inspect(depth, options = { stylize: (x) => '' + x }) {
     var repr = options.stylize(this.constructor.name, 'none')
       , strings = Array.from(this[_data])
-          .map((i) => (''+i).match(/(NaN|-?Infinity|-?\d*)\.?(\d*)/))
+        .map((i) => ('' + i).match(/(NaN|-?Infinity|-?\d*)\.?(\d*)/))
       , lwidth = Math.max.apply(null, strings.map((match) => match[1].length))
       , rwidth = Math.min(
-          Math.max.apply(null, strings.map((match) => match[2].length)),
-          PRINT_DECIMALS
-        )
+        Math.max.apply(null, strings.map((match) => match[2].length)),
+        PRINT_DECIMALS
+      )
       , rows = []
       , i;
 
@@ -498,9 +478,8 @@ class Matrix {
       (n) => options.stylize(utils.formatNum(lwidth, rwidth, n), 'number')
     );
 
-    for (i = 0; i < this[_m]; i += 1) {
-      rows.push('[ ' + strings.slice(i*this[_n], (i+1)*this[_n]).join(', ') + ' ]');
-    }
+    for (i = 0; i < this[_m]; i += 1)
+      rows.push('[ ' + strings.slice(i * this[_n], (i + 1) * this[_n]).join(', ') + ' ]');
 
     return repr + ' ' + utils.padAll(
       this.constructor.name.length + 1,
@@ -520,17 +499,16 @@ class Matrix {
       , k;
 
     if (newCol != null) {
-      if (newCol.length > this[_m]) {
+      if (newCol.length > this[_m])
         throw new RangeError('newCol cannot be longer than ' + this[_m]);
-      }
-      for (k = 0; k < this[_m]; k += 1) {
+
+      for (k = 0; k < this[_m]; k += 1)
         this[_data][k * this[_n] + i] = newCol[k];
-      }
     }
 
-    for (k = 0; k < this[_m]; k += 1) {
+    for (k = 0; k < this[_m]; k += 1)
       theCol[_data][k] = this[_data][k * this[_n] + i];
-    }
+
     return theCol;
   }
 
@@ -543,14 +521,14 @@ class Matrix {
    */
   row(i, newRow) {
     if (newRow != null) {
-      if (newRow.length > this[_n]) {
+      if (newRow.length > this[_n])
         throw new RangeError('newRow cannot be longer than ' + this[_n]);
-      }
+
       this[_data].subarray(i * this[_n]).set(newRow);
     }
     return new Matrix(
       1, this[_n],
-      this[_data].slice(i * this[_n], (i+1) * this[_n])
+      this[_data].slice(i * this[_n], (i + 1) * this[_n])
     );
   }
 
@@ -563,7 +541,7 @@ class Matrix {
    * @param {number[]} cols Array of indices used to construct the subset
    * @return {Matrix<rows.length, cols.length>} Subset of this
    */
-  subset(rows=':', cols=':') {
+  subset(rows = ':', cols = ':') {
     rows = utils.convertRange(rows, this[_m]);
     cols = utils.convertRange(cols, this[_n]);
 
@@ -580,7 +558,7 @@ class Matrix {
   }
 
   // Create subset of data with row-end
-  lo(row=0) {
+  lo(row = 0) {
     return new Matrix(
       this[_m] - row,
       this[_n],
@@ -589,7 +567,7 @@ class Matrix {
   }
 
   // Create a subset of data withs rows 0-row
-  hi(row=0) {
+  hi(row = 0) {
     return new Matrix(
       row,
       this[_n],
@@ -598,12 +576,12 @@ class Matrix {
   }
 
   // Function removes column from matrix
-  delColumn(col=0) {
+  delColumn(col = 0) {
     var columns = this[_n];
     return new Matrix(
       this[_m],
       this[_n] - 1,
-      this[_data].filter(function(_, i) {
+      this[_data].filter(function (_, i) {
         return i % columns !== col
       })
     );
@@ -626,9 +604,9 @@ class Matrix {
     var diagonal = new Matrix(1, Math.min(this[_m], this[_n]))
       , i;
 
-    for (i = 0; i < this[_m] && i < this[_n]; i += 1) {
+    for (i = 0; i < this[_m] && i < this[_n]; i += 1)
       diagonal[_data][i] = this[_data][i * this[_n] + i];
-    }
+
     return diagonal;
   }
 
@@ -642,9 +620,9 @@ class Matrix {
     var absolute = this.clone()
       , i;
 
-    for (i = 0; i < absolute[_data].length; i += 1) {
+    for (i = 0; i < absolute[_data].length; i += 1)
       absolute[_data][i] = Math.abs(absolute[_data][i]);
-    }
+
     return absolute;
   }
 
@@ -657,9 +635,9 @@ class Matrix {
     var tot = 0
       , i;
 
-    for (i = 0; i < this[_data].length; i += 1) {
+    for (i = 0; i < this[_data].length; i += 1)
       tot += this[_data][i];
-    }
+
     return tot;
   }
 
@@ -672,9 +650,9 @@ class Matrix {
     var tot = 1
       , i;
 
-    for (i = 0; i < this[_data].length; i += 1) {
+    for (i = 0; i < this[_data].length; i += 1)
       tot *= this[_data][i];
-    }
+
     return tot;
   }
 
@@ -686,9 +664,9 @@ class Matrix {
   min() {
     let i, min;
 
-    for (i = 0, min = Infinity; i < this[_data].length; i += 1) {
+    for (i = 0, min = Infinity; i < this[_data].length; i += 1)
       min = Math.min(min, this[_data][i]);
-    }
+
     return min;
   }
 
@@ -700,9 +678,9 @@ class Matrix {
   max() {
     let i, max;
 
-    for (i = 0, max = -Infinity; i < this[_data].length; i += 1) {
+    for (i = 0, max = -Infinity; i < this[_data].length; i += 1)
       max = Math.max(max, this[_data][i]);
-    }
+
     return max;
   }
 
@@ -713,11 +691,10 @@ class Matrix {
     var transpose = new Matrix(this[_n], this[_m])
       , i, j;
 
-    for (i = 0; i < this[_m]; i += 1) {
-      for (j = 0; j < this[_n]; j += 1) {
+    for (i = 0; i < this[_m]; i += 1)
+      for (j = 0; j < this[_n]; j += 1)
         transpose[_data][j * this[_m] + i] = this[_data][i * this[_n] + j];
-      }
-    }
+
     return transpose;
   }
 
@@ -745,11 +722,10 @@ class Matrix {
     var randMatrix = new Matrix(m, n)
       , i, j;
 
-    for (i = 0; i < m; i += 1) {
-      for (j = 0; j < n; j += 1) {
+    for (i = 0; i < m; i += 1)
+      for (j = 0; j < n; j += 1)
         randMatrix[_data][i * n + j] = Math.random();
-      }
-    }
+
     return randMatrix;
   }
 
@@ -759,13 +735,13 @@ class Matrix {
    * @static
    * @return {Matrix<m,n>} Diagonal onez
    */
-  static eye(m, n=m) {
+  static eye(m, n = m) {
     var onez = new Matrix(m, n)
       , i, j;
 
-    for (i = 0; i < m; i += 1) {
+    for (i = 0; i < m; i += 1)
       onez[_data][i * n + i] = 1;
-    }
+
     return onez;
   }
 
@@ -778,15 +754,14 @@ class Matrix {
    * @param {number}            n   Columns in the new matrix
    */
   static from(arr, m, n) {
-    if (arr instanceof Matrix) {
+    if (arr instanceof Matrix)
       return arr.clone();
-    }
-    if (!Array.isArray(arr)) {
+
+    if (!Array.isArray(arr))
       throw new TypeError('Expected an array or Matrix');
-    }
-    if (arr.length <= 0) {
+
+    if (arr.length <= 0)
       return new Matrix(0, 0);
-    }
 
     var i;
 
@@ -794,16 +769,15 @@ class Matrix {
     n = n || arr[0].length;
 
     // handed a 1-d array
-    if (arr[0].length == null) {
+    if (arr[0].length == null)
       return new Matrix(1, arr.length, Float64Array.from(arr));
-    }
+
 
     // otherwise, it's a 2-d array (and hopefully not >2-d)
-    for (i = 0; i < arr.length; i += 1) {
-      if (arr[i].length !== n) {
+    for (i = 0; i < arr.length; i += 1)
+      if (arr[i].length !== n)
         throw new Error('All rows must have equal length');
-      }
-    }
+
     return new Matrix(m, n, Float64Array.from(utils.join(arr)));
   }
 
@@ -818,13 +792,13 @@ class Matrix {
       , mat = new Matrix(m, m)
       , i;
 
-    for (i = 0; i < m; i += 1) {
-      mat.data[i*m+i] = arr[i];
-    }
+    for (i = 0; i < m; i += 1)
+      mat.data[i * m + i] = arr[i];
+
     return mat;
   }
 
-  static zeros(m, n=m) {
+  static zeros(m, n = m) {
     return this.eye(m, n).dotMultiply(0);
   }
 

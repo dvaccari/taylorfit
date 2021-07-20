@@ -101,7 +101,7 @@ ko.components.register "tf-data-partition",
             @cross_row_start(start_row)
           end_row = if data_rows <= start_row + num_rows then data_rows else start_row + num_rows
           @cross_row_end(end_row)
-    
+
     @change_validate_partition = ( ) ->
       fit_partition = Number(@fit_p())
       cross_partition = Number(@cross_p())
@@ -137,7 +137,7 @@ ko.components.register "tf-data-partition",
             @validate_row_start(start_row)
           end_row = if data_rows <= start_row + num_rows then data_rows else start_row + num_rows
           @validate_row_end(end_row)
-    
+
     '''
     Function handles data input change for row start of the fit partition
     '''
@@ -157,7 +157,7 @@ ko.components.register "tf-data-partition",
         partition_percentage = Math.round((fit_row_end - fit_row_start + 1) / data_rows * 100)
         @fit_p(partition_percentage)
         @error_msg(undefined)
-    
+
     @change_fit_end_row = ( ) ->
       fit_row_start = Number(@fit_row_start())
       fit_row_end = Number(@fit_row_end())
@@ -174,7 +174,7 @@ ko.components.register "tf-data-partition",
         partition_percentage = Math.round((fit_row_end - fit_row_start + 1) / data_rows * 100)
         @fit_p(partition_percentage)
         @error_msg(undefined)
-    
+
     @change_cross_start_row = ( ) ->
       cross_row_start = Number(@cross_row_start())
       cross_row_end = Number(@cross_row_end())
@@ -208,7 +208,7 @@ ko.components.register "tf-data-partition",
         partition_percentage = Math.round((cross_row_end - cross_row_start + 1) / data_rows * 100)
         @cross_p(partition_percentage)
         @error_msg(undefined)
-    
+
     @change_validate_start_row = ( ) ->
       validate_row_start = Number(@validate_row_start())
       validate_row_end = Number(@validate_row_end())
@@ -242,14 +242,13 @@ ko.components.register "tf-data-partition",
         partition_percentage = Math.round((validate_row_end - validate_row_start + 1) / data_rows * 100)
         @validate_p(partition_percentage)
         @error_msg(undefined)
-    
+
     check_in_range = (num, start, end) ->
-      # The other partition is not partitioned
-      if (start == 0 && end == 0)
+      if (start == 0 && end == 0)  # The other partition is not partitioned
         false
       else
         num >= start && num <= end
-    
+
     @import_dataset = ( ) ->
       fit_p = Number(@fit_p()) || 0
       cross_p = Number(@cross_p()) || 0

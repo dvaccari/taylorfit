@@ -28,21 +28,27 @@
   { "id": "SKEW", "sort": "<", "description": "Skewness" },
   { "id": "XKURT", "sort": "<", "description": "Excess kurtosis" },
 
-  { "id": "PLACEHOLDER"}, 
+  { "id": "PLACEHOLDER"},
 
   { "id": "AIC", "sort": ">", "description": "Akaike Information Criterion" },
   { "id": "BIC", "sort": ">", "description": "Bayesian Information Criterion" },
-  { "id": "F", "sort": "<", "description": "F-statistic" },  
-  { "id": "pF", "displayName": "p(F)", "sort": ">", "description": "Probability that a larger value of the F-statistic occurs by chance. This is a test of overall model fitness." },  
+  { "id": "F", "sort": "<", "description": "F-statistic" },
+  { "id": "pF", "displayName": "p(F)", "sort": ">", "description": "Probability that a larger value of the F-statistic occurs by chance. This is a test of overall model fitness." },
 
-  { "id": "PLACEHOLDER"}, 
+  { "id": "PLACEHOLDER"},
 
   { "id": "seSKEW", "displayName": "s.e. SKEW", "sort": "<", "description": "Estimated standard error of the skewness. If SKEW > 2*s.e.SKEW, there is evidence that residual errors are not normally distributed." },
   { "id": "seXKURT", "displayName": "s.e. XKURT", "sort": "<", "description": "Estimated standard error of the kurtosis. If |ExKurt|> 2*s.e.ExKurt, there is evidence that residual errors are not normally distributed." },
 
 
-  { "id": "t", "sort": "|<|", "candidateOnly": true, "default": true, "description": "The t-statistic used to determine how significant this term is. A value above about 2.0 is usually considered significant." },
+  { "id": "meany", "show": false},
+  { "id": "stdy", "show": false},
+  { "id": "adj_mean", "show": false},
+  { "id": "adj_std", "show": false},
+  
+  { "id": "t", "displayName": "t", "sort": "|<|", "candidateOnly": true, "default": true, "description": "The t-statistic used to determine how significant this term is. A value above about 2.0 is usually considered significant." },
   { "id": "pt", "displayName": "p(t)", "sort": ">", "candidateOnly": true, "default": true, "description": "The probability that this term occurs by chance. Cell is colored green if p(t) > alpha (default alpha = 0.05)." },
+  { "id": "ir", "displayName": "IR", "currentModelOnly": true, "description": "The Importance Ratio TODO"},
 
   { "id": "stdev", "show": false },
   { "id": "mean", "show": false },

@@ -26,7 +26,7 @@ ko.components.register "tf-validate-data-partition",
       num >= 0 &&
       num <= 100 &&
       !isNaN(num)
-    
+
     @change_validate_partition = ( ) ->
       validate_partition = Number(@validate_p())
       validate_split_invalid = !check_split_valid(validate_partition)
@@ -55,7 +55,7 @@ ko.components.register "tf-validate-data-partition",
             @validate_row_start(start_row)
           end_row = if data_rows <= start_row + num_rows then data_rows else start_row + num_rows
           @validate_row_end(end_row)
-    
+
     @change_validate_start_row = ( ) ->
       validate_row_start = Number(@validate_row_start())
       validate_row_end = Number(@validate_row_end())
@@ -89,14 +89,14 @@ ko.components.register "tf-validate-data-partition",
         partition_percentage = Math.round((validate_row_end - validate_row_start + 1) / data_rows * 100)
         @validate_p(partition_percentage)
         @error_msg(undefined)
-    
+
     check_in_range = (num, start, end) ->
       # The other partition is not partitioned
       if (start == 0 && end == 0)
         false
       else
         num >= start && num <= end
-    
+
     @import_validate_dataset = ( ) ->
       validate_p = Number(@validate_p()) || 0
       validate_row_start = Number(@validate_row_start()) || 0

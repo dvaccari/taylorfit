@@ -1,4 +1,3 @@
-
 const inDegree = (stat, statistics) => {
   let names = statistics.map(({ name }) => name);
   return stat.args.filter((s) => names.includes(s)).length;
@@ -17,9 +16,9 @@ const topsort = (statistics) => {
     S = S.concat(remaining.filter((stat) => inDegree(stat, remaining) === 0));
     remaining = remaining.filter((stat) => !S.includes(stat));
   }
-  if (remaining.length > 0) {
+  if (remaining.length > 0)
     throw new Error('Statistics are co-dependent');
-  }
+
   return L;
 };
 

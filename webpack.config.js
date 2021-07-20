@@ -20,19 +20,15 @@ module.exports = {
   target: 'web',
   profile: true,
   cache: true,
-  devtool: '#eval',
   devServer: {
     contentBase: BUILD,
     inline: true,
     hot: true
   },
   node: {
-    console: false,
-    global: false,
-    process: true,
-    Buffer: false,
-    setImmediate: false
+    global: false
   },
+  //devtool: '#eval',
   entry: {
     'engine-worker': ENGINE_WORKER,
     'candidate-worker': CANDIDATE_WORKER,
@@ -54,7 +50,7 @@ module.exports = {
                  '.loader.js', '.js', '.coffee', '.es6']
   },
   module: {
-    loaders: [{
+    rules: [{
       test: /\.coffee$/,
       loader: 'coffee-loader'
     }, {
@@ -81,12 +77,12 @@ module.exports = {
       test: /\.txt$/,
       loader: 'raw-loader'
     }, {
-      test: /\.json$/,
-      loader: 'json-loader'
-    }, {
       test: /\.jsx?$/,
       exclude: /node_modules/,
-      loader: 'babel-loader?presets[]=es2017'
+      loader: 'babel-loader',
+      options: {
+      	presets: ['@babel/preset-env']
+      }
     }]
   },
   plugins: [
@@ -95,7 +91,6 @@ module.exports = {
       raw: true,
       entryOnly: true
     }),
-    new webpack.optimize.UglifyJsPlugin(),
     new HtmlWebpackPlugin({
       title: 'TaylorFit',
       chunks: ['interface', 'subworkers'],
@@ -103,4 +98,3 @@ module.exports = {
     })
   ]
 };
-

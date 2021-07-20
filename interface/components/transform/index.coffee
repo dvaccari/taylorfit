@@ -51,7 +51,7 @@ ko.components.register "tf-transform",
 
     @change_k = ( ) ->
       @invalid = !@k() || isNaN(@k())
-    
+
     validate_log = ( index ) ->
       data = data_fit()
       col_data = data.map((d) -> d[index])
@@ -74,7 +74,7 @@ ko.components.register "tf-transform",
         @close()
       else
         @error_msg("Cannot perform Log transform because column contains negative number(s)")
-    
+
     @k_order_diff = ( index ) ->
       if !@invalid
         transform_col = gen_column(
@@ -120,7 +120,7 @@ ko.components.register "tf-transform",
       model.columns(cols)
       link_transform_column(index, transform_col.index)
       @close()
-    
+
     @transform_index.subscribe ( next ) ->
       #if next then adapter.unsubscribeToChanges()
       #else adapter.subscribeToChanges()

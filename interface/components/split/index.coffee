@@ -1,4 +1,3 @@
-
 require "./index.styl"
 
 ko.bindingHandlers.split =
@@ -32,4 +31,3 @@ ko.bindingHandlers.split =
     child2.onmouseover = ( ) ->
       child1.setAttribute "hover", false
       child2.setAttribute "hover", true
-

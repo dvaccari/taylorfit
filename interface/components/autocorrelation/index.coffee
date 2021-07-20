@@ -1,11 +1,9 @@
-
 require "./index.styl"
 c3 = require "c3"
 Model = require "../Model"
 
 mean = (values) ->
-  sum = 0
-  i = 0
+  [sum, i] = [0, 0]
   while i < values.length
     sum += values[i]
     i++
@@ -13,21 +11,18 @@ mean = (values) ->
   return sum
 
 variance = (values, mu) ->
-  sum = 0
-  i = 0
+  [sum, i] = [0, 0]
   while i < values.length
     sum += (values[i] - mu) * (values[i] - mu)
     i++
   return sum /= values.length
 
 calculateAutoCorrelation = (values, k) ->
-  mu = mean(values)
-  
+  [sum, i, mu] = [0, 0, mean(values)]
+
   normal_values = values.slice(0,values.length - k)
   skipped_values = values.slice(k)
 
-  sum = 0
-  i = 0
   while i < normal_values.length
     sum += (normal_values[i] - mu) * (skipped_values[i] - mu)
     i++
@@ -36,19 +31,12 @@ calculateAutoCorrelation = (values, k) ->
   return sum
 
 calculateStandardError = (acf, numValues) ->
-  i = 0
-  errors = []
-  sum = 0
+  [sum, i, errors] = [0, 0, []]
   while i < acf.length
     sum += acf[i] * acf[i]
-    console.log('Sum: ', sum)
     errors[i] = Math.sqrt((1 + 2 * sum) / numValues)
-    console.log(errors[i])
     i++
-  console.log(errors)
   return errors
-
-  
 
 ko.components.register "tf-autocorrelation",
   template: do require "./index.pug"
@@ -57,30 +45,56 @@ ko.components.register "tf-autocorrelation",
     unless ko.isObservable params.model
       throw new TypeError "components/options:
       expects [model] to be observable"
-    
+
     model = params.model()
     @column_index = model.show_autocorrelation
 
     @active = ko.computed ( ) => @column_index() != undefined
-    
-    @column_name = ko.computed ( ) => 
+
+    @column_name = ko.computed ( ) =>
       if !@active()
         return undefined
-      index = @column_index()
+      index = @column_index()[0]
       if typeof index == "string"
         if index.indexOf("Sensitivity") != -1
           index = index.split("_")[1]
           return "Sensitivity " + model.sensitivityColumns()[index].name
+        if index.indexOf("C.I.") != -1
+          index = 0
+          return "C.I."
+        if index.indexOf("P.I.") != -1
+          index = 0
+          return "P.I."
         if index.indexOf("ImportanceRatio") != -1
           index = index.split("_")[1]
           return "Importance Ratio " + model.importanceRatioColumns()[index].name
         return @column_index()
-      return model.columns()[@column_index()].name
-    
-    @values = ko.computed ( ) => 
+      return model.columns()[index].name
+
+    @values = ko.computed ( ) =>
       if !@active()
         return undefined
-      index = @column_index()
+      table = @column_index()[1]
+      offset_start = 0
+      offset_end = 0
+      if @table == 'fit'
+        offset_start = 0
+        offset_end = model["data_fit"]().length
+      else if @table == 'cross'
+        offset_start = model["data_fit"]().length
+        offset_end = offset_start + model["data_cross"]().length
+      else
+        offset_start = model["data_fit"]().length
+        if model["data_cross"]() != undefined
+          offset_start += model["data_cross"]().length
+        offset_end = offset_start
+        if model["data_validation"]() != undefined
+          offset_end += model["data_validation"]().length
+        # We've gotten into a situation where there's only 1 data table
+        # but this patch is easier than fixing the bug
+        if offset_start == offset_end
+          offset_start = 0
+      index = @column_index()[0]
       if typeof index == "string"
         if index == "Dependent"
           index = 0
@@ -92,12 +106,20 @@ ko.components.register "tf-autocorrelation",
           # format is: Sensitivity_index
           index = index.split("_")[1]
           return Object.values(model.sensitivityData()[index])
+        if typeof index == "string" && index.indexOf("C.I.") != -1
+          # format is: C.I.
+          index = 0
+          return Object.values(model.confidenceData()[0].slice(offset_start, offset_end))
+        if typeof index == "string" && index.indexOf("P.I.") != -1
+          # format is: P.I.
+          index = 0
+          return Object.values(model.predictionData()[0].slice(offset_start, offset_end))
         if typeof index == "string" && index.indexOf("ImportanceRatio") != -1
           # format is: ImportanceRatio_index
           index = index.split("_")[1]
           return Object.values(model.importanceRatioData()[index])
-        return model["extra_#{model.data_plotted()}"]().map((row) => row[index])
-      return model["data_#{model.data_plotted()}"]().map((row) => row[index])
+        return model["extra_#{table}"]().map((row) => row[index])
+      return model["data_#{table}"]().map((row) => row[index])
 
     @close = ( ) ->
       model.show_autocorrelation undefined
@@ -114,20 +136,14 @@ ko.components.register "tf-autocorrelation",
 
       buckets = Array(@bucket_size()).fill(0)
 
-      i = 0
-      k = @bucket_size()
+      [i, k, z_score] = [0, @bucket_size(), 3]
       while i < k
-        console.log('Calculating Autocorrelation in Bucket ', i)
         buckets[i] = calculateAutoCorrelation(filtered, i+1)
-        console.log('Autocorrelation Value: ', buckets[i])
         i++
-      z_score = 3
 
       errors = calculateStandardError(buckets, filtered.length)
       errors = errors.map((value) => value * z_score)
       negativeErrors = errors.map((value) => value * -1)
-
-      console.log(errors)
 
       labels = Array(@bucket_size()).fill(0).map((x, index) => index + 1)
       # global varible 'chart' can be accessed in download function
@@ -159,7 +175,7 @@ ko.components.register "tf-autocorrelation",
           show: false
       return chart.element.innerHTML
 
-    @download = ( ) -> 
+    @download = ( ) ->
       if !@active()
         return undefined
       svg_element = chart.element.querySelector "svg"
@@ -172,8 +188,8 @@ ko.components.register "tf-autocorrelation",
 
       svg_element.style.padding = "10px"
       box_size = svg_element.getBBox()
-      svg_element.style.height = box_size.height 
-      svg_element.style.width = box_size.width 
+      svg_element.style.height = box_size.height
+      svg_element.style.width = box_size.width
 
       chart_line = svg_element.querySelectorAll ".c3-chart-line"
       chart_line[1].style.opacity = 1
@@ -195,12 +211,12 @@ ko.components.register "tf-autocorrelation",
       x_and_y.concat Array.from node_list2
       x_and_y.forEach (e) ->
         e.style.fill = "none"
-        e.style.stroke = "black" 
+        e.style.stroke = "black"
 
       scale = Array.from node_list3
       scale.forEach (e) ->
         e.style.fill = "none"
-        e.style.stroke = "black" 
+        e.style.stroke = "black"
 
       svg_element.style.backgroundColor = "white"
 
@@ -234,10 +250,6 @@ ko.components.register "tf-autocorrelation",
         document.body.removeChild a_element
 
       return undefined
-
-    @column_index.subscribe ( next ) =>
-      #if next then adapter.unsubscribeToChanges()
-      #else adapter.subscribeToChanges()
 
     @inc = ( ) -> @bucket_size @bucket_size() + 1
     @dec = ( ) -> @bucket_size ((@bucket_size() - 1) || 1)

@@ -39,7 +39,7 @@
           // /ko
         //- This is the candidate terms
         // ko foreach: result
-        tr.candidate(data-bind="click:function(){selected(true);$parent.current_page(0);$parent.updateSensitivity();$parent.updateImportanceRatio();},css:{selected:selected}")
+        tr.candidate(data-bind="click:function(){selected(true);$parent.current_page(0);$parent.updateSensitivity();$parent.updateConfidence();$parent.updatePrediction();$parent.updateImportanceRatio();},css:{selected:selected}")
           td.term
             span.coeff
               span(data-bind="num:coeff")

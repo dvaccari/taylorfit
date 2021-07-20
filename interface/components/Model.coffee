@@ -16,7 +16,6 @@ IGNORE = ( v ) -> undefined
 DATA = ( type ) -> ( v ) ->
   o = ko.observable()
   o.subscribe ( next ) ->
-    # return unless next?.length
     adapter.setData next, type
   o v
   return o
@@ -68,6 +67,18 @@ CTRL =
     [ undefined   , SEND("deleteSensitivity", Number) , IGNORE ]
   update_sensitivity:
     [ undefined   , SEND("updateSensitivity", Number)  , IGNORE ]
+  show_confidence:
+    [ undefined   , SEND("getConfidence", Number)    , IGNORE ]
+  delete_confidence:
+    [ undefined   , SEND("deleteConfidence", Number) , IGNORE ]
+  update_confidence:
+    [ undefined   , SEND("updateConfidence", Number)  , IGNORE ]
+  show_prediction:
+    [ undefined   , SEND("getPrediction", Number)    , IGNORE ]
+  delete_prediction:
+    [ undefined   , SEND("deletePrediction", Number) , IGNORE ]
+  update_prediction:
+    [ undefined   , SEND("updatePrediction", Number)  , IGNORE ]
   show_importanceRatio:
     [ undefined   , SEND("getImportanceRatio", Number)    , IGNORE ]
   delete_importanceRatio:
@@ -86,10 +97,8 @@ CTRL =
     [ undefined   , DATA("validation")                , UNWRAP ]
   data_plotted:
     [ "fit"       , WRAP_O                            , IGNORE ]
-
   candidates:
     [ [ ]         , WRAP_A                            , IGNORE ]
-
   result_fit:
     [ undefined   , WRAP_O                            , UNWRAP ]
   result_cross:
@@ -99,14 +108,12 @@ CTRL =
 
   psig:
     [ 0.05        , WRAP_O                            , UNWRAP ]
-
   dependent:
     [ 0           , SEND("setDependent", Number)      , UNWRAP ]
   hiddenColumns:
     [ {}            , WRAP_O                          , UNWRAP ]
   multiplicands:
     [ 1           , SEND("setMultiplicands", Number)  , UNWRAP ]
-
   exponents:
     [ 1: true     , SEND("setExponents", object2array), UNWRAP_O ]
   timeseries:
@@ -134,6 +141,14 @@ CTRL =
     [ []         , WRAP_A                            , UNWRAP ]
   sensitivityData:
     [ []         , WRAP_A                            , UNWRAP ]
+  confidenceColumns:
+    [ []         , WRAP_A                            , UNWRAP ]
+  confidenceData:
+    [ []         , WRAP_A                            , UNWRAP ]
+  predictionColumns:
+    [ []         , WRAP_A                            , UNWRAP ]
+  predictionData:
+    [ []         , WRAP_A                            , UNWRAP ]
   importanceRatioColumns:
     [ []         , WRAP_A                            , UNWRAP ]
   importanceRatioData:
@@ -144,6 +159,13 @@ module.exports = class Model
   constructor: ( o ) ->
 
     console.debug "model/input", o
+
+    # Sets on startup
+    setTimeout =>
+      psig = ko.unwrap @psig
+      adapter.sendPsig(psig)
+      console.debug "PSIG sending"
+    , 0
 
     adapter.unsubscribeToChanges()
 
@@ -166,7 +188,8 @@ module.exports = class Model
           data = @["data_#{type}"]()
           res = @["result_#{type}"]()
           if res
-            pred = (NaN for i in [0...res.lag]).concat res.predicted
+            lags = data.length - res.predicted.length
+            pred = (NaN for i in [0...lags]).concat res.predicted
 
           if (not data) or (not pred) then return undefined
 
@@ -181,13 +204,13 @@ module.exports = class Model
 
     mapper = ( terms, fn ) =>
       cols = ko.unwrap @columns
-      # filter out terms that couldn't get a coefficient calculated
+      # Filter out terms that couldn't get a coefficient calculated
       terms.filter((t) => t.coeff).map (t) =>
         return t if t.selected?
         result =
           selected: ko.observable false
           stats: t.stats
-          # TODO, remove hack
+          # TODO: remove hack
           coeff: t.coeff or t.stats.coeff
           term: t.term.map ( term ) ->
             name: cols[term[0]]?.name
@@ -227,7 +250,7 @@ module.exports = class Model
           stats: model.stats
           predicted: model.predicted
       , 100
-    
+
     adapter.on("data:transform", ( data ) =>
       setTimeout =>
         @data_fit(data.fit)
@@ -319,9 +342,9 @@ module.exports = class Model
           @sensitivityData(sensitivityData)
       , 100
       adapter.subscribeToChanges()
-    
+
     adapter.on "model:deleteSensitivity", (data) =>
-      setTimeout =>        
+      setTimeout =>
         sensitivityColumns = ko.unwrap @sensitivityColumns
         sensitivityData = ko.unwrap @sensitivityData
 
@@ -351,6 +374,112 @@ module.exports = class Model
       , 100
       adapter.subscribeToChanges()
 
+    adapter.on "model:getConfidence", (data) =>
+      setTimeout =>
+        columns = ko.unwrap @columns
+        confidenceColumns = ko.unwrap @confidenceColumns
+        confidenceData = ko.unwrap @confidenceData
+
+        # Check if column already exists
+        colExists = false
+        confidenceColumns.forEach((col) =>
+          if col.index == data.index
+            colExists = true
+        )
+
+        if colExists == false
+          column = columns[0] # Weird hack to stop errors showing up but it works
+          confidenceColumns.push(column)
+          confidenceData.push(data.confidence)
+          @confidenceColumns(confidenceColumns)
+          @confidenceData(confidenceData)
+      , 100
+      adapter.subscribeToChanges()
+
+    adapter.on "model:deleteConfidence", (data) =>
+      setTimeout =>
+        confidenceColumns = ko.unwrap @confidenceColumns
+        confidenceData = ko.unwrap @confidenceData
+
+        confidenceColumns.splice(data.index, 1);
+        confidenceData.splice(data.index, 1);
+
+        @confidenceColumns(confidenceColumns)
+        @confidenceData(confidenceData)
+      , 100
+      adapter.subscribeToChanges()
+
+    adapter.on "model:updateConfidence", (data) =>
+      setTimeout =>
+        columns = ko.unwrap @columns
+        confidenceColumns = ko.unwrap @confidenceColumns
+        confidenceData = ko.unwrap @confidenceData
+
+        # Find the column and replace it
+        confidenceColumns.forEach((col, i) =>
+          if col.index == data.index
+            confidenceColumns[i] = columns[data.index]
+            confidenceData[i] = data.confidence
+        )
+
+        @confidenceColumns(confidenceColumns)
+        @confidenceData(confidenceData)
+      , 100
+      adapter.subscribeToChanges()
+
+    adapter.on "model:getPrediction", (data) =>
+      setTimeout =>
+        columns = ko.unwrap @columns
+        predictionColumns = ko.unwrap @predictionColumns
+        predictionData = ko.unwrap @predictionData
+
+        # Check if column already exists
+        colExists = false
+        predictionColumns.forEach((col) =>
+          if col.index == data.index
+            colExists = true
+        )
+
+        if colExists == false
+          column = columns[0] # Weird hack to stop errors showing up but it works
+          predictionColumns.push(column)
+          predictionData.push(data.prediction)
+          @predictionColumns(predictionColumns)
+          @predictionData(predictionData)
+      , 100
+      adapter.subscribeToChanges()
+
+    adapter.on "model:deletePrediction", (data) =>
+      setTimeout =>
+        predictionColumns = ko.unwrap @predictionColumns
+        predictionData = ko.unwrap @predictionData
+
+        predictionColumns.splice(data.index, 1);
+        predictionData.splice(data.index, 1);
+
+        @predictionColumns(predictionColumns)
+        @predictionData(predictionData)
+      , 100
+      adapter.subscribeToChanges()
+
+    adapter.on "model:updatePrediction", (data) =>
+      setTimeout =>
+        columns = ko.unwrap @columns
+        predictionColumns = ko.unwrap @predictionColumns
+        predictionData = ko.unwrap @predictionData
+
+        # Find the column and replace it
+        predictionColumns.forEach((col, i) =>
+          if col.index == data.index
+            predictionColumns[i] = columns[data.index]
+            predictionData[i] = data.prediction
+        )
+
+        @predictionColumns(predictionColumns)
+        @predictionData(predictionData)
+      , 100
+      adapter.subscribeToChanges()
+
     adapter.on "model:getImportanceRatio", (data) =>
       setTimeout =>
         columns = ko.unwrap @columns
@@ -373,9 +502,9 @@ module.exports = class Model
           @importanceRatioData(importanceRatioData)
       , 100
       adapter.subscribeToChanges()
-    
+
     adapter.on "model:deleteImportanceRatio", (data) =>
-      setTimeout =>        
+      setTimeout =>
         importanceRatioColumns = ko.unwrap @importanceRatioColumns
         importanceRatioData = ko.unwrap @importanceRatioData
 
@@ -403,7 +532,7 @@ module.exports = class Model
         @importanceRatioColumns(importanceRatioColumns)
         @importanceRatioData(importanceRatioData)
       , 100
-      adapter.subscribeToChanges()  
+      adapter.subscribeToChanges()
 
     adapter.on "progress.start", ( { curr, total } ) =>
       @progress 0.01

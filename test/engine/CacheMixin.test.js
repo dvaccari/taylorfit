@@ -1,8 +1,8 @@
-/*global describe, it, beforeEach*/
+/* global describe, it, beforeEach */
 
-const chai        = require('chai')
-    , expect      = chai.expect
-    , CacheMixin  = require('../../engine/model/CacheMixin');
+const chai = require('chai')
+  , expect = chai.expect
+  , CacheMixin = require('../../engine/model/CacheMixin');
 
 describe('CacheMixin', () => {
 
@@ -16,7 +16,7 @@ describe('CacheMixin', () => {
       foo(amt) {
         return this.value += amt;
       }
-      val(a, b=2, c=3) {
+      val(a, b = 2, c = 3) {
         return this.value = a + b + c;
       }
     };
@@ -25,12 +25,12 @@ describe('CacheMixin', () => {
   beforeEach(setup);
 
   it('can be extended by a subclass', () => {
-    expect(() => class extends CacheMixin() {}).not.to.throw();
+    expect(() => class extends CacheMixin() { }).not.to.throw();
   });
 
   it('wraps a base class s.t. a subclass inherits behavior from both', () => {
-    let BaseClass = class {};
-    let Test = class extends CacheMixin(BaseClass) {};
+    let BaseClass = class { };
+    let Test = class extends CacheMixin(BaseClass) { };
 
     expect(new Test()).to.be.instanceof(BaseClass);
     expect(new Test().uncache).to.exist;
@@ -200,4 +200,3 @@ describe('CacheMixin', () => {
   });
 
 });
-

@@ -1,4 +1,3 @@
-
 require "./index.styl"
 c3 = require "c3"
 Model = require "../Model"
@@ -10,30 +9,58 @@ ko.components.register "tf-histogram",
     unless ko.isObservable params.model
       throw new TypeError "components/options:
       expects [model] to be observable"
-    
+
     model = params.model()
     @column_index = model.show_histogram
 
     @active = ko.computed ( ) => @column_index() != undefined
-    
-    @column_name = ko.computed ( ) => 
+
+    @column_name = ko.computed ( ) =>
       if !@active()
         return undefined
-      index = @column_index()
+      index = @column_index()[0]
       if typeof index == "string"
         if index.indexOf("Sensitivity") != -1
           index = index.split("_")[1]
           return "Sensitivity " + model.sensitivityColumns()[index].name
+        if index.indexOf("C.I.") != -1
+          index = 0
+          return "C.I."
+        if index.indexOf("P.I.") != -1
+          index = 0
+          return "P.I."
         if index.indexOf("ImportanceRatio") != -1
           index = index.split("_")[1]
           return "Importance Ratio " + model.importanceRatioColumns()[index].name
         return index
       return model.columns()[index].name
-    
-    @values = ko.computed ( ) => 
+
+    @values = ko.computed ( ) =>
       if !@active()
         return undefined
-      index = @column_index()
+
+      table = @column_index()[1]
+      offset_start = 0
+      offset_end = 0
+      if @table == 'fit'
+        offset_start = 0
+        offset_end = model["data_fit"]().length
+      else if @table == 'cross'
+        offset_start = model["data_fit"]().length
+        offset_end = offset_start + model["data_cross"]().length
+      else
+         offset_start = model["data_fit"]().length
+        if model["data_cross"]() != undefined
+          offset_start += model["data_cross"]().length
+        offset_end = offset_start
+        if model["data_validation"]() != undefined
+          offset_end += model["data_validation"]().length
+        # We've gotten into a situation where there's only 1 data table
+        # but this patch is easier than fixing the bug
+        if offset_start == offset_end
+          offset_start = 0
+
+      index = @column_index()[0]
       if typeof index == "string"
         if index == "Dependent"
           index = 0
@@ -45,12 +72,20 @@ ko.components.register "tf-histogram",
           # format is: Sensitivity_index
           index = index.split("_")[1]
           return Object.values(model.sensitivityData()[index])
+        if typeof index == "string" && index.indexOf("C.I.") != -1
+          # format is: C.I.
+          index = 0
+          return Object.values(model.confidenceData()[0].slice(offset_start, offset_end))
+        if typeof index == "string" && index.indexOf("P.I.") != -1
+          # format is: P.I.
+          index = 0
+          return Object.values(model.predictionData()[0].slice(offset_start, offset_end))
         if typeof index == "string" && index.indexOf("ImportanceRatio") != -1
           # format is: ImportanceRatio_index
           index = index.split("_")[1]
           return Object.values(model.importanceRatioData()[index])
-        return model["extra_#{model.data_plotted()}"]().map((row) => row[index])
-      return model["data_#{model.data_plotted()}"]().map((row) => row[index])
+        return model["extra_#{table}"]().map((row) => row[index])
+      return model["data_#{table}"]().map((row) => row[index])
 
     @close = ( ) ->
       model.show_histogram undefined
@@ -94,17 +129,17 @@ ko.components.register "tf-histogram",
         axis:
           x:
             tick:
-              count: () -> 
+              count: () ->
                 numUniqueLabels = labels.filter((val, i, arr) ->
                                     return arr.indexOf(val) == i
                                   ).length
-                # to avoid text label for each bin overlap on each other 
+                # to avoid text label for each bin overlap on each other
                 if numUniqueLabels < 9
-                  return numUniqueLabels                  
+                  return numUniqueLabels
                 else
                   if column_name.indexOf("Sensitivity") != -1 || column_name.indexOf("Importance Ratio") != -1
                     # avoid tick labels overlap when labels are very long
-                    return 8                  
+                    return 8
                   return 9
               format: d3.format('.3s')
         legend:
@@ -112,9 +147,7 @@ ko.components.register "tf-histogram",
 
       return chart.element.innerHTML
 
-      
-
-    @download = ( ) -> 
+    @download = ( ) ->
       if !@active()
         return undefined
       svg_element = chart.element.querySelector "svg"
@@ -126,8 +159,8 @@ ko.components.register "tf-histogram",
       svg_element.style.overflow = "visible"
       svg_element.style.padding = "10px"
       box_size = svg_element.getBBox()
-      svg_element.style.height = box_size.height 
-      svg_element.style.width = box_size.width 
+      svg_element.style.height = box_size.height
+      svg_element.style.width = box_size.width
 
       chart_bar = svg_element.querySelector ".c3-chart-bar"
       chart_bar.style.opacity = 1
@@ -140,25 +173,25 @@ ko.components.register "tf-histogram",
       x_and_y.concat Array.from node_list2
       x_and_y.forEach (e) ->
         e.style.fill = "none"
-        e.style.stroke = "black" 
+        e.style.stroke = "black"
 
       scale = Array.from node_list3
       scale.forEach (e) ->
         e.style.fill = "none"
-        e.style.stroke = "black" 
-      
+        e.style.stroke = "black"
+
       svg_element.style.backgroundColor = "white"
 
       fst_bar = svg_element.querySelector ".c3-shape-0"
       if fst_bar
         fst_bar_shape = fst_bar.getAttribute "d"
-        shape_arr = fst_bar_shape.split(" ") 
+        shape_arr = fst_bar_shape.split(" ")
         if (shape_arr[1].split(",")[0])*1 < 0
           shape_arr[1] = "0," + shape_arr[1].split(",")[1]
           shape_arr[2] = "L0," + shape_arr[2].split(",")[1]
           new_fst_bar_shap = shape_arr.join(' ')
           fst_bar.setAttribute "d", new_fst_bar_shap
-      
+
       bars = svg_element.querySelectorAll ".c3-chart-bar"
       bars = bars[0]
       paths = bars.getElementsByTagName("path")
@@ -167,7 +200,7 @@ ko.components.register "tf-histogram",
         shape_width = event_rect_area.getAttribute "width"
         lst_bar = paths[paths.length-1]
         lst_bar_shape = lst_bar.getAttribute "d"
-        shape_arr = lst_bar_shape.split(" ") 
+        shape_arr = lst_bar_shape.split(" ")
         if ((shape_arr[3].split(",")[0]).substring(1))*1 > shape_width
           shape_arr[3] = "L" + shape_width + "," + shape_arr[3].split(",")[1]
           shape_arr[4] = "L" + shape_width + "," + shape_arr[4].split(",")[1]
@@ -205,8 +238,6 @@ ko.components.register "tf-histogram",
 
       return undefined
 
-
-
     @column_index.subscribe ( next ) =>
       #if next then adapter.unsubscribeToChanges()
       #else adapter.subscribeToChanges()
@@ -218,7 +249,7 @@ ko.components.register "tf-histogram",
                               return arr.indexOf(val) == i
                             ).length
           if numUniqueValues == 1
-            @bucket_size 1 
+            @bucket_size 1
           else
             @bucket_size k
 

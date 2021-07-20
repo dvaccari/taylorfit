@@ -3,7 +3,7 @@
   table.terms
     thead
       tr
-        th(colspan="3" title="Each row in this Table is a single term in the current model.") Current Model
+        th(colspan="4" title="Each row in this Table is a single term in the current model.") Current Model
       tr
         th(title="This column shows the coefficient and multiplicands (product of independent variables) for each term in the current model.") Term
         // ko foreach: allstats().filter((x) => x.candidate)
@@ -13,7 +13,7 @@
       // ko foreach: result_fit().terms
       tr
         td.term
-          span.remove.fa.fa-close(data-bind="click:function(){selected(true);$parent.updateSensitivity();$parent.updateImportanceRatio();}" title='Click on the "x" to remove a term from the current model.')
+          span.remove.fa.fa-close(data-bind="click:function(){selected(true);$parent.updateSensitivity();$parent.updateConfidence();$parent.updatePrediction();$parent.updateImportanceRatio();}" title='Click on the "x" to remove a term from the current model.')
           span.operator(data-bind="text:coeff<0?'-':'+'")
           span.coeff(data-bind="num:Math.abs(coeff)")
           // ko foreach:term
@@ -43,6 +43,8 @@
         }")
           span.value(data-bind="num:$value")
         // /ko
+        //td.stat()
+        //span.value(data-bind="num:(coeff)")
       // /ko
   a.button(data-bind="click:function(){model().show_export_code(true)}" title="Generate code for the current model that can be used in programs in Excel, C++, Matlab, Python, or JavaScript.") Export to Code
 
@@ -50,7 +52,7 @@
   table.stats
     thead
       tr
-        th(colspan="4" title="This Table shows global statistics for the current model as applied to either the FIT, CROSS, or VALIDATE data sets") Goodness of Fit Statistics
+        th(colspan="3" title="This Table shows global statistics for the current model as applied to either the FIT, CROSS, or VALIDATE data sets") Goodness of Fit Statistics
       tr
         th Stat
         th(title="The FIT dataset is used to compute the coefficients of the terms in both the “Current Model” table and the “Candidate Terms” Table.") Fit

@@ -1,4 +1,3 @@
-
 const defaults = ['X', 'y', 'BHat'];
 
 class Statistic {
@@ -14,7 +13,7 @@ class Statistic {
     return statistics;
   }
 
-  inspect(depth, options={ stylize: (x) => ''+x }) {
+  inspect(depth, options = { stylize: (x) => '' + x }) {
     return `${this.name}(${this.args})`;
   }
 

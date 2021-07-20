@@ -1,11 +1,10 @@
 {
-  "FIT_LABEL"   : "fit",
-  "CROSS_LABEL" : "cross",
-  "VALIDATION_LABEL" : "validation",
-
-  "LOG" : "log",
-  "K_ORDER_DIFFERENCE" : "k_order_difference",
-  "STANDARDIZE" : "standardize",
-  "RESCALE" : "rescale",
+  "FIT_LABEL": "fit",
+  "CROSS_LABEL": "cross",
+  "VALIDATION_LABEL": "validation",
+  "LOG": "log",
+  "K_ORDER_DIFFERENCE": "k_order_difference",
+  "STANDARDIZE": "standardize",
+  "RESCALE": "rescale",
   "DELETE": "delete"
 }

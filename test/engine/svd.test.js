@@ -1,12 +1,11 @@
-/*global describe, it, before*/
+/* global describe, it, before */
 
-const chai    = require('chai')
-    , expect  = chai.expect
-    , should  = chai.should;
+const chai = require('chai')
+  , expect = chai.expect;
 
-const Matrix  = require('../../engine/matrix')
-    , svd     = require('../../engine/regression').svd
-    , dataset = require('./testdata/svd.data.json');
+const Matrix = require('../../engine/matrix')
+  , svd = require('../../engine/regression').svd
+  , dataset = require('./testdata/svd.data.json');
 
 describe('svd', () => {
 

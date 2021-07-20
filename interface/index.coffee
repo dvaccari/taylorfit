@@ -1,39 +1,41 @@
-
-# --- include core libraries
+# Include core libraries
 require "core-js"
 require "../engine/worker/subworkers.js"
 
-# --- choose correct adapter
+# Choose correct adapter
 # TODO: make selection based on build model
 global.adapter = require "./adapter/worker"
 
-# --- setup knockout
+# Setup knockout
 global.ko = require "./ko-adapter"
 
-# --- setup lodash
+# Setup lodash
 global._ = require "lodash"
 
-# --- request statistics
-
+# Request statistics
 global.allstats = ko.observableArray [ ]
 
-adapter.on "statisticsMetadata", ( data ) ->
-  for stat in data
-    if stat.show != false
-      allstats.push
-        id: stat.id
-        name: stat.displayName or stat.id
-        global: stat.globalOnly or false
-        candidate: stat.candidateOnly or false
-        sort: stat.sort or ">"
-        default: stat.default
-        selected: ko.observable stat.default is true
-        sorting: ko.observable false
-        format: stat.format or "float"
-        description: stat.description
-adapter.requestStatisticsMetadata()
+global.send_incoming_stats = () ->
+  adapter.on "statisticsMetadata", ( data ) ->
+    for stat in data
+      if stat.show != false && allstats().find((element) => element.id == stat.id) == undefined
+        allstats.push
+          id: stat.id
+          name: stat.displayName or stat.id
+          global: stat.globalOnly or false
+          candidate: stat.candidateOnly or stat.currentModelOnly or false
+          sort: stat.sort or ">"  # Uses specified sort value unless unspecified
+          default: stat.default
+          selected: ko.observable stat.default is true
+          sorting: ko.observable false
+          format: stat.format or "float"
+          description: stat.description
+  adapter.requestStatisticsMetadata()
 
-# --- include components
+if performance.navigation.type == performance.navigation.TYPE_RELOAD
+  send_incoming_stats()
+
+# Include components
 require "./components"
 
 document.body.appendChild \

@@ -1,4 +1,3 @@
-
 require "./index.styl"
 Model = require "../Model"
 

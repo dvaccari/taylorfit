@@ -1,4 +1,3 @@
-
 require "./index.styl"
 Model = require "../Model"
 
@@ -26,7 +25,6 @@ read_csv = ( file ) ->
           name = file.name
           accept { name, rows, cols }
 
-
 read_model = ( file ) ->
   new Promise ( accept, reject ) ->
     reader = new FileReader
@@ -52,23 +50,19 @@ ko.components.register "tf-loader",
 
     @id = "input-#{@table}-dataset"
 
-    # --- for loading just dataset
+    # For loading just dataset
     @dataset = ko.observable null
     @show_partition = ko.observable undefined
     @show_validate_partition = ko.observable undefined
     @temp_model = ko.observable undefined
     @dataset.subscribe ( next ) =>
       # Importing CSV file
-      read_csv document.getElementById(@id).files[0]
+      await read_csv document.getElementById(@id).files[0]
       # Completed parsing CSV to build model
       .then ( model ) =>
         if @init # Importing data
           @temp_model(model)
           @show_partition(true)
-          # params.model new Model
-          #   "data_#{@table}": model.rows
-          #   name: model.name
-          #   columns: model.cols
         else if ( @table == "validation" )
           @temp_model(model)
           @show_validate_partition(true)
@@ -77,7 +71,7 @@ ko.components.register "tf-loader",
           # TODO: check for column length
           m["data_#{@table}"] model.rows
           m["name_#{@table}"] = model.name
-    
+
     @import_validate_partition = (
       validate_row_start,
       validate_row_end,
@@ -89,8 +83,8 @@ ko.components.register "tf-loader",
       m = params.model()
       m["data_validation"] data_validate
       m["name_validation"] = model.name
-    
-     # --- Use from data partition modal
+
+     # Use from data partition modal
     @import_partition = (
       fit_row_start,
       fit_row_end,
@@ -120,11 +114,11 @@ ko.components.register "tf-loader",
         columns: model.cols
       @show_partition(false)
 
-    # --- for loading entire model
+    # For loading entire model
     if @init
       @model = ko.observable null
       @model.subscribe ( next ) ->
-        read_model document.getElementById("input-model").files[0]
+        await read_model document.getElementById("input-model").files[0]
         .then ( model ) -> params.model new Model model
 
     return this

@@ -6,8 +6,6 @@ VALIDATION_LABEL = require('../../engine/labels.json').VALIDATION_LABEL
 
 SILENT_MESSAGE_TYPES = [ "progress" ]
 
-#EngineWorker = require "../../engine/worker/engine-worker"
-
 class ME
 
   constructor: ( ) ->
@@ -58,7 +56,13 @@ module.exports = new class WorkerAdapter extends ME
       type: target,
       data: message
     })
-
+  # Send data to engine-worker.js
+  stopCalc: ( ) ->
+    console.error("Stopped/cancelled calc");
+    @post "stopCalc"
+  sendPsig: ( x ) ->
+    console.debug("Sending PSIG" + x)
+    @post "sendPsig", x
   setData: ( x, label ) ->
     @post "setData", { data: x, label }
   setExponents: ( x ) ->
@@ -74,7 +78,7 @@ module.exports = new class WorkerAdapter extends ME
     @post "addTerm", x
   removeTerm: ( x ) ->
     @post "removeTerm", x
-  
+
   transformDelete: ( x ) ->
     if x
       @post("transformData", {
@@ -128,6 +132,24 @@ module.exports = new class WorkerAdapter extends ME
 
   updateSensitivity: ( x ) ->
     @post "updateSensitivity", x
+
+  getConfidence: ( x ) ->
+    @post "getConfidence", x
+
+  deleteConfidence: ( x ) ->
+    @post "deleteConfidence", x
+
+  updateConfidence: ( x ) ->
+    @post "updateConfidence", x
+
+  getPrediction: ( x ) ->
+    @post "getPrediction", x
+
+  deletePrediction: ( x ) ->
+    @post "deletePrediction", x
+
+  updatePrediction: ( x ) ->
+    @post "updatePrediction", x
 
   getImportanceRatio: ( x ) ->
     @post "getImportanceRatio", x

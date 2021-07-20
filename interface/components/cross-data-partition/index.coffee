@@ -26,7 +26,7 @@ ko.components.register "tf-cross-data-partition",
       num >= 0 &&
       num <= 100 &&
       !isNaN(num)
-    
+
     @change_cross_partition = ( ) ->
       cross_partition = Number(@cross_p())
       cross_split_invalid = !check_split_valid(cross_partition)
@@ -55,7 +55,7 @@ ko.components.register "tf-cross-data-partition",
             @cross_row_start(start_row)
           end_row = if data_rows <= start_row + num_rows then data_rows else start_row + num_rows
           @cross_row_end(end_row)
-    
+
     @change_cross_start_row = ( ) ->
       cross_row_start = Number(@cross_row_start())
       cross_row_end = Number(@cross_row_end())
@@ -89,7 +89,7 @@ ko.components.register "tf-cross-data-partition",
         partition_percentage = Math.round((cross_row_end - cross_row_start + 1) / data_rows * 100)
         @cross_p(partition_percentage)
         @error_msg(undefined)
-    
+
     check_in_range = (num, start, end) ->
       # The other partition is not partitioned
       if (start == 0 && end == 0)
@@ -97,12 +97,12 @@ ko.components.register "tf-cross-data-partition",
       else
         num >= start && num <= end
 
-    
     @import_cross_dataset = ( ) ->
       cross_p = Number(@cross_p()) || 0
       cross_row_start = Number(@cross_row_start()) || 0
       cross_row_end = Number(@cross_row_end()) || 0
       data_rows = model().rows.length
+      ncols = model().cols.length
       # Check if percentage 0-100
       sum_p = cross_p
       if @cross_invalid()
@@ -127,10 +127,11 @@ ko.components.register "tf-cross-data-partition",
       params.parent.import_cross_partition(
         cross_row_start,
         cross_row_end,
+        ncols,
       )
       window.location.reload()
       return true
-    
+
     @close_window = ( ) ->
       @show_partition(false)
       window.location.reload()

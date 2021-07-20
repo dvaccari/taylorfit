@@ -1,4 +1,3 @@
-
 require "./index.styl"
 c3 = require "c3"
 Model = require "../Model"
@@ -10,30 +9,58 @@ ko.components.register "tf-cumulative-distribution",
     unless ko.isObservable params.model
       throw new TypeError "components/options:
       expects [model] to be observable"
-    
+
     model = params.model()
     @column_index = model.show_cumulative_distribution
 
     @active = ko.computed ( ) => @column_index() != undefined
-    
-    @column_name = ko.computed ( ) => 
+
+    @column_name = ko.computed ( ) =>
       if !@active()
         return undefined
-      index = @column_index()
+      index = @column_index()[0]
       if typeof index == "string"
         if index.indexOf("Sensitivity") != -1
           index = index.split("_")[1]
           return "Sensitivity " + model.sensitivityColumns()[index].name
+        if index.indexOf("C.I.") != -1
+          index = 0
+          return "C.I."
+        if index.indexOf("P.I.") != -1
+          index = 0
+          return "P.I."
         if index.indexOf("ImportanceRatio") != -1
           index = index.split("_")[1]
           return "Importance Ratio " + model.importanceRatioColumns()[index].name
         return index
       return model.columns()[index].name
-    
-    @values = ko.computed ( ) => 
+
+    @values = ko.computed ( ) =>
       if !@active()
         return undefined
-      index = @column_index()
+
+      table = @column_index()[1]
+      offset_start = 0
+      offset_end = 0
+      if @table == 'fit'
+        offset_start = 0
+        offset_end = model["data_fit"]().length
+      else if @table == 'cross'
+        offset_start = model["data_fit"]().length
+        offset_end = offset_start + model["data_cross"]().length
+      else
+        offset_start = model["data_fit"]().length
+        if model["data_cross"]() != undefined
+          offset_start += model["data_cross"]().length
+        offset_end = offset_start
+        if model["data_validation"]() != undefined
+          offset_end += model["data_validation"]().length
+        # We've gotten into a situation where there's only 1 data table
+        # but this patch is easier than fixing the bug
+        if offset_start == offset_end
+          offset_start = 0
+
+      index = @column_index()[0]
       if typeof index == "string"
         if index == "Dependent"
           index = 0
@@ -45,12 +72,20 @@ ko.components.register "tf-cumulative-distribution",
           # format is: Sensitivity_index
           index = index.split("_")[1]
           return Object.values(model.sensitivityData()[index])
+        if typeof index == "string" && index.indexOf("C.I.") != -1
+          # format is: C.I.
+          index = 0
+          return Object.values(model.confidenceData()[0].slice(offset_start, offset_end))
+        if typeof index == "string" && index.indexOf("P.I.") != -1
+          # format is: P.I.
+          index = 0
+          return Object.values(model.predictionData()[0].slice(offset_start, offset_end))
         if typeof index == "string" && index.indexOf("ImportanceRatio") != -1
           # format is: ImportanceRatio_index
           index = index.split("_")[1]
-          return Object.values(model.importanceRatioData()[index]) 
-        return model["extra_#{model.data_plotted()}"]().map((row) => row[index])
-      return model["data_#{model.data_plotted()}"]().map((row) => row[index])
+          return Object.values(model.importanceRatioData()[index])
+        return model["extra_#{table}"]().map((row) => row[index])
+      return model["data_#{table}"]().map((row) => row[index])
 
     @close = ( ) ->
       model.show_cumulative_distribution undefined
@@ -70,10 +105,10 @@ ko.components.register "tf-cumulative-distribution",
         ++occurrences[sorted[i]]
 
       keys = Object.keys(occurrences)
-      # Sort keys 
+      # Sort keys
       keys.sort((a, b) => a - b)
       sorted_occurrences = {}
-      for i in [0..keys.length-1] 
+      for i in [0..keys.length-1]
         key = keys[i]
         value = occurrences[key]
         sorted_occurrences[key] = value
@@ -122,9 +157,7 @@ ko.components.register "tf-cumulative-distribution",
 
       return chart.element.innerHTML
 
-      
-
-    @download = ( ) -> 
+    @download = ( ) ->
       if !@active()
         return undefined
       svg_element = chart.element.querySelector "svg"
@@ -136,8 +169,8 @@ ko.components.register "tf-cumulative-distribution",
       svg_element.style.overflow = "visible"
       svg_element.style.padding = "10px"
       box_size = svg_element.getBBox()
-      svg_element.style.height = box_size.height 
-      svg_element.style.width = box_size.width 
+      svg_element.style.height = box_size.height
+      svg_element.style.width = box_size.width
 
       chart_line = svg_element.querySelector ".c3-chart-line"
       chart_line.style.opacity = 1
@@ -151,13 +184,13 @@ ko.components.register "tf-cumulative-distribution",
       x_and_y.concat Array.from node_list2
       x_and_y.forEach (e) ->
         e.style.fill = "none"
-        e.style.stroke = "black" 
+        e.style.stroke = "black"
 
       scale = Array.from node_list3
       scale.forEach (e) ->
         e.style.fill = "none"
-        e.style.stroke = "black" 
-      
+        e.style.stroke = "black"
+
       path = Array.from node_list4
       path.forEach (e) ->
         e.style.fill = "none"
@@ -167,17 +200,17 @@ ko.components.register "tf-cumulative-distribution",
       num_arr = Array(tick.length).fill(0).map((x, y) => y)
 
       for num in num_arr
-        # use transform property to check if the SVG element is on the top position of y axis
+        # Use transform property to check if the SVG element is on the top position of y axis
         # matrix(1, 0, 0, 1, 0, 1) -> ["1", "0", "0", "1", "0", "1"]
         transform_y_val = (getComputedStyle(tick[num]).getPropertyValue('transform').replace(/^matrix(3d)?\((.*)\)$/,'$2').split(/, /)[5])*1
         if transform_y_val == 1
           text = tick[num].getElementsByTagName("text")
-          # stop the loop once the SVG element on the top position of y axis is found
+          # Stop the loop once the SVG element on the top position of y axis is found
           break
 
       original_y = text[0].getAttribute "y"
       text[0].setAttribute "y", original_y + 3
-      
+
       xml = new XMLSerializer().serializeToString svg_element
       data_url = "data:image/svg+xml;base64," + btoa xml
 
@@ -209,11 +242,5 @@ ko.components.register "tf-cumulative-distribution",
         document.body.removeChild a_element
 
       return undefined
-
-
-
-    @column_index.subscribe ( next ) =>
-      #if next then adapter.unsubscribeToChanges()
-      #else adapter.subscribeToChanges()
 
     return this

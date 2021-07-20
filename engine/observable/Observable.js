@@ -1,7 +1,6 @@
-
-const _events         = Symbol('events');
-const _listeners      = Symbol('listeners');
-const _listenerCount  = Symbol('listenerCount');
+const _events = Symbol('events');
+const _listeners = Symbol('listeners');
+const _listenerCount = Symbol('listenerCount');
 
 class Observable {
 
@@ -13,18 +12,16 @@ class Observable {
 
   on(event, handler) {
     // If an array of events, register for each event
-    if (Array.isArray(event)) {
+    if (Array.isArray(event))
       return event.map((ev) => this.on(ev, handler));
-    }
 
     // Otherwise, register the sole event
     let id = this[_listenerCount] += 1;
 
     this[_listeners][id] = handler;
 
-    if (!this[_events][event]) {
+    if (!this[_events][event])
       this[_events][event] = [];
-    }
 
     this[_events][event].push(id);
     return id;
@@ -32,9 +29,8 @@ class Observable {
 
   removeListener(id) {
     // If an array of ids, unregister for each id
-    if (Array.isArray(id)) {
+    if (Array.isArray(id))
       return id.every((ev) => this.removeListener(ev, id));
-    }
 
     delete this[_listeners][id];
 
@@ -45,9 +41,9 @@ class Observable {
   }
 
   fire(event, data) {
-    if (!this[_events][event]) {
+    if (!this[_events][event])
       this[_events][event] = [];
-    }
+
     this[_events][event].forEach((id) => this[_listeners][id](data));
   }
 

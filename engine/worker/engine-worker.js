@@ -3,9 +3,9 @@
 
 require('./subworkers');
 
-const perf      = require('../perf');
+const perf = require('../perf');
 const statsMeta = require('../statistics/metadata.json');
-const Model     = require('../model');
+const Model = require('../model');
 const {
   FIT_LABEL, CROSS_LABEL, VALIDATION_LABEL,
   LOG,
@@ -15,11 +15,14 @@ const {
   DELETE,
 } = require('../labels.json');
 
+self.stopping = false;
+self.psig = 0.05;
+
 const Transformation = require("../../interface/components/transform/label.json")
 
-const getCandidateProgressInterval  = 50;
-let   onGetCandidateId              = 0;
-let   m         = initializeModel();
+const getCandidateProgressInterval = 50;
+let onGetCandidateId = 0;
+let m = initializeModel();
 
 function log() {
   console.debug('[Engine]:', ...arguments);
@@ -84,14 +87,14 @@ function initializeModel() {
   m.on('error', (error) =>
     postMessage({ type: 'error', data: error })
   );
-  
+
   m.on('getSensitivity', (data) => {
     postMessage({
       type: 'model:getSensitivity',
       data: data
     });
   });
-  
+
   m.on('deleteSensitivity', (data) => {
     postMessage({
       type: 'model:deleteSensitivity',
@@ -106,13 +109,55 @@ function initializeModel() {
     });
   });
 
+  m.on('getConfidence', (data) => {
+    postMessage({
+      type: 'model:getConfidence',
+      data: data
+    });
+  });
+
+  m.on('deleteConfidence', (data) => {
+    postMessage({
+      type: 'model:deleteConfidence',
+      data: data
+    });
+  });
+
+  m.on('updateConfidence', (data) => {
+    postMessage({
+      type: 'model:updateConfidence',
+      data: data
+    });
+  });
+
+  m.on('getPrediction', (data) => {
+    postMessage({
+      type: 'model:getPrediction',
+      data: data
+    });
+  });
+
+  m.on('deletePrediction', (data) => {
+    postMessage({
+      type: 'model:deletePrediction',
+      data: data
+    });
+  });
+
+  m.on('updatePrediction', (data) => {
+    postMessage({
+      type: 'model:updatePrediction',
+      data: data
+    });
+  });
+
   m.on('getImportanceRatio', (data) => {
     postMessage({
       type: 'model:getImportanceRatio',
       data: data
     });
   });
-  
+
   m.on('deleteImportanceRatio', (data) => {
     postMessage({
       type: 'model:deleteImportanceRatio',
@@ -139,18 +184,20 @@ let subscribeToChanges = (m, updateNow = true) => {
     'setData', 'setExponents', 'setMultiplicands', 'setDependent',
     'setLags', 'addTerm', 'removeTerm', 'clear', 'subset', 'setColumns',
     'getSensitivity', 'deleteSensitivity', 'updateSensitivity',
+    'getConfidence', 'deleteConfidence', 'updateConfidence',
+    'getPrediction', 'deletePrediction', 'updatePrediction',
     'getImportanceRatio', 'deleteImportanceRatio', 'updateImportanceRatio'
   ], () => {
     m.getCandidates()
-     .then((cands) => postMessage({ type: 'candidates', data: cands }));
+      .then((cands) => postMessage({ type: 'candidates', data: cands }));
     m.labels.forEach((label) =>
       postMessage({ type: `model:${label}`, data: m.getModel(label) })
     );
   });
 
-  if (updateNow) {
+  if (updateNow)
     m.fire('setData');
-  }
+
 };
 let unsubscribeToChanges = (m) => m.removeListener(subscriptionIds);
 
@@ -162,9 +209,8 @@ let unsubscribeToChanges = (m) => m.removeListener(subscriptionIds);
  */
 onmessage = function (e) {
   // If it's for a sub-worker, just ignore it
-  if (e.data._from != null) {
+  if (e.data._from != null)
     return;
-  }
 
   let type = e.data.type
     , data = e.data.data
@@ -172,8 +218,8 @@ onmessage = function (e) {
 
   log(e.data);
 
-  switch(type) {
-    // only works because the event type is the same as the method name
+  switch (type) {
+    // Only works because the event type is the same as the method name
     case 'setExponents':
     case 'setMultiplicands':
     case 'setDependent':
@@ -185,6 +231,15 @@ onmessage = function (e) {
       m[type](data);
       break;
 
+    // Receive message from worker.coffee
+    // TODO: Interrupt code to receive message during work
+    case 'stopCalc':
+      console.error("Cancelled calculation!");
+      self.stopping = true;  // Variable is accessible to workers (i.e. Term.js)
+      break;
+    case 'sendPsig':
+      self.psig = data;  // Data is psig
+      break;
     // this one's special
     case 'setData':
       m[type](data.data, data.label);
@@ -251,27 +306,51 @@ onmessage = function (e) {
     case 'getSensitivity':
       m.getSensitivity(data);
       break;
-    
+
     case 'deleteSensitivity':
       m.deleteSensitivity(data);
       break;
-    
+
     case 'updateSensitivity':
       m.updateSensitivity(data);
       break;
-    
+
+    case 'getConfidence':
+      m.getConfidence(data);
+      break;
+
+    case 'deleteConfidence':
+      m.deleteConfidence(data);
+      break;
+
+    case 'updateConfidence':
+      m.updateConfidence(data);
+      break;
+
+    case 'getPrediction':
+      m.getPrediction(data);
+      break;
+
+    case 'deletePrediction':
+      m.deletePrediction(data);
+      break;
+
+    case 'updatePrediction':
+      m.updatePrediction(data);
+      break;
+
     case 'getImportanceRatio':
       m.getImportanceRatio(data);
       break;
-    
+
     case 'deleteImportanceRatio':
       m.deleteImportanceRatio(data);
       break;
-    
+
     case 'updateImportanceRatio':
       m.updateImportanceRatio(data);
       break;
-    
+
     case 'reset':
       m = new Model();
       break;
