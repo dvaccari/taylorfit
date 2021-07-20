@@ -1,0 +1,9 @@
+/*! ModuleConcatenation bailout: Module is not an ECMAScript module */
+
+/*! runtime requirements:  */
+
+/*! unknown exports (runtime-defined) */
+
+/*!*************************************!*\
+  !*** ./engine/worker/subworkers.js ***!
+  \*************************************/
