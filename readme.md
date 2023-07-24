@@ -4,7 +4,7 @@
 TaylorFit is a multivariate polynomial regression application that fits data to
 a predictive model consisting of a polynomial function, such as
 
-`f(x, y) = ax + by + cxy`
+`f(x, y) = a*x + b*y + c*xy + d*x*y^2`
 
 where `x`, `y`, and `xy` are terms selected by the user, and `a`, `b`, and `c`
 are coefficients determined using least squares regression.
